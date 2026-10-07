@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Harness tool
+GenericName=Spacecraft harness design
+Comment=Design electrical harnesses from a block diagram, offline
+Exec=@EXEC@ %f
+Icon=@ICON@
+Terminal=false
+Categories=Engineering;Science;
+Keywords=harness;wiring;spacecraft;
+StartupWMClass=harness-tool

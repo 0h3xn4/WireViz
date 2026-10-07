@@ -1,4 +1,4 @@
-# harness-tool 0.0.1 model 677d8603a988
+# harness-tool 0.1.0rc1 model 30a3bc678c1e
 Finding,Rule,Severity,Object,Statement,Waived,Justification
 part-unapproved.EX-DSUB-9-F,part-unapproved,warning,EX-DSUB-9-F,Part EX-DSUB-9-F is not approved yet but is used (8 place(s)),,
 part-unapproved.EX-DSUB-9-M,part-unapproved,warning,EX-DSUB-9-M,Part EX-DSUB-9-M is not approved yet but is used (4 place(s)),,

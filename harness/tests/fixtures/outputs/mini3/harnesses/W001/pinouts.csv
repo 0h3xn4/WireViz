@@ -1,4 +1,4 @@
-# harness-tool 0.0.1 model 677d8603a988
+# harness-tool 0.1.0rc1 model 30a3bc678c1e
 Connector,Role,Mates with,Part,Pin,Signal,Interface,Wires,Spare
 W001-P1,cable,PCDU-J01,EX-DSUB-9-M,1,PWR,,W001-001,no
 W001-P1,cable,PCDU-J01,EX-DSUB-9-M,2,RTN,,W001-002,no

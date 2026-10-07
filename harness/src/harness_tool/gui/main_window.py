@@ -4,8 +4,8 @@ from collections.abc import Callable
 from functools import partial
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QEventLoop, QSettings, Qt, QThread, QTimer, Signal
-from PySide6.QtGui import QAction, QActionGroup, QCloseEvent, QKeySequence
+from PySide6.QtCore import QEvent, QEventLoop, QSettings, Qt, QThread, QTimer, QUrl, Signal
+from PySide6.QtGui import QAction, QActionGroup, QCloseEvent, QDesktopServices, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -80,6 +80,7 @@ from harness_tool.gui.panels import (
 from harness_tool.gui.theme import ThemeManager
 from harness_tool.gui.tokens import CATEGORIES
 from harness_tool.gui.tour import Tour
+from harness_tool.resources import guide_path
 
 SCALES = (100, 125, 150, 200)
 
@@ -224,6 +225,7 @@ class MainWindow(QMainWindow):
         self.ask_text: Callable[[str, str, str], str | None] = self._ask_text
         self.ask_choice: Callable[[str, str, list[str]], int] = self._ask_choice
         self.ask_file: Callable[[], str | None] = _no_file
+        self.open_url: Callable[[QUrl], bool] = QDesktopServices.openUrl
         self.compute_plan: Callable[[], GenerationPlan | None] = self._compute_plan
         self.compute_outputs: Callable[[], tuple[OutputSet, VerifyReport] | None] = (
             self._compute_outputs
@@ -290,6 +292,7 @@ class MainWindow(QMainWindow):
         self.tool_connect.setToolTip(strings.TOOL_CONNECT_TIP)
         self.tool_select.clicked.connect(lambda: self.ctl.end_connect())
         self.tool_connect.clicked.connect(lambda: self.ctl.begin_connect(self.ctl.connect_type))
+        self._told_properties = False
         self.hint = QLabel("")
         self.hint.setObjectName("hint")
         self.hint.setWordWrap(True)
@@ -473,6 +476,7 @@ class MainWindow(QMainWindow):
         )
         self.act_fit = a(strings.FIT, self.view.fit, "Ctrl+0", name="act-fit")
         self.act_commands = a(strings.A_COMMANDS, self.open_commands, "Ctrl+K", name="act-commands")
+        self.act_guide = a(strings.A_GUIDE, self.guide_flow, "F1", name="act-guide")
         self.act_tour = a(
             strings.A_TOUR,
             self._start_tour,
@@ -482,6 +486,13 @@ class MainWindow(QMainWindow):
         self.act_sample = a(strings.A_SAMPLE, self.sample_flow, name="act-sample")
         self.act_about = a(strings.A_ABOUT, self.about_flow, name="act-about")
         self.act_issues = a(strings.A_ISSUES, self.issues_flow, name="act-issues")
+
+    def guide_flow(self) -> None:
+        path = guide_path()
+        if path is None:
+            self.toasts.show_message(strings.GUIDE_MISSING, None)
+            return
+        self.open_url(QUrl.fromLocalFile(str(path)))
 
     def _start_tour(self) -> None:
         self.tour.start()
@@ -527,6 +538,7 @@ class MainWindow(QMainWindow):
             v.addAction(dock.toggleViewAction())
         h = mb.addMenu(strings.M_HELP)
         for act in (
+            self.act_guide,
             self.act_commands,
             self.act_tour,
             self.act_glossary,
@@ -655,6 +667,9 @@ class MainWindow(QMainWindow):
         self.status_sel.setText(strings.SELECTED.format(s.id) if s else strings.NOTHING_SEL)
         if s is not None and s.kind == "unit":
             self.view.reveal(s.id)
+        if s is not None and not self.dock_right.isVisibleTo(self) and not self._told_properties:
+            self._told_properties = True
+            self.toasts.show_message(strings.PROPERTIES_HIDDEN, None)
         self._update_selection_actions()
 
     def _update_selection_actions(self) -> None:
@@ -679,6 +694,8 @@ class MainWindow(QMainWindow):
         hint = c.connect_hint()
         warn = hint.startswith("No other unit")
         self.hint.setText(hint)
+        # reserve two lines so a long hint never makes the toolbar jump
+        self.hint.setMinimumHeight(self.hint.fontMetrics().lineSpacing() * 2 + 4)
         self.hint.setProperty("error", warn)
         self.hint.style().unpolish(self.hint)
         self.hint.style().polish(self.hint)
@@ -1184,8 +1201,12 @@ class MainWindow(QMainWindow):
         """At high UI scale or small windows, hide secondary panels so the diagram keeps room."""
         scale = self.theme.scale
         eff_w = self.width() / scale
+        was = (self.dock_left.isVisibleTo(self), self.dock_right.isVisibleTo(self))
         self.dock_right.setVisible(eff_w >= 1150)
         self.dock_left.setVisible(eff_w >= 800)
+        now = (self.dock_left.isVisibleTo(self), self.dock_right.isVisibleTo(self))
+        if was != now and (was[0] and not now[0] or was[1] and not now[1]):
+            self.toasts.show_message(strings.PANELS_HIDDEN, None)  # never hide panels silently
         self.table.scale_factor = scale
         self.dock_left.setMinimumWidth(self.theme.px(240))
         self.dock_right.setMinimumWidth(self.theme.px(260))

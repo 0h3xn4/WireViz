@@ -1,7 +1,8 @@
 """Referential integrity of a project. Runs on every load, save and transaction."""
 
 from collections import Counter
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
+from functools import partial
 
 from .issues import Issue
 from .model import Connector, Harness, Project
@@ -36,6 +37,15 @@ def _orphan(h: Harness | None, code: str, message: str, object_id: str | None = 
             object_id,
         )
     return _err(code, message, object_id)
+
+
+def _check_harness_lazy(
+    project: Project, h: Harness, wires: Counter[str], pins: Callable[[], dict[str, frozenset[str]]]
+) -> list[Issue]:
+    return _check_harness(project, h, wires, pins())
+
+
+_CACHE: dict[tuple[int, str], tuple[object, tuple[int, ...], list[Issue]]] = {}
 
 
 def _check_connector(project: Project, c: Connector, owner: str) -> list[Issue]:
@@ -196,12 +206,44 @@ def check_integrity(project: Project) -> list[Issue]:
         )
         for pid in sorted(set(project.placements) - set(project.units))
     )
-    for c in project.connectors.values():
-        out.extend(_check_connector(project, c, "project"))
     wire_counts = Counter(w.id for h in project.harnesses.values() for w in h.wires)
-    box_pins = {cid: frozenset(p.id for p in c.pins) for cid, c in project.connectors.items()}
+    # Results per connector and harness are reused while the objects (immutable) and everything
+    # they are checked against are unchanged; this keeps an edit at stress size well under 100 ms.
+    token = (
+        hash(frozenset(project.units)),
+        hash(frozenset(map(id, project.connectors.values()))),
+        hash(frozenset(project.interfaces)),
+        hash(frozenset((p.id, p.category, p.pin_count) for p in project.parts.values())),
+        hash(frozenset(k for k, n in wire_counts.items() if n > 1)),
+    )
+    seen: dict[tuple[int, str], tuple[object, tuple[int, ...], list[Issue]]] = {}
+
+    def cached(obj: object, owner: str, compute: Callable[[], list[Issue]]) -> list[Issue]:
+        key = (id(obj), owner)
+        hit = _CACHE.get(key)
+        if hit is None or hit[0] is not obj or hit[1] != token:
+            hit = (obj, token, compute())
+        seen[key] = hit
+        return hit[2]
+
+    for c in project.connectors.values():
+        out.extend(cached(c, "project", partial(_check_connector, project, c, "project")))
+    box_pins: dict[str, frozenset[str]] | None = None
+
+    def pins() -> dict[str, frozenset[str]]:
+        nonlocal box_pins
+        if box_pins is None:
+            box_pins = {
+                cid: frozenset(p.id for p in c.pins) for cid, c in project.connectors.items()
+            }
+        return box_pins
+
     for h in project.harnesses.values():
         for c in h.connectors:
-            out.extend(_check_connector(project, c, h.id))
-        out.extend(_check_harness(project, h, wire_counts, box_pins))
+            out.extend(cached(c, h.id, partial(_check_connector, project, c, h.id)))
+        out.extend(
+            cached(h, "harness", partial(_check_harness_lazy, project, h, wire_counts, pins))
+        )
+    _CACHE.clear()
+    _CACHE.update(seen)
     return out

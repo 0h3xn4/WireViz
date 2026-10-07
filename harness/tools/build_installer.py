@@ -1,7 +1,7 @@
 """Build a self-contained, offline package with PyInstaller (one-folder) and archive it.
 
-Run once per target OS (build on the oldest supported Linux for glibc compatibility).
-Output: dist/harness-tool-<version>-<platform>.(zip|tar.gz)
+Ubuntu only (D-110). Build on Ubuntu 22.04 so the package also starts on 24.04 (glibc).
+Output: dist/harness-tool-<version>-linux-<arch>.tar.gz
 """
 
 import platform
@@ -28,6 +28,8 @@ def _pyinstaller(
            "--specpath", str(work), "--paths", str(ROOT / "src")]  # fmt: skip
     for mod in (*EXCLUDES, *extra_excludes):
         cmd += ["--exclude-module", mod]
+    guide = ROOT / "src" / "harness_tool" / "resources" / "guide"
+    cmd += ["--add-data", f"{guide}:harness_tool/resources/guide"]
     cmd.append(str(entry))
     return subprocess.run(cmd, check=False).returncode
 
@@ -48,9 +50,13 @@ def main() -> int:
         ROOT / "dist" / "harness", ROOT / "dist" / "harness-tool" / "cli", dirs_exist_ok=True
     )
     shutil.rmtree(ROOT / "dist" / "harness", ignore_errors=True)
+    for item in (
+        ROOT / "packaging" / "ubuntu"
+    ).iterdir():  # install scripts, desktop file, icon, readme
+        shutil.copy2(item, ROOT / "dist" / "harness-tool" / item.name)
     system = platform.system().lower()
     base = ROOT / "dist" / f"harness-tool-{__version__}-{system}-{platform.machine().lower()}"
-    fmt = "zip" if system == "windows" else "gztar"
+    fmt = "gztar"
     archive = shutil.make_archive(str(base), fmt, root_dir=ROOT / "dist", base_dir="harness-tool")
     print(archive)
     return 0

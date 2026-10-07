@@ -3,7 +3,7 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0 to M6 done (`docs/demos/`). Next is M7 (polish: accessibility audit, user guide, installers, release checklist). Generation runs on placeholders until the owner answers D-10 (harness boundary rule) and D-11 (derating numbers); results must say so.
+M0 to M7 done (`docs/demos/`); version 0.1.0rc1. Platform: Ubuntu only (D-110). What is left needs people: owner answers on D-10, D-11, D-15, D-20, usability sessions, a screen-reader pass, sign-off (docs/RELEASE.md). Generation runs on placeholders until the owner answers D-10 (harness boundary rule) and D-11 (derating numbers); results must say so.
 
 ## Commands (run from `harness/`)
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
@@ -14,7 +14,9 @@ M0 to M6 done (`docs/demos/`). Next is M7 (polish: accessibility audit, user gui
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmarks: `python -m tools.bench_stress`, `python -m tools.bench_generate`
 - Output goldens: `PYTHONPATH=. python -m tools.gen_output_goldens` (on purpose; review the diff)
-- Package: `python -m tools.build_installer`, then `dist/harness-tool/harness-tool --selftest`
+- Package (Ubuntu): `python -m tools.build_installer`, `python -m tools.build_deb`, then `dist/harness-tool/harness-tool --selftest`
+- Release checklist: `python -m tools.release_check [--quick]`; soak: `python -m tools.soak 5000 <seed>`
+- Docs that must stay in sync (tests fail otherwise): `python -m tools.build_guide`, `python -m tools.gen_rule_docs`; usability: `python -m tools.usability_setup DIR`, `python -m tools.usability_summary results.csv sus.csv`
 - SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`
 - Offline wheelhouse: `python -m tools.vendor`
 
@@ -67,3 +69,9 @@ M0 to M6 done (`docs/demos/`). Next is M7 (polish: accessibility audit, user gui
 - Anything that may change a released harness must pass `check_locks`; `apply_ops` bypasses it on purpose (generation, loaders, tests), so keep new editing paths on `History`.
 - Generation's input hash must not include release bookkeeping (status); the outputs gate uses `content_hash`.
 - Add a diffable object kind in `vcs/diff.py` (`_flatten_*`) and its name in `KIND_NAMES`.
+
+## Polish layout (M7)
+User guide `docs/guide/USER_GUIDE.md` (HTML bundled in `src/harness_tool/resources/guide/`, F1), `docs/RULES.md` (generated), `docs/CONFIG.md`, `docs/usability/`, Ubuntu packaging in `packaging/ubuntu/` and `tools/build_deb.py`, `tools/release_check.py`, `tools/soak.py`.
+- New UI controls need an accessible name (`tests/test_accessibility.py` fails otherwise) and strings go in `gui/strings.py`.
+- New CLI commands or buttons mentioned in the guide must exist, and new commands must be documented in the guide (`tests/test_docs.py`).
+- Keep the integrity cache correct: anything the checks depend on must be part of the token in `core/integrity.py`.

@@ -4,7 +4,7 @@ APP_TITLE = "Harness Designer"
 EMPTY_STATE = "No project open. Create a new project or open an existing one to begin."
 EMPTY_CANVAS = "Your diagram is empty.\nAdd your first unit from the palette on the left."
 CANVAS = "Block diagram canvas"
-CANVAS_HELP = "Tab moves between units, Enter selects, Shift+arrow keys move the selected unit."
+CANVAS_HELP = "Tab moves between units, Enter selects, Shift+arrow keys move the selected unit. The Interface table tab lists every interface and is the screen-reader friendly alternative."
 MINIMAP = "Minimap: click to move the view"
 
 GLOSSARY: list[tuple[str, str]] = [
@@ -312,3 +312,17 @@ MARK_DIAGRAM = "Mark on diagram"
 CLEAR_MARKS = "Clear marks"
 HISTORY_TITLE = "Change log of {0}"
 NO_HISTORY = "Nothing has been recorded yet."
+
+CANVAS_NAME = "Block diagram: {0} units, {1} interfaces"
+CANVAS_SELECTED = "Selected: {0} {1}."
+CANVAS_NONE = "Nothing selected."
+HARNESS_LIST = "Harnesses"
+WIRE_LIST = "Wires of the selected harness"
+PANELS_HIDDEN = "The window is narrow, so the palette and properties are hidden. Widen the window or use the View menu to show them."
+PROPERTIES_HIDDEN = (
+    "Properties are hidden because the window is narrow. Widen the window or use the View menu."
+)
+A_GUIDE = "User guide"
+GUIDE_MISSING = (
+    "The user guide is not installed with this build. It is in docs/guide/USER_GUIDE.md."
+)

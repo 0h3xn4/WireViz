@@ -1,0 +1,190 @@
+"""Run the release checklist (docs/RELEASE.md) and write dist/release-docs/release-report.md.
+Ubuntu only. Usage: python -m tools.release_check [--quick]   (--quick skips the long steps)"""
+
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from collections.abc import Callable
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+Result = tuple[bool, str]
+
+
+def run(cmd: list[str], timeout: int = 3600, env: dict[str, str] | None = None) -> tuple[int, str]:
+    p = subprocess.run(
+        cmd, cwd=ROOT, capture_output=True, text=True, timeout=timeout, check=False, env=env
+    )
+    return p.returncode, (p.stdout + p.stderr).strip()
+
+
+def tail(text: str, n: int = 2) -> str:
+    return " | ".join(text.splitlines()[-n:])
+
+
+def _selftest_line(out: str) -> str:
+    return next((ln for ln in out.splitlines() if "selftest" in ln), "no selftest output")
+
+
+def versions() -> Result:
+    from harness_tool import __version__
+
+    pyproject = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(), re.M)
+    change = re.search(r"^## (\S+)", (ROOT / "CHANGELOG.md").read_text(), re.M)
+    found = {
+        "__init__": __version__,
+        "pyproject": pyproject.group(1) if pyproject else "?",
+        "CHANGELOG": change.group(1) if change else "?",
+    }
+    return len(set(found.values())) == 1, ", ".join(f"{k} {v}" for k, v in found.items())
+
+
+def lint() -> Result:
+    steps = [["ruff", "format", "--check", "."], ["ruff", "check", "."], ["mypy"]]
+    for cmd in steps:
+        code, out = run([sys.executable, "-m", *cmd])
+        if code:
+            return False, f"{' '.join(cmd)}: {tail(out)}"
+    return True, "ruff format, ruff check, mypy --strict clean"
+
+
+def tests() -> Result:
+    code, out = run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--cov"])
+    return code == 0, tail(out, 3)
+
+
+def soak() -> Result:
+    code, out = run([sys.executable, "-m", "tools.soak", "3000", "7"])
+    return code == 0, out.splitlines()[0] if out else "no output"
+
+
+def targets() -> Result:
+    from harness_tool.core import drc
+    from harness_tool.core.commands import apply_ops
+    from harness_tool.core.generate.engine import plan_generation
+    from harness_tool.core.outputs.build import build_outputs
+    from harness_tool.core.outputs.verify import verify_outputs
+    from harness_tool.core.samples import stress_project
+    from harness_tool.core.verify import verify_project
+
+    p = stress_project()
+    t = time.perf_counter()
+    plan = plan_generation(p)
+    gen = time.perf_counter() - t
+    apply_ops(p, plan.ops)
+    t = time.perf_counter()
+    verify = verify_project(p)
+    ver = time.perf_counter() - t
+    t = time.perf_counter()
+    drc.run(p)
+    rules = time.perf_counter() - t
+    t = time.perf_counter()
+    out = build_outputs(p)
+    build = time.perf_counter() - t
+    t = time.perf_counter()
+    ok = verify_outputs(p, out.files).ok
+    check = time.perf_counter() - t
+    ok = ok and verify.ok and gen < 10 and not [f for f in drc.run(p) if f.severity == "error"]
+    return (
+        ok,
+        f"stress project: generate {gen:.1f} s (limit 10), verify {ver:.1f} s, rules {rules:.1f} s, outputs {build:.0f} s + check {check:.0f} s",
+    )
+
+
+def reference_projects() -> Result:
+    from harness_tool.core.generate.engine import generate_project
+    from harness_tool.core.outputs.build import build_outputs
+    from harness_tool.core.outputs.verify import verify_outputs
+    from harness_tool.core.samples import mini3, sat15, sat15_full
+    from harness_tool.core.verify import verify_project
+
+    for name, make in (("mini3", mini3), ("sat15", sat15), ("sat15_full", sat15_full)):
+        p = make()
+        if name != "sat15_full":
+            generate_project(p)
+        if not verify_project(p).ok or not verify_outputs(p, build_outputs(p).files).ok:
+            return False, f"verifier reports errors on {name}"
+    return True, "verifier and output verifier clean on mini3, sat15, sat15_full"
+
+
+def sbom() -> Result:
+    code, out = run([sys.executable, "-m", "tools.gen_sbom"])
+    docs = ROOT / "dist" / "release-docs"
+    return code == 0 and (docs / "sbom.cdx.json").is_file(), tail(out)
+
+
+def reproducible() -> Result:
+    code, out = run([sys.executable, "-m", "tools.check_reproducible"])
+    return code == 0, "wheel builds identically twice" if code == 0 else tail(out)
+
+
+def package() -> Result:
+    code, out = run([sys.executable, "-m", "tools.build_installer"])
+    if code:
+        return False, tail(out)
+    code, out = run([sys.executable, "-m", "tools.build_deb"])
+    if code:
+        return False, tail(out)
+    code, out = run([str(ROOT / "dist" / "harness-tool" / "harness-tool"), "--selftest"])
+    return code == 0 and "selftest ok" in out, f"tarball and deb built; {_selftest_line(out)}"
+
+
+def deb_install() -> Result:
+    from harness_tool import __version__
+
+    deb = ROOT / "dist" / f"harness-tool_{__version__}_amd64.deb"
+    with tempfile.TemporaryDirectory() as tmp:
+        code, out = run(["dpkg-deb", "-x", str(deb), tmp])
+        if code:
+            return False, tail(out)
+        code, out = run([f"{tmp}/opt/harness-tool/harness-tool", "--selftest"])
+        cli_code, cli_out = run([f"{tmp}/opt/harness-tool/cli/harness", "--version"])
+    return (
+        code == 0 and cli_code == 0 and "selftest ok" in out,
+        f"extracted deb runs: {_selftest_line(out)}; {cli_out}",
+    )
+
+
+STEPS: list[tuple[str, Callable[[], Result], bool]] = [
+    ("Versions agree (pyproject, package, changelog)", versions, True),
+    ("Lint and types", lint, True),
+    ("Verifier clean on the reference projects", reference_projects, True),
+    ("Performance targets on the stress project", targets, False),
+    ("Soak test (3,000 random steps)", soak, False),
+    ("Test suite and coverage gate", tests, False),
+    ("SBOM and licence report", sbom, False),
+    ("Reproducible wheel", reproducible, False),
+    ("Package (tar.gz, deb) and self-test", package, False),
+    ("Installed package runs (deb extracted)", deb_install, False),
+]
+
+
+def main() -> int:
+    quick = "--quick" in sys.argv
+    lines = ["# Release report", ""]
+    failed = 0
+    for name, step, fast in STEPS:
+        if quick and not fast:
+            lines.append(f"- SKIPPED: {name}")
+            continue
+        t = time.perf_counter()
+        try:
+            ok, detail = step()
+        except Exception as exc:  # report, never crash the whole checklist
+            ok, detail = False, f"{type(exc).__name__}: {exc}"
+        failed += not ok
+        lines.append(
+            f"- {'PASS' if ok else 'FAIL'}: {name} ({time.perf_counter() - t:.0f} s): {detail}"
+        )
+        print(lines[-1], flush=True)
+    out = ROOT / "dist" / "release-docs"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "release-report.md").write_text("\n".join(lines) + "\n")
+    print(f"{failed} step(s) failed" if failed else "release checklist passed")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

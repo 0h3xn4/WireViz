@@ -296,9 +296,9 @@ Screenshots of the real editor (offscreen render) are in `docs/ux/qt/`; the 40 j
 | Q8 | Table filter for "rs422" found nothing because the column shows "RS-422" | Medium | Fixed: the filter matches ID, name, type name and ID, units, requirement |
 | Q9 | Table column widths reset on every refresh; names truncated | Medium | Fixed |
 | Q10 | Link chips truncated long IDs; the Properties panel showed its message twice (deleted widgets lingered); import preview put the long status in the middle and cut off "To"; "Create redundant copy" enabled for a redundant unit; new units off-screen after selection | Medium | Fixed |
-| Q11 | Interface chips can still overlap in dense diagrams; no automatic layout beyond lane placement | Medium | **Open** |
-| Q12 | The connect hint wraps to two or three lines and makes the toolbar jump | Low | **Open** |
+| Q11 | Interface chips can still overlap in dense diagrams | Medium | Mostly fixed in M7: labels slide along their link to free space (placement grid); a test limits overlaps on `sat15`; automatic unit layout is still lane placement |
+| Q12 | The connect hint wraps and makes the toolbar jump | Low | Fixed in M7: the hint reserves two lines (`test_connect_hint_has_a_fixed_height...`) |
 | Q13 | At 150% and above the legend wraps and the canvas is small; the diagram itself does not scale with the UI scale | Low | **Open** (View menu can hide the bottom panel) |
-| Q14 | Properties and palette auto-hide on narrow windows without a hint | Low | **Open** |
-| Q15 | The canvas is not exposed to screen readers (Qt graphics items); the interface table is the accessible route | Medium | **Open** for M7 (accessibility audit) |
-| Q16 | An edit at stress size with every link visible costs about 120 ms (target 100 ms); undo about 250 ms | Medium | **Open**; incremental integrity checks would remove about 30 ms |
+| Q14 | Properties and palette auto-hide on narrow windows without a hint | Low | Fixed in M7: a message says so once, and again when Properties is needed |
+| Q15 | The canvas is not exposed to screen readers (Qt graphics items) | Medium | Partly fixed in M7: the canvas announces unit and interface counts and the selection and names the Interface table as the accessible alternative; items are still not individually exposed. A test audit (`tests/test_accessibility.py`) found and fixed unnamed fields in the release dialog and the harness tables. A manual screen-reader pass (Orca) is still needed |
+| Q16 | An edit at stress size costs about 120 ms (target 100 ms); undo about 250 ms | Medium | Improved in M7: integrity results are cached per object (a generated 20,000-wire project: 110 ms to 22 ms per check). Measured now: rename about 100 ms, move about 100 ms, undo about 200 ms. Still borderline |

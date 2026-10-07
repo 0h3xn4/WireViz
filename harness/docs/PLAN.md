@@ -54,7 +54,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - Revisions, status, release with mandatory comment (blocked by verifier errors, stale outputs, DRC errors), baselines, locks on released items, diff engine and visual diff, change log, `harness check` for post-merge consistency, on-disk change detection and safe reload.
 **Acceptance:** diff of two baselines lists added/removed/changed objects exactly; released items cannot be edited without a new revision.
 
-## M7 Polish
+## M7 Polish (done except the items that need people; see demos/M7.md)
 - Guided and expert modes, themes, scaling to 200%, accessibility audit, performance tuning, soak test, user guide (Markdown + offline HTML/PDF), developer docs (file format, rule config), release checklist, final installers, SBOM.
 **Acceptance:** performance targets met on the stress project; soak test passes N thousand steps; release checklist completed; usability test results triaged.
 

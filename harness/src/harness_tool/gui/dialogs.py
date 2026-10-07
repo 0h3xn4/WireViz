@@ -588,13 +588,16 @@ class ChangeDialog(QDialog):
         self.by = QLineEdit(by)
         self.by.setObjectName("change-by")
         lay.addWidget(self.by)
+        self.by.setAccessibleName(strings.YOUR_NAME)
         self.checker = QLineEdit()
         self.checker.setObjectName("change-checker")
+        self.checker.setAccessibleName(strings.CHECKED_BY)
         if ask_checker:
             lay.addWidget(QLabel(strings.CHECKED_BY))
             lay.addWidget(self.checker)
         self.comment = QPlainTextEdit()
         self.comment.setObjectName("change-comment")
+        self.comment.setAccessibleName(strings.COMMENT)
         self.comment.setFixedHeight(80)
         if ask_comment:
             lay.addWidget(QLabel(strings.COMMENT))

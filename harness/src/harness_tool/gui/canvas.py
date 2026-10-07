@@ -404,8 +404,17 @@ class LinkItem(QGraphicsPathItem):
         path.cubicTo(c1, c2, p2)
         self.setPath(path)
         idx = self.dscene.link_order(i.id)
-        t = 0.35 + 0.1 * (idx % 4)
-        self._chip_center = path.pointAtPercent(t)
+        t0 = 0.35 + 0.1 * (idx % 4)
+        width = 30 + 7.5 * len(i.id)
+        center = path.pointAtPercent(t0)
+        for k in range(9):  # slide along the link until the label sits on free space
+            t = min(0.8, max(0.2, t0 + (0.07 * ((k + 1) // 2)) * (1 if k % 2 else -1)))
+            cand = path.pointAtPercent(t)
+            if self.dscene.chip_free(QRectF(cand.x() - width / 2, cand.y() - 11, width, 22), i.id):
+                center = cand
+                break
+        self._chip_center = center
+        self.dscene.chip_place(i.id, QRectF(center.x() - width / 2, center.y() - 11, width, 22))
 
     def shape(self) -> QPainterPath:
         stroker = QPainterPathStroker()
@@ -532,6 +541,8 @@ class DiagramScene(QGraphicsScene):
         self.theme = theme
         self.unit_items: dict[str, UnitItem] = {}
         self.link_items: dict[str, LinkItem] = {}
+        self._chips: dict[tuple[int, int], list[tuple[str, QRectF]]] = {}
+        self._chip_rects: dict[str, QRectF] = {}
         self.zone_items: list[ZoneItem] = []
         self.lane_height = 700.0
         self._adj: dict[str, list[str]] = {}
@@ -548,6 +559,35 @@ class DiagramScene(QGraphicsScene):
 
     def adjacent(self, unit_id: str) -> list[str]:
         return self._adj.get(unit_id, [])
+
+    # ---- label placement: a coarse grid of placed link labels, so they do not overlap ------------
+    CELL = 120.0
+
+    def _cells(self, r: QRectF) -> list[tuple[int, int]]:
+        x0, x1 = int(r.left() // self.CELL), int(r.right() // self.CELL)
+        y0, y1 = int(r.top() // self.CELL), int(r.bottom() // self.CELL)
+        return [(x, y) for x in range(x0, x1 + 1) for y in range(y0, y1 + 1)]
+
+    def chip_free(self, rect: QRectF, own: str) -> bool:
+        pad = rect.adjusted(-3, -3, 3, 3)
+        for cell in self._cells(pad):
+            for other, r in self._chips.get(cell, ()):
+                if other != own and r.intersects(pad):
+                    return False
+        return True
+
+    def chip_forget(self, interface_id: str) -> None:
+        rect = self._chip_rects.pop(interface_id, None)
+        if rect is None:
+            return
+        for cell in self._cells(rect):
+            self._chips[cell] = [c for c in self._chips.get(cell, []) if c[0] != interface_id]
+
+    def chip_place(self, interface_id: str, rect: QRectF) -> None:
+        self.chip_forget(interface_id)
+        self._chip_rects[interface_id] = rect
+        for cell in self._cells(rect):
+            self._chips.setdefault(cell, []).append((interface_id, rect))
 
     def link_order(self, interface_id: str) -> int:
         return self._order.get(interface_id, 0)
@@ -566,6 +606,8 @@ class DiagramScene(QGraphicsScene):
         self.clear()
         self.unit_items.clear()
         self.link_items.clear()
+        self._chips.clear()
+        self._chip_rects.clear()
         self.zone_items.clear()
         self._rebuild_adjacency()
         self._sync_zones()
@@ -643,6 +685,7 @@ class DiagramScene(QGraphicsScene):
                     link.update()
             elif link is not None:
                 self.removeItem(link)
+                self.chip_forget(iid)
                 del self.link_items[iid]
         for uid in delta.units:  # heights may have changed: relink neighbours
             self.relink(uid)
@@ -731,14 +774,26 @@ class DiagramView(QGraphicsView):
         self.empty.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.minimap = MiniMap(self)
         ctl.changed.connect(self._on_changed)
+        ctl.selectionChanged.connect(self._announce)
         theme.changed.connect(self._restyle)
         self._on_changed(None)
+        self._announce()
+
+    def _announce(self) -> None:
+        """Qt does not expose graphics items to screen readers, so the view itself says what it
+        holds, what is selected, and where the full accessible alternative is."""
+        p = self.ctl.project
+        self.setAccessibleName(strings.CANVAS_NAME.format(len(p.units), len(p.interfaces)))
+        sel = self.ctl.selection
+        picked = strings.CANVAS_SELECTED.format(sel.kind, sel.id) if sel else strings.CANVAS_NONE
+        self.setAccessibleDescription(f"{picked} {strings.CANVAS_HELP}")
 
     def _restyle(self) -> None:
         self.setBackgroundBrush(QBrush(self.theme.color("bg")))
         self.viewport().update()
 
     def _on_changed(self, delta: object) -> None:
+        self._announce()
         if getattr(delta, "full", False):
             QTimer.singleShot(0, self.fit)  # a newly opened project starts fitted to the window
         self.empty.setVisible(not self.ctl.project.units)

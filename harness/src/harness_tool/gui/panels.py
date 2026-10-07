@@ -965,6 +965,8 @@ class HarnessPanel(QWidget):
         self.wires = QTableWidget(0, len(strings.WIRE_COLUMNS))
         self.wires.setObjectName("plans-wires")
         self.wires.setHorizontalHeaderLabels(strings.WIRE_COLUMNS)
+        self.harnesses.setAccessibleName(strings.HARNESS_LIST)
+        self.wires.setAccessibleName(strings.WIRE_LIST)
         for t in (self.harnesses, self.wires):
             t.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
             t.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)

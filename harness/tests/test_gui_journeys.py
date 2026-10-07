@@ -762,3 +762,32 @@ def test_glossary_and_about(win) -> None:  # type: ignore[no-untyped-def]
     DialogScript(win, lambda d: shown.append(d.objectName()))
     win.glossary_flow()
     assert shown == ["glossary-dialog"]
+
+
+def test_narrow_window_says_it_hid_the_panels_and_properties(win) -> None:  # type: ignore[no-untyped-def]
+    win.resize(1440, 900)
+    win.auto_layout()
+    win.resize(700, 900)
+    win.auto_layout()
+    assert "narrow" in win.toasts.messages[-1].lower() and not win.dock_right.isVisibleTo(win)
+
+
+def test_connect_hint_has_a_fixed_height_so_the_toolbar_does_not_jump(win) -> None:  # type: ignore[no-untyped-def]
+    win.ctl.begin_connect("rs422")
+    win._on_connect()
+    h1 = win.hint.minimumHeight()
+    win.ctl.end_connect()
+    win._on_connect()
+    assert win.hint.minimumHeight() == h1 > win.hint.fontMetrics().lineSpacing()
+
+
+def test_link_labels_do_not_overlap_in_a_dense_diagram(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from harness_tool.core.samples import sat15
+
+    w = make_window(tmp_path)
+    qtbot.addWidget(w)
+    w.ctl._install(sat15(), None, None)
+    rects = list(w.view.dscene._chip_rects.values())
+    assert len(rects) >= 20
+    overlaps = sum(1 for k, a in enumerate(rects) for b in rects[k + 1 :] if a.intersects(b))
+    assert overlaps <= max(2, len(rects) // 10), f"{overlaps} overlapping labels of {len(rects)}"

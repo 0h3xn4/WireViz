@@ -1,4 +1,4 @@
-# harness-tool 0.0.1 model 677d8603a988
+# harness-tool 0.1.0rc1 model 30a3bc678c1e
 Label,Kind,Text,Quantity
 W001-P1,connector,W001-P1 mates PCDU-J01,1
 W001-P2,connector,W001-P2 mates RW1-J01,1

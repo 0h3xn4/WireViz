@@ -363,7 +363,7 @@
  "format_version": 1,
  "generator": {
   "name": "harness-tool",
-  "version": "0.0.1"
+  "version": "0.1.0rc1"
  },
  "harnesses": [
   {
@@ -1182,7 +1182,7 @@
    "voltage_v": null
   }
  ],
- "model_hash": "677d8603a9886e2581e17031facccb8e8405e011b3b20f9bb709a48efd7c7203",
+ "model_hash": "30a3bc678c1e4cf05efa5385014436165fedb00c18f1ad73726923124d600782",
  "parts": [
   {
    "approval": "pending",
