@@ -11,10 +11,10 @@ from typing import Any
 from openpyxl import Workbook
 from openpyxl.cell import WriteOnlyCell
 
+from harness_tool.core.generate.lengths import wire_length
 from harness_tool.core.model import Harness, Project
 
 from .stamp import Stamp, Table
-from .tables import wire_length
 
 JSON_FORMAT = "harness-tool-export"
 JSON_VERSION = 1

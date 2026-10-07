@@ -8,11 +8,12 @@ Pagination: rows flow onto as many sheets as needed; every sheet repeats the hea
 
 from dataclasses import dataclass
 
+from harness_tool.core.generate.lengths import wire_length
 from harness_tool.core.model import Harness, Project, Wire
 
 from .canvas import SHEETS, Line, Rect, Sheet, Text, fit
 from .stamp import Stamp
-from .tables import PENDING, num, wire_length
+from .tables import PENDING, num
 
 MARGIN = 8.0
 TB_H = 42.0  # title block height
@@ -313,8 +314,12 @@ def _draw_sketch(sh: Sheet, h: Harness, y: float, width: float) -> None:
         return
     sh.add(Text(MARGIN + 1.0, y + 4.0, "Routing (schematic, not to scale):", size=SIZE, bold=True))
     x0, y0 = MARGIN + 6.0, y + 7.0
+    columns = max(col for col, _row in layout.values()) + 1
+    natural = columns * NODE_W + (columns - 1) * NODE_GAP_X
+    scale = min(1.0, (width - 2 * MARGIN - 6.0) / natural)  # a long chain is squeezed, not cut off
+    node_w, gap_x = NODE_W * scale, NODE_GAP_X * scale
     pos = {
-        n: (x0 + col * (NODE_W + NODE_GAP_X), y0 + row * (NODE_H + NODE_GAP_Y))
+        n: (x0 + col * (node_w + gap_x), y0 + row * (NODE_H + NODE_GAP_Y))
         for n, (col, row) in layout.items()
     }
     for g in sorted(h.segments, key=lambda x: x.id):
@@ -322,7 +327,7 @@ def _draw_sketch(sh: Sheet, h: Harness, y: float, width: float) -> None:
             (ax, ay), (bx, by) = pos[g.from_node], pos[g.to_node]
             if ax > bx:
                 (ax, ay), (bx, by) = (bx, by), (ax, ay)
-            xa, xb = ax + NODE_W, bx
+            xa, xb = ax + node_w, bx
             ya, yb = ay + NODE_H / 2, by + NODE_H / 2
             sh.add(Line(xa, ya, xb, yb, width=0.5))
             length = f"{num(g.length_m)} m" if g.length_m is not None else "? m"
@@ -330,7 +335,7 @@ def _draw_sketch(sh: Sheet, h: Harness, y: float, width: float) -> None:
                 Text(
                     (xa + xb) / 2,
                     (ya + yb) / 2 - 1.0,
-                    fit(f"{g.id} {length}", NODE_GAP_X, 2.2),
+                    fit(f"{g.id} {length}", gap_x, 2.2),
                     size=2.2,
                     anchor="middle",
                     color=GREY,
@@ -342,12 +347,12 @@ def _draw_sketch(sh: Sheet, h: Harness, y: float, width: float) -> None:
             Rect(
                 x,
                 yy,
-                NODE_W,
+                node_w,
                 NODE_H,
                 width=0.4,
                 fill="#ffffff" if n in connector_ids else "#e6e6e6",
             )
         )
         sh.add(
-            Text(x + 1.0, yy + 4.6, fit(n, NODE_W - 2.0, SIZE), size=SIZE, bold=n in connector_ids)
+            Text(x + 1.0, yy + 4.6, fit(n, node_w - 2.0, SIZE), size=SIZE, bold=n in connector_ids)
         )

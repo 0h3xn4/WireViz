@@ -47,7 +47,7 @@ def _class_of(
     project: Project, i: InterfaceInstance, seg: dict[str, object], sep: dict[str, object]
 ) -> str:
     cat = project.interface_types[i.type_id].category
-    if cat == "pyro" and sep.get("forbid_pyro_with_other", True):
+    if cat == "pyro" and sep.get("forbid_pyro_with_other") in (None, True):
         return "pyro"
     pairs = sep.get("category_pairs_to_separate")
     if isinstance(pairs, list):

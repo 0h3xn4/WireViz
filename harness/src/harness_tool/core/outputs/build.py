@@ -219,6 +219,38 @@ def outputs_content_state(project: Project, folder: Path | str) -> str:
     return "current" if old.content_hash == content_hash(project) else "stale"
 
 
+def damaged_files(folder: Path | str) -> list[str] | None:
+    """Files listed in the manifest that are missing or whose content changed since export.
+    None if the manifest cannot be read."""
+    root = Path(folder)
+    old = _read_manifest(root)
+    if old is None:
+        return None
+    bad = []
+    for rel, digest in sorted(old.files.items()):
+        path = root / rel
+        if (
+            not _safe_rel(rel)
+            or not path.is_file()
+            or path.is_symlink()
+            or hashlib.sha256(path.read_bytes()).hexdigest() != digest
+        ):
+            bad.append(rel)
+    return bad
+
+
+def exported_harnesses(folder: Path | str) -> set[str] | None:
+    """Harness IDs that have output files listed in the manifest (None if unreadable)."""
+    old = _read_manifest(Path(folder))
+    if old is None:
+        return None
+    return {
+        rel.split("/")[1]
+        for rel in old.files
+        if rel.startswith("harnesses/") and rel.count("/") >= 2
+    }
+
+
 @dataclass(frozen=True)
 class OutputStatus:
     state: str  # "none" | "current" | "stale" | "modified" | "unreadable"

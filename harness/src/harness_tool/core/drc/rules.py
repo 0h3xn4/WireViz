@@ -9,13 +9,14 @@ from collections import Counter, defaultdict
 from collections.abc import Iterator
 
 from harness_tool.core.configcheck import validate as validate_config
+from harness_tool.core.generate.lengths import wire_length
 from harness_tool.core.generate.sizing import ampacity_table
 from harness_tool.core.integrity import check_integrity
 from harness_tool.core.model import Connector, Harness, InterfaceInstance, Project, Wire
 from harness_tool.core.units import awg_to_area_mm2
 from harness_tool.core.vcs.consistency import release_integrity
 
-from .base import Hit, Rule, cfg, number
+from .base import Hit, Rule, cfg, flag, number
 
 # ---- helpers ---------------------------------------------------------------------------------------
 
@@ -262,10 +263,16 @@ def _voltage_drop(project: Project) -> Iterator[Hit]:
         for w in h.wires:
             i = project.interfaces.get(w.interface_id or "")
             itype = project.interface_types.get(i.type_id) if i else None
-            if not (i and itype and i.max_current_a is not None and w.length_m and w.gauge_awg):
+            length = wire_length(h, w)
+            if not (i and itype and i.max_current_a is not None and length and w.gauge_awg):
+                continue
+            if not 0 <= w.gauge_awg <= 40:  # a hand-edited gauge must not stop the whole check
+                yield Hit(
+                    w.id, f"Wire {w.id} has AWG {w.gauge_awg}, which is not a wire size (0 to 40)"
+                )
                 continue
             n = 2 if itype.category in ("power", "ground") else 1
-            drop = i.max_current_a * rho * w.length_m / (awg_to_area_mm2(w.gauge_awg) * 1e-6) * n
+            drop = i.max_current_a * rho * length / (awg_to_area_mm2(w.gauge_awg) * 1e-6) * n
             if drop > limit:
                 yield Hit(w.id, f"Wire {w.id} drops {drop:.3g} V, more than the {limit:g} V limit")
 
@@ -326,7 +333,7 @@ def _carried(project: Project, h: Harness) -> list[InterfaceInstance]:
 
 
 def _chains_mixed(project: Project) -> Iterator[Hit]:
-    if not cfg(project, "segregation").get("forbid_nominal_with_redundant", True):
+    if not flag(cfg(project, "segregation"), "forbid_nominal_with_redundant"):
         return
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
         if {i.redundancy for i in _carried(project, h)} >= {"nominal", "redundant"}:
@@ -342,7 +349,7 @@ def _chains_mixed(project: Project) -> Iterator[Hit]:
 
 
 def _pyro_mixed(project: Project) -> Iterator[Hit]:
-    if not cfg(project, "segregation").get("forbid_pyro_with_other", True):
+    if not flag(cfg(project, "segregation"), "forbid_pyro_with_other"):
         return
 
     def cats(ids: list[InterfaceInstance]) -> set[str]:
@@ -442,6 +449,40 @@ def _unchecked(project: Project) -> Iterator[Hit]:
             "derating",
             "Current and derating limits were not checked: the derating values are still placeholders",
         )
+    table = ampacity_table(d.get("ampacity_a_by_awg"))
+    if table is not None:
+        missing_gauges = sorted(
+            {
+                w.gauge_awg
+                for h in project.harnesses.values()
+                for w in h.wires
+                if w.gauge_awg is not None
+                and w.gauge_awg not in table
+                and (i := project.interfaces.get(w.interface_id or "")) is not None
+                and i.max_current_a is not None
+            }
+        )
+        if missing_gauges:
+            yield Hit(
+                "derating-gauge",
+                f"Wire current was not checked for AWG {', '.join(str(g) for g in missing_gauges)}: the ampacity table has no value for it",
+            )
+    if number(d.get("contact_current_factor")) is not None:
+        unrated = sorted(
+            {
+                box.part_id
+                for i in project.interfaces.values()
+                if i.max_current_a is not None
+                for e in i.endpoints
+                if (box := project.connectors.get(e.connector_id or "")) is not None
+                and _contact_rating(project, box) is None
+            }
+        )
+        if unrated:
+            yield Hit(
+                "contact-rating",
+                f"Contact current was not checked for {', '.join(unrated)}: the part has no contact rating",
+            )
     if has_current and (
         number(d.get("max_voltage_drop_v")) is None
         or number(g.get("conductor_resistivity_ohm_m")) is None

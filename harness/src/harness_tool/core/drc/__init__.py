@@ -24,6 +24,8 @@ def run(project: Project) -> list[Finding]:
 
 
 def _verifier_findings(project: Project) -> list[Finding]:
+    import hashlib
+
     from harness_tool.core.checks import finding_id
     from harness_tool.core.verify import verify_project
 
@@ -33,7 +35,10 @@ def _verifier_findings(project: Project) -> list[Finding]:
     for n, issue in enumerate(verify_project(project).issues):
         if issue.severity != "error":
             continue
-        obj = f"{issue.code}.{issue.object_id or n}"
+        # the message is part of the ID: several findings can share a code and an object
+        # (one per missing signal), and every finding needs an ID of its own
+        digest = hashlib.sha256(issue.message.encode()).hexdigest()[:6]
+        obj = f"{issue.code}.{issue.object_id or n}.{digest}"
         out.append(
             Finding(
                 finding_id("verify-mismatch", obj), "verify-mismatch", "error", issue.object_id or obj,

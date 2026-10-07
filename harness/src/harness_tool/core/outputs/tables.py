@@ -4,9 +4,9 @@ unknown values are written as "pending", "unknown" or "TBD (placeholder)"."""
 
 from collections import defaultdict
 
-from harness_tool.core.generate.lengths import path_length
+from harness_tool.core.generate.lengths import clear_length_cache, wire_length
 from harness_tool.core.generate.mass import harness_mass
-from harness_tool.core.model import Connector, Harness, Project, Wire
+from harness_tool.core.model import Connector, Harness, Project
 
 from .stamp import Table
 
@@ -18,24 +18,8 @@ def num(v: float | None) -> str:
     return "" if v is None else f"{v:.6g}"
 
 
-_PATHS: dict[tuple[int, str, str], tuple[Harness, float | None]] = {}
-
-
 def clear_cache() -> None:
-    _PATHS.clear()
-
-
-def wire_length(h: Harness, w: Wire) -> float | None:
-    """The wire's own length, else the sum of routing segments between its connectors."""
-    if w.length_m is not None:
-        return w.length_m
-    if not h.segments:
-        return None
-    key = (id(h), w.from_connector, w.to_connector)
-    hit = _PATHS.get(key)
-    if hit is None or hit[0] is not h:  # the identity check guards against reused object ids
-        hit = _PATHS[key] = (h, path_length(h, w.from_connector, w.to_connector))
-    return hit[1]
+    clear_length_cache()
 
 
 def shield_of(h: Harness) -> dict[str, str]:

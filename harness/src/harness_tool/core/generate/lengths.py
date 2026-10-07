@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 from harness_tool.core.commands import Op, Put
 from harness_tool.core.imports import Table
-from harness_tool.core.model import Harness, Project, Segment, evolve
+from harness_tool.core.model import Harness, Project, Segment, Wire, evolve
 
 
 def path_length(h: Harness, start: str, end: str) -> float | None:
@@ -29,6 +29,27 @@ def path_length(h: Harness, start: str, end: str) -> float | None:
                 seen.add(nxt)
                 queue.append((nxt, [*trail, length]))
     return None
+
+
+_PATHS: dict[tuple[int, str, str], tuple[Harness, float | None]] = {}
+
+
+def clear_length_cache() -> None:
+    _PATHS.clear()
+
+
+def wire_length(h: Harness, w: Wire) -> float | None:
+    """The wire's own length, else the sum of routing segments between its connectors.
+    The one place that answers 'how long is this wire' (tables, mass, rules and the release gate)."""
+    if w.length_m is not None:
+        return w.length_m
+    if not h.segments:
+        return None
+    key = (id(h), w.from_connector, w.to_connector)
+    hit = _PATHS.get(key)
+    if hit is None or hit[0] is not h:  # the identity check guards against reused object ids
+        hit = _PATHS[key] = (h, path_length(h, w.from_connector, w.to_connector))
+    return hit[1]
 
 
 @dataclass

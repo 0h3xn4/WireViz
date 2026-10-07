@@ -48,3 +48,9 @@ def cfg(project: Project, name: str) -> dict[str, object]:
 
 def number(value: object) -> float | None:
     return float(value) if isinstance(value, int | float) and not isinstance(value, bool) else None
+
+
+def flag(values: dict[str, object], key: str) -> bool:
+    """A yes/no setting that defaults to yes; an explicit null must not silently switch it off."""
+    value = values.get(key)
+    return True if value is None else bool(value)

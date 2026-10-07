@@ -26,8 +26,10 @@ def evolve[E: Entity](obj: E, **changes: Any) -> E:
 
 def _no_control_chars(value: str) -> str:
     for ch in value:
-        if unicodedata.category(ch) in ("Cc", "Cs") and ch not in "\n\t":
-            raise ValueError("must not contain control characters")
+        if (unicodedata.category(ch) in ("Cc", "Cs") and ch not in "\n\t") or ch in "\ufffe\uffff":
+            raise ValueError(
+                "must not contain control characters"
+            )  # (U+FFFE/FFFF are not valid XML)
     return value
 
 

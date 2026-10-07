@@ -5,6 +5,7 @@ Every finding says what is wrong, why it matters and (when safe) offers a fix.
 """
 
 import hashlib
+import re
 from dataclasses import dataclass
 
 from . import edit
@@ -33,8 +34,17 @@ class Todo:
     target: str
 
 
+def safe_id(text: str) -> str:
+    """`text` as a valid ID: other characters become '_' and a short hash keeps names apart
+    (signal names such as TX+ are not allowed in IDs)."""
+    cleaned = re.sub(r"[^A-Za-z0-9_.-]", "_", text).rstrip(".") or "x"
+    if cleaned == text:
+        return text
+    return cleaned[:52] + "." + hashlib.sha256(text.encode()).hexdigest()[:8]
+
+
 def finding_id(rule: str, object_id: str) -> str:
-    raw = f"{rule}.{object_id}"
+    raw = safe_id(f"{rule}.{object_id}")
     if len(raw) <= 64:
         return raw
     return raw[:52] + "." + hashlib.sha256(raw.encode()).hexdigest()[:8]
@@ -150,15 +160,18 @@ def _assign_connectors(project: Project, interface_id: str) -> list[Op]:
 def waive_op(finding: Finding, justification: str) -> Op:
     if not finding.can_waive:
         raise edit.EditError("This finding cannot be waived.")
-    return Put(
-        "waivers",
-        Waiver(
+    try:
+        waiver = Waiver(
             id=finding.id,
             rule=finding.rule,
-            object_id=finding.object_id,
+            object_id=safe_id(finding.object_id),
             justification=justification.strip(),
-        ),
-    )
+        )
+    except ValueError as exc:  # a justification that is too short or too long, for example
+        raise edit.EditError(
+            "The reason is not acceptable: it needs at least 10 characters and no more than 2000."
+        ) from exc
+    return Put("waivers", waiver)
 
 
 def todos(project: Project) -> list[Todo]:

@@ -67,9 +67,10 @@ def _diagram(
     legend: list[tuple[str, str, tuple[float, float] | None]],
 ) -> Sheet:
     pos, w, h = _layout(project)
-    sheet = Sheet(max(420.0, w), max(297.0, h), title=title)
+    legend_y = max((y for _x, y in pos.values()), default=20.0) + BOX_H + 16.0  # below every box
+    sheet = Sheet(max(420.0, w), max(297.0, h, legend_y + 5.0 * len(legend) + 8.0), title=title)
     sheet.add(Rect(2, 2, sheet.width - 4, sheet.height - 4, width=0.5))
-    sheet.add(Text(8, 10, title, size=4.2, bold=True))
+    sheet.add(Text(8, 10, fit(title, sheet.width - 16, 4.2), size=4.2, bold=True))
     sheet.add(Text(8, 16, fit(stamp.line, sheet.width - 16, 2.6), size=2.6, color="#555555"))
     for z in sorted(
         {project.units[u].zone or "(no zone)" for u in pos},
@@ -108,7 +109,7 @@ def _diagram(
         sheet.add(Rect(x, y, BOX_W, BOX_H, width=0.4, fill="#ffffff"))
         sheet.add(Text(x + 1.5, y + 4.6, fit(uid, BOX_W - 3, 3.0), size=3.0, bold=True))
         sheet.add(Text(x + 1.5, y + 9.0, fit(u.name, BOX_W - 3, 2.4), size=2.4, color="#555555"))
-    lx, ly = sheet.width - 90.0, 10.0
+    lx, ly = 8.0, legend_y
     for k, (name, color, dash) in enumerate(legend):
         sheet.add(
             Line(

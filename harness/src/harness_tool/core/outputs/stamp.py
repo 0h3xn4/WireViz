@@ -32,7 +32,7 @@ Table = list[list[str]]  # first row is the header
 
 def _safe(cell: str) -> str:
     """Spreadsheet programs run cells that start with = + - @ as formulas; mark such text."""
-    if cell[:1] in ("=", "+", "-", "@"):
+    if cell[:1] in ("=", "+", "-", "@", "\t", "\r"):
         try:
             float(cell)
         except ValueError:
@@ -41,7 +41,7 @@ def _safe(cell: str) -> str:
 
 
 def _unsafe(cell: str) -> str:
-    return cell[1:] if cell[:1] == "'" and cell[1:2] in ("=", "+", "-", "@") else cell
+    return cell[1:] if cell[:1] == "'" and cell[1:2] in ("=", "+", "-", "@", "\t", "\r") else cell
 
 
 def csv_bytes(table: Table, stamp: Stamp) -> bytes:
@@ -56,5 +56,7 @@ def csv_bytes(table: Table, stamp: Stamp) -> bytes:
 
 def parse_csv(data: bytes) -> Table:
     """Inverse of `csv_bytes` (used by the independent output verifier)."""
-    lines = [ln for ln in data.decode().splitlines(keepends=True) if not ln.startswith("# ")]
+    lines = data.decode().splitlines(keepends=True)
+    if lines and lines[0].startswith("# "):  # only the stamp line: a cell may hold "# ..." text
+        lines = lines[1:]
     return [[_unsafe(c) for c in row] for row in csv.reader(io.StringIO("".join(lines)))]

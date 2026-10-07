@@ -9,22 +9,35 @@ revision, which keeps the old baseline.
 
 import re
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 
 from harness_tool.core import drc
 from harness_tool.core.commands import Op, Put
 from harness_tool.core.errors import HarnessError
 from harness_tool.core.generate.engine import generation_status
+from harness_tool.core.generate.lengths import wire_length
 from harness_tool.core.model import Baseline, ChangeEntry, Harness, Project, evolve
 from harness_tool.core.model.review import ChangeKind
 from harness_tool.core.verify import verify_project
 
 from .consistency import release_integrity
 from .hashing import content_hash
-from .snapshot import normalize, related_ids, snapshot_for
+from .snapshot import carried_interfaces, normalize, related_ids, snapshot_for
 
 MIN_COMMENT = 10
-DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+DATE_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")  # ASCII digits only
+
+
+def valid_date(text: str) -> bool:
+    """A real calendar date written 2026-03-31 (not 2026-02-30, not full-width digits)."""
+    if not DATE_RE.fullmatch(text):
+        return False
+    try:
+        date.fromisoformat(text)
+    except ValueError:
+        return False
+    return True
 
 
 class ReleaseError(HarnessError):
@@ -98,7 +111,7 @@ def _common(project: Project, hid: str, by: str, comment: str | None, when: str)
                 f"The comment needs at least {MIN_COMMENT} characters: say what changed or why.",
             )
         )
-    if not DATE_RE.match(when):
+    if not valid_date(when):
         out.append(Blocker("bad_date", "The date must look like 2026-03-31."))
     return out
 
@@ -132,12 +145,18 @@ def release_blockers(
     for issue in verify_project(project).errors:
         if issue.object_id is None or issue.object_id in related:
             out.append(Blocker("verify_error", f"Verifier: {issue.message}", issue.object_id))
+    carried = carried_interfaces(h)
     for f in drc.run(project):
-        if (
-            f.severity == "error"
-            and f.waiver is None
-            and (f.object_id in related or drc.locate(project, f.object_id) == ("harness", hid))
-        ):
+        if f.severity != "error" or f.waiver is not None:
+            continue
+        where = drc.locate(project, f.object_id)
+        mine = (
+            f.object_id in related
+            or where == ("harness", hid)
+            or (where is not None and where[0] == "interface" and where[1] in carried)
+            or f.rule == "config-invalid"  # a wrong engineering value affects every harness
+        )
+        if mine:
             out.append(Blocker("rule_error", f.title, f.object_id))
     undecided = [w.id for w in h.wires if w.gauge_awg is None]
     if undecided:
@@ -148,7 +167,7 @@ def release_blockers(
                 undecided[0],
             )
         )
-    no_length = [w.id for w in h.wires if w.length_m is None]
+    no_length = [w.id for w in h.wires if wire_length(h, w) is None]
     if no_length:
         out.append(
             Blocker(
@@ -157,7 +176,7 @@ def release_blockers(
                 no_length[0],
             )
         )
-    out.extend(outputs_blockers(project, outputs_folder))
+    out.extend(outputs_blockers(project, outputs_folder, hid))
     existing = f"{hid}.{h.revision}"
     if existing in project.baselines:
         out.append(
@@ -170,8 +189,14 @@ def release_blockers(
     return out
 
 
-def outputs_blockers(project: Project, folder: Path | None) -> list[Blocker]:
-    from harness_tool.core.outputs.build import outputs_content_state
+def outputs_blockers(
+    project: Project, folder: Path | None, hid: str | None = None
+) -> list[Blocker]:
+    from harness_tool.core.outputs.build import (
+        damaged_files,
+        exported_harnesses,
+        outputs_content_state,
+    )
 
     if folder is None:
         return [
@@ -193,6 +218,23 @@ def outputs_blockers(project: Project, folder: Path | None) -> list[Blocker]:
             Blocker(
                 "outputs_stale",
                 "The outputs are out of date (the design changed after the export). Export again.",
+            )
+        ]
+    # the manifest alone proves nothing: the files it lists must still be there and unchanged
+    damaged = damaged_files(folder)
+    if damaged:
+        return [
+            Blocker(
+                "outputs_modified",
+                f"{len(damaged)} output file(s) were changed or removed after the export (first: {damaged[0]}). Export again.",
+            )
+        ]
+    if hid is not None and hid not in (exported_harnesses(folder) or set()):
+        return [
+            Blocker(
+                "outputs_missing",
+                f"The exported outputs do not include {hid}. Export all outputs, then release.",
+                hid,
             )
         ]
     return []

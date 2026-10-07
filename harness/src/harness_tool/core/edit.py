@@ -441,7 +441,11 @@ def _blocked_text(project: Project, harness_ids: tuple[str, ...] | list[str]) ->
 
 def _waiver_deletes(project: Project, object_ids: set[str]) -> list[Op]:
     """Waivers about objects that no longer exist would only confuse the next reader."""
-    return [Delete("waivers", w.id) for w in project.waivers.values() if w.object_id in object_ids]
+    return [
+        Delete("waivers", w.id)
+        for w in project.waivers.values()
+        if w.object_id in object_ids or w.object_id.split(".")[0] in object_ids
+    ]
 
 
 def ops_delete_harness(project: Project, harness_id: str) -> list[Op]:

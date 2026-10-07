@@ -263,8 +263,9 @@ def _harness(r: VerifyReport, project: Project, h: Harness, files: dict[str, byt
                 r.error("out_bom", f"The BOM of {h.id} has the wrong quantity for {pid}.", h.id)
         metres: dict[str, float] = defaultdict(float)
         for w in h.wires:
-            if w.part_id and w.length_m is not None:
-                metres[w.part_id] += w.length_m
+            length = _length(h, w.id)
+            if w.part_id and length is not None:
+                metres[w.part_id] += length
         for pid, total in sorted(metres.items()):
             if pid not in bom_rows or abs(float(bom_rows[pid][6] or 0) - total) > 1e-5 * max(
                 1.0, total
@@ -299,7 +300,160 @@ def _harness(r: VerifyReport, project: Project, h: Harness, files: dict[str, byt
             r.error(
                 "out_xlsx", f"The workbook of {h.id} lists different wires than the design.", h.id
             )
+    _harness_cells(r, project, h, files)
     _drawings(r, h, files)
+
+
+# ---- cell-level expectations, derived from the project alone ------------------------------------
+
+
+def _length(h: Harness, wire_id: str) -> float | None:
+    """A wire's own length, else the sum of the segments on the path between its connectors
+    (worked out here, not imported from the table builders)."""
+    w = next(x for x in h.wires if x.id == wire_id)
+    if w.length_m is not None:
+        return w.length_m
+    adj: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
+    for s in h.segments:
+        adj[s.from_node].append((s.to_node, s.length_m))
+        adj[s.to_node].append((s.from_node, s.length_m))
+    seen = {w.from_connector}
+    stack: list[tuple[str, list[float | None]]] = [(w.from_connector, [])]
+    while stack:
+        node, trail = stack.pop()
+        if node == w.to_connector:
+            return None if any(x is None for x in trail) else sum(x for x in trail if x is not None)
+        for nxt, ln in adj[node]:
+            if nxt not in seen:
+                seen.add(nxt)
+                stack.append((nxt, [*trail, ln]))
+    return None
+
+
+def _same_number(cell: str, expected: float | None) -> bool:
+    if expected is None:
+        return cell == ""
+    try:
+        return abs(float(cell) - expected) <= 1e-5 * max(1.0, abs(expected))
+    except ValueError:
+        return False
+
+
+def _mass(project: Project, h: Harness) -> tuple[float, bool]:
+    """Mass of the parts whose mass is known, and whether every mass and length was known."""
+    total, complete = 0.0, True
+    for c in h.connectors:
+        part = project.parts.get(c.part_id)
+        if part is None or part.mass_g is None:
+            complete = False
+        else:
+            total += part.mass_g
+    for w in h.wires:
+        part = project.parts.get(w.part_id) if w.part_id else None
+        length = _length(h, w.id)
+        if part is None or part.mass_per_m_g is None or length is None:
+            complete = False
+        else:
+            total += part.mass_per_m_g * length
+    return total, complete
+
+
+def _margin(project: Project) -> float | None:
+    cfg = project.config.get("generation")
+    value = cfg.values.get("mass_margin_fraction") if cfg else None
+    return float(value) if isinstance(value, int | float) and not isinstance(value, bool) else None
+
+
+def _harness_cells(r: VerifyReport, project: Project, h: Harness, files: dict[str, bytes]) -> None:
+    base = f"harnesses/{h.id}"
+    shield_of = {wid: s.id for s in h.shields for wid in s.wire_ids}
+    wl = _table(files, f"{base}/wirelist.csv")
+    if wl:
+        by_id = {w.id: w for w in h.wires}
+        for row in wl[1:]:
+            w = by_id.get(row[0])
+            if w is None or len(row) < 13:
+                continue
+            wrong = []
+            if row[1] != (w.signal or ""):
+                wrong.append("signal")
+            if row[2] != (w.interface_id or ""):
+                wrong.append("interface")
+            if row[8] != (w.part_id or ""):
+                wrong.append("part")
+            if row[9] != (w.colour or ""):
+                wrong.append("colour")
+            if not _same_number(row[10], _length(h, w.id)):
+                wrong.append("length")
+            if row[11] != shield_of.get(w.id, ""):
+                wrong.append("shield group")
+            if bool(row[12]) != w.locked:
+                wrong.append("locked")
+            if wrong:
+                r.error(
+                    "out_wire_differs",
+                    f"Wire {w.id} in the wire list of {h.id} differs from the design: {', '.join(wrong)}.",
+                    w.id,
+                )
+    ts = _table(files, f"{base}/tests.csv")
+    if ts:
+        by_id = {w.id: w for w in h.wires}
+        for row in ts[1:]:
+            w = by_id.get(row[7]) if row[1] == "continuity" else None
+            if w is not None and (
+                row[2] != f"{w.from_connector}.{w.from_pin}"
+                or row[3] != f"{w.to_connector}.{w.to_pin}"
+            ):
+                r.error(
+                    "out_tests",
+                    f"The continuity test of {w.id} in {h.id} tests the wrong pins.",
+                    w.id,
+                )
+    lb = _table(files, f"{base}/labels.csv")
+    if lb:
+        want = {c.id for c in h.connectors} | {f"{w.id}-{s}" for w in h.wires for s in "AB"}
+        if {row[0] for row in lb[1:]} != want:
+            r.error(
+                "out_labels", f"The labels of {h.id} are not the connectors and wire ends.", h.id
+            )
+    ml = _table(files, f"{base}/mass_length.csv")
+    if ml and len(ml) >= 2:
+        _mass_row(r, project, h, ml[1], h.id)
+    yml = files.get(f"{base}/wireviz.yaml")
+    if yml is not None:
+        text = yml.decode()
+        listed = set(re.findall(r'^  "([^"]+)":$', text, flags=re.M))
+        if listed != {c.id for c in h.connectors} | {w.id for w in h.wires}:
+            r.error(
+                "out_yaml",
+                f"The WireViz file of {h.id} lists different parts than the design.",
+                h.id,
+            )
+    x = files.get(f"{base}/{h.id}.xlsx")
+    if x is not None and wl and _xlsx_rows(x, "Wire list") != wl:
+        r.error("out_xlsx", f"The workbook of {h.id} differs from its wire list.", h.id)
+
+
+def _mass_row(r: VerifyReport, project: Project, h: Harness, row: list[str], what: str) -> None:
+    if len(row) < 9:
+        return
+    total, complete = _mass(project, h)
+    lengths = [_length(h, w.id) for w in h.wires]
+    known = sum(x for x in lengths if x is not None)
+    unknown = sum(1 for x in lengths if x is None)
+    margin = _margin(project)
+    ok = (
+        row[1] == str(len(h.wires))
+        and row[2] == str(len(h.connectors))
+        and _same_number(row[3], known)
+        and row[4] == str(unknown)
+        and _same_number(row[5], total)
+        and _same_number(row[6], None if margin is None else total * margin)
+        and _same_number(row[7], None if margin is None else total * (1 + margin))
+        and row[8] == ("yes" if complete and unknown == 0 else "no")
+    )
+    if not ok:
+        r.error("out_mass", f"The mass and length of {what} do not match the design.", what)
 
 
 def _drawings(r: VerifyReport, h: Harness, files: dict[str, bytes]) -> None:
@@ -355,6 +509,17 @@ def _system(r: VerifyReport, project: Project, files: dict[str, bytes]) -> None:
         r.error(
             "out_mass", "The system mass and length table does not count every wire.", "mass_length"
         )
+    elif ml:
+        by_h = {row[0]: row for row in ml[1:-1]}
+        if set(by_h) != set(project.harnesses):
+            r.error(
+                "out_mass",
+                "The system mass table does not list exactly the harnesses.",
+                "mass_length",
+            )
+        for hid, row in sorted(by_h.items()):
+            if hid in project.harnesses:
+                _mass_row(r, project, project.harnesses[hid], row, hid)
     bm = _table(files, "system/bom.csv")
     if bm:
         want = Counter(c.part_id for h in project.harnesses.values() for c in h.connectors)
@@ -397,6 +562,8 @@ def _system(r: VerifyReport, project: Project, files: dict[str, bytes]) -> None:
                 and len(doc["units"]) == len(project.units)
                 and len(doc["interfaces"]) == len(project.interfaces)
                 and sum(len(h["wires"]) for h in doc["harnesses"]) == len(wires)
+                and {h["id"]: h for h in doc["harnesses"]}
+                == {h.id: h.model_dump(mode="json") for h in project.harnesses.values()}
             )
         except (ValueError, KeyError, TypeError):
             same = False
