@@ -3,11 +3,13 @@
     {
       "endpoints": [
         {
+          "auto": false,
           "connector_id": "PCDU-J01",
           "role": null,
           "unit_id": "PCDU"
         },
         {
+          "auto": false,
           "connector_id": "RW1-J01",
           "role": null,
           "unit_id": "RW1"

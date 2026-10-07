@@ -2,6 +2,7 @@
 
 import pytest
 
+from harness_tool.core import edit
 from harness_tool.core.commands import Delete, History, Put, SetConfig, SetMeta, apply_ops
 from harness_tool.core.errors import TransactionError
 from harness_tool.core.io.layout import model_hash
@@ -44,14 +45,7 @@ def test_inconsistent_change_is_rolled_back() -> None:
 def test_delete_with_dependants_in_one_transaction_is_allowed() -> None:
     p = mini3()
     h = History(p)
-    h.execute(
-        "delete OBC",
-        [
-            Delete("interfaces", "IF-TM-RW1"),
-            Delete("connectors", "OBC-J01"),
-            Delete("units", "OBC"),
-        ],
-    )
+    h.execute("delete OBC", edit.ops_delete_unit(p, "OBC"))
     assert "OBC" not in p.units
     h.undo()
     assert "OBC" in p.units and "IF-TM-RW1" in p.interfaces

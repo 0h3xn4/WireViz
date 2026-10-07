@@ -1,0 +1,906 @@
+"""Side and bottom panels: palette, properties, problems, to-do, interface table, harness plans."""
+
+from PySide6.QtCore import (
+    QAbstractTableModel,
+    QModelIndex,
+    QPersistentModelIndex,
+    QSortFilterProxyModel,
+    Qt,
+    Signal,
+)
+from PySide6.QtGui import QColor, QFont, QIcon, QPainter, QPen, QPixmap
+from PySide6.QtWidgets import (
+    QAbstractItemView,
+    QComboBox,
+    QFrame,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLayout,
+    QLineEdit,
+    QPlainTextEdit,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QStyledItemDelegate,
+    QTableView,
+    QVBoxLayout,
+    QWidget,
+)
+
+from harness_tool.core import checks, edit
+from harness_tool.core.model import InterfaceInstance
+from harness_tool.gui import strings
+from harness_tool.gui.controller import Delta, EditorController
+from harness_tool.gui.theme import ThemeManager
+from harness_tool.gui.tokens import CATEGORIES, style_category
+
+
+def category_icon(cat: str, theme: ThemeManager, size: int = 20, pressed: bool = False) -> QIcon:
+    """Letter chip in the category colour: colour is never the only cue."""
+    s = theme.px(size)
+    pm = QPixmap(s, s)
+    pm.fill(Qt.GlobalColor.transparent)
+    p = QPainter(pm)
+    p.setRenderHint(QPainter.RenderHint.Antialiasing)
+    cat = style_category(cat)
+    color = QColor(theme.tokens[f"cat-{cat}"])
+    p.setPen(QPen(QColor(theme.tokens["on-primary"]) if pressed else color, 2))
+    p.setBrush(Qt.BrushStyle.NoBrush)
+    p.drawRoundedRect(2, 2, s - 4, s - 4, 4, 4)
+    f = QFont()
+    f.setBold(True)
+    f.setPixelSize(max(8, int(s * 0.55)))
+    p.setFont(f)
+    p.drawText(pm.rect(), Qt.AlignmentFlag.AlignCenter, CATEGORIES[cat]["icon"])
+    p.end()
+    return QIcon(pm)
+
+
+def heading(text: str) -> QLabel:
+    lab = QLabel(text.upper())
+    lab.setProperty("heading", True)
+    return lab
+
+
+def muted(text: str) -> QLabel:
+    lab = QLabel(text)
+    lab.setProperty("muted", True)
+    lab.setWordWrap(True)
+    lab.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
+    return lab
+
+
+def scroll_body(area: QScrollArea) -> QVBoxLayout:
+    """Give a scroll area a body whose layout never squeezes its children (it scrolls instead)."""
+    area.setWidgetResizable(True)
+    body = QWidget()
+    lay = QVBoxLayout(body)
+    lay.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+    area.setWidget(body)
+    return lay
+
+
+def clear_layout(layout: QLayout) -> None:
+    """Remove and delete everything in a layout, including nested layouts."""
+    while layout.count():
+        item = layout.takeAt(0)
+        if item is None:
+            continue
+        widget = item.widget()
+        if widget is not None:
+            widget.hide()  # deleteLater is deferred; hide now so nothing lingers on screen
+            widget.setParent(None)
+            widget.deleteLater()
+        sub = item.layout()
+        if sub is not None:
+            clear_layout(sub)
+
+
+# ---- palette -------------------------------------------------------------------------------------
+
+
+class PalettePanel(QScrollArea):
+    addUnit = Signal(str)
+    connectType = Signal(str)
+    importRequested = Signal()
+
+    def __init__(self, ctl: EditorController, theme: ThemeManager) -> None:
+        super().__init__()
+        self.ctl, self.theme = ctl, theme
+        self.setObjectName("palette")
+        self.setAccessibleName(strings.PALETTE)
+        self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        body = QWidget()
+        self.setWidget(body)
+        outer = QVBoxLayout(body)
+        outer.setSpacing(4)
+        outer.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        outer.addWidget(heading(strings.ADD_UNIT))
+        self.add_buttons: dict[str, QPushButton] = {}
+        for tid, tpl in edit.TEMPLATES.items():
+            b = QPushButton(f"＋ {tpl.label}")
+            b.setObjectName(f"add-{tid}")
+            b.setToolTip(strings.ADD_UNIT_TIP.format(tpl.label))
+            b.clicked.connect(lambda _=False, t=tid: self.addUnit.emit(t))
+            outer.addWidget(b)
+            self.add_buttons[tid] = b
+        outer.addWidget(heading(strings.CONNECT_WITH))
+        self.type_box = QVBoxLayout()
+        outer.addLayout(self.type_box)
+        outer.addWidget(muted(strings.CONNECT_HELP))
+        outer.addWidget(heading(strings.BRING_IN_DATA))
+        self.import_btn = QPushButton(strings.IMPORT_BUTTON)
+        self.import_btn.setObjectName("import-button")
+        self.import_btn.clicked.connect(self.importRequested)
+        outer.addWidget(self.import_btn)
+        outer.addStretch(1)
+        self.type_buttons: dict[str, QPushButton] = {}
+        ctl.connectChanged.connect(self.refresh)
+        ctl.stateChanged.connect(self.refresh)
+        ctl.changed.connect(lambda _d: self._maybe_rebuild_types())
+        theme.changed.connect(self._rebuild_types)  # icons depend on the theme
+        self._rebuild_types()
+
+    def _maybe_rebuild_types(self) -> None:
+        if set(self.type_buttons) != set(self.ctl.project.interface_types):
+            self._rebuild_types()
+
+    def _rebuild_types(self) -> None:
+        clear_layout(self.type_box)
+        self.type_buttons.clear()
+        for tid, t in sorted(self.ctl.project.interface_types.items()):
+            b = QPushButton(t.name)
+            b.setObjectName(f"type-{tid}")
+            b.setCheckable(True)
+            b.setIcon(category_icon(t.category, self.theme))
+            b.setToolTip(f"{t.name}: {CATEGORIES[style_category(t.category)]['label']} interface")
+            b.clicked.connect(lambda _=False, x=tid: self.connectType.emit(x))
+            self.type_box.addWidget(b)
+            self.type_buttons[tid] = b
+        self.type_box.invalidate()
+        body = self.widget()
+        if body is not None:
+            body.updateGeometry()
+        self.refresh()
+
+    def refresh(self) -> None:
+        ro = self.ctl.read_only
+        for b in self.add_buttons.values():
+            b.setEnabled(not ro)
+        self.import_btn.setEnabled(not ro)
+        for tid, b in self.type_buttons.items():
+            active = self.ctl.tool == "connect" and self.ctl.connect_type == tid
+            b.setEnabled(not ro)
+            if b.isChecked() != active or b.property("icon-state") is None:
+                b.blockSignals(True)
+                b.setChecked(active)
+                b.blockSignals(False)
+                t = self.ctl.project.interface_types[tid]
+                b.setIcon(category_icon(t.category, self.theme, pressed=active))
+                b.setProperty("icon-state", active)
+
+
+# ---- properties ----------------------------------------------------------------------------------
+
+
+class _Field(QWidget):
+    """A labelled line edit with an inline error line (live validation)."""
+
+    def __init__(self, label: str, value: str, *, enabled: bool = True) -> None:
+        super().__init__()
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(2)
+        self.label = muted(label)
+        self.edit = QLineEdit(value)
+        self.edit.setEnabled(enabled)
+        self.edit.setAccessibleName(label)
+        self.error = QLabel("")
+        self.error.setProperty("error", True)
+        self.error.setWordWrap(True)
+        self.error.hide()
+        lay.addWidget(self.label)
+        lay.addWidget(self.edit)
+        lay.addWidget(self.error)
+
+    def show_error(self, message: str) -> None:
+        self.error.setText(message)
+        self.error.setVisible(bool(message))
+        self.edit.setProperty("invalid", bool(message))
+        self.edit.style().unpolish(self.edit)
+        self.edit.style().polish(self.edit)
+
+
+def parse_optional_float(text: str) -> tuple[float | None, str]:
+    text = text.strip()
+    if not text:
+        return None, ""
+    try:
+        value = float(text)
+    except ValueError:
+        return None, strings.NUMBER_HELP
+    if value != value or value in (float("inf"), float("-inf")) or value < 0:
+        return None, strings.NUMBER_HELP
+    return value, ""
+
+
+class PropertiesPanel(QScrollArea):
+    confirmRequested = Signal(str)
+
+    def __init__(self, ctl: EditorController, theme: ThemeManager) -> None:
+        super().__init__()
+        self.ctl, self.theme = ctl, theme
+        self.setObjectName("properties")
+        self.setAccessibleName(strings.PROPERTIES)
+        self.lay = scroll_body(self)
+        self.body: QWidget = self.widget()  # type: ignore[assignment]
+        self.fields: dict[str, QWidget] = {}
+        ctl.selectionChanged.connect(self.rebuild)
+        ctl.modeChanged.connect(self.rebuild)
+        ctl.stateChanged.connect(self._state)
+        ctl.changed.connect(self._changed)
+        self.rebuild()
+
+    def _state(self) -> None:
+        for w in self.body.findChildren(QWidget):
+            if w.property("editable") is True and self.ctl.read_only:
+                w.setEnabled(False)
+
+    def _changed(self, delta: Delta) -> None:
+        s = self.ctl.selection
+        if s is None:
+            return
+        if (
+            (s.kind == "unit" and s.id in delta.units)
+            or (s.kind == "interface" and s.id in delta.interfaces)
+            or delta.full
+        ):
+            focus = self.body.focusWidget()
+            if focus is None or not isinstance(
+                focus, QLineEdit | QPlainTextEdit
+            ):  # never rebuild under the cursor
+                self.rebuild()
+
+    def rebuild(self) -> None:
+        clear_layout(self.lay)
+        self.fields.clear()
+        s = self.ctl.selection
+        p = self.ctl.project
+        if (
+            s is None
+            or (s.kind == "unit" and s.id not in p.units)
+            or (s.kind == "interface" and s.id not in p.interfaces)
+        ):
+            self.lay.addWidget(heading(strings.PROPERTIES))
+            self.lay.addWidget(muted(strings.NOTHING_SELECTED))
+            self.lay.addStretch(1)
+            return
+        (self._unit_form if s.kind == "unit" else self._interface_form)(s.id)
+        self.lay.addStretch(1)
+        self._state()
+
+    def _editable(self, w: QWidget) -> QWidget:
+        w.setProperty("editable", True)
+        return w
+
+    # unit ---------------------------------------------------------------------------------------
+    def _unit_form(self, uid: str) -> None:
+        ctl, p = self.ctl, self.ctl.project
+        u = p.units[uid]
+        self.lay.addWidget(heading(strings.UNIT))
+        f_id = _Field(strings.FIELD_ID, u.id)
+        self._editable(f_id.edit)
+        self.fields["id"] = f_id.edit
+
+        def check_id(text: str) -> str:
+            try:
+                edit.ops_rename_unit(p, uid, text.strip())
+            except Exception as exc:
+                return _first_line(exc)
+            return ""
+
+        f_id.edit.textEdited.connect(lambda t: f_id.show_error(check_id(t)))
+
+        def commit_id() -> None:
+            text = f_id.edit.text().strip()
+            if text != uid and not check_id(text):
+                ctl.rename_unit(uid, text)
+
+        f_id.edit.editingFinished.connect(commit_id)
+        self.lay.addWidget(f_id)
+        f_name = _Field(strings.FIELD_NAME, u.name)
+        self._editable(f_name.edit)
+        self.fields["name"] = f_name.edit
+        f_name.edit.editingFinished.connect(
+            lambda: self._commit_unit(uid, f_name, "name", f_name.edit.text())
+        )
+        self.lay.addWidget(f_name)
+        self.lay.addWidget(muted(strings.FIELD_CHAIN))
+        side = QComboBox()
+        side.setObjectName("unit-side")
+        side.addItems(["nominal", "redundant", "none"])
+        side.setCurrentText(u.side)
+        side.setToolTip(strings.CHAIN_TIP)
+        side.setAccessibleName(strings.FIELD_CHAIN)
+        side.activated.connect(lambda _i: ctl.update_unit(uid, side=side.currentText()))
+        self._editable(side)
+        self.lay.addWidget(side)
+        zone = _Field(strings.FIELD_ZONE_AUTO, u.zone or "", enabled=False)
+        zone.edit.setObjectName("unit-zone")
+        self.lay.addWidget(zone)
+        sub = _Field(strings.FIELD_SUBSYSTEM, u.subsystem, enabled=False)
+        self.lay.addWidget(sub)
+        if ctl.mode == "expert":
+            self.lay.addWidget(heading(strings.CONNECTORS_PHYSICAL))
+            self._connector_rows(uid)
+        else:
+            self.lay.addWidget(muted(strings.GUIDED_HIDES_PHYSICAL))
+        btn = QPushButton(strings.REDUNDANT_COPY)
+        btn.setObjectName("props-redundant")
+        btn.setEnabled(u.side != "redundant" and f"{uid}-R" not in p.units)
+        btn.clicked.connect(lambda: ctl.redundant_copy(uid))
+        self._editable(btn)
+        self.lay.addWidget(btn)
+
+    def _commit_unit(self, uid: str, field: _Field, key: str, value: str) -> None:
+        cur = getattr(self.ctl.project.units[uid], key)
+        if value == cur:
+            return
+        try:
+            edit.ops_update_unit(self.ctl.project, uid, **{key: value})
+        except Exception as exc:
+            field.show_error(_first_line(exc))
+            return
+        field.show_error("")
+        self.ctl.update_unit(uid, **{key: value})
+
+    def _connector_rows(self, uid: str) -> None:
+        ctl, p = self.ctl, self.ctl.project
+        auto_by_conn: dict[str, str] = {}
+        for i in p.interfaces.values():
+            for e in i.endpoints:
+                if e.auto and e.connector_id:
+                    auto_by_conn[e.connector_id] = i.id
+        parts = sorted(pid for pid, part in p.parts.items() if part.category == "connector")
+        for c in edit.unit_connectors(p, uid):
+            card = QFrame()
+            card.setProperty("card", True)
+            card.setProperty("severity", "info")
+            lay = QVBoxLayout(card)
+            row = QHBoxLayout()
+            row.addWidget(QLabel(f"<b>{c.name}</b>"))
+            if c.id in auto_by_conn:
+                badge = QLabel(strings.AUTO)
+                badge.setToolTip(strings.AUTO_TIP)
+                row.addWidget(badge)
+                confirm = QPushButton(strings.CONFIRM)
+                confirm.setObjectName(f"confirm-{c.id}")
+                iid = auto_by_conn[c.id]
+                confirm.clicked.connect(lambda _=False, x=iid: ctl.confirm_interface(x))
+                self._editable(confirm)
+                row.addWidget(confirm)
+            row.addStretch(1)
+            lay.addLayout(row)
+            combo = QComboBox()
+            combo.setObjectName(f"part-{c.id}")
+            combo.addItems(parts)
+            combo.setCurrentText(c.part_id)
+            combo.setAccessibleName(f"{strings.LIBRARY_PART} {c.name}")
+            combo.activated.connect(
+                lambda _i, cid=c.id, cb=combo: ctl.set_connector_part(cid, cb.currentText())
+            )
+            self._editable(combo)
+            lay.addWidget(combo)
+            carries = (
+                ", ".join(p.interface_types[t].name for t in c.carries if t in p.interface_types)
+                or strings.ANY_TYPE
+            )
+            lay.addWidget(muted(strings.CARRIES.format(carries)))
+            self.lay.addWidget(card)
+        self.lay.addWidget(muted(strings.PARTS_UNVERIFIED))
+
+    # interface ----------------------------------------------------------------------------------
+    def _interface_form(self, iid: str) -> None:
+        ctl, p = self.ctl, self.ctl.project
+        i = p.interfaces[iid]
+        t = p.interface_types[i.type_id]
+        self.lay.addWidget(heading(strings.INTERFACE))
+        self.lay.addWidget(_Field(strings.FIELD_ID, i.id, enabled=False))
+        f_name = _Field(strings.FIELD_NAME, i.name)
+        self._editable(f_name.edit)
+        self.fields["name"] = f_name.edit
+        f_name.edit.editingFinished.connect(
+            lambda: self._commit_if(iid, f_name, "name", f_name.edit.text())
+        )
+        self.lay.addWidget(f_name)
+        type_row = QHBoxLayout()
+        icon = QLabel()
+        icon.setPixmap(
+            category_icon(t.category, self.theme).pixmap(self.theme.px(20), self.theme.px(20))
+        )
+        type_row.addWidget(icon)
+        type_row.addWidget(QLabel(f"{t.name} ({CATEGORIES[style_category(t.category)]['label']})"))
+        type_row.addStretch(1)
+        self.lay.addLayout(type_row)
+        self.lay.addWidget(muted(strings.FIELD_CHAIN))
+        side = QComboBox()
+        side.setObjectName("if-chain")
+        side.addItems(["nominal", "redundant", "none"])
+        side.setCurrentText(i.redundancy)
+        side.activated.connect(lambda _i: ctl.update_interface(iid, redundancy=side.currentText()))
+        self._editable(side)
+        self.lay.addWidget(side)
+        for key, label in (
+            ("max_current_a", strings.FIELD_MAX_A),
+            ("voltage_v", strings.FIELD_VOLTAGE),
+        ):
+            cur = getattr(i, key)
+            f = _Field(label, "" if cur is None else f"{cur:g}")
+            self._editable(f.edit)
+            self.fields[key] = f.edit
+            f.edit.editingFinished.connect(lambda k=key, fld=f: self._commit_number(iid, fld, k))
+            self.lay.addWidget(f)
+        f_req = _Field(strings.FIELD_REQUIREMENT, i.requirement_id or "")
+        self._editable(f_req.edit)
+        self.fields["requirement_id"] = f_req.edit
+        f_req.edit.editingFinished.connect(
+            lambda: self._commit_if(iid, f_req, "requirement_id", f_req.edit.text().strip() or None)
+        )
+        self.lay.addWidget(f_req)
+        self.lay.addWidget(heading(strings.ENDS))
+        for k in range(len(i.endpoints)):
+            self.lay.addWidget(self._end_row(i, k))
+        if any(e.auto for e in i.endpoints):
+            b = QPushButton(strings.CONFIRM_AUTO)
+            b.setObjectName("if-confirm")
+            b.clicked.connect(lambda: ctl.confirm_interface(iid))
+            self._editable(b)
+            self.lay.addWidget(b)
+        self.lay.addWidget(muted(strings.SIGNALS.format(", ".join(s.name for s in t.signals))))
+
+    def _end_row(self, i: InterfaceInstance, k: int) -> QWidget:
+        ctl, p = self.ctl, self.ctl.project
+        e = i.endpoints[k]
+        box = QWidget()
+        lay = QHBoxLayout(box)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.addWidget(QLabel(f"{strings.FROM if k == 0 else strings.TO}: <b>{e.unit_id}</b>"))
+        if ctl.mode == "expert":
+            combo = QComboBox()
+            combo.setObjectName(f"end-{k}")
+            choices = [
+                c
+                for c in edit.unit_connectors(p, e.unit_id)
+                if c.id == e.connector_id or edit.connector_compat(p, i.type_id, c.id).ok
+            ]
+            for c in choices:
+                combo.addItem(c.name, c.id)
+            if e.connector_id in [c.id for c in choices]:
+                combo.setCurrentIndex([c.id for c in choices].index(e.connector_id))
+            combo.activated.connect(
+                lambda _i, cb=combo: ctl.set_endpoint_connector(i.id, k, cb.currentData())
+            )
+            self._editable(combo)
+            lay.addWidget(combo)
+        if e.auto:
+            badge = QLabel(strings.AUTO)
+            badge.setToolTip(strings.AUTO_TIP)
+            lay.addWidget(badge)
+        lay.addStretch(1)
+        return box
+
+    def _commit_if(self, iid: str, field: _Field, key: str, value: object) -> None:
+        if value == getattr(self.ctl.project.interfaces[iid], key):
+            return
+        try:
+            edit.ops_update_interface(self.ctl.project, iid, **{key: value})
+        except Exception as exc:
+            field.show_error(_first_line(exc))
+            return
+        field.show_error("")
+        self.ctl.update_interface(iid, **{key: value})
+
+    def _commit_number(self, iid: str, field: _Field, key: str) -> None:
+        value, error = parse_optional_float(field.edit.text())
+        field.show_error(error)
+        if not error:
+            self._commit_if(iid, field, key, value)
+
+
+def _first_line(exc: Exception) -> str:
+    errors = getattr(exc, "errors", None)
+    if callable(errors):
+        msgs = [str(e.get("msg", "")).removeprefix("Value error, ") for e in errors()]
+        return "; ".join(m for m in msgs if m) or strings.INVALID_VALUE
+    return str(exc)
+
+
+# ---- problems and to-do --------------------------------------------------------------------------
+
+
+MAX_CARDS = 25
+
+
+class ProblemsPanel(QScrollArea):
+    showRequested = Signal(str)  # object id
+    waiveRequested = Signal(object)  # Finding
+
+    def __init__(self, ctl: EditorController) -> None:
+        super().__init__()
+        self.ctl = ctl
+        self.setObjectName("problems")
+        self.setAccessibleName(strings.PROBLEMS)
+        self.lay = scroll_body(self)
+        self._dirty = True
+        self._signature: object = None
+        ctl.changed.connect(lambda _d: self._invalidate())
+        ctl.stateChanged.connect(self._invalidate)
+        self.refresh()
+
+    def _invalidate(self) -> None:
+        self._dirty = True
+        if self.isVisible():
+            self.refresh()
+
+    def showEvent(self, event: object) -> None:
+        super().showEvent(event)  # type: ignore[arg-type]
+        if self._dirty:
+            self.refresh()
+
+    def counts(self) -> tuple[int, int]:
+        f = self.ctl.open_findings()
+        return sum(x.severity == "error" for x in f), sum(x.severity == "warning" for x in f)
+
+    def refresh(self) -> None:
+        self._dirty = False
+        findings = self.ctl.findings()
+        signature = (
+            tuple((f.id, f.waiver is not None, f.title) for f in findings),
+            self.ctl.read_only,
+        )
+        if signature == self._signature:
+            return  # same findings as last time: keep the widgets
+        self._signature = signature
+        clear_layout(self.lay)
+        open_ = [f for f in findings if f.waiver is None]
+        if not open_:
+            self.lay.addWidget(muted(strings.NO_PROBLEMS))
+        for f in open_[:MAX_CARDS]:
+            self.lay.addWidget(self._card(f))
+        if len(open_) > MAX_CARDS:
+            self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(len(open_) - MAX_CARDS)))
+        waived = [f for f in findings if f.waiver is not None]
+        if waived:
+            self.lay.addWidget(heading(strings.WAIVED))
+            for f in waived:
+                if f.waiver is not None:
+                    self.lay.addWidget(muted(f"✓ {f.id}: “{f.waiver.justification}”"))
+        self.lay.addStretch(1)
+
+    def _card(self, f: checks.Finding) -> QFrame:
+        card = QFrame()
+        card.setProperty("card", True)
+        card.setProperty("severity", f.severity)
+        card.setObjectName(f"finding-{f.id}")
+        lay = QVBoxLayout(card)
+        sev = {
+            "warning": strings.SEV_WARNING,
+            "error": strings.SEV_ERROR,
+            "info": strings.SEV_INFO,
+        }[f.severity]
+        title = QLabel(f"<b>{sev} {f.title}</b>")
+        title.setWordWrap(True)
+        title.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
+        lay.addWidget(title)
+        lay.addWidget(muted(f.why))
+        row = QHBoxLayout()
+        show = QPushButton(strings.SHOW)
+        show.clicked.connect(lambda: self.showRequested.emit(f.object_id))
+        row.addWidget(show)
+        if f.fix_label:
+            fix = QPushButton(f.fix_label)
+            fix.setObjectName("fix")
+            fix.setProperty("primary", True)
+            fix.setEnabled(not self.ctl.read_only)
+            fix.clicked.connect(lambda: self.ctl.apply_fix(f))
+            row.addWidget(fix)
+        if f.can_waive:
+            waive = QPushButton(strings.WAIVE)
+            waive.setObjectName("waive")
+            waive.setEnabled(not self.ctl.read_only)
+            waive.clicked.connect(lambda: self.waiveRequested.emit(f))
+            row.addWidget(waive)
+        row.addStretch(1)
+        lay.addLayout(row)
+        return card
+
+
+class TodoPanel(QScrollArea):
+    activated = Signal(str, str)  # kind, target
+
+    def __init__(self, ctl: EditorController) -> None:
+        super().__init__()
+        self.ctl = ctl
+        self.setObjectName("todo")
+        self.setAccessibleName(strings.TODO)
+        self.lay = scroll_body(self)
+        self._dirty = True
+        ctl.changed.connect(lambda _d: self._invalidate())
+        self.refresh()
+
+    def _invalidate(self) -> None:
+        self._dirty = True
+        if self.isVisible():
+            self.refresh()
+
+    def showEvent(self, event: object) -> None:
+        super().showEvent(event)  # type: ignore[arg-type]
+        if self._dirty:
+            self.refresh()
+
+    def items(self) -> list[checks.Todo]:
+        return self.ctl.todos()
+
+    def refresh(self) -> None:
+        self._dirty = False
+        clear_layout(self.lay)
+        items = self.items()
+        if not items:
+            self.lay.addWidget(muted(strings.ALL_DONE))
+        for k, t in enumerate(items):
+            b = QPushButton(f"☐ {t.text}")
+            b.setObjectName(f"todo-{k}")
+            b.setStyleSheet("text-align: left;")
+            b.clicked.connect(lambda _=False, x=t: self.activated.emit(x.kind, x.target))
+            self.lay.addWidget(b)
+        self.lay.addStretch(1)
+
+
+# ---- interface table -----------------------------------------------------------------------------
+
+COLUMNS = ["ID", "Name", "Type", "From", "To", "Chain", "Max A", "Requirement"]
+EDITABLE = {1, 5, 6, 7}
+
+
+class InterfaceModel(QAbstractTableModel):
+    def __init__(self, ctl: EditorController) -> None:
+        super().__init__()
+        self.ctl = ctl
+        self.ids: list[str] = []
+        self.reload()
+
+    def reload(self) -> None:
+        self.beginResetModel()
+        self.ids = sorted(self.ctl.project.interfaces)
+        self.endResetModel()
+
+    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:  # noqa: B008
+        return 0 if parent.isValid() else len(self.ids)
+
+    def columnCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:  # noqa: B008
+        return 0 if parent.isValid() else len(COLUMNS)
+
+    def headerData(
+        self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole
+    ) -> object:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return COLUMNS[section]
+        return None
+
+    def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
+        f = super().flags(index)
+        if index.column() in EDITABLE and not self.ctl.read_only:
+            f |= Qt.ItemFlag.ItemIsEditable
+        return f
+
+    def search_text(self, row: int) -> str:
+        i = self.ctl.project.interfaces.get(self.ids[row])
+        if i is None:
+            return ""
+        t = self.ctl.project.interface_types.get(i.type_id)
+        parts = [i.id, i.name, i.type_id, t.name if t else "", i.requirement_id or "", i.redundancy]
+        parts += [e.unit_id for e in i.endpoints]
+        return " ".join(parts).lower()
+
+    def _end(self, i: InterfaceInstance, k: int) -> str:
+        e = i.endpoints[k]
+        name = e.unit_id
+        if self.ctl.mode == "expert" and e.connector_id:
+            c = self.ctl.project.connectors.get(e.connector_id)
+            name += f".{c.name}" if c else ""
+        return name + (" (auto)" if e.auto else "")
+
+    def data(
+        self, index: QModelIndex | QPersistentModelIndex, role: int = Qt.ItemDataRole.DisplayRole
+    ) -> object:
+        if not index.isValid() or index.row() >= len(self.ids):
+            return None
+        i = self.ctl.project.interfaces.get(self.ids[index.row()])
+        if i is None:
+            return None
+        col = index.column()
+        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
+            t = self.ctl.project.interface_types.get(i.type_id)
+            return [
+                i.id, i.name, t.name if t else i.type_id, self._end(i, 0), self._end(i, 1), i.redundancy,
+                "" if i.max_current_a is None else f"{i.max_current_a:g}", i.requirement_id or "",
+            ][col]  # fmt: skip
+        if role == Qt.ItemDataRole.AccessibleTextRole:
+            return f"{COLUMNS[col]} of {i.id}: {self.data(index, Qt.ItemDataRole.DisplayRole)}"
+        return None
+
+    def setData(
+        self,
+        index: QModelIndex | QPersistentModelIndex,
+        value: object,
+        role: int = Qt.ItemDataRole.EditRole,
+    ) -> bool:
+        if role != Qt.ItemDataRole.EditRole or index.column() not in EDITABLE:
+            return False
+        iid = self.ids[index.row()]
+        text = str(value).strip()
+        col = index.column()
+        if col == 1:
+            return self.ctl.update_interface(iid, name=text)
+        if col == 5:
+            return self.ctl.update_interface(iid, redundancy=text)
+        if col == 6:
+            num, err = parse_optional_float(text)
+            if err:
+                self.ctl.message.emit(err, False)
+                return False
+            return self.ctl.update_interface(iid, max_current_a=num)
+        return self.ctl.update_interface(iid, requirement_id=text or None)
+
+
+class _RowFilter(QSortFilterProxyModel):
+    """Match every word typed against the ID, name, type (name and ID), units and requirement."""
+
+    def filterAcceptsRow(
+        self, source_row: int, source_parent: QModelIndex | QPersistentModelIndex
+    ) -> bool:
+        model = self.sourceModel()
+        words = self.filterRegularExpression().pattern().lower().split()
+        if not words or not isinstance(model, InterfaceModel):
+            return True
+        return all(w in model.search_text(source_row) for w in words)
+
+
+class _ChainDelegate(QStyledItemDelegate):
+    def createEditor(
+        self, parent: QWidget, option: object, index: QModelIndex | QPersistentModelIndex
+    ) -> QWidget:
+        cb = QComboBox(parent)
+        cb.addItems(["nominal", "redundant", "none"])
+        return cb
+
+    def setEditorData(self, editor: QWidget, index: QModelIndex | QPersistentModelIndex) -> None:
+        editor.setCurrentText(str(index.data(Qt.ItemDataRole.EditRole)))  # type: ignore[attr-defined]
+
+    def setModelData(
+        self, editor: QWidget, model: object, index: QModelIndex | QPersistentModelIndex
+    ) -> None:
+        model.setData(index, editor.currentText(), Qt.ItemDataRole.EditRole)  # type: ignore[attr-defined]
+
+
+class InterfaceTable(QWidget):
+    newInterfaceRequested = Signal()
+
+    def __init__(self, ctl: EditorController) -> None:
+        super().__init__()
+        self.ctl = ctl
+        self.setObjectName("interface-table")
+        self.scale_factor = 1.0
+        lay = QVBoxLayout(self)
+        top = QHBoxLayout()
+        self.filter = QLineEdit()
+        self.filter.setPlaceholderText(strings.FILTER_PLACEHOLDER)
+        self.filter.setAccessibleName(strings.FILTER_PLACEHOLDER)
+        self.filter.setClearButtonEnabled(True)
+        self.add_btn = QPushButton(strings.NEW_INTERFACE)
+        self.add_btn.setObjectName("new-interface")
+        self.add_btn.clicked.connect(self.newInterfaceRequested)
+        top.addWidget(self.filter, 1)
+        top.addWidget(self.add_btn)
+        lay.addLayout(top)
+        self.model = InterfaceModel(ctl)
+        self.proxy = _RowFilter()
+        self.proxy.setSourceModel(self.model)
+        self.proxy.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.proxy.setFilterKeyColumn(-1)
+        self.view = QTableView()
+        self.view.setObjectName("interfaces")
+        self.view.setAccessibleName(strings.INTERFACE_TABLE)
+        self.view.setModel(self.proxy)
+        self.view.setSortingEnabled(True)
+        self.view.setAlternatingRowColors(True)
+        self.view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.view.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.view.setItemDelegateForColumn(5, _ChainDelegate(self.view))
+        header = self.view.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        header.setStretchLastSection(True)
+        self._apply_widths()
+        self.view.verticalHeader().hide()
+        lay.addWidget(self.view)
+        self.filter.textChanged.connect(self._set_filter)
+        self.view.selectionModel().selectionChanged.connect(self._row_selected)
+        ctl.changed.connect(self._changed)
+        ctl.modeChanged.connect(self._mode_changed)
+        ctl.selectionChanged.connect(self._sync_if_visible)
+        ctl.stateChanged.connect(lambda: self.add_btn.setEnabled(not ctl.read_only))
+        self._busy = False
+        self._dirty = False
+
+    def _mode_changed(self) -> None:
+        self._dirty = True
+        if self.isVisible():
+            self.refresh()
+
+    def _set_filter(self, text: str) -> None:
+        import re
+
+        self.proxy.setFilterRegularExpression(re.escape(text.strip()) if text.strip() else "")
+
+    def _changed(self, delta: Delta) -> None:
+        if delta.full or delta.interfaces or delta.units:
+            self._dirty = True
+            if self.isVisible():
+                self.refresh()
+
+    def _apply_widths(self) -> None:
+        for col, width in enumerate((120, 260, 150, 130, 130, 100, 70)):
+            self.view.setColumnWidth(col, self.ctl_scale(width))
+
+    def ctl_scale(self, px: int) -> int:
+        return round(px * self.scale_factor)
+
+    def refresh(self) -> None:
+        self._dirty = False
+        self.model.reload()  # a model reset restores default column widths
+        self._apply_widths()
+        self._sync_selection()
+
+    def showEvent(self, event: object) -> None:
+        super().showEvent(event)  # type: ignore[arg-type]
+        if self._dirty:
+            self.refresh()
+
+    def _row_selected(self) -> None:
+        if self._busy:
+            return
+        rows = self.view.selectionModel().selectedRows()
+        if rows:
+            iid = self.proxy.data(rows[0], Qt.ItemDataRole.DisplayRole)
+            self._busy = True
+            self.ctl.select("interface", str(iid))
+            self._busy = False
+
+    def _sync_if_visible(self) -> None:
+        if self.isVisible():
+            self._sync_selection()
+
+    def _sync_selection(self) -> None:
+        if self._busy:
+            return
+        s = self.ctl.selection
+        self._busy = True
+        self.view.clearSelection()
+        if s is not None and s.kind == "interface" and s.id in self.model.ids:
+            src = self.model.index(self.model.ids.index(s.id), 0)
+            idx = self.proxy.mapFromSource(src)
+            if idx.isValid():
+                self.view.selectRow(idx.row())
+        self._busy = False
+
+
+class HarnessPanel(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setObjectName("harness-plans")
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel(f"<b>{strings.NO_PLANS_TITLE}</b>"))
+        lay.addWidget(muted(strings.NO_PLANS_BODY))
+        lay.addStretch(1)

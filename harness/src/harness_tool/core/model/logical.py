@@ -49,6 +49,7 @@ class InterfaceType(Entity):
 class Endpoint(Entity):
     unit_id: Id
     connector_id: Id | None = None  # a box connector on that unit, once chosen
+    auto: bool = False  # connector was picked by the tool and not yet confirmed by a person
     role: Name | None = None
 
 

@@ -8,8 +8,10 @@ from .config import ConfigFile, default_configs
 from .library import LibraryInfo, Part
 from .logical import InterfaceInstance, InterfaceType, Unit
 from .physical import Connector, Harness
+from .review import Placement, Waiver
 
 SCHEMA_VERSION = 1
+DEFAULT_ZONES = ("panel-A", "panel-B")
 
 
 class ProjectMeta(Entity):
@@ -39,6 +41,9 @@ class Project:
     interfaces: dict[str, InterfaceInstance] = field(default_factory=dict)
     connectors: dict[str, Connector] = field(default_factory=dict)  # box connectors only
     harnesses: dict[str, Harness] = field(default_factory=dict)
+    zones: list[str] = field(default_factory=lambda: list(DEFAULT_ZONES))
+    placements: dict[str, Placement] = field(default_factory=dict)
+    waivers: dict[str, Waiver] = field(default_factory=dict)
     config: dict[str, ConfigFile] = field(default_factory=default_configs)
     quarantine: list[QuarantinedItem] = field(default_factory=list)
     quarantine_files: dict[str, bytes] = field(default_factory=dict)

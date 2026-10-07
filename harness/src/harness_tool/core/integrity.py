@@ -75,9 +75,12 @@ def _check_connector(project: Project, c: Connector, owner: str) -> list[Issue]:
     return out
 
 
-def _check_harness(project: Project, h: Harness, all_wires: Counter[str]) -> list[Issue]:
+def _check_harness(
+    project: Project, h: Harness, all_wires: Counter[str], box_pins: dict[str, frozenset[str]]
+) -> list[Issue]:
     out: list[Issue] = []
     local = {c.id: c for c in h.connectors}
+    pins_of = {**box_pins, **{cid: frozenset(p.id for p in c.pins) for cid, c in local.items()}}
     if len(local) != len(h.connectors):
         out.append(
             _err("duplicate_id", f"Harness '{h.id}' lists the same connector ID twice.", h.id)
@@ -91,7 +94,7 @@ def _check_harness(project: Project, h: Harness, all_wires: Counter[str]) -> lis
             conn = reachable.get(cid)
             if conn is None:
                 out.append(_err("dangling_wire", f"Wire '{w.id}' ends on connector '{cid}', which does not exist (or is not part of harness '{h.id}').", w.id))  # fmt: skip
-            elif pin not in {p.id for p in conn.pins}:
+            elif pin not in pins_of[cid]:
                 out.append(_err("dangling_wire", f"Wire '{w.id}' ends on pin '{pin}' of connector '{cid}', but that pin does not exist.", w.id))  # fmt: skip
         if w.part_id is not None:
             part = project.parts.get(w.part_id)
@@ -157,11 +160,22 @@ def check_integrity(project: Project) -> list[Issue]:
                 conn = project.connectors.get(e.connector_id)
                 if conn is None or conn.unit_id != e.unit_id:
                     out.append(_err("bad_endpoint_connector", f"Interface '{i.id}' uses connector '{e.connector_id}', which is not a connector of unit '{e.unit_id}'.", i.id))  # fmt: skip
+    out.extend(
+        Issue(
+            "warning",
+            "orphan_placement",
+            f"A diagram position exists for '{pid}', which is not a unit.",
+            None,
+            pid,
+        )
+        for pid in sorted(set(project.placements) - set(project.units))
+    )
     for c in project.connectors.values():
         out.extend(_check_connector(project, c, "project"))
     wire_counts = Counter(w.id for h in project.harnesses.values() for w in h.wires)
+    box_pins = {cid: frozenset(p.id for p in c.pins) for cid, c in project.connectors.items()}
     for h in project.harnesses.values():
         for c in h.connectors:
             out.extend(_check_connector(project, c, h.id))
-        out.extend(_check_harness(project, h, wire_counts))
+        out.extend(_check_harness(project, h, wire_counts, box_pins))
     return out

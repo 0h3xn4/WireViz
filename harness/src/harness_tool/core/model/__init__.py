@@ -12,11 +12,36 @@ from .physical import (
     Splice,
     Wire,
 )
-from .project import SCHEMA_VERSION, Project, ProjectMeta, QuarantinedItem
+from .project import DEFAULT_ZONES, SCHEMA_VERSION, Project, ProjectMeta, QuarantinedItem
+from .review import Placement, Waiver
 
 __all__ = [
-    "CONFIG_NAMES", "PART_CATEGORIES", "SCHEMA_VERSION", "BranchPoint", "ConfigFile", "Connector",
-    "Endpoint", "Entity", "Harness", "InterfaceInstance", "InterfaceType", "LibraryInfo", "Part",
-    "Pin", "Project", "ProjectMeta", "QuarantinedItem", "Segment", "ShieldGroup", "SignalDef",
-    "Splice", "Unit", "Wire", "default_configs", "evolve",
-]  # fmt: skip
+    "CONFIG_NAMES",
+    "DEFAULT_ZONES",
+    "PART_CATEGORIES",
+    "SCHEMA_VERSION",
+    "BranchPoint",
+    "ConfigFile",
+    "Connector",
+    "Endpoint",
+    "Entity",
+    "Harness",
+    "InterfaceInstance",
+    "InterfaceType",
+    "LibraryInfo",
+    "Part",
+    "Pin",
+    "Placement",
+    "Project",
+    "ProjectMeta",
+    "QuarantinedItem",
+    "Segment",
+    "ShieldGroup",
+    "SignalDef",
+    "Splice",
+    "Unit",
+    "Waiver",
+    "Wire",
+    "default_configs",
+    "evolve",
+]

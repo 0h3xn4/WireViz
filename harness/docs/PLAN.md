@@ -22,7 +22,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - Reference project `mini3` (hand-written).
 **Acceptance:** round trip load/save is byte-identical; fuzz tests on loader never crash; corrupt-file fixtures open in recovery mode with a precise report; coverage >= 90% for `core`.
 
-## M2 Block diagram
+## M2 Block diagram (DONE: see docs/demos/M2-gate.md and M2.md)
 - Gate 1: `docs/UX.md` (personas, 10 journeys, IA, wireframes, design system) and a clickable prototype; **owner review before continuing**.
 - Canvas editor (units, connectors, interfaces, zones, nominal/redundant styles, multi-drop, hierarchy), palette, properties panel, status/to-do panel, table (ICD) view in sync, undo/redo, autosave and crash recovery, command palette, search.
 - Interface-type library and compatibility highlighting with tooltips.

@@ -1,0 +1,93 @@
+{
+  "branch_points": [],
+  "connectors": [
+    {
+      "gender": "male",
+      "id": "W001-P1",
+      "keying": null,
+      "name": "P1",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "locked": false,
+          "signal": "PWR",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        }
+      ],
+      "role": "cable",
+      "unit_id": null
+    },
+    {
+      "gender": "female",
+      "id": "W001-P2",
+      "keying": null,
+      "name": "P2",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "locked": false,
+          "signal": "PWR",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        }
+      ],
+      "role": "cable",
+      "unit_id": null
+    }
+  ],
+  "id": "W001",
+  "name": "PCDU to RW1 power",
+  "notes": "",
+  "revision": "A",
+  "segments": [],
+  "shields": [],
+  "splices": [],
+  "status": "draft",
+  "wires": [
+    {
+      "colour": null,
+      "from_connector": "W001-P1",
+      "from_pin": "1",
+      "gauge_awg": null,
+      "id": "W001-001",
+      "interface_id": "IF-PWR-RW1",
+      "length_m": null,
+      "part_id": null,
+      "signal": "PWR",
+      "to_connector": "W001-P2",
+      "to_pin": "1"
+    },
+    {
+      "colour": null,
+      "from_connector": "W001-P1",
+      "from_pin": "2",
+      "gauge_awg": null,
+      "id": "W001-002",
+      "interface_id": "IF-PWR-RW1",
+      "length_m": null,
+      "part_id": null,
+      "signal": "RTN",
+      "to_connector": "W001-P2",
+      "to_pin": "2"
+    }
+  ]
+}

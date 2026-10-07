@@ -1,10 +1,13 @@
 {
   "connectors": [
     {
+      "carries": [
+        "power_primary"
+      ],
       "gender": "male",
       "id": "RW1-J01",
       "keying": null,
-      "name": "J01 power in",
+      "name": "J01",
       "notes": "",
       "part_id": "EX-DSUB-9-M",
       "pins": [
@@ -34,10 +37,14 @@
       "unit_id": "RW1"
     },
     {
+      "carries": [
+        "rs422",
+        "can"
+      ],
       "gender": "male",
       "id": "RW1-J02",
       "keying": null,
-      "name": "J02 data",
+      "name": "J02",
       "notes": "",
       "part_id": "EX-DSUB-9-M",
       "pins": [

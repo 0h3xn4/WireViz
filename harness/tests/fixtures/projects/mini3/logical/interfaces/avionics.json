@@ -3,11 +3,13 @@
     {
       "endpoints": [
         {
+          "auto": false,
           "connector_id": "OBC-J01",
           "role": null,
           "unit_id": "OBC"
         },
         {
+          "auto": false,
           "connector_id": "RW1-J02",
           "role": null,
           "unit_id": "RW1"

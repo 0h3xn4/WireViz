@@ -66,3 +66,21 @@ Format: ID, decision, one-line rationale. `Default` = chosen by Claude Code beca
 | D-61 | Category colours were chosen by a small search that maximises the minimum colour difference under simulated colour blindness, subject to AA contrast on all surfaces; the test locks in dE >= 20. | A hand-picked palette had indistinguishable pairs for protanopia. |
 | D-62 | Zones are vertical lanes in the prototype (zone follows where a unit is placed). Free-form zones are an open question in UX.md. | Simplest model that makes "grouped by zone" visible. |
 | D-63 | The prototype's harness rule (one harness per interface) and all pin/gauge data are mock. The real rule is D-10. | Prototype only. |
+
+## M2 additions (defaults taken because the owner approved the prototype without answering UX.md section 11)
+| ID | Decision | Rationale |
+| --- | --- | --- |
+| D-64 | The editor starts in Guided mode and then remembers the last mode, theme and UI scale per user (local settings file, no design data). | Prototype default; mode never changes data. |
+| D-65 | Zones are vertical lanes; their ordered list is stored in `logical/layout.json` and a unit's zone follows the lane it sits in. "Add zone…" appends a lane. | Simplest model that shows "grouped by zone". Free-form zones remain an option. |
+| D-66 | The default one-click fix for a cross-strap is "connect to a redundant copy of the nominal end"; waiving with a justification is always offered next to it. | Prototype review: the fix must make engineering sense. |
+| D-67 | Seven built-in unit templates (computer, power unit, wheel, star tracker, payload, transceiver, pyro unit). Importing your own template list is deferred. | Enough for the usability tests; needs the owner's list to go further. |
+| D-68 | Diagram positions are stored in the project (`layout.json`), use one footprint independent of mode (so switching modes never causes overlap), and are auto-assigned deterministically for units without one. | Layout must be remembered and diffable. |
+| D-69 | `Connector.carries` and `Endpoint.auto` are new optional fields; the schema version stays 1 because projects saved by M1 load and behave unchanged. | Additive change; tested with an M1-format fixture. |
+| D-70 | Waivers live in `waivers.json` with a mandatory justification of at least 10 characters. | SPEC DRC waiver rule. M4 reuses the store. |
+| D-71 | The sample project opens untitled with a banner and no autosave journal until it is saved to a folder. | Rule: no project content outside a project folder. |
+| D-72 | Autosave = journal in `<project>/.harness-recovery/`, debounced 1.5 s; restore is offered at open. | Never lose more than a few seconds of work. |
+| D-73 | XLSX import uses openpyxl 3.1.5 (MIT) and et_xmlfile 2.0.0 (MIT), read-only, at most 8 MB and 20,000 rows. | SPEC import requirement; permissive licences. |
+| D-74 | UI scale 100 to 200% scales fonts and spacing; panels auto-collapse by effective window size; the diagram has its own zoom. | Keeps the canvas usable at 200%. |
+| D-75 | "Generate harnesses" is shown but disabled with an explanation until M3. | Honest about what exists. |
+| D-76 | Canvas keyboard support: Tab between units and links, Enter selects or picks, Shift+arrows nudge. The interface table is the screen-reader-friendly alternative. Full screen-reader support for the canvas is open (M7). | Qt graphics items have no accessibility tree by default. |
+| D-77 | A fully zoomed-out view draws units as plain boxes and links without labels (level of detail), and panels refresh lazily when hidden. | Needed for the 200-unit / 2,000-interface target. |

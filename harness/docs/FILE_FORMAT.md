@@ -8,11 +8,14 @@ config/<name>.json                segmentation, segregation, derating, naming, e
 library/manifest.json             library name and version
 library/<category>.json           {"parts": [...]} for connector, contact, backshell, wire, sleeving, label
 logical/interface_types.json      {"interface_types": [...]}
+logical/layout.json               {"zones": [...], "placements": [{id, x, y}]}  diagram lanes and unit positions
+waivers.json                      {"waivers": [...]}  written only when a finding has been waived
 logical/units/<subsystem>.json    {"units": [...]}
 logical/interfaces/<subsystem>.json  {"interfaces": [...]}   grouped by the subsystem of the first endpoint
 physical/connectors/<subsystem>.json {"connectors": [...]}   box connectors, grouped by their unit's subsystem
 physical/harnesses/<id>.json      one harness with its connectors, wires, splices, shields, branch points, segments
 .gitignore                        written once: *.bak, .harness.lock, temp files
+.harness-recovery/session.json    autosave journal of an open project (not part of the project; ignore in Git)
 ```
 
 ## Rules
@@ -39,3 +42,11 @@ Each file is written to a temp file, flushed, `fsync`ed and renamed; the previou
 
 ## Hash
 `model_hash` is the SHA-256 of all canonical files with the saving tool's version blanked. Outputs (from M5) will carry it, so a printed sheet can be traced to the exact model.
+
+## Additions in M2 (schema version stays 1)
+All additions are optional with defaults, so projects saved by M1 load unchanged (tested against `tests/fixtures/m1_project`) and are upgraded on the next save.
+- `Connector.carries`: list of interface-type IDs the connector is meant for (empty means any).
+- `Endpoint.auto`: true while the connector was chosen by the tool and not yet confirmed by a person.
+- `logical/layout.json`: ordered `zones` (diagram lanes) and one `placements` entry per unit (`id` is the unit ID, `x`/`y` in scene units). Units without a placement are placed deterministically at load (`edit.ops_autoplace`).
+- `waivers.json`: `id` is `<rule>.<object>`; `justification` is mandatory (at least 10 characters).
+- Autosave journal: the full set of project files as text in `.harness-recovery/session.json`, written (atomically) 1.5 s after the last change while a project folder is open; removed on save; offered for restore on the next open if it differs from the files on disk. Never written for the unsaved sample project, so no project content leaves the project folder.

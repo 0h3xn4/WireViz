@@ -30,6 +30,7 @@ class Connector(Entity):
     unit_id: Id | None = None  # box connectors only
     gender: Gender = "unspecified"
     keying: Name | None = None
+    carries: list[Id] = []  # interface types this connector is meant for (empty = any)
     pins: list[Pin] = []
     notes: Text = ""
 

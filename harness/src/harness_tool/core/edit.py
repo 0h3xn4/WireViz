@@ -1,0 +1,653 @@
+"""Editing operations for the block diagram. Pure functions: they build lists of `Op`s.
+
+Nothing here mutates a project. The GUI runs the returned ops through `History.execute`, so every
+edit is a transaction that is rolled back if it would leave the project inconsistent.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from .commands import Delete, Op, Put, SetZones
+from .errors import HarnessError
+from .model import (
+    Connector,
+    Endpoint,
+    InterfaceInstance,
+    Pin,
+    Placement,
+    Project,
+    Unit,
+    evolve,
+)
+
+LANE_WIDTH = 430.0
+LANE_X0 = 10.0
+UNIT_W = 176.0
+UNIT_FOOTPRINT_H = 150.0  # tallest case (expert mode) so switching modes never causes overlap
+SLOT_STEP = 70.0
+
+
+class EditError(HarnessError):
+    """An edit that cannot be done; the message says why in plain language."""
+
+
+# ---- templates ---------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ConnectorTemplate:
+    part_id: str
+    carries: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class UnitTemplate:
+    id: str
+    label: str
+    prefix: str
+    subsystem: str
+    connectors: tuple[ConnectorTemplate, ...]
+
+
+def _t(id_: str, label: str, prefix: str, sub: str, *conns: tuple[str, ...]) -> UnitTemplate:
+    return UnitTemplate(
+        id_, label, prefix, sub, tuple(ConnectorTemplate("EX-DSUB-9-F", c) for c in conns)
+    )
+
+
+TEMPLATES: dict[str, UnitTemplate] = {
+    t.id: t
+    for t in (
+        _t("computer", "Computer", "OBC", "avionics", ("rs422", "can", "spacewire", "discrete"), ("power_primary",), ("rs422", "can")),
+        _t("power", "Power unit", "PCDU", "power", ("power_primary",), ("power_primary",), ("discrete", "rs422")),
+        _t("actuator", "Actuator (wheel)", "RW", "aocs", ("power_primary",), ("rs422", "can")),
+        _t("sensor", "Sensor (star tracker)", "ST", "aocs", ("power_primary",), ("spacewire", "rs422")),
+        _t("payload", "Payload", "PL", "payload", ("power_primary",), ("spacewire",), ("rf_coax",)),
+        _t("transceiver", "Transceiver", "TRX", "comms", ("power_primary",), ("rs422", "can"), ("rf_coax",)),
+        _t("pyro", "Pyro unit", "PYRO", "mechanisms", ("power_primary",), ("pyro",), ("discrete",)),
+    )
+}  # fmt: skip
+
+
+# ---- ids and placement -------------------------------------------------------------------------
+
+
+def _taken(ids: set[str]) -> set[str]:
+    return {i.casefold() for i in ids}
+
+
+def next_unit_id(project: Project, prefix: str) -> tuple[str, int]:
+    taken = _taken(set(project.units))
+    n = 1
+    while f"{prefix}{n}".casefold() in taken:
+        n += 1
+    return f"{prefix}{n}", n
+
+
+def next_interface_id(project: Project, extra: set[str] | None = None) -> str:
+    taken = _taken(set(project.interfaces) | (extra or set()))
+    n = 1
+    while f"IF-{n:03d}".casefold() in taken:
+        n += 1
+    return f"IF-{n:03d}"
+
+
+def effective_zones(project: Project) -> list[str]:
+    zones = list(project.zones)
+    extra = sorted({u.zone for u in project.units.values() if u.zone and u.zone not in zones})
+    return zones + extra
+
+
+def lane_index(lane_count: int, x: float) -> int:
+    """Lane (0-based) of a unit whose left edge is at `x`."""
+    centre = x + UNIT_W / 2
+    return max(0, min(lane_count - 1, int((centre - LANE_X0) // LANE_WIDTH)))
+
+
+def lane_index_of_x(project: Project, x: float) -> int:
+    return lane_index(len(effective_zones(project)), x)
+
+
+def zone_of_x(project: Project, x: float) -> str:
+    return effective_zones(project)[lane_index_of_x(project, x)]
+
+
+def lane_x(index: int) -> float:
+    return LANE_X0 + index * LANE_WIDTH + 20
+
+
+def position_of(project: Project, unit_id: str) -> tuple[float, float]:
+    p = project.placements.get(unit_id)
+    if p is not None:
+        return p.x, p.y
+    return free_slot(project, project.units[unit_id].zone)
+
+
+def ops_autoplace(project: Project) -> list[Op]:
+    """Positions for units that have none (e.g. projects saved before layouts existed).
+
+    Deterministic: units are placed in (zone, ID) order, each in the first free slot of its lane,
+    and each placement is visible to the next so units never stack.
+    """
+    missing = sorted(
+        (u for u in project.units.values() if u.id not in project.placements),
+        key=lambda u: (u.zone or "", u.id),
+    )
+    if not missing:
+        return []
+    from copy import copy
+
+    scratch = copy(project)
+    scratch.placements = dict(project.placements)
+    ops: list[Op] = []
+    for u in missing:
+        x, y = free_slot(scratch, u.zone)
+        place = Placement(id=u.id, x=x, y=y)
+        scratch.placements[u.id] = place
+        ops.append(Put("placements", place))
+    return ops
+
+
+def free_slot(project: Project, zone: str | None = None) -> tuple[float, float]:
+    """First position in the preferred lane (then the others) that overlaps no placed unit."""
+    zones = effective_zones(project)
+    placed = [(p.x, p.y) for uid, p in project.placements.items() if uid in project.units]
+    if zone in zones:
+        order = [zones.index(zone)]  # the caller asked for this lane: stay in it
+    else:  # no preference: fill the emptiest lane first so the diagram stays balanced
+        counts = [
+            sum(1 for px, _ in placed if lane_index_of_x(project, px) == i)
+            for i in range(len(zones))
+        ]
+        order = sorted(range(len(zones)), key=lambda i: (counts[i], i))
+    for lane in order:
+        x = lane_x(lane)
+        y = 40.0
+        while y < 20000:
+            if not any(
+                abs(px - x) < UNIT_W + 10 and abs(py - y) < UNIT_FOOTPRINT_H - 20
+                for px, py in placed
+            ):
+                return x, y
+            y += SLOT_STEP
+    raise EditError("There is no room left in the diagram for another unit.")
+
+
+# ---- compatibility (prevent errors instead of reporting them) -----------------------------------
+
+
+@dataclass(frozen=True)
+class Compat:
+    ok: bool
+    short: str = ""
+    why: str = ""
+
+
+def interface_using(project: Project, connector_id: str) -> InterfaceInstance | None:
+    for i in project.interfaces.values():
+        if any(e.connector_id == connector_id for e in i.endpoints):
+            return i
+    return None
+
+
+def unit_connectors(project: Project, unit_id: str) -> list[Connector]:
+    return sorted(
+        (c for c in project.connectors.values() if c.unit_id == unit_id and c.role == "box"),
+        key=lambda c: c.id,
+    )
+
+
+def carries(connector: Connector, type_id: str) -> bool:
+    return not connector.carries or type_id in connector.carries
+
+
+def free_connectors(project: Project, unit_id: str, type_id: str) -> list[Connector]:
+    return [
+        c
+        for c in unit_connectors(project, unit_id)
+        if carries(c, type_id) and interface_using(project, c.id) is None
+    ]
+
+
+def _type_name(project: Project, type_id: str) -> str:
+    t = project.interface_types.get(type_id)
+    return t.name if t else type_id
+
+
+def unit_compat(
+    project: Project, type_id: str, unit_id: str, source_unit: str | None = None
+) -> Compat:
+    """Can `unit_id` take an interface of this type (Guided mode: connector chosen automatically)?"""
+    if type_id not in project.interface_types:
+        return Compat(
+            False, "Unknown interface type", f"Interface type '{type_id}' does not exist."
+        )
+    if source_unit == unit_id:
+        return Compat(False, "Same unit", "A unit cannot be connected to itself.")
+    if not free_connectors(project, unit_id, type_id):
+        name = _type_name(project, type_id)
+        return Compat(
+            False,
+            f"No free {name} connector",
+            f"{unit_id} has no free {name} connector. Switch to Expert mode to add one.",
+        )
+    return Compat(True)
+
+
+def connector_compat(
+    project: Project, type_id: str, connector_id: str, source_unit: str | None = None
+) -> Compat:
+    """Can this exact connector take an interface of this type (Expert mode)?"""
+    c = project.connectors.get(connector_id)
+    if c is None or c.role != "box" or c.unit_id is None:
+        return Compat(
+            False, "Not a unit connector", f"'{connector_id}' is not a connector of a unit."
+        )
+    if source_unit == c.unit_id:
+        return Compat(False, "Same unit", "A unit cannot be connected to itself.")
+    used = interface_using(project, connector_id)
+    if used is not None:
+        return Compat(
+            False, "In use", f"{c.name} already carries {used.id}. One interface per connector."
+        )
+    if not carries(c, type_id):
+        names = ", ".join(_type_name(project, t) for t in c.carries)
+        return Compat(
+            False,
+            "Wrong type",
+            f"{c.name} does not carry {_type_name(project, type_id)} (it carries {names}).",
+        )
+    return Compat(True)
+
+
+# ---- unit operations ---------------------------------------------------------------------------
+
+
+def ops_add_unit(
+    project: Project, template_id: str, x: float | None = None, y: float | None = None
+) -> tuple[list[Op], str]:
+    tpl = TEMPLATES.get(template_id)
+    if tpl is None:
+        raise EditError(f"Unknown unit template '{template_id}'.")
+    missing = sorted({c.part_id for c in tpl.connectors} - set(project.parts))
+    if missing:
+        raise EditError(
+            f"The parts library lacks {', '.join(missing)}; add the starter parts first."
+        )
+    uid, n = next_unit_id(project, tpl.prefix)
+    if x is None or y is None:
+        x, y = free_slot(project)
+    zone = zone_of_x(project, x)
+    ops: list[Op] = [
+        Put(
+            "units",
+            Unit(
+                id=uid, name=f"{tpl.label} {n}", subsystem=tpl.subsystem, zone=zone, side="nominal"
+            ),
+        ),
+        Put("placements", Placement(id=uid, x=x, y=y)),
+    ]
+    for k, ct in enumerate(tpl.connectors, start=1):
+        part = project.parts[ct.part_id]
+        pins = [Pin(id=str(i)) for i in range(1, (part.pin_count or 0) + 1)]
+        ops.append(
+            Put(
+                "connectors",
+                Connector(
+                    id=f"{uid}-J{k:02d}",
+                    name=f"J{k:02d}",
+                    role="box",
+                    part_id=ct.part_id,
+                    unit_id=uid,
+                    carries=list(ct.carries),
+                    pins=pins,
+                ),
+            )
+        )
+    return ops, uid
+
+
+@dataclass(frozen=True)
+class DeleteImpact:
+    interfaces: tuple[str, ...]
+    connectors: tuple[str, ...]
+    blocked_by_harnesses: tuple[str, ...]
+
+
+def delete_impact(project: Project, unit_id: str) -> DeleteImpact:
+    conns = {c.id for c in unit_connectors(project, unit_id)}
+    ifs = sorted(
+        i.id for i in project.interfaces.values() if any(e.unit_id == unit_id for e in i.endpoints)
+    )
+    blocked = sorted(
+        h.id
+        for h in project.harnesses.values()
+        if any(
+            w.from_connector in conns or w.to_connector in conns or w.interface_id in ifs
+            for w in h.wires
+        )
+    )
+    return DeleteImpact(tuple(ifs), tuple(sorted(conns)), tuple(blocked))
+
+
+def ops_delete_unit(project: Project, unit_id: str) -> list[Op]:
+    if unit_id not in project.units:
+        raise EditError(f"Unit '{unit_id}' does not exist.")
+    impact = delete_impact(project, unit_id)
+    if impact.blocked_by_harnesses:
+        raise EditError(
+            f"{unit_id} cannot be deleted: harness {', '.join(impact.blocked_by_harnesses)} has wires for its "
+            "interfaces or connectors. Remove those wires first."
+        )
+    ops: list[Op] = [Delete("interfaces", i) for i in impact.interfaces]
+    ops += [Delete("connectors", c) for c in impact.connectors]
+    if unit_id in project.placements:
+        ops.append(Delete("placements", unit_id))
+    ops.append(Delete("units", unit_id))
+    return ops
+
+
+def ops_delete_interface(project: Project, interface_id: str) -> list[Op]:
+    if interface_id not in project.interfaces:
+        raise EditError(f"Interface '{interface_id}' does not exist.")
+    users = sorted(
+        h.id
+        for h in project.harnesses.values()
+        if any(w.interface_id == interface_id for w in h.wires)
+    )
+    if users:
+        raise EditError(
+            f"{interface_id} cannot be deleted: harness {', '.join(users)} has wires for it. Remove those wires first."
+        )
+    return [Delete("interfaces", interface_id)]
+
+
+def ops_move_unit(project: Project, unit_id: str, x: float, y: float) -> list[Op]:
+    unit = project.units[unit_id]
+    ops: list[Op] = [Put("placements", Placement(id=unit_id, x=x, y=y))]
+    zone = zone_of_x(project, x)
+    if unit.zone != zone:
+        ops.append(Put("units", evolve(unit, zone=zone)))
+    return ops
+
+
+def ops_add_zone(project: Project, name: str) -> list[Op]:
+    name = name.strip()
+    if not name:
+        raise EditError("A zone needs a name.")
+    if name.casefold() in {z.casefold() for z in effective_zones(project)}:
+        raise EditError(f"A zone called '{name}' already exists.")
+    return [SetZones((*project.zones, name))]
+
+
+def ops_rename_unit(project: Project, old: str, new: str) -> list[Op]:
+    if old not in project.units:
+        raise EditError(f"Unit '{old}' does not exist.")
+    if new == old:
+        return []
+    if new.casefold() in _taken(set(project.units) - {old}):
+        raise EditError(f"ID {new} is already used.")
+    unit = evolve(project.units[old], id=new)  # validates the new ID format
+    ops: list[Op] = [Put("units", unit), Delete("units", old)]
+    if old in project.placements:
+        p = project.placements[old]
+        ops += [Put("placements", evolve(p, id=new)), Delete("placements", old)]
+    for c in unit_connectors(project, old):
+        ops.append(Put("connectors", evolve(c, unit_id=new)))
+    for i in project.interfaces.values():
+        if any(e.unit_id == old for e in i.endpoints):
+            eps = [evolve(e, unit_id=new) if e.unit_id == old else e for e in i.endpoints]
+            ops.append(Put("interfaces", evolve(i, endpoints=eps)))
+    return ops
+
+
+# ---- interface operations ----------------------------------------------------------------------
+
+
+def ops_add_interface(
+    project: Project,
+    type_id: str,
+    from_unit: str,
+    to_unit: str,
+    from_connector: str | None = None,
+    to_connector: str | None = None,
+    *,
+    interface_id: str | None = None,
+    name: str | None = None,
+    redundancy: str | None = None,
+    avoid_connectors: set[str] | None = None,
+) -> tuple[list[Op], str]:
+    """Add an interface; connectors not given are chosen automatically and marked `auto`."""
+    chosen: list[tuple[str, str, bool]] = []
+    for unit_id, conn_id in ((from_unit, from_connector), (to_unit, to_connector)):
+        if unit_id not in project.units:
+            raise EditError(f"Unit '{unit_id}' does not exist.")
+        if conn_id is None:
+            compat = unit_compat(
+                project, type_id, unit_id, from_unit if unit_id == to_unit else None
+            )
+            if not compat.ok:
+                raise EditError(compat.why)
+            free = [
+                c
+                for c in free_connectors(project, unit_id, type_id)
+                if c.id not in (avoid_connectors or set())
+            ]
+            if not free:
+                raise EditError(f"{unit_id} has no free {_type_name(project, type_id)} connector.")
+            chosen.append((unit_id, free[0].id, True))
+        else:
+            compat = connector_compat(
+                project, type_id, conn_id, from_unit if unit_id == to_unit else None
+            )
+            if not compat.ok:
+                raise EditError(compat.why)
+            chosen.append((unit_id, conn_id, False))
+    iid = interface_id or next_interface_id(project)
+    side = project.units[from_unit].side
+    inst = InterfaceInstance(
+        id=iid,
+        name=name or f"{_type_name(project, type_id)} {from_unit} to {to_unit}",
+        type_id=type_id,
+        endpoints=[Endpoint(unit_id=u, connector_id=c, auto=a) for u, c, a in chosen],
+        redundancy=redundancy if redundancy is not None else ("none" if side == "none" else side),  # type: ignore[arg-type]
+    )
+    return [Put("interfaces", inst)], iid
+
+
+def ops_confirm_interface(project: Project, interface_id: str) -> list[Op]:
+    i = project.interfaces[interface_id]
+    return [Put("interfaces", evolve(i, endpoints=[evolve(e, auto=False) for e in i.endpoints]))]
+
+
+def twin_id(unit_id: str) -> str:
+    return f"{unit_id}-R"
+
+
+@dataclass(frozen=True)
+class RedundantCopy:
+    ops: list[Op]
+    twin_id: str
+    skipped: tuple[str, ...]  # interfaces that could not be mirrored (no free connector)
+
+
+def ops_redundant_copy(project: Project, unit_id: str) -> RedundantCopy:
+    """Copy a nominal unit as its redundant twin and mirror its interfaces (names end in -R)."""
+    unit = project.units.get(unit_id)
+    if unit is None:
+        raise EditError(f"Unit '{unit_id}' does not exist.")
+    if unit.side == "redundant":
+        raise EditError(f"{unit_id} is already on the redundant chain.")
+    tid = twin_id(unit_id)
+    if tid.casefold() in _taken(set(project.units)):
+        raise EditError(f"{unit_id} already has a redundant copy ({tid}).")
+    ops = _twin_unit_ops(project, unit)
+    # Work on a scratch view so mirrored interfaces see the twin's connectors.
+    scratch = clone_with(project, ops)
+    skipped: list[str] = []
+    for i in sorted(project.interfaces.values(), key=lambda x: x.id):
+        if i.redundancy == "redundant" or not any(e.unit_id == unit_id for e in i.endpoints):
+            continue
+        other = next((e for e in i.endpoints if e.unit_id != unit_id), None)
+        if other is None:
+            continue
+        other_twin = (
+            twin_id(other.unit_id) if twin_id(other.unit_id) in scratch.units else other.unit_id
+        )
+        mine = next(e for e in i.endpoints if e.unit_id == unit_id)
+        from_a = i.endpoints[0].unit_id == unit_id
+        f_unit, t_unit = (tid, other_twin) if from_a else (other_twin, tid)
+        f_conn = _twin_connector(mine, tid) if from_a else None
+        t_conn = None if from_a else _twin_connector(mine, tid)
+        iid = f"{i.id}-R"
+        try:
+            new_ops, _ = ops_add_interface(
+                scratch,
+                i.type_id,
+                f_unit,
+                t_unit,
+                f_conn,
+                t_conn,
+                interface_id=iid,
+                name=f"{i.name} (redundant)",
+                redundancy="redundant",
+            )
+        except EditError:
+            skipped.append(i.id)
+            continue
+        ops += new_ops
+        scratch = clone_with(scratch, new_ops)
+    return RedundantCopy(ops, tid, tuple(skipped))
+
+
+def _twin_connector(endpoint: Endpoint, tid: str) -> str | None:
+    if endpoint.connector_id is None:
+        return None
+    suffix = endpoint.connector_id.rsplit("-", 1)[-1]
+    return f"{tid}-{suffix}"
+
+
+def _twin_unit_ops(project: Project, unit: Unit) -> list[Op]:
+    tid = twin_id(unit.id)
+    lane = lane_index_of_x(project, position_of(project, unit.id)[0])
+    zones = effective_zones(project)
+    target_zone = zones[(lane + 1) % len(zones)] if len(zones) > 1 else zones[0]
+    x, y = free_slot(project, target_zone)
+    twin = evolve(
+        unit, id=tid, name=f"{unit.name} (redundant)", side="redundant", zone=zone_of_x(project, x)
+    )
+    ops: list[Op] = [Put("units", twin), Put("placements", Placement(id=tid, x=x, y=y))]
+    for c in unit_connectors(project, unit.id):
+        suffix = c.id.rsplit("-", 1)[-1]
+        ops.append(Put("connectors", evolve(c, id=f"{tid}-{suffix}", unit_id=tid)))
+    return ops
+
+
+def ops_complete_chain(project: Project, interface_id: str) -> tuple[list[Op], str]:
+    """Fix for a cross-strap: move the nominal end of the interface onto a redundant twin."""
+    i = project.interfaces[interface_id]
+    nominal = [e for e in i.endpoints if project.units[e.unit_id].side == "nominal"]
+    if not nominal:
+        raise EditError("This interface has no nominal end to replace.")
+    end = nominal[0]
+    tid = twin_id(end.unit_id)
+    ops: list[Op] = []
+    scratch = project
+    if tid not in project.units:
+        ops += _twin_unit_ops(project, project.units[end.unit_id])
+        scratch = clone_with(project, ops)
+    conn = _twin_connector(end, tid)
+    if conn is None or not connector_compat(scratch, i.type_id, conn).ok:
+        free = free_connectors(scratch, tid, i.type_id)
+        if not free:
+            raise EditError(f"{tid} has no free {_type_name(project, i.type_id)} connector.")
+        conn = free[0].id
+    eps = [
+        Endpoint(unit_id=tid, connector_id=conn, auto=end.auto) if e is end else e
+        for e in i.endpoints
+    ]
+    ops.append(Put("interfaces", evolve(i, endpoints=eps, redundancy="redundant")))
+    return ops, tid
+
+
+def clone_with(project: Project, ops: list[Op]) -> Project:
+    """A scratch copy of `project` with `ops` applied (entities are immutable, so copies are cheap)."""
+    from copy import copy
+
+    from .commands import apply_ops
+
+    dup = copy(project)
+    for name in (
+        "units",
+        "interface_types",
+        "interfaces",
+        "connectors",
+        "harnesses",
+        "parts",
+        "placements",
+        "waivers",
+        "config",
+    ):
+        setattr(dup, name, dict(getattr(project, name)))
+    dup.zones = list(project.zones)
+    apply_ops(dup, ops)
+    return dup
+
+
+def ops_set_endpoint_connector(
+    project: Project, interface_id: str, index: int, connector_id: str
+) -> list[Op]:
+    """Expert mode: choose the exact connector for one end of an interface (marks it confirmed)."""
+    i = project.interfaces[interface_id]
+    end = i.endpoints[index]
+    if end.connector_id == connector_id:
+        return []
+    compat = connector_compat(project, i.type_id, connector_id, None)
+    if not compat.ok:
+        raise EditError(compat.why)
+    c = project.connectors[connector_id]
+    if c.unit_id != end.unit_id:
+        raise EditError(f"{connector_id} is not a connector of {end.unit_id}.")
+    eps = [
+        Endpoint(unit_id=end.unit_id, connector_id=connector_id, auto=False) if k == index else e
+        for k, e in enumerate(i.endpoints)
+    ]
+    return [Put("interfaces", evolve(i, endpoints=eps))]
+
+
+def ops_set_connector_part(project: Project, connector_id: str, part_id: str) -> list[Op]:
+    c = project.connectors[connector_id]
+    part = project.parts.get(part_id)
+    if part is None or part.category != "connector":
+        raise EditError(f"'{part_id}' is not a connector part in the library.")
+    if part.pin_count is not None and len(c.pins) > part.pin_count:
+        raise EditError(
+            f"{connector_id} has {len(c.pins)} pins but {part_id} only has {part.pin_count}."
+        )
+    return [Put("connectors", evolve(c, part_id=part_id))]
+
+
+def ops_update_interface(project: Project, interface_id: str, **changes: object) -> list[Op]:
+    """Change plain fields (name, redundancy, max_current_a, voltage_v, requirement_id, notes)."""
+    allowed = {
+        "name",
+        "redundancy",
+        "max_current_a",
+        "voltage_v",
+        "requirement_id",
+        "notes",
+        "flow",
+    }
+    bad = set(changes) - allowed
+    if bad:
+        raise EditError(f"These interface fields cannot be changed here: {', '.join(sorted(bad))}.")
+    return [Put("interfaces", evolve(project.interfaces[interface_id], **changes))]
+
+
+def ops_update_unit(project: Project, unit_id: str, **changes: object) -> list[Op]:
+    allowed = {"name", "side", "notes", "mass_relevant"}
+    bad = set(changes) - allowed
+    if bad:
+        raise EditError(f"These unit fields cannot be changed here: {', '.join(sorted(bad))}.")
+    return [Put("units", evolve(project.units[unit_id], **changes))]

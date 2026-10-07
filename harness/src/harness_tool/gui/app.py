@@ -1,29 +1,40 @@
-"""GUI entry point (M0: an empty window)."""
+"""GUI entry point."""
 
 import sys
+from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel, QMainWindow
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import QApplication
 
-from harness_tool.gui import strings
+from harness_tool.gui.main_window import MainWindow
+from harness_tool.gui.theme import ThemeManager
 
 
-def create_window() -> QMainWindow:
+def make_settings() -> QSettings:
+    """Per-user UI settings (mode, theme, scale, last project). No design data is stored here."""
+    return QSettings(
+        QSettings.Format.IniFormat, QSettings.Scope.UserScope, "HarnessDesigner", "HarnessDesigner"
+    )
+
+
+def create_window(
+    settings: QSettings | None = None, *, first_run: bool | None = None
+) -> MainWindow:
     if QApplication.instance() is None:
         QApplication(sys.argv)
-    window = QMainWindow()
-    window.setWindowTitle(strings.APP_TITLE)
-    label = QLabel(strings.EMPTY_STATE)
-    label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    window.setCentralWidget(label)
-    window.resize(1200, 800)
-    return window
+    theme = ThemeManager()
+    win = MainWindow(settings or make_settings(), theme, first_run=first_run)
+    return win
 
 
 def main() -> int:
     app = QApplication.instance() or QApplication(sys.argv)
-    window = create_window()
-    window.show()
+    settings = make_settings()
+    win = create_window(settings)
+    last = settings.value("project/last")
+    if last and Path(str(last), "project.json").is_file():
+        win.open_project(Path(str(last)))
+    win.show()
     return int(app.exec())
 
 

@@ -1,0 +1,11 @@
+{
+  "name": "derating",
+  "placeholder": true,
+  "values": {
+    "bundle_derating": null,
+    "contact_current_factor": null,
+    "max_ambient_temperature_c": null,
+    "max_voltage_drop_v": null,
+    "spare_pin_fraction": null
+  }
+}

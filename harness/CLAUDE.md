@@ -3,13 +3,14 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0 and M1 done (`docs/demos/`). M2 gate: `docs/UX.md` + clickable prototype (`prototype/index.html`) are ready and WAIT FOR OWNER REVIEW. Do not start the Qt editor until the owner signs off (SPEC UX process step 2).
+M0, M1, M2 done (`docs/demos/`). Qt editor implemented; next is M3 (generation). M3 needs the owner's answers on D-10 (harness boundary rule) and D-11 (derating numbers); until then use placeholders and say so.
 
 ## Commands (run from `harness/`)
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
 - Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core, enforced)
 - Lint/type: `ruff format . && ruff check . && mypy`
 - CLI: `harness --version | validate DIR | check DIR | migrate DIR`; GUI: `harness-gui`
+- GUI tests: `QT_QPA_PLATFORM=offscreen pytest tests/test_gui_journeys.py` (conftest sets it); timings: `python -m tools.bench_gui`; screenshots of the real editor: `python -m tools.gui_screenshots` (docs/ux/qt)
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmark: `python -m tools.bench_stress`
 - Package: `python -m tools.build_installer`, then `dist/harness-tool/harness-tool --selftest`
@@ -31,3 +32,10 @@ M0 and M1 done (`docs/demos/`). M2 gate: `docs/UX.md` + clickable prototype (`pr
 - Edit model objects only with `evolve()` and `History.execute`; never mutate `Project` directly outside commands/loader.
 - Regenerate the golden fixture only on purpose: `python -c "from harness_tool.core.samples import mini3; from harness_tool.core.io.saver import save_project; save_project(mini3(), 'tests/fixtures/projects/mini3')"` and review the diff.
 - Tests that run as root skip the read-only folder test; run the suite as a normal user in CI.
+
+## GUI layout (M2)
+`gui/controller.py` (EditorController: the only thing that changes the project; Delta signals), `canvas.py` (scene, items, view, minimap), `panels.py`, `dialogs.py`, `tour.py`, `main_window.py`, `theme.py`, `tokens.py`, `strings.py` (all UI text). Edit logic is headless in `core/edit.py`, `core/checks.py`, `core/imports.py`, `core/recovery.py`; add new editor features there first, with tests, and keep the GUI thin.
+- Never name a widget attribute `palette` (it hides `QWidget.palette()`); it is `palette_panel`.
+- Panels that are not visible refresh lazily (on show). Tests that read a tab's widgets must switch to that tab first.
+- Dialog hooks (`run_dialog`, `ask_folder`, `ask_text`, `ask_choice`, `ask_file`) exist so tests can drive the UI without blocking.
+- Keep edits under 100 ms at stress size: use the Delta, never rebuild the whole scene for a local change.

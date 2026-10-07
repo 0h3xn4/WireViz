@@ -1,10 +1,16 @@
 {
   "connectors": [
     {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete"
+      ],
       "gender": "female",
       "id": "OBC-J01",
       "keying": null,
-      "name": "J01 data",
+      "name": "J01",
       "notes": "",
       "part_id": "EX-DSUB-9-F",
       "pins": [
@@ -39,6 +45,79 @@
         {
           "contact_size": null,
           "id": "5",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC"
+    },
+    {
+      "carries": [
+        "power_primary"
+      ],
+      "gender": "female",
+      "id": "OBC-J02",
+      "keying": null,
+      "name": "J02",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can"
+      ],
+      "gender": "female",
+      "id": "OBC-J03",
+      "keying": null,
+      "name": "J03",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
           "locked": false,
           "signal": null,
           "termination": "unspecified"

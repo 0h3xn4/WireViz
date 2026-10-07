@@ -27,3 +27,10 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-UX-01 | Design tokens meet WCAG 2.2 AA and category colours stay distinguishable under simulated colour blindness (dE >= 20). | SPEC Part 3 (accessibility, visual design) | `tests/test_tokens.py` |
 | REQ-UX-02 | The prototype supports the ten journeys, works offline and logs no console errors. | SPEC Part 3 (UX process 1 and 2) | `tests/test_prototype.py` |
 | REQ-UX-03 | The committed prototype matches the generator and is self-contained. | SPEC Part 1 (offline) | `tests/test_prototype_build.py` |
+| REQ-GUI-01 | The Qt editor supports the UX journeys (add units, connect safely, table and import, redundancy and findings, delete and undo, modes, search, files, recovery, read-only). | UX.md section 3 | `tests/test_gui_journeys.py` |
+| REQ-EDIT-01 | Diagram edits are validated operations that compose into transactions. | SPEC Part 3 (foolproof) | `tests/test_edit.py` |
+| REQ-EDIT-02 | Units saved without positions get deterministic, non-overlapping ones. | UX.md section 6 | `tests/test_autoplace.py` |
+| REQ-CHECK-01 | Logical findings state what, why and how to fix; fixes are safe; waivers need a justification. | SPEC Part 3 (DRC) | `tests/test_checks.py` |
+| REQ-IMPORT-01 | Imports show a per-row preview and apply as one undo step. | SPEC Part 4 (imports) | `tests/test_imports.py`, GUI import tests |
+| REQ-JOURNAL-01 | Autosave journal inside the project folder; restore after a crash. | SPEC Part 4 (data integrity) | `tests/test_recovery_journal.py`, GUI recovery tests |
+| REQ-PERF-01 | The editor stays responsive at 200 units, 2,000 interfaces, 20,000 wires. | SPEC Part 3 (performance) | `tests/test_gui_perf.py`, `tools/bench_gui.py` |

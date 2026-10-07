@@ -13,13 +13,24 @@ from .model import (
     InterfaceInstance,
     InterfaceType,
     Part,
+    Placement,
     Project,
     ProjectMeta,
     Unit,
+    Waiver,
 )
 from .model.base import Entity
 
-Collection = Literal["units", "interface_types", "interfaces", "connectors", "harnesses", "parts"]
+Collection = Literal[
+    "units",
+    "interface_types",
+    "interfaces",
+    "connectors",
+    "harnesses",
+    "parts",
+    "placements",
+    "waivers",
+]
 _TYPES: dict[str, type[Entity]] = {
     "units": Unit,
     "interface_types": InterfaceType,
@@ -27,6 +38,8 @@ _TYPES: dict[str, type[Entity]] = {
     "connectors": Connector,
     "harnesses": Harness,
     "parts": Part,
+    "placements": Placement,
+    "waivers": Waiver,
 }
 
 
@@ -54,7 +67,12 @@ class SetMeta:
     meta: ProjectMeta
 
 
-Op = Put | Delete | SetConfig | SetMeta
+@dataclass(frozen=True)
+class SetZones:
+    zones: tuple[str, ...]
+
+
+Op = Put | Delete | SetConfig | SetMeta | SetZones
 
 
 def _apply(project: Project, op: Op) -> Op:
@@ -63,6 +81,10 @@ def _apply(project: Project, op: Op) -> Op:
         before_meta = project.meta
         project.meta = op.meta
         return SetMeta(before_meta)
+    if isinstance(op, SetZones):
+        before_zones = tuple(project.zones)
+        project.zones = list(op.zones)
+        return SetZones(before_zones)
     if isinstance(op, SetConfig):
         previous = project.config.get(op.config.name)
         project.config[op.config.name] = op.config
@@ -112,21 +134,32 @@ class History:
     project: Project
     _undo: list[_Step] = field(default_factory=list)
     _redo: list[_Step] = field(default_factory=list)
+    revision: int = 0  # increases with every applied change, undo or redo
+    last_ops: list[Op] = field(default_factory=list)  # what the latest call applied
+    _baseline: set[tuple[str, str, str | None, str | None]] | None = None
 
     def execute(self, label: str, ops: list[Op]) -> None:
         if self.project.read_only:
             raise TransactionError("This project is read-only (saved by a newer tool version).")
-        before = {i.key() for i in errors(check_integrity(self.project))}
+        before = self._baseline
+        if before is None:
+            before = {i.key() for i in errors(check_integrity(self.project))}
         backward = apply_ops(self.project, ops)
-        new = [i for i in errors(check_integrity(self.project)) if i.key() not in before]
+        after_issues = errors(check_integrity(self.project))
+        after = {i.key() for i in after_issues}
+        new = after - before
         if new:
             apply_ops(self.project, backward)
+            self._baseline = before
             raise TransactionError(
                 f"'{label}' was cancelled because it would leave the project inconsistent.",
-                [i.message for i in new],
+                [i.message for i in after_issues if i.key() in new],
             )
+        self._baseline = after
         self._undo.append(_Step(label, list(ops), backward))
         self._redo.clear()
+        self.revision += 1
+        self.last_ops = list(ops)
 
     @property
     def can_undo(self) -> bool:
@@ -144,10 +177,16 @@ class History:
         step = self._undo.pop()
         apply_ops(self.project, step.backward)
         self._redo.append(step)
+        self.revision += 1
+        self._baseline = None
+        self.last_ops = list(step.backward)
         return step.label
 
     def redo(self) -> str:
         step = self._redo.pop()
         apply_ops(self.project, step.forward)
         self._undo.append(step)
+        self.revision += 1
+        self._baseline = None
+        self.last_ops = list(step.forward)
         return step.label

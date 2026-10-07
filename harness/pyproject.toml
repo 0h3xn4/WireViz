@@ -8,7 +8,7 @@ version = "0.0.1"
 description = "Offline spacecraft harness design tool"
 requires-python = ">=3.12"
 license = "LicenseRef-Proprietary"
-dependencies = ["pydantic==2.13.5"]
+dependencies = ["pydantic==2.13.5", "openpyxl==3.1.5"]
 
 [project.optional-dependencies]
 gui = ["PySide6-Essentials==6.11.2"]
@@ -32,7 +32,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra --strict-markers"
 filterwarnings = ["error"]
-markers = ["gui: needs Qt (run with QT_QPA_PLATFORM=offscreen)", "ux: drives the clickable prototype in a browser"]
+markers = ["gui: needs Qt (run with QT_QPA_PLATFORM=offscreen)", "ux: drives the clickable prototype in a browser", "perf: timing checks at stress size"]
 
 [tool.coverage.run]
 source = ["harness_tool.core"]
@@ -48,6 +48,14 @@ python_version = "3.12"
 plugins = ["pydantic.mypy"]
 files = ["src", "tests", "tools"]
 
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = ["openpyxl", "openpyxl.*"]
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
@@ -60,5 +68,9 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "S"]
 "src/harness_tool/core/io/loader.py" = ["E501"]
 "src/harness_tool/core/starter.py" = ["E501"]  # data tables
 "src/harness_tool/core/samples.py" = ["E501"]
+"src/harness_tool/core/edit.py" = ["E501"]
+"src/harness_tool/gui/*.py" = ["E501"]  # style sheet and UI text
+"src/harness_tool/core/checks.py" = ["E501"]
+"src/harness_tool/core/imports.py" = ["E501"]
 "tools/*" = ["S101", "S603", "S607", "E501"]
 "tests/*" = ["S101", "S311", "S603", "S607", "E501"]

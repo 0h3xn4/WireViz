@@ -16,9 +16,11 @@ from . import canonical
 from .fs import slug
 
 MANAGED_RE = re.compile(
-    r"^(project\.json|config/[^/]+\.json|library/[^/]+\.json|logical/interface_types\.json"
+    r"^(project\.json|waivers\.json|logical/layout\.json|config/[^/]+\.json|library/[^/]+\.json|logical/interface_types\.json"
     r"|logical/(units|interfaces)/[^/]+\.json|physical/(connectors|harnesses)/[^/]+\.json)$"
 )
+# Serialized harness files by object identity (harnesses are immutable); keeps hashing cheap.
+_HARNESS_CACHE: dict[int, tuple[Any, bytes]] = {}
 MANAGED_DIRS = ("config", "library", "logical", "physical")
 
 
@@ -55,6 +57,11 @@ def serialize(project: Project, *, tool_version: str | None = None) -> dict[str,
     files["logical/interface_types.json"] = canonical.dumps(
         {"interface_types": _dump(list(project.interface_types.values()))}
     )
+    files["logical/layout.json"] = canonical.dumps(
+        {"zones": list(project.zones), "placements": _dump(list(project.placements.values()))}
+    )
+    if project.waivers:
+        files["waivers.json"] = canonical.dumps({"waivers": _dump(list(project.waivers.values()))})
     files.update(_grouped(project.units, "logical/units", "units", lambda u: u.subsystem))
 
     def interface_group(i: Any) -> str:
@@ -69,11 +76,18 @@ def serialize(project: Project, *, tool_version: str | None = None) -> dict[str,
         return unit.subsystem if unit else "unassigned"
 
     files.update(_grouped(project.connectors, "physical/connectors", "connectors", connector_group))
+    keep: dict[int, tuple[Any, bytes]] = {}
     for h in project.harnesses.values():
-        data = h.model_dump(mode="json")
-        for key in ("connectors", "wires", "splices", "shields", "branch_points", "segments"):
-            data[key] = sorted(data[key], key=lambda x: x["id"])
-        files[f"physical/harnesses/{h.id}.json"] = canonical.dumps(data)
+        cached = _HARNESS_CACHE.get(id(h))
+        if cached is None or cached[0] is not h:  # immutable objects: identity means same content
+            data = h.model_dump(mode="json")
+            for key in ("connectors", "wires", "splices", "shields", "branch_points", "segments"):
+                data[key] = sorted(data[key], key=lambda x: x["id"])
+            cached = (h, canonical.dumps(data))
+        keep[id(h)] = cached
+        files[f"physical/harnesses/{h.id}.json"] = cached[1]
+    _HARNESS_CACHE.clear()
+    _HARNESS_CACHE.update(keep)
     return files
 
 

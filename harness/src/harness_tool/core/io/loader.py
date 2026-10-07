@@ -20,10 +20,12 @@ from harness_tool.core.model import (
     InterfaceType,
     LibraryInfo,
     Part,
+    Placement,
     Project,
     ProjectMeta,
     QuarantinedItem,
     Unit,
+    Waiver,
     default_configs,
 )
 from harness_tool.core.model.base import Entity
@@ -58,6 +60,8 @@ def read_tree(root: Path) -> tuple[dict[str, Any], dict[str, bytes], list[Issue]
     issues: list[Issue] = []
     base = long_path(root)
     candidates = [Path("project.json")]
+    if (base / "waivers.json").is_file():
+        candidates.append(Path("waivers.json"))
     for top in MANAGED_DIRS:
         folder = base / top
         if folder.is_dir():
@@ -119,6 +123,26 @@ class _Builder:
                 target[oid] = obj
 
 
+def _layout(b: "_Builder", rel: str, data: Any) -> None:
+    ok = isinstance(data, dict) and set(data) == {"zones", "placements"}
+    if not ok or not isinstance(data["zones"], list) or not isinstance(data["placements"], list):
+        b.quarantine(rel, "file", "expected an object with 'zones' and 'placements' lists", data)
+        return
+    zones = [z for z in data["zones"] if isinstance(z, str) and z.strip()]
+    if len(zones) != len(data["zones"]) or len(set(zones)) != len(zones):
+        b.quarantine(rel, "zone list", "zone names must be unique, non-empty text", data["zones"])
+    else:
+        b.p.zones = zones
+    b.items(
+        rel,
+        {"placements": data["placements"]},
+        "placements",
+        "placement",
+        Placement,
+        b.p.placements,
+    )
+
+
 def _build(files: dict[str, Any], project: Project, issues: list[Issue]) -> None:
     b = _Builder(project, issues)
     if "project.json" in files:
@@ -156,6 +180,10 @@ def _build(files: dict[str, Any], project: Project, issues: list[Issue]) -> None
                 InterfaceType,
                 project.interface_types,
             )
+        elif rel == "waivers.json":
+            b.items(rel, data, "waivers", "waiver", Waiver, project.waivers)
+        elif rel == "logical/layout.json":
+            _layout(b, rel, data)
         elif rel.startswith("logical/units/"):
             b.items(rel, data, "units", "unit", Unit, project.units)
         elif rel.startswith("logical/interfaces/"):
@@ -185,8 +213,18 @@ def load_project(root: Path | str) -> LoadResult:
     if not (base / "project.json").is_file():
         raise LoadError(f"'{root}' is not a harness project folder (no project.json).")
     files, broken, issues = read_tree(root)
+    return load_from_files(files, broken, issues)
+
+
+def load_from_files(
+    files: dict[str, Any],
+    broken: dict[str, bytes] | None = None,
+    issues: list[Issue] | None = None,
+) -> LoadResult:
+    """Build a project from already-parsed files (also used to restore an autosave journal)."""
+    issues = list(issues or [])
     project = Project()
-    for rel, data in broken.items():
+    for rel, data in (broken or {}).items():
         project.quarantine_files[rel] = data
     version = schema_version_of(files)
     if version > SCHEMA_VERSION:

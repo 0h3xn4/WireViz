@@ -71,6 +71,16 @@ CATEGORIES: Final[dict[str, dict[str, str]]] = {
     "ground": {"label": "Ground", "icon": "G", "weight": "1"},
 }
 
+# Model categories without their own design-system colour share one with a related category.
+CATEGORY_ALIAS: Final[dict[str, str]] = {"thermal": "analog", "other": "ground"}
+
+
+def style_category(category: str) -> str:
+    """The design-system category used to draw an interface-type category."""
+    key = CATEGORY_ALIAS.get(category, category)
+    return key if key in CATEGORIES else "data"
+
+
 FONT_UI: Final[str] = "Inter, 'Segoe UI', system-ui, sans-serif"  # Inter bundled in the release
 FONT_MONO: Final[str] = "'JetBrains Mono', Consolas, monospace"
 # Type scale in px (base 14, ratio ~1.2) and spacing on a 4/8 px grid.

@@ -1,6 +1,6 @@
 # UX specification (gate for M2)
 
-Status: **draft for owner review.** No editor code exists yet. The clickable prototype (`prototype/index.html`, open it in any browser, offline) implements the journeys below with mock data, and 33 automated browser tests (`tests/test_prototype.py`) verify that the journeys really work. Screenshots are in `docs/ux/screens/`.
+Status: **approved by the owner; the Qt editor is implemented (section 12).** The prototype below was the review gate. The clickable prototype (`prototype/index.html`, open it in any browser, offline) implements the journeys below with mock data, and 33 automated browser tests (`tests/test_prototype.py`) verify that the journeys really work. Screenshots are in `docs/ux/screens/`.
 
 This document is the contract for the editor in M2. Where the prototype and this text disagree, this text wins; tell me which is wrong.
 
@@ -279,3 +279,26 @@ I rendered every screen and walked every journey. Found, fixed, and covered by a
 6. **Title block / drawing standard** (D-15) and whether sheet size defaults to A3.
 7. **Language of the glossary:** the 10 terms in the prototype are my wording. Please correct any definition your reviewers would dispute.
 8. **Prototype sign-off:** which of the open issues (9, 11, 12) block you from approving M2 implementation?
+
+## 12. Qt editor review log (M2 implementation)
+
+Screenshots of the real editor (offscreen render) are in `docs/ux/qt/`; the 40 journey tests are in `tests/test_gui_journeys.py`. I walked every journey and rendered every screen as the process requires. Found, fixed and covered by a test unless marked open.
+
+| # | Issue | Severity | Status |
+| --- | --- | --- | --- |
+| Q1 | Problems cards collapsed into blank bars when several findings were listed (word-wrapped labels were squeezed instead of the panel scrolling) | High | Fixed (scrolling bodies that size to content) |
+| Q2 | Units saved without positions (any M1 project) stacked in one slot | High | Fixed: deterministic auto-placement at load (`test_autoplace.py`) |
+| Q3 | Selection was lost after renaming a unit | High | Fixed (`test_j2_id_validation_*`) |
+| Q4 | Saving a copy to a folder that does not exist yet failed (the project lock needs the folder) | High | Fixed (`test_sample_save_as_*`) |
+| Q5 | Edits and selection took 350 to 650 ms at stress size | High | Fixed to about 20 ms (select) and 100 to 125 ms (edit); see M2 demo note |
+| Q6 | At 150% scale palette labels were truncated and the bottom panel was capped so the table was unusable | High | Fixed: docks scale with the UI, no height cap |
+| Q7 | After a theme change the palette collapsed into overlapping slivers | Medium | Fixed (layout invalidated on rebuild) |
+| Q8 | Table filter for "rs422" found nothing because the column shows "RS-422" | Medium | Fixed: the filter matches ID, name, type name and ID, units, requirement |
+| Q9 | Table column widths reset on every refresh; names truncated | Medium | Fixed |
+| Q10 | Link chips truncated long IDs; the Properties panel showed its message twice (deleted widgets lingered); import preview put the long status in the middle and cut off "To"; "Create redundant copy" enabled for a redundant unit; new units off-screen after selection | Medium | Fixed |
+| Q11 | Interface chips can still overlap in dense diagrams; no automatic layout beyond lane placement | Medium | **Open** |
+| Q12 | The connect hint wraps to two or three lines and makes the toolbar jump | Low | **Open** |
+| Q13 | At 150% and above the legend wraps and the canvas is small; the diagram itself does not scale with the UI scale | Low | **Open** (View menu can hide the bottom panel) |
+| Q14 | Properties and palette auto-hide on narrow windows without a hint | Low | **Open** |
+| Q15 | The canvas is not exposed to screen readers (Qt graphics items); the interface table is the accessible route | Medium | **Open** for M7 (accessibility audit) |
+| Q16 | An edit at stress size with every link visible costs about 120 ms (target 100 ms); undo about 250 ms | Medium | **Open**; incremental integrity checks would remove about 30 ms |

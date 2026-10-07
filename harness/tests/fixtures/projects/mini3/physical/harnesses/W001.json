@@ -2,6 +2,7 @@
   "branch_points": [],
   "connectors": [
     {
+      "carries": [],
       "gender": "male",
       "id": "W001-P1",
       "keying": null,
@@ -28,6 +29,7 @@
       "unit_id": null
     },
     {
+      "carries": [],
       "gender": "female",
       "id": "W001-P2",
       "keying": null,
