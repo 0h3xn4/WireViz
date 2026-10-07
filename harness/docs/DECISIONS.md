@@ -38,3 +38,12 @@ Format: ID, decision, one-line rationale. `Default` = chosen by Claude Code beca
 | D-38 | Packaging: PyInstaller (one-folder build, plus Windows installer via Inno Setup or portable zip) | GPL w/ bootloader exception (allows closed apps) / Inno Setup licence | Standard offline packaging. Build must be run per OS in CI. |
 | D-39 | CLI: stdlib `argparse` | stdlib | Fewer dependencies in the headless core. |
 | D-40 | Package layout `harness/src/harness_tool/{core,cli,gui}`; core never imports gui or network modules (enforced by test). | n/a | Spec architecture rule. |
+
+## M0 additions
+| ID | Decision | Rationale |
+| --- | --- | --- |
+| D-41 | Build backend setuptools 84.0.0 (MIT), runtime pins: pydantic 2.13.5 (MIT), PySide6-Essentials 6.11.2 (LGPL-3.0 OR GPL), shiboken6 6.11.2 (same). | PySide6-Essentials avoids the large Addons set; needed so `license = "LicenseRef-Proprietary"` (SPDX string) works. |
+| D-42 | Dev-only tools (not shipped): pytest 9.1.1, pytest-cov 7.1.0, pytest-qt 4.5.0, hypothesis 6.168.5 (MPL-2.0), mypy 2.4.0, ruff 0.16.10, cyclonedx-bom 7.5.0 (Apache-2.0), pip-licenses 5.5.5, pyinstaller 6.22.3 (GPL-2.0+ with bootloader exception, permits closed apps). Transitive `pyinstaller-hooks-contrib` is dual Apache/GPL, dev-only. | The licence report checks only the clean runtime env. |
+| D-43 | Licence classifier: SPDX `OR` needs any allowed, `AND` and `;` need all allowed, GPL/AGPL without LGPL rejected, unknown rejected. | Conservative allow-list. |
+| D-44 | Qt build excludes QtNetwork, WebEngine, WebChannel, WebSockets, QtQml/Quick, QtPdf, QtSvg. QtSvg may be re-enabled in M2 if the canvas needs it. | Offline guarantee and smaller package. |
+| D-45 | Coverage gate disabled until M1 (empty core has 0 statements). | Avoids a meaningless failure; enable in M1. |

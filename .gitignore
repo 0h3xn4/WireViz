@@ -13,3 +13,12 @@ venv/
 desktop.ini
 thumbs.db
 temp/
+harness/.venv/
+harness/build/
+harness/dist/
+harness/wheelhouse/
+.coverage
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/

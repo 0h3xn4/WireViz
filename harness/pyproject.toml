@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harness-tool"
+version = "0.0.1"
+description = "Offline spacecraft harness design tool"
+requires-python = ">=3.12"
+license = "LicenseRef-Proprietary"
+dependencies = ["pydantic==2.13.5"]
+
+[project.optional-dependencies]
+gui = ["PySide6-Essentials==6.11.2"]
+dev = [
+  "pytest==9.1.1", "pytest-cov==7.1.0", "pytest-qt==4.5.0", "hypothesis==6.168.5",
+  "mypy==2.4.0", "ruff==0.16.10", "cyclonedx-bom==7.5.0", "pip-licenses==5.5.5",
+  "pyinstaller==6.22.3",
+]
+
+[project.scripts]
+harness = "harness_tool.cli.main:main"
+
+[project.gui-scripts]
+harness-gui = "harness_tool.gui.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+filterwarnings = ["error"]
+markers = ["gui: needs Qt (run with QT_QPA_PLATFORM=offscreen)"]
+
+[tool.coverage.run]
+source = ["harness_tool.core"]
+branch = true
+
+[tool.coverage.report]
+# M1: enable once core has code (an empty core measures 0 statements)
+# fail_under = 90
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+files = ["src", "tests", "tools"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S603", "S607"]
+"tools/*" = ["S603", "S607"]

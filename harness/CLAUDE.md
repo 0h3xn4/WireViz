@@ -3,13 +3,16 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-Planning stage: no code yet. Next: owner reviews ARCHITECTURE.md and PLAN.md, then implement M0.
+M0 done (see `docs/demos/M0.md`). Next: M1 (model and files).
 
-## Commands (to be filled in during M0)
-- Install: TBD
-- Test: `pytest` (core coverage gate 90%)
-- Lint/type: `ruff check` and `mypy --strict`
-- Run CLI: `harness --help`
+## Commands (run from `harness/`)
+- Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
+- Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core from M1)
+- Lint/type: `ruff format . && ruff check . && mypy`
+- CLI: `harness --version`; GUI: `harness-gui`
+- Package: `python -m tools.build_installer`, then `dist/harness-tool/harness-tool --selftest`
+- SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`
+- Offline wheelhouse: `python -m tools.vendor`
 
 ## Conventions
 - `core` must not import `gui`, `cli` or any network module. Offline guarantee is tested.
