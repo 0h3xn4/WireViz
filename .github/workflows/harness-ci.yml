@@ -2,9 +2,16 @@ name: harness-tool CI
 
 on:
   push:
+    branches: [master]  # branches are tested through their pull request; running both doubled every push
     paths: ["harness/**", ".github/workflows/harness-ci.yml"]
   pull_request:
     paths: ["harness/**", ".github/workflows/harness-ci.yml"]
+
+# A newer push to the same branch replaces the run in progress or waiting, so pushes in quick
+# succession do not pile up and keep the shared runners busy for hours.
+concurrency:
+  group: harness-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
