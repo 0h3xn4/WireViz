@@ -1,0 +1,260 @@
+{
+  "approver": null,
+  "author": null,
+  "branch_points": [],
+  "checker": null,
+  "connectors": [
+    {
+      "carries": [],
+      "gender": "unspecified",
+      "id": "W004-P1",
+      "keying": null,
+      "mates_with": "HTR1-J02",
+      "name": "P1",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "cable",
+      "unit_id": null
+    },
+    {
+      "carries": [],
+      "gender": "unspecified",
+      "id": "W004-P2",
+      "keying": null,
+      "mates_with": "OBC1-J11",
+      "name": "P2",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "cable",
+      "unit_id": null
+    }
+  ],
+  "generated": true,
+  "group_key": "cp|nominal|HTR1-J02|OBC1-J11",
+  "id": "W004",
+  "interfaces": [
+    "IF-021"
+  ],
+  "name": "HTR1-J02 to OBC1-J11",
+  "notes": "",
+  "released_on": null,
+  "revision": "A",
+  "segments": [
+    {
+      "from_node": "W004-P1",
+      "id": "W004-L1",
+      "length_m": null,
+      "to_node": "W004-P2"
+    }
+  ],
+  "shields": [
+    {
+      "end_a": "floating",
+      "end_b": "floating",
+      "id": "W004-S1",
+      "kind": "twisted_pair",
+      "wire_ids": [
+        "W004-001",
+        "W004-002"
+      ]
+    }
+  ],
+  "splices": [],
+  "status": "draft",
+  "wires": [
+    {
+      "colour": null,
+      "from_connector": "W004-P1",
+      "from_pin": "1",
+      "gauge_awg": null,
+      "id": "W004-001",
+      "interface_id": "IF-021",
+      "length_m": null,
+      "locked": false,
+      "part_id": "EX-WIRE-SINGLE",
+      "signal": "T+",
+      "to_connector": "W004-P2",
+      "to_pin": "1"
+    },
+    {
+      "colour": null,
+      "from_connector": "W004-P1",
+      "from_pin": "2",
+      "gauge_awg": null,
+      "id": "W004-002",
+      "interface_id": "IF-021",
+      "length_m": null,
+      "locked": false,
+      "part_id": "EX-WIRE-SINGLE",
+      "signal": "T-",
+      "to_connector": "W004-P2",
+      "to_pin": "2"
+    }
+  ]
+}

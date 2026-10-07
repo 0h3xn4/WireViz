@@ -1,0 +1,8 @@
+{
+  "name": "segmentation",
+  "placeholder": true,
+  "values": {
+    "merge_when_same_zone": true,
+    "mode": "per_connector_pair"
+  }
+}

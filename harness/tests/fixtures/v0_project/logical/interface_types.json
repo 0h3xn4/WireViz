@@ -1,0 +1,19 @@
+{
+  "interface_types": [
+    {
+      "category": "data",
+      "construction": "single",
+      "default_gauge_awg": null,
+      "emc_class": null,
+      "id": "uart",
+      "impedance_ohm": null,
+      "name": "UART",
+      "notes": "",
+      "shielding": "none",
+      "signals": [
+        {"direction": "out", "name": "TX", "pair": null}
+      ],
+      "unverified": false
+    }
+  ]
+}

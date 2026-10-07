@@ -1,0 +1,84 @@
+{
+  "connectors": [
+    {
+      "gender": "male",
+      "id": "RW1-J01",
+      "keying": null,
+      "name": "J01 power in",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "locked": false,
+          "signal": "PWR",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "RW1"
+    },
+    {
+      "gender": "male",
+      "id": "RW1-J02",
+      "keying": null,
+      "name": "J02 data",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "locked": false,
+          "signal": "TX+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "locked": false,
+          "signal": "TX-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "locked": false,
+          "signal": "RX+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "locked": false,
+          "signal": "RX-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "RW1"
+    }
+  ]
+}

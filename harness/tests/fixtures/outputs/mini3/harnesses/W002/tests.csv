@@ -1,0 +1,12 @@
+# harness-tool 0.1.0rc4 model 6c35cd91012b
+Test,Type,From,To,Expected,Limit,Test voltage,Wire
+T001,continuity,W002-P1.1,W002-P2.3,continuous,TBD (placeholder),,W002-001
+T002,continuity,W002-P2.1,W002-P1.3,continuous,TBD (placeholder),,W002-002
+T003,continuity,W002-P1.2,W002-P2.4,continuous,TBD (placeholder),,W002-003
+T004,continuity,W002-P2.2,W002-P1.4,continuous,TBD (placeholder),,W002-004
+T005,isolation,W002-P1.1,all other wires and shields,isolated,TBD (placeholder),TBD (placeholder),W002-001
+T006,isolation,W002-P2.1,all other wires and shields,isolated,TBD (placeholder),TBD (placeholder),W002-002
+T007,isolation,W002-P1.2,all other wires and shields,isolated,TBD (placeholder),TBD (placeholder),W002-003
+T008,isolation,W002-P2.2,all other wires and shields,isolated,TBD (placeholder),TBD (placeholder),W002-004
+T009,isolation,shield W002-S1,all wires,isolated,TBD (placeholder),TBD (placeholder),W002-001;W002-003
+T010,isolation,shield W002-S2,all wires,isolated,TBD (placeholder),TBD (placeholder),W002-002;W002-004

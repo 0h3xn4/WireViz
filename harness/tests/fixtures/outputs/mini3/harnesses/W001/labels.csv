@@ -1,0 +1,8 @@
+# harness-tool 0.1.0rc4 model 6c35cd91012b
+Label,Kind,Text,Quantity
+W001-P1,connector,W001-P1 mates PCDU-J01,1
+W001-P2,connector,W001-P2 mates RW1-J01,1
+W001-001-A,wire,W001-001 PWR to W001-P2.1,1
+W001-001-B,wire,W001-001 PWR to W001-P1.1,1
+W001-002-A,wire,W001-002 RTN to W001-P2.2,1
+W001-002-B,wire,W001-002 RTN to W001-P1.2,1

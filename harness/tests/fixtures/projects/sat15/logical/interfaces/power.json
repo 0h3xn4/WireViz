@@ -1,0 +1,304 @@
+{
+  "interfaces": [
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J01",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "OBC1-J01",
+          "role": null,
+          "unit_id": "OBC1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-001",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to OBC1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-R-J01",
+          "role": null,
+          "unit_id": "PCDU1-R"
+        },
+        {
+          "auto": false,
+          "connector_id": "OBC1-R-J01",
+          "role": null,
+          "unit_id": "OBC1-R"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-001-R",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to OBC1 (redundant)",
+      "notes": "",
+      "redundancy": "redundant",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J02",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "TRX1-J01",
+          "role": null,
+          "unit_id": "TRX1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-002",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to TRX1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J03",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PL1-J01",
+          "role": null,
+          "unit_id": "PL1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-003",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to PL1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J04",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "ST1-J01",
+          "role": null,
+          "unit_id": "ST1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-004",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to ST1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J05",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW1-J01",
+          "role": null,
+          "unit_id": "RW1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-005",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to RW1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J06",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW2-J01",
+          "role": null,
+          "unit_id": "RW2"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-006",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to RW2",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J07",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "SS1-J01",
+          "role": null,
+          "unit_id": "SS1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-007",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to SS1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J08",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "MTQ1-J01",
+          "role": null,
+          "unit_id": "MTQ1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-008",
+      "max_current_a": null,
+      "name": "Primary power PCDU1 to MTQ1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J11",
+          "role": null,
+          "unit_id": "PCDU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "HTR1-J01",
+          "role": null,
+          "unit_id": "HTR1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-009",
+      "max_current_a": null,
+      "name": "Heater PCDU1 to HTR1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "heater",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "BAT1-J01",
+          "role": null,
+          "unit_id": "BAT1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J09",
+          "role": null,
+          "unit_id": "PCDU1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-010",
+      "max_current_a": null,
+      "name": "Primary power BAT1 to PCDU1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "SA1-J01",
+          "role": null,
+          "unit_id": "SA1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J10",
+          "role": null,
+          "unit_id": "PCDU1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-011",
+      "max_current_a": null,
+      "name": "Primary power SA1 to PCDU1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "power_primary",
+      "voltage_v": null
+    }
+  ]
+}

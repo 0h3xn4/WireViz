@@ -1,0 +1,104 @@
+# Design rule check: sat15 (example data)
+
+Model hash: `48394267db1f`. Rules run: 22.
+Open: 0 error(s), 18 warning(s), 28 note(s). Waived: 0.
+
+Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.
+
+## Warnings (18)
+
+- **BAT1-J01, BAT1-J02 on BAT1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.BAT1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **HTR1-J01, HTR1-J02 on HTR1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.HTR1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **MTQ1-J01, MTQ1-J02 on MTQ1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.MTQ1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **OBC1-J01, OBC1-J02, OBC1-J03 and 10 more on OBC1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.OBC1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **PCDU1-J01, PCDU1-J02, PCDU1-J03 and 9 more on PCDU1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PCDU1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **PCDU1-R-J01, PCDU1-R-J12 on PCDU1-R are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PCDU1-R-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **PL1-J01, PL1-J02 on PL1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PL1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **RW1-J01, RW1-J02 on RW1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.RW1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **RW2-J01, RW2-J02 on RW2 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.RW2-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **SA1-J01, SA1-J02 on SA1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SA1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **SS1-J01, SS1-J02 on SS1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SS1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **ST1-J01, ST1-J02 on ST1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.ST1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **TRX1-J01, TRX1-J02 on TRX1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.TRX1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **IF-012-R connects the nominal chain to the redundant chain** (`cross-strap.IF-012-R`)  
+  One unit is nominal and the other redundant. A cross-strap like this means one failure could affect both chains, so reviewers will ask about it.
+- **Part EX-DSUB-9-F is not approved yet but is used (72 place(s))** (`part-unapproved.EX-DSUB-9-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-DSUB-9-M is not approved yet but is used (48 place(s))** (`part-unapproved.EX-DSUB-9-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-WIRE-SINGLE is not approved yet but is used (30 place(s))** (`part-unapproved.EX-WIRE-SINGLE`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (28 place(s))** (`part-unapproved.EX-WIRE-TWISTED-SHIELDED`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+
+## Not checked / note (28)
+
+- **EMC class separation was not checked: the EMC rules are still a placeholder** (`unchecked-config.emc`)  
+  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+- **Shield grounding was not checked against a concept: it is still a placeholder** (`unchecked-config.grounding`)  
+  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+- **Power, signal and sensitive-analog separation was not checked: the category pairs are still a placeholder** (`unchecked-config.separation`)  
+  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+- **Spare pins were not checked: the required fraction is still a placeholder** (`unchecked-config.spare-pins`)  
+  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+- **IF-001 uses connectors the tool chose for you** (`unconfirmed.IF-001`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-001-R uses connectors the tool chose for you** (`unconfirmed.IF-001-R`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-002 uses connectors the tool chose for you** (`unconfirmed.IF-002`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-003 uses connectors the tool chose for you** (`unconfirmed.IF-003`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-004 uses connectors the tool chose for you** (`unconfirmed.IF-004`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-005 uses connectors the tool chose for you** (`unconfirmed.IF-005`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-006 uses connectors the tool chose for you** (`unconfirmed.IF-006`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-007 uses connectors the tool chose for you** (`unconfirmed.IF-007`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-008 uses connectors the tool chose for you** (`unconfirmed.IF-008`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-009 uses connectors the tool chose for you** (`unconfirmed.IF-009`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-010 uses connectors the tool chose for you** (`unconfirmed.IF-010`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-011 uses connectors the tool chose for you** (`unconfirmed.IF-011`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-012 uses connectors the tool chose for you** (`unconfirmed.IF-012`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-012-R uses connectors the tool chose for you** (`unconfirmed.IF-012-R`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-013 uses connectors the tool chose for you** (`unconfirmed.IF-013`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-014 uses connectors the tool chose for you** (`unconfirmed.IF-014`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-015 uses connectors the tool chose for you** (`unconfirmed.IF-015`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-016 uses connectors the tool chose for you** (`unconfirmed.IF-016`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-017 uses connectors the tool chose for you** (`unconfirmed.IF-017`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-018 uses connectors the tool chose for you** (`unconfirmed.IF-018`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-019 uses connectors the tool chose for you** (`unconfirmed.IF-019`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-020 uses connectors the tool chose for you** (`unconfirmed.IF-020`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-021 uses connectors the tool chose for you** (`unconfirmed.IF-021`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
+- **IF-022 uses connectors the tool chose for you** (`unconfirmed.IF-022`)  
+  Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.

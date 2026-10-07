@@ -1,0 +1,12 @@
+# harness-tool 0.1.0rc4 model 6c35cd91012b
+Label,Kind,Text,Quantity
+W002-P1,connector,W002-P1 mates OBC-J01,1
+W002-P2,connector,W002-P2 mates RW1-J02,1
+W002-001-A,wire,W002-001 TX+/RX+ to W002-P2.3,1
+W002-001-B,wire,W002-001 TX+/RX+ to W002-P1.1,1
+W002-002-A,wire,W002-002 TX+/RX+ to W002-P1.3,1
+W002-002-B,wire,W002-002 TX+/RX+ to W002-P2.1,1
+W002-003-A,wire,W002-003 TX-/RX- to W002-P2.4,1
+W002-003-B,wire,W002-003 TX-/RX- to W002-P1.2,1
+W002-004-A,wire,W002-004 TX-/RX- to W002-P1.4,1
+W002-004-B,wire,W002-004 TX-/RX- to W002-P2.2,1

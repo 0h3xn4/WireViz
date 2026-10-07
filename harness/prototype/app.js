@@ -1,0 +1,387 @@
+'use strict';
+// ---- data ------------------------------------------------------------------------------------
+const TYPES={
+ power_primary:{name:'Primary power',cat:'power',sig:['PWR','RTN']},
+ rs422:{name:'RS-422',cat:'data',sig:['TX+','TX-','RX+','RX-']},
+ spacewire:{name:'SpaceWire',cat:'data',sig:['DIN+','DIN-','SIN+','SIN-','DOUT+','DOUT-','SOUT+','SOUT-']},
+ can:{name:'CAN',cat:'data',sig:['CANH','CANL']},
+ analog:{name:'Analog signal',cat:'analog',sig:['SIG+','SIG-']},
+ discrete:{name:'Discrete / bilevel',cat:'discrete',sig:['SIG','RTN']},
+ pyro:{name:'Pyro initiator',cat:'pyro',sig:['FIRE+','FIRE-']},
+ rf_coax:{name:'RF coax',cat:'rf',sig:['RF']},
+ ground:{name:'Ground / chassis',cat:'ground',sig:['GND']}};
+const TPL={
+ computer:{label:'Computer',pre:'OBC',sub:'avionics',ports:[['J01',['rs422','can','spacewire','discrete']],['J02',['power_primary']],['J03',['rs422','can']]]},
+ power:{label:'Power unit',pre:'PCDU',sub:'power',ports:[['J01',['power_primary']],['J02',['power_primary']],['J03',['discrete','rs422']]]},
+ actuator:{label:'Actuator (wheel)',pre:'RW',sub:'aocs',ports:[['J01',['power_primary']],['J02',['rs422','can']]]},
+ sensor:{label:'Sensor (star tracker)',pre:'ST',sub:'aocs',ports:[['J01',['power_primary']],['J02',['spacewire','rs422']]]},
+ payload:{label:'Payload',pre:'PL',sub:'payload',ports:[['J01',['power_primary']],['J02',['spacewire']],['J03',['rf_coax']]]},
+ transceiver:{label:'Transceiver',pre:'TRX',sub:'comms',ports:[['J01',['power_primary']],['J02',['rs422','can']],['J03',['rf_coax']]]},
+ pyro:{label:'Pyro unit',pre:'PYRO',sub:'mechanisms',ports:[['J01',['power_primary']],['J02',['pyro']],['J03',['discrete']]]}};
+const PARTS=['EX-DSUB-9-F','EX-DSUB-9-M','EX-DSUB-15-F','EX-DSUB-15-M','EX-MICROD-15-F','EX-MDM-21-M'];
+const W=176,ZONES=[{n:'panel-A',x0:10,x1:430},{n:'panel-B',x0:440,x1:880}];
+const GLOSSARY=[
+ ['Harness','A bundle of wires with connectors at the ends that carries signals between units. Every harness gets its own drawing and wire list.'],
+ ['Interface','A logical connection between two units, such as "RS-422 between the computer and a wheel". The tool turns interfaces into wires.'],
+ ['Nominal / redundant','The main chain and its backup chain. They must never share a connector or harness, so one failure cannot take out both.'],
+ ['Pinout','A table of which signal is on which pin of a connector.'],
+ ['Twisted pair','Two wires twisted together to reduce noise. Used for most data and power pairs.'],
+ ['Derating','Using a wire or contact below its maximum current for safety. The factors come from your project standard.'],
+ ['Spare pin','A pin deliberately left unused so changes later need no new connector.'],
+ ['Splice','A joint where several wires are connected together inside a harness.'],
+ ['Cross-strap','A connection between the nominal chain and the redundant chain. Allowed only with a written justification.'],
+ ['Waiver','A recorded decision to accept a warning. It needs a justification and appears in reports.']];
+const SAMPLE_CSV=`Interface,Type,From unit,To unit,Redundancy
+IF-010,Primary power,PCDU-A,OBC-A,nominal
+IF-011,CAN,OBC-A,RW1,nominal
+IF-012,RS-422,OBC-A,PCDU-A,nominal
+IF-013,RS-423,OBC-A,RW1,nominal
+IF-002,Discrete / bilevel,OBC-A,PCDU-A,nominal
+IF-014,Primary power,PCDU-A,GHOST,nominal`;
+
+// ---- state -----------------------------------------------------------------------------------
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mkUnit=(id,name,tpl,x,y,side='nominal')=>({id,name,tpl,sub:TPL[tpl].sub,x,y,side,notes:'',massRelevant:true,
+  ports:TPL[tpl].ports.map(([pid,kinds])=>({id:pid,kinds,part:'EX-DSUB-9-F',gender:'female',auto:false}))});
+const mkIf=(id,name,type,a,b,side)=>({id,name,type,a,b,side,maxA:'',volt:'',req:''});
+function sample(){
+ const D={units:[mkUnit('OBC-A','On-board computer','computer',30,60),mkUnit('PCDU-A','Power control unit','power',30,300),mkUnit('RW1','Reaction wheel 1','actuator',470,170)],ifaces:[],waived:{},gen:null,seq:2};
+ D.ifaces.push(mkIf('IF-001','Wheel power','power_primary',{u:'PCDU-A',p:'J01',auto:false},{u:'RW1',p:'J01',auto:false},'nominal'));
+ D.ifaces.push(mkIf('IF-002','Wheel command and telemetry','rs422',{u:'OBC-A',p:'J01',auto:false},{u:'RW1',p:'J02',auto:false},'nominal'));
+ return D;}
+let D=sample();                      // persisted model (undo/redo snapshots)
+let UI={mode:'guided',tool:'select',ctype:null,cfrom:null,sel:null,tab:'problems',hsel:null,vx:0,vy:0,vz:1,filter:''};
+const hist=[],redo=[];
+const snap=()=>JSON.stringify(D);
+function commit(label,fn){const before=snap();fn();hist.push({label,before});redo.length=0;saved();render();}
+function undo(){if(!hist.length)return;const h=hist.pop();redo.push({label:h.label,before:snap()});D=JSON.parse(h.before);toast('Undone: '+h.label);saved();render();}
+function redoit(){if(!redo.length)return;const h=redo.pop();hist.push({label:h.label,before:snap()});D=JSON.parse(h.before);toast('Redone: '+h.label);saved();render();}
+let savedN=0;function saved(){savedN++;$('#saved').textContent='All changes saved (autosave '+savedN+')';}
+const hash=()=>{let h=5381;const s=JSON.stringify([D.units.map(u=>[u.id,u.name,u.side,u.ports.map(p=>[p.id,p.part])]),D.ifaces]);for(const c of s)h=((h<<5)+h+c.charCodeAt(0))>>>0;return h.toString(16).padStart(8,'0');};
+const unit=id=>D.units.find(u=>u.id===id), iface=id=>D.ifaces.find(i=>i.id===id);
+const zoneOf=u=>(u.x+W/2)<435?'panel-A':'panel-B';
+const used=(u,p)=>D.ifaces.find(i=>(i.a.u===u&&i.a.p===p)||(i.b.u===u&&i.b.p===p));
+const freeFor=(u,type)=>u.ports.filter(p=>p.kinds.includes(type)&&!used(u.id,p.id));
+function toast(msg,undoable){const t=document.createElement('div');t.className='toastitem';t.innerHTML='<span>'+esc(msg)+'</span>'+(undoable?'<button>Undo</button>':'');if(undoable)t.querySelector('button').onclick=()=>{undo();t.remove();};$('#toast').append(t);setTimeout(()=>t.remove(),5000);}
+
+// ---- compatibility (prevent errors instead of reporting them) -------------------------------
+function unitCompat(u){ // guided mode: whole unit
+ if(!UI.ctype)return{ok:false,why:'Pick an interface type first.'};
+ if(UI.cfrom&&UI.cfrom.u===u.id)return{ok:false,why:'A unit cannot be connected to itself.'};
+ if(!freeFor(u,UI.ctype).length)return{ok:false,short:'No free '+TYPES[UI.ctype].name+' connector',why:u.id+' has no free '+TYPES[UI.ctype].name+' connector. Switch to Expert mode to add one.'};
+ return{ok:true};}
+function portCompat(u,p){ // expert mode: exact connector
+ if(!UI.ctype)return{ok:false,why:'Pick an interface type first.'};
+ if(UI.cfrom&&UI.cfrom.u===u.id)return{ok:false,why:'A unit cannot be connected to itself.'};
+ const m=used(u.id,p.id);if(m)return{ok:false,why:p.id+' already carries '+m.id+'. One interface per connector.'};
+ if(!p.kinds.includes(UI.ctype))return{ok:false,why:p.id+' does not carry '+TYPES[UI.ctype].name+' (it supports '+p.kinds.map(k=>TYPES[k].name).join(', ')+').'};
+ return{ok:true};}
+
+// ---- problems / DRC (mock rules on the logical layer) ----------------------------------------
+function problems(){
+ const out=[];
+ for(const i of D.ifaces){const a=unit(i.a.u),b=unit(i.b.u);
+  if(a&&b&&a.side!==b.side&&!D.waived['seg-'+i.id])out.push({id:'seg-'+i.id,sev:'warning',obj:i.id,
+   title:`${i.id} connects the nominal chain to the redundant chain`,
+   why:`${a.id} is ${a.side} but ${b.id} is ${b.side}. A cross-strap like this means one failure could affect both chains, so reviewers will ask about it.`,
+   fix:`Connect to a redundant copy of ${(a.side==='nominal'?a:b).id}`,fixfn:()=>completeChain(i),waive:true});}
+ for(const u of D.units)if(!D.ifaces.some(i=>i.a.u===u.id||i.b.u===u.id))out.push({id:'iso-'+u.id,sev:'info',obj:u.id,
+   title:`${u.id} is not connected to anything yet`,why:'Units without interfaces get no wires, so they will not appear in any harness plan.',fix:'Start connecting',fixfn:()=>{startConnect('power_primary');}});
+ if(D.gen&&D.gen.hash!==hash())out.push({id:'stale',sev:'warning',obj:null,title:'Harness plans are out of date',why:'The diagram changed after the plans were generated. Outdated plans cannot be released.',fix:'Generate again',fixfn:()=>generate()});
+ return out;}
+function todos(){
+ const t=[],auto=D.ifaces.flatMap(i=>[i.a,i.b]).filter(e=>e.auto).length,
+  iso=D.units.filter(u=>!D.ifaces.some(i=>i.a.u===u.id||i.b.u===u.id)).length,warn=problems().filter(p=>p.sev==='warning').length;
+ if(iso)t.push({txt:`${iso} unit${iso>1?'s are':' is'} not connected to anything`,go:()=>{const u=D.units.find(u=>!D.ifaces.some(i=>i.a.u===u.id||i.b.u===u.id));UI.sel={k:'unit',id:u.id};render();}});
+ if(auto)t.push({txt:`${auto} auto-filled connector assignment${auto>1?'s':''} to review`,go:()=>{const i=D.ifaces.find(i=>i.a.auto||i.b.auto);UI.sel={k:'iface',id:i.id};render();}});
+ if(warn)t.push({txt:`${warn} warning${warn>1?'s':''} to fix or waive`,go:()=>{UI.tab='problems';render();}});
+ if(!D.gen)t.push({txt:'Harness plans not generated yet',go:()=>{UI.tab='harness';render();$('#generate').focus();}});
+ else if(D.gen.hash!==hash())t.push({txt:'Harness plans are out of date: generate again',go:()=>generate()});
+ else{const n=D.gen.harnesses.filter(h=>!D.gen.released[h.id]).length;t.push({txt:`${n} harness plan${n===1?'':'s'} ready for review`,go:()=>{UI.tab='harness';render();}});}
+ return t;}
+
+// ---- actions ---------------------------------------------------------------------------------
+function addUnit(tpl){commit('Add '+TPL[tpl].label,()=>{
+  const n=D.units.filter(u=>u.tpl===tpl).length+1,id=TPL[tpl].pre+(tpl==='computer'||tpl==='power'?'-'+String.fromCharCode(64+n):n);
+  const u=mkUnit(id,TPL[tpl].label+' '+n,tpl,...freeSlot());D.units.push(u);UI.sel={k:'unit',id:u.id};});}
+function freeSlot(prefer){ // first position that does not overlap any existing unit (tallest case: expert mode)
+ for(let y=40;y<1400;y+=70)for(const x of (prefer===470?[470,30]:[30,470])){
+  if(!D.units.some(o=>Math.abs(o.x-x)<W+10&&Math.abs(o.y-y)<130))return[x,y];}
+ return[30+(D.units.length%5)*20,40+(D.units.length%5)*20];}
+function startConnect(type){UI.tool='connect';UI.ctype=type;UI.cfrom=null;render();}
+function pickEnd(u,p){
+ const c=UI.mode==='expert'?portCompat(u,p||{id:'',kinds:[]}):unitCompat(u);
+ if(!c.ok){toast(c.why);return;}
+ if(!UI.cfrom){UI.cfrom={u:u.id,p:p?p.id:null};render();return;}
+ const type=UI.ctype,from=UI.cfrom;
+ commit('Add interface',()=>{
+  const ua=unit(from.u);let pa=from.p,aauto=false;if(!pa){pa=freeFor(ua,type)[0].id;aauto=true;}
+  let pb=p?p.id:null,bauto=false;if(!pb){pb=freeFor(u,type)[0].id;bauto=true;}
+  const iid='IF-'+String(D.seq=(D.seq||0)+1).padStart(3,'0');
+  D.ifaces.push(mkIf(iid,TYPES[type].name+' '+from.u+' to '+u.id,type,{u:from.u,p:pa,auto:aauto},{u:u.id,p:pb,auto:bauto},unit(from.u).side));
+  UI.sel={k:'iface',id:iid};UI.cfrom=null;});
+ toast('Interface added'+(UI.mode==='guided'?'. Connectors were chosen for you and are marked "Auto" until you confirm them.':'.'),true);}
+function removeUnit(id){
+ const aff=D.ifaces.filter(i=>i.a.u===id||i.b.u===id);
+ confirmDlg('Delete '+id+'?',`<p>This will also remove:</p><ul><li>${aff.length} interface${aff.length===1?'':'s'}${aff.length?': '+aff.map(i=>'<b>'+esc(i.id)+'</b>').join(', '):''}</li><li>${D.gen?'The generated harness plans become outdated.':'No harness plans are affected.'}</li></ul><p class="muted">You can undo this with Ctrl+Z.</p>`,'Delete',()=>{
+  commit('Delete '+id,()=>{D.ifaces=D.ifaces.filter(i=>i.a.u!==id&&i.b.u!==id);D.units=D.units.filter(u=>u.id!==id);UI.sel=null;});toast('Deleted '+id,true);});}
+function completeChain(i){ // one-click fix: give the nominal end a redundant twin and rewire this interface to it
+ const aN=unit(i.a.u).side==='nominal',key=aN?'a':'b',nom=unit(i[key].u),tid=nom.id+'-R';
+ commit('Connect '+i.id+' to a redundant copy of '+nom.id,()=>{
+  let twin=unit(tid);if(!twin){twin=JSON.parse(JSON.stringify(nom));twin.id=tid;twin.name=nom.name+' (redundant)';twin.side='redundant';[twin.x,twin.y]=freeSlot(zoneOf(nom)==='panel-A'?470:30);twin.ports.forEach(p=>p.auto=false);D.units.push(twin);}
+  const kind=i.type;let port=i[key].p;if(used(twin.id,port)){const f=freeFor(twin,kind)[0];port=f?f.id:port;}
+  i[key]={u:twin.id,p:port,auto:i[key].auto};});
+ toast('Connected '+i.id+' to '+tid+'. Both ends are now on the redundant chain.',true);}
+function removeIface(id){commit('Delete '+id,()=>{D.ifaces=D.ifaces.filter(i=>i.id!==id);UI.sel=null;});toast('Deleted '+id,true);}
+function makeRedundant(id){
+ const u=unit(id);if(!u||u.side==='redundant')return;
+ commit('Create redundant copy of '+id,()=>{
+  const r=JSON.parse(JSON.stringify(u));r.id=id+'-R';r.name=u.name+' (redundant)';r.side='redundant';[r.x,r.y]=freeSlot(zoneOf(u)==='panel-A'?470:30);
+  r.ports.forEach(p=>p.auto=false);D.units.push(r);
+  for(const i of D.ifaces.filter(i=>(i.a.u===id||i.b.u===id)&&i.side!=='redundant')){
+   const mine=i.a.u===id?'a':'b',other=mine==='a'?'b':'a',o=unit(i[other].u);
+   const twin=unit(o.id+'-R')||o;
+   const n=JSON.parse(JSON.stringify(i));n.id=i.id+'-R';n.name=i.name+' (redundant)';n.side='redundant';n[mine]={u:r.id,p:i[mine].p,auto:false};n[other]={u:twin.id,p:i[other].p,auto:false};
+   if(used(twin.id,i[other].p)){const f=freeFor(twin,i.type)[0];if(f)n[other]={u:twin.id,p:f.id,auto:true};else continue;}
+   D.ifaces.push(n);}
+  UI.sel={k:'unit',id:r.id};});
+ toast('Created '+id+'-R and mirrored its interfaces (names end in -R).',true);}
+
+// ---- generation (mock): one harness per interface, deterministic ----------------------------
+let genTimer=null;
+function generate(){
+ if(!D.units.length||!D.ifaces.length){toast('Add at least two connected units first.');return;}
+ const prev=D.gen,locked=prev?Object.keys(prev.locked||{}).length:0;
+ const next=buildHarnesses(),changed=prev?next.filter(h=>{const o=prev.harnesses.find(x=>x.iface===h.iface);return !o||o.sig!==h.sig;}).length:next.length;
+ const body=prev?`<p>Regeneration will <b>keep ${locked}</b> pin lock${locked===1?'':'s'} and <b>change ${changed}</b> of ${next.length} harness plans.</p><p class="muted">Nothing is applied until you confirm. Locked pins are never moved.</p>`:`<p>${next.length} harness plan${next.length===1?'':'s'} will be created, one per interface (rule: one harness per unit-connector pair).</p>`;
+ confirmDlg(prev?'Regenerate harness plans?':'Generate harness plans?',body,prev?'Regenerate':'Generate',()=>runGen(next),false);}
+function runGen(next){
+ const d=$('#dlg');d.innerHTML='<h3>Generating…</h3><div class="progress"><div id="pb"></div></div><p class="muted" id="pt">Creating harnesses</p><div class="foot"><button id="cancelgen">Cancel</button></div>';
+ if(!d.open)d.showModal();let p=0;$('#cancelgen').onclick=()=>{clearInterval(genTimer);d.close();toast('Cancelled. Nothing was changed.');};
+ genTimer=setInterval(()=>{p+=25;$('#pb').style.width=p+'%';$('#pt').textContent=['Segmenting','Allocating pins','Checking independently','Done'][Math.min(3,p/25-1)];
+  if(p>=100){clearInterval(genTimer);d.close();commit('Generate harnesses',()=>{const locked=D.gen?D.gen.locked:{},released=D.gen?D.gen.released:{};D.gen={harnesses:next,hash:hash(),locked,released};});UI.tab='harness';UI.hsel=next[0]?next[0].id:null;render();
+   toast('Done. Independent check passed: every signal appears exactly once.');}},350);}
+function buildHarnesses(){
+ return D.ifaces.map((i,n)=>{const T=TYPES[i.type],ua=unit(i.a.u),ub=unit(i.b.u),id='W'+String(n+1).padStart(3,'0');
+  const wires=T.sig.map((s,k)=>({id:id+'-'+String(k+1).padStart(3,'0'),sig:s,from:id+'-P1',fpin:String(k+1),to:id+'-P2',tpin:String(k+1)}));
+  return{id,iface:i.id,name:ua.id+' to '+ub.id+' ('+T.name+')',side:i.side,cat:T.cat,a:ua.id+'.'+i.a.p,b:ub.id+'.'+i.b.p,wires,sig:JSON.stringify([i.type,i.a,i.b,i.side])};});}
+
+// ---- dialogs ---------------------------------------------------------------------------------
+function dlg(html,wire){const d=$('#dlg');d.innerHTML=html;if(!d.open)d.showModal();wire&&wire(d);const f=d.querySelector('[autofocus]');if(f)f.focus();return d;}
+function confirmDlg(title,body,ok,fn,danger=true){dlg(`<h3>${esc(title)}</h3>${body}<div class="foot"><button id="no" autofocus>Cancel</button><button id="yes" class="${danger?'danger':'primary'}">${esc(ok)}</button></div>`,d=>{$('#no').onclick=()=>d.close();$('#yes').onclick=()=>{d.close();fn();};});}
+function glossary(){dlg('<h3>Glossary</h3><dl>'+GLOSSARY.map(([t,x])=>`<dt><b>${esc(t)}</b></dt><dd style="margin:0 0 8px">${esc(x)}</dd>`).join('')+'</dl><div class="foot"><button autofocus onclick="$(\'#dlg\').close()">Close</button></div>');}
+function helpMenu(){dlg('<h3>Help</h3><p>Pick what you need:</p><p><button id="h1">Replay the tour</button> <button id="h2">Glossary</button> <button id="h3">Load the sample project</button> <button id="h4">Start with an empty project</button></p><p class="muted">Offline help for every panel is available with the ⓘ buttons.</p><div class="foot"><button autofocus onclick="$(\'#dlg\').close()">Close</button></div>',d=>{
+ $('#h1').onclick=()=>{d.close();tour(0);};$('#h2').onclick=()=>glossary();
+ $('#h3').onclick=()=>{d.close();D=sample();hist.length=redo.length=0;UI.sel=null;render();};
+ $('#h4').onclick=()=>{d.close();D={units:[],ifaces:[],waived:{},gen:null,seq:0};hist.length=redo.length=0;UI.sel=null;render();};});}
+function waiveDlg(p){dlg(`<h3>Waive this warning?</h3><p><b>${esc(p.title)}</b></p><label for="why">Justification (required, shown in reports)</label><textarea id="why" rows="3" autofocus></textarea><div class="err" id="werr"></div><div class="foot"><button id="no">Cancel</button><button id="yes" class="primary">Waive with justification</button></div>`,d=>{
+ $('#no').onclick=()=>d.close();$('#yes').onclick=()=>{const v=$('#why').value.trim();if(v.length<10){$('#werr').textContent='Please explain why this is acceptable (at least 10 characters).';return;}d.close();commit('Waive '+p.id,()=>{D.waived[p.id]=v;});toast('Waived. The justification will appear in the DRC report.',true);};});}
+function explain(title,text){dlg(`<h3>${esc(title)}</h3><p>${text}</p><div class="foot"><button autofocus onclick="$('#dlg').close()">Got it</button></div>`);}
+
+// ---- import (preview before anything changes) -----------------------------------------------
+function parseCSV(t){return t.trim().split(/\r?\n/).map(l=>l.split(',').map(x=>x.trim()));}
+function importDlg(){
+ dlg(`<h3>Import interfaces from CSV</h3><p class="muted">Step 1: paste or open a file. Step 2: match columns. Step 3: check the preview. Nothing changes until you confirm.</p><label for="csv">CSV content (sample loaded)</label><textarea id="csv" rows="6" class="mono">${esc(SAMPLE_CSV)}</textarea><div id="map"></div><div id="prev"></div><div class="foot"><button id="no">Cancel</button><button id="yes" class="primary" disabled>Import</button></div>`,d=>{
+  const upd=()=>{const rows=parseCSV($('#csv').value),head=rows[0],body=rows.slice(1);
+   const fields=[['id','Interface ID'],['type','Interface type'],['a','From unit'],['b','To unit'],['side','Redundancy']];
+   if(!$('#map select'))$('#map').innerHTML='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">'+fields.map(([k,l],ix)=>`<div><label>${l}</label><select data-f="${k}">${head.map((h,j)=>`<option value="${j}" ${j===ix?'selected':''}>${esc(h)}</option>`).join('')}</select></div>`).join('')+'</div>';
+   const m={};document.querySelectorAll('#map select').forEach(s=>m[s.dataset.f]=+s.value);
+   const typeBy=n=>Object.keys(TYPES).find(k=>TYPES[k].name.toLowerCase()===n.toLowerCase());
+   const seen=new Set(D.ifaces.map(i=>i.id)),ok=[];
+   const res=body.map((r,ix)=>{const id=r[m.id],ty=typeBy(r[m.type]||''),a=r[m.a],b=r[m.b];let e='';
+    if(!/^[A-Za-z][A-Za-z0-9_.-]*$/.test(id||''))e='Invalid ID';else if(seen.has(id))e='ID '+id+' already used';else if(!ty)e='Unknown interface type "'+r[m.type]+'"';
+    else if(!unit(a))e='Unit "'+a+'" does not exist';else if(!unit(b))e='Unit "'+b+'" does not exist';
+    else if(!freeFor(unit(a),ty).length||!freeFor(unit(b),ty).length)e='No free '+TYPES[ty].name+' connector on '+(freeFor(unit(a),ty).length?b:a);
+    if(!e){seen.add(id);ok.push({id,ty,a,b,side:r[m.side]==='redundant'?'redundant':'nominal'});}return{ix:ix+2,r,e};});
+   $('#prev').innerHTML=`<table><tr><th>Row</th><th>Status</th><th>Interface</th><th>Type</th><th>From</th><th>To</th></tr>${res.map(x=>`<tr><td>${x.ix}</td><td>${x.e?'<span class="badge err">✕ '+esc(x.e)+'</span>':'<span class="badge ok">✓ OK</span>'}</td><td>${esc(x.r[m.id]||'')}</td><td>${esc(x.r[m.type]||'')}</td><td>${esc(x.r[m.a]||'')}</td><td>${esc(x.r[m.b]||'')}</td></tr>`).join('')}</table><p><b>${ok.length}</b> of ${res.length} rows can be imported; ${res.length-ok.length} have errors and will be skipped.</p>`;
+   const y=$('#yes');y.disabled=!ok.length;y.textContent=`Import ${ok.length} row${ok.length===1?'':'s'} (one undo step)`;
+   y.onclick=()=>{d.close();commit('Import '+ok.length+' interfaces',()=>{for(const o of ok){const ua=unit(o.a),ub=unit(o.b);D.ifaces.push(mkIf(o.id,TYPES[o.ty].name+' '+o.a+' to '+o.b,o.ty,{u:o.a,p:freeFor(ua,o.ty)[0].id,auto:true},{u:o.b,p:freeFor(ub,o.ty)[0].id,auto:true},o.side));}});toast('Imported '+ok.length+' interfaces in one step.',true);};};
+  $('#csv').oninput=()=>{$('#map').innerHTML='';upd();};$('#map').onchange=upd;$('#no').onclick=()=>d.close();upd();});}
+
+// ---- command palette -------------------------------------------------------------------------
+function commands(){
+ const c=[['Generate harnesses',()=>generate()],['Undo',undo],['Redo',redoit],['Switch to Guided mode',()=>setMode('guided')],['Switch to Expert mode',()=>setMode('expert')],['Toggle dark theme',toggleTheme],['Import interfaces from CSV…',importDlg],['Open glossary',glossary],['Replay the tour',()=>tour(0)],['Show problems',()=>{UI.tab='problems';render();}],['Show to-do list',()=>{UI.tab='todo';render();}],['Show interface table',()=>{UI.tab='table';render();}],['Show harness plans',()=>{UI.tab='harness';render();}]];
+ for(const t in TPL)c.push(['Add unit: '+TPL[t].label,()=>addUnit(t)]);
+ for(const t in TYPES)c.push(['Connect with '+TYPES[t].name,()=>startConnect(t)]);
+ for(const u of D.units)c.push(['Go to unit '+u.id+' ('+u.name+')',()=>{UI.sel={k:'unit',id:u.id};render();}]);
+ for(const i of D.ifaces)c.push(['Go to interface '+i.id+' ('+i.name+')',()=>{UI.sel={k:'iface',id:i.id};render();}]);
+ return c;}
+let cmdSel=0,cmdList=[];
+function openCmd(){const d=$('#cmdk');d.showModal();$('#cmdin').value='';cmdSel=0;fillCmd();$('#cmdin').focus();}
+function fillCmd(){const q=$('#cmdin').value.toLowerCase();cmdList=commands().filter(([n])=>q.split(' ').every(w=>n.toLowerCase().includes(w))).slice(0,12);if(cmdSel>=cmdList.length)cmdSel=0;
+ $('#cmdlist').innerHTML=cmdList.map(([n],i)=>`<li role="option" aria-selected="${i===cmdSel}" data-i="${i}">${esc(n)}</li>`).join('')||'<li class="muted">No match</li>';}
+function runCmd(i){const c=cmdList[i];if(c){$('#cmdk').close();c[1]();}}
+
+// ---- tour ------------------------------------------------------------------------------------
+const STEPS=[['#left','Start here: add units from the palette. Each is a box in your system, like a computer or a wheel.'],['#canvaswrap','This is your block diagram. Drag units to move them. Units on the left lane are in panel A, on the right lane in panel B.'],['#types','To connect two units, pick an interface type, then click the two units. Only valid choices light up.'],['#bottom','Problems and a to-do list appear here and update as you work. Click any line to jump to the item.'],['#generate','When you are ready, generate the harness plans. An independent check runs automatically.']];
+function tour(i){const t=$('#tour');document.querySelectorAll('.tourhl').forEach(e=>e.classList.remove('tourhl'));if(i>=STEPS.length||i<0){t.style.display='none';return;}
+ const el=$(STEPS[i][0]);el.classList.add('tourhl');const r=el.getBoundingClientRect();
+ t.innerHTML=`<b>Step ${i+1} of ${STEPS.length}</b><p>${esc(STEPS[i][1])}</p><div class="row"><button id="ts">Skip tour</button><span><button id="tb" ${i?'':'disabled'}>Back</button> <button id="tn" class="primary">${i===STEPS.length-1?'Finish':'Next'}</button></span></div>`;
+ t.style.display='block';const tw=t.offsetWidth||320,th=t.offsetHeight||150,vw=innerWidth,vh=innerHeight;let x,y;
+ if(r.right+12+tw<vw){x=r.right+12;y=Math.max(60,Math.min(vh-th-8,r.top+8));}
+ else if(r.bottom+12+th<vh){x=Math.max(8,Math.min(vw-tw-8,r.right-tw));y=r.bottom+12;}
+ else if(r.top-12-th>0){x=Math.max(8,r.left+16);y=r.top-th-12;}
+ else{x=r.left+r.width/2-tw/2;y=r.top+r.height/2-th/2;}
+ t.style.left=x+'px';t.style.top=y+'px';
+ $('#ts').onclick=()=>tour(99);$('#tn').onclick=()=>tour(i+1);$('#tb').onclick=()=>tour(i-1);$('#tn').focus();}
+
+// ---- rendering -------------------------------------------------------------------------------
+const col=c=>`var(--cat-${c})`;
+const touching=u=>D.ifaces.filter(i=>i.a.u===u.id||i.b.u===u.id).sort((x,y)=>x.id<y.id?-1:1);
+const uH=u=>UI.mode==='expert'?46+u.ports.length*22:70+Math.max(0,touching(u).length-2)*14;
+const sideOf=u=>zoneOf(u)==='panel-A'?'right':'left'; // ports face the gap between the two panels
+function anchor(u,pid,ifid){const y=UI.mode==='expert'?u.y+46+u.ports.findIndex(p=>p.id===pid)*22+11:(()=>{const l=touching(u),k=Math.max(0,l.findIndex(i=>i.id===ifid));return u.y+36+(k+.5)*((uH(u)-44)/Math.max(1,l.length));})();return[sideOf(u)==='right'?u.x+W:u.x,y];}
+function render(){
+ $('#m-guided').setAttribute('aria-pressed',UI.mode==='guided');$('#m-expert').setAttribute('aria-pressed',UI.mode==='expert');document.body.classList.toggle('expert',UI.mode==='expert');
+ $('#t-select').setAttribute('aria-pressed',UI.tool==='select');$('#t-connect').setAttribute('aria-pressed',UI.tool==='connect');
+ $('#undo').disabled=!hist.length;$('#redo').disabled=!redo.length;
+ $('#empty').style.display=D.units.length?'none':'flex';
+ $('#redundant').disabled=!(UI.sel&&UI.sel.k==='unit'&&unit(UI.sel.id)&&unit(UI.sel.id).side!=='redundant');$('#delete').disabled=!UI.sel;
+$('#hint').className='';
+ const noTarget=UI.tool==='connect'&&UI.ctype&&UI.cfrom&&!D.units.some(x=>x.id!==UI.cfrom.u&&(UI.mode==='expert'?x.ports.some(p=>portCompat(x,p).ok):unitCompat(x).ok));
+ if(noTarget)$('#hint').className='warn';
+ $('#hint').textContent=noTarget?'No other unit has a free '+TYPES[UI.ctype].name+' connector. Pick another type, or add a unit that supports it.':UI.tool==='connect'?(!UI.ctype?'Pick an interface type on the left.':UI.cfrom?'Now click the second '+(UI.mode==='expert'?'connector':'unit')+'. Valid ones are highlighted.':'Click the first '+(UI.mode==='expert'?'connector':'unit')+' for '+TYPES[UI.ctype].name+'.'):'';
+ $('#palette-list').innerHTML=Object.entries(TPL).map(([k,t])=>`<button data-add="${k}" title="Add a ${esc(t.label)} to the diagram">＋ ${esc(t.label)}</button>`).join('');
+ $('#types').innerHTML=Object.entries(TYPES).map(([k,t])=>`<button class="palitem ${UI.ctype===k?'active':''}" data-type="${k}" title="${esc(t.name)}: ${esc(CATS[t.cat].label)} interface"><span class="chip" style="color:${UI.ctype===k?'var(--on-primary)':col(t.cat)}">${esc(CATS[t.cat].icon)}</span><span>${esc(t.name)}</span></button>`).join('');
+ $('#legend').innerHTML=Object.entries(CATS).map(([k,c])=>`<span><span class="chip" style="color:${col(k)};width:16px;height:16px">${esc(c.icon)}</span> ${esc(c.label)}</span>`).join('')+'<span>━━ nominal</span><span>╌╌ redundant</span><span style="color:var(--auto-fill)">▢ auto-filled, not reviewed</span>';
+ drawCanvas();drawProps();drawBottom();
+ $('#selinfo').textContent=UI.sel?'Selected: '+UI.sel.id:'Nothing selected';$('#modelinfo').textContent=D.units.length+' units, '+D.ifaces.length+' interfaces · model '+hash();}
+function drawCanvas(){
+ let s=`<g transform="translate(${UI.vx} ${UI.vy}) scale(${UI.vz})">`;
+ for(const z of ZONES)s+=`<rect class="zone" x="${z.x0}" y="0" width="${z.x1-z.x0}" height="1500" rx="8"/><text x="${z.x0+10}" y="20" class="mutedt" font-size="12" font-weight="600">${z.n.toUpperCase()}</text>`;
+ const exp=UI.mode==='expert';
+ for(const i of D.ifaces){const a=unit(i.a.u),b=unit(i.b.u);if(!a||!b)continue;  const [x1,y1]=anchor(a,i.a.p,i.id),[x2,y2]=anchor(b,i.b.p,i.id),same=sideOf(a)===sideOf(b),
+   dxa=(sideOf(a)==='right'?1:-1)*(same?70:Math.max(50,Math.abs(x2-x1)/2)),dxb=(sideOf(b)==='right'?1:-1)*(same?70:Math.max(50,Math.abs(x2-x1)/2));
+  const T=TYPES[i.type],c=col(T.cat),sel=UI.sel&&UI.sel.k==='iface'&&UI.sel.id===i.id,t=.35+.1*(D.ifaces.indexOf(i)%4),bz=(p0,p1,p2,p3)=>(1-t)**3*p0+3*(1-t)**2*t*p1+3*(1-t)*t*t*p2+t**3*p3,mx=bz(x1,x1+dxa,x2+dxb,x2),my=bz(y1,y1,y2,y2);
+  s+=`<g class="ifc" data-if="${esc(i.id)}" tabindex="0" role="button" aria-label="Interface ${esc(i.id)}, ${esc(T.name)}, ${esc(i.a.u)} to ${esc(i.b.u)}, ${i.side}"><path class="link ${sel?'link-sel':''}" d="M${x1} ${y1} C${x1+dxa} ${y1} ${x2+dxb} ${y2} ${x2} ${y2}" stroke="${c}" stroke-width="${CATS[T.cat].weight}" ${i.side==='redundant'?'stroke-dasharray="9 6"':''}/><path d="M${x1} ${y1} C${x1+dxa} ${y1} ${x2+dxb} ${y2} ${x2} ${y2}" stroke="transparent" stroke-width="14" fill="none"/>
+   <rect class="chipbg" x="${mx-40}" y="${my-11}" width="80" height="22" rx="11" stroke="${c}" ${sel?'stroke-width="3"':''}/><text x="${mx-33}" y="${my+4}" font-size="11" font-weight="700" style="fill:${c}">${esc(CATS[T.cat].icon)}</text><text x="${mx-22}" y="${my+4}" font-size="11">${esc(i.id)}</text></g>`;}
+ for(const u of D.units){const h=uH(u),sel=UI.sel&&UI.sel.k==='unit'&&UI.sel.id===u.id;
+  let cls='u-'+(u.side==='redundant'?'redundant':'nominal'),reason='';if(sel)cls+=' u-sel';
+  const isFrom=UI.tool==='connect'&&UI.cfrom&&UI.cfrom.u===u.id;
+  if(isFrom)cls+=' u-from';
+  else if(UI.tool==='connect'&&UI.ctype){
+   if(!exp){const c=unitCompat(u);cls+=c.ok?' u-ok':' u-no';if(!c.ok)reason=c.short||c.why;}
+   else{const ok=u.ports.some(p=>portCompat(u,p).ok);cls+=ok?' u-ok':' u-no';if(!ok)reason='No free '+TYPES[UI.ctype].name+' connector';}}
+  const c=reason?{ok:false,why:reason}:null;
+  s+=`<g class="unit ${cls}" data-u="${esc(u.id)}" tabindex="0" role="button" aria-label="Unit ${esc(u.id)}, ${esc(u.name)}, ${u.side}" transform="translate(${u.x} ${u.y})"><title>${esc(c&&!c.ok?c.why:u.name)}</title>
+   <rect class="u-rect" width="${W}" height="${h}" rx="8"/><rect width="${W}" height="30" rx="8" fill="var(--surface-2)"/><rect y="22" width="${W}" height="8" fill="var(--surface-2)"/>
+   <text x="10" y="20" font-weight="700" font-size="13">${esc(u.id)}</text><text x="${W-10}" y="20" font-size="11" text-anchor="end" class="mutedt">${isFrom?'FROM':u.side==='redundant'?'REDUNDANT':'NOMINAL'}</text>`;
+  if(exp){u.ports.forEach((p,k)=>{const y=46+k*22,pc=UI.tool==='connect'&&UI.ctype?portCompat(u,p):null,pcls=(p.auto?' auto':'')+(pc?(pc.ok&&!(UI.cfrom&&UI.cfrom.u===u.id)?' ok':' no'):'');
+    s+=`<g class="port${pcls}" data-u="${esc(u.id)}" data-p="${esc(p.id)}" tabindex="0" role="button" aria-label="Connector ${esc(p.id)} of ${esc(u.id)}${pc&&!pc.ok?'. Not available: '+esc(pc.why):''}"><title>${esc(pc&&!pc.ok?pc.why:p.id+' '+p.part+(p.auto?' (auto-filled, not reviewed)':''))}</title><rect x="${sideOf(u)==='right'?W-7:-7}" y="${y-7}" width="14" height="14" rx="3"/><text x="${sideOf(u)==='right'?W-12:12}" y="${y+4}" font-size="11" ${sideOf(u)==='right'?'text-anchor="end"':''}>${esc(p.id)}</text><text x="${sideOf(u)==='right'?10:W-10}" y="${y+4}" font-size="10" ${sideOf(u)==='right'?'':'text-anchor="end"'} class="mutedt">${esc(p.kinds.map(k=>CATS[TYPES[k].cat].icon).join(' '))}</text></g>`;});}
+  else{const n=u.ports.length;s+=`<text x="10" y="48" font-size="12" class="mutedt">${esc(u.name)}</text><text x="10" y="64" font-size="11" class="mutedt">${n} connectors (auto)</text>`;}
+  if(reason)s+=`<text class="reason" x="0" y="${h+16}" font-size="12">✕ ${esc(reason)}</text>`;
+  s+='</g>';}
+ s+='</g>';$('#canvas').innerHTML=s;}
+function drawProps(){
+ const P=$('#props');const sel=UI.sel;if(!sel){P.innerHTML='<h2>Properties</h2><p class="muted">Select a unit or an interface to see its details.</p>';return;}
+ if(sel.k==='unit'){const u=unit(sel.id);if(!u){P.innerHTML='';return;}
+  P.innerHTML=`<h2>Unit <button class="ghost" data-explain="unit" title="Explain" aria-label="Explain this unit">ⓘ</button></h2>
+  <label for="f-id">ID</label><input id="f-id" value="${esc(u.id)}" aria-describedby="e-id"><div class="err" id="e-id"></div>
+  <label for="f-name">Name</label><input id="f-name" value="${esc(u.name)}">
+  <label for="f-side" title="Nominal is the main chain, redundant is the backup">Chain (nominal / redundant)</label><select id="f-side"><option ${u.side==='nominal'?'selected':''}>nominal</option><option ${u.side==='redundant'?'selected':''}>redundant</option></select>
+  <label>Zone <span class="muted">(set by where you place the unit)</span></label><input value="${zoneOf(u)}" disabled><label>Subsystem</label><input value="${esc(u.sub)}" disabled>
+  <div class="expert-only"><h2>Connectors (physical)</h2>${u.ports.map((p,k)=>`<div style="border:1px ${p.auto?'dashed var(--auto-fill)':'solid var(--surface-2)'};border-radius:6px;padding:6px;margin-bottom:6px"><b>${esc(p.id)}</b> ${p.auto?'<span class="badge auto" title="Chosen for you; confirm to accept">Auto</span> <button data-confirm="${k}">Confirm</button>':''}<label>Library part</label><select data-part="${k}">${PARTS.map(x=>`<option ${x===p.part?'selected':''}>${x}</option>`).join('')}</select><div class="muted" style="font-size:12px">Part numbers are unverified example data. Carries: ${esc(p.kinds.map(k=>TYPES[k].name).join(', '))}</div></div>`).join('')}</div>
+  <div class="guided-only muted" style="margin-top:12px;font-size:12px">Connectors, pins and parts are chosen for you in Guided mode. Switch to Expert mode to see and change them.</div>`;
+  $('#f-id').onchange=e=>{const v=e.target.value.trim();let m='';if(!/^[A-Za-z][A-Za-z0-9_.-]{0,63}$/.test(v))m='Use letters, digits, - _ . and start with a letter.';else if(v!==u.id&&unit(v))m='ID '+v+' is already used.';
+    $('#e-id').textContent=m;e.target.setAttribute('aria-invalid',!!m);if(m)return;commit('Rename '+u.id,()=>{const old=u.id;D.ifaces.forEach(i=>{if(i.a.u===old)i.a.u=v;if(i.b.u===old)i.b.u=v;});u.id=v;UI.sel={k:'unit',id:v};});};
+  $('#f-name').onchange=e=>commit('Rename unit',()=>{u.name=e.target.value;});$('#f-side').onchange=e=>commit('Change chain',()=>{u.side=e.target.value;});
+  P.querySelectorAll('[data-part]').forEach(s=>s.onchange=e=>commit('Change part',()=>{u.ports[+s.dataset.part].part=e.target.value;u.ports[+s.dataset.part].auto=false;}));
+  P.querySelectorAll('[data-confirm]').forEach(b=>b.onclick=()=>commit('Confirm connector',()=>{u.ports[+b.dataset.confirm].auto=false;}));
+  P.querySelector('[data-explain]').onclick=()=>explain('Why is this here?','You added '+esc(u.id)+' yourself. Its connectors come from the “'+esc(TPL[u.tpl].label)+'” template and are marked Auto until you confirm them.');
+ }else{const i=iface(sel.id);if(!i){P.innerHTML='';return;}const T=TYPES[i.type];
+  const ep=(e,l)=>`<div class="muted">${l}: <b>${esc(e.u)}</b> <span class="expert-only">connector <b>${esc(e.p)}</b></span> ${e.auto?'<span class="badge auto" title="Chosen for you; confirm to accept">Auto</span>':''}</div>`;
+  P.innerHTML=`<h2>Interface <button class="ghost" data-explain="1" aria-label="Explain this interface">ⓘ</button></h2>
+  <label>ID</label><input value="${esc(i.id)}" disabled><label for="i-name">Name</label><input id="i-name" value="${esc(i.name)}">
+  <label>Type</label><div><span class="chip" style="color:${col(T.cat)}">${esc(CATS[T.cat].icon)}</span> ${esc(T.name)} <span class="muted">(${esc(CATS[T.cat].label)})</span></div>
+  <label for="i-side">Chain</label><select id="i-side"><option ${i.side==='nominal'?'selected':''}>nominal</option><option ${i.side==='redundant'?'selected':''}>redundant</option></select>
+  <label for="i-a">Max current (A)</label><input id="i-a" value="${esc(i.maxA)}" inputmode="decimal" placeholder="optional" aria-describedby="e-a"><div class="err" id="e-a"></div>
+  <label for="i-req">Requirement ID</label><input id="i-req" value="${esc(i.req)}" placeholder="optional, for traceability">
+  <h2>Ends</h2>${ep(i.a,'From')}${ep(i.b,'To')}${i.a.auto||i.b.auto?'<p><button id="i-conf">Confirm auto-filled connectors</button></p>':''}
+  <p class="muted" style="font-size:12px">Signals: ${esc(T.sig.join(', '))}</p>`;
+  $('#i-name').onchange=e=>commit('Rename interface',()=>{i.name=e.target.value;});$('#i-side').onchange=e=>commit('Change chain',()=>{i.side=e.target.value;});$('#i-req').onchange=e=>commit('Set requirement',()=>{i.req=e.target.value;});
+  $('#i-a').onchange=e=>{const v=e.target.value.trim();const bad=v!==''&&!(+v>=0&&isFinite(+v));$('#e-a').textContent=bad?'Enter a number in amperes, for example 2.5.':'';e.target.setAttribute('aria-invalid',bad);if(!bad)commit('Set max current',()=>{i.maxA=v;});};
+  if($('#i-conf'))$('#i-conf').onclick=()=>commit('Confirm connectors',()=>{i.a.auto=false;i.b.auto=false;});
+  P.querySelector('[data-explain]').onclick=()=>explain('Why these connectors?',i.a.auto||i.b.auto?'In Guided mode the tool picked the first free connector that carries '+esc(T.name)+' on each unit. Confirm them, or switch to Expert mode to choose.':'You chose these connectors yourself.');}}
+function drawBottom(){
+ const pr=problems(),td=todos(),e=pr.filter(p=>p.sev==='error').length,w=pr.filter(p=>p.sev==='warning').length;
+ const tabs=[['problems','Problems',(e?`<span class="badge err">${e}</span>`:'')+(w?`<span class="badge warn">${w}</span>`:'')+(!e&&!w?'<span class="badge ok">0</span>':'')],['todo','To-do',`<span class="badge info">${td.length}</span>`],['table','Interface table',''],['harness','Harness plans',D.gen?(D.gen.hash!==hash()?'<span class="badge stale">outdated</span>':'<span class="badge ok">verified</span>'):'']];
+ $('#tabs').innerHTML=tabs.map(([k,l,b])=>`<button role="tab" data-tab="${k}" aria-selected="${UI.tab===k}">${l}${b}</button>`).join('');
+ const B=$('#tabbody');
+ if(UI.tab==='problems'){B.innerHTML=(pr.length?pr.map(p=>`<div class="prob ${p.sev}"><span class="sev">${p.sev==='warning'?'⚠ Warning':p.sev==='error'?'✕ Error':'ⓘ Info'}</span><div><b>${esc(p.title)}</b><div class="muted">${esc(p.why)}</div><div class="acts">${p.obj?`<button data-go="${esc(p.obj)}">Show</button>`:''}<button data-fix="${esc(p.id)}" class="primary">${esc(p.fix)}</button>${p.waive?`<button data-waive="${esc(p.id)}">Waive…</button>`:''}</div></div></div>`).join(''):'<p class="muted">No problems. Nice work.</p>')+(Object.keys(D.waived).length?'<h2>Waived</h2>'+Object.entries(D.waived).map(([k,v])=>`<div class="muted">✓ ${esc(k)}: “${esc(v)}”</div>`).join(''):'');
+  B.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const id=b.dataset.go;UI.sel=unit(id)?{k:'unit',id}:{k:'iface',id};render();});
+  B.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>pr.find(p=>p.id===b.dataset.fix).fixfn());
+  B.querySelectorAll('[data-waive]').forEach(b=>b.onclick=()=>waiveDlg(pr.find(p=>p.id===b.dataset.waive)));}
+ else if(UI.tab==='todo'){B.innerHTML=td.map((t,k)=>`<button class="todo" data-todo="${k}">☐ ${esc(t.txt)}</button>`).join('');B.querySelectorAll('[data-todo]').forEach(b=>b.onclick=()=>td[+b.dataset.todo].go());}
+ else if(UI.tab==='table'){B.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:8px"><input id="flt" placeholder="Filter by ID, unit or type" value="${esc(UI.filter)}" style="max-width:260px" aria-label="Filter table"><button id="addrow">＋ Interface</button></div><table><tr><th>ID</th><th>Name</th><th>Type</th><th>From</th><th>To</th><th>Chain</th><th>Max A</th><th>Requirement</th></tr>${D.ifaces.filter(i=>(i.id+i.a.u+i.b.u+TYPES[i.type].name).toLowerCase().includes(UI.filter.toLowerCase())).map(i=>`<tr data-sel="${esc(i.id)}" class="${UI.sel&&UI.sel.id===i.id?'sel':''}"><td>${esc(i.id)}</td><td><input data-c="name" data-i="${esc(i.id)}" value="${esc(i.name)}" aria-label="Name of ${esc(i.id)}"></td><td><span class="chip" style="color:${col(TYPES[i.type].cat)};width:16px;height:16px">${esc(CATS[TYPES[i.type].cat].icon)}</span> ${esc(TYPES[i.type].name)}</td><td>${esc(i.a.u)}${i.a.auto?' <span class="badge auto">Auto</span>':''}</td><td>${esc(i.b.u)}${i.b.auto?' <span class="badge auto">Auto</span>':''}</td><td><select data-c="side" data-i="${esc(i.id)}" aria-label="Chain of ${esc(i.id)}"><option ${i.side==='nominal'?'selected':''}>nominal</option><option ${i.side==='redundant'?'selected':''}>redundant</option></select></td><td><input data-c="maxA" data-i="${esc(i.id)}" value="${esc(i.maxA)}" style="width:64px" aria-label="Max current of ${esc(i.id)}"></td><td><input data-c="req" data-i="${esc(i.id)}" value="${esc(i.req)}" style="width:96px" aria-label="Requirement of ${esc(i.id)}"></td></tr>`).join('')}</table>`;
+  B.querySelectorAll('tr[data-sel]').forEach(r=>r.onclick=e=>{if(e.target.closest('input,select'))return;UI.sel={k:'iface',id:r.dataset.sel};render();});
+  B.querySelectorAll('[data-c]').forEach(inp=>inp.onchange=e=>{const i=iface(inp.dataset.i);commit('Edit '+inp.dataset.c,()=>{i[inp.dataset.c]=e.target.value;});});
+  $('#flt').oninput=e=>{UI.filter=e.target.value;const p=e.target.selectionStart;render();$('#flt').focus();$('#flt').setSelectionRange(p,p);};$('#addrow').onclick=()=>{UI.tool='connect';UI.ctype='rs422';UI.tab='table';render();toast('Pick a type on the left, then click two units on the diagram.');};}
+ else{drawHarness(B);}
+}
+function drawHarness(B){
+ if(!D.gen){B.innerHTML='<p><b>No harness plans yet.</b></p><p class="muted">Connect your units, then click <b>Generate harnesses</b>. You will see a preview of what will be created before anything is made.</p>';return;}
+ const stale=D.gen.hash!==hash(),H=D.gen.harnesses,h=H.find(x=>x.id===UI.hsel)||H[0];
+ B.innerHTML=`<div style="display:flex;gap:16px;align-items:flex-start"><div style="min-width:300px"><div>${stale?'<span class="badge stale">Outdated: the diagram changed</span>':'<span class="badge ok">✓ Independent check passed</span>'} <span class="muted mono">model ${D.gen.hash}</span></div><table><tr><th>ID</th><th>Harness</th><th>Chain</th><th>Status</th></tr>${H.map(x=>`<tr data-h="${x.id}" class="${x.id===h.id?'sel':''}" tabindex="0"><td>${x.id}</td><td>${esc(x.name)}</td><td>${x.side==='redundant'?'╌╌':'━━'} ${x.side}</td><td>${D.gen.released[x.id]?'<span class="badge released">🔒 released</span>':'<span class="badge info">draft</span>'}</td></tr>`).join('')}</table></div>
+ <div style="flex:1"><b>${h.id}: ${esc(h.name)}</b> <button data-explain-h="1">Why does this harness exist?</button> <button id="rel" ${stale||D.gen.released[h.id]?'disabled':''} ${stale?'title="Outdated plans cannot be released"':''}>${D.gen.released[h.id]?'Released':'Release…'}</button>
+ <table><tr><th>Wire</th><th>Signal</th><th>From</th><th>To</th><th>Gauge</th><th>Lock pin</th><th></th></tr>${h.wires.map(w=>`<tr><td class="mono">${w.id}</td><td>${esc(w.sig)}</td><td class="mono">${w.from} pin ${w.fpin} <span class="badge auto">Auto</span></td><td class="mono">${w.to} pin ${w.tpin}</td><td><span class="muted" title="Derating rules are still placeholders; an engineer must fill them in">AWG — (rules pending)</span></td><td><input type="checkbox" data-lock="${w.id}" ${D.gen.locked[w.id]?'checked':''} aria-label="Lock pin of ${w.id}" ${D.gen.released[h.id]?'disabled':''}> ${D.gen.locked[w.id]?'🔒':''}</td><td><button class="ghost" data-why="${w.id}">Why this pin?</button></td></tr>`).join('')}</table></div></div>`;
+ B.querySelectorAll('[data-h]').forEach(r=>r.onclick=()=>{UI.hsel=r.dataset.h;render();});
+ B.querySelectorAll('[data-lock]').forEach(c=>c.onchange=()=>commit('Lock pin',()=>{if(c.checked)D.gen.locked[c.dataset.lock]=true;else delete D.gen.locked[c.dataset.lock];}));
+ B.querySelectorAll('[data-why]').forEach(b=>b.onclick=()=>explain('Why this pin?','Wire <b>'+b.dataset.why+'</b> got the next free pin on its connector. Signals of a twisted pair are placed on adjacent pins, power and return are grouped, and spare pins are kept at the end. <span class="muted">(Rules come from the project configuration; pin numbers here are mock data.)</span>'));
+ const ua=unit(h.a.split('.')[0]),ub=unit(h.b.split('.')[0]);
+ B.querySelector('[data-explain-h]').onclick=()=>explain('Why does '+h.id+' exist?','Rule “one harness per unit-connector pair”: interface <b>'+esc(h.iface)+'</b> joins '+esc(h.a)+' and '+esc(h.b)+', which are in '+(ua&&ub&&zoneOf(ua)===zoneOf(ub)?'the same zone':'different zones')+'. You can change this rule in the project settings.');
+ $('#rel').onclick=()=>{dlg(`<h3>Release ${h.id}?</h3><p>Releasing freezes its IDs and locks it against accidental edits. A baseline snapshot is saved.</p><label for="rc">Change comment (required)</label><input id="rc" autofocus><div class="err" id="re"></div><div class="foot"><button id="no">Cancel</button><button id="yes" class="primary">Release</button></div>`,d=>{$('#no').onclick=()=>d.close();$('#yes').onclick=()=>{if($('#rc').value.trim().length<3){$('#re').textContent='Please add a short comment.';return;}d.close();commit('Release '+h.id,()=>{D.gen.released[h.id]=true;});toast(h.id+' released and locked.',true);};});};}
+
+// ---- wiring ----------------------------------------------------------------------------------
+function layout(){
+ const m=document.querySelector('.main');m.classList.toggle('nol',!!UI.hideL);m.classList.toggle('nor',!!UI.hideR);
+ m.style.gridTemplateColumns=`${UI.hideL?0:232}px 1fr ${UI.hideR?0:300}px`;
+ m.style.gridTemplateRows=`1fr ${UI.bottom==='min'?'38px':UI.bottom==='tall'?'62%':'232px'}`;
+ $('#lt-left').setAttribute('aria-pressed',!UI.hideL);$('#lt-right').setAttribute('aria-pressed',!UI.hideR);
+ $('#bmin').textContent=UI.bottom==='min'?'▴ Restore':'▾ Collapse';$('#bexp').textContent=UI.bottom==='tall'?'⤡ Shorter':'⤢ Taller';$('#tabbody').style.display=UI.bottom==='min'?'none':'';}
+function autoLayout(){const z=parseFloat(document.body.style.zoom||1),h=innerHeight/z,w=innerWidth/z;UI.hideR=w<1150;UI.hideL=w<800;UI.bottom=h<640?'min':'normal';const hd=document.querySelector('header');hd.classList.toggle('compact',w<1500);hd.classList.remove('open');$('#morebtn').setAttribute('aria-expanded','false');layout();}
+$('#morebtn').onclick=()=>{const hd=document.querySelector('header'),o=hd.classList.toggle('open');$('#morebtn').setAttribute('aria-expanded',o);};
+addEventListener('resize',autoLayout);
+function setMode(m){UI.mode=m;UI.cfrom=null;render();}
+function toggleTheme(){const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';}
+document.addEventListener('click',e=>{
+ const add=e.target.closest('[data-add]');if(add){addUnit(add.dataset.add);return;}
+ const ty=e.target.closest('[data-type]');if(ty){startConnect(ty.dataset.type);return;}
+ const tab=e.target.closest('[data-tab]');if(tab){UI.tab=tab.dataset.tab;if(UI.bottom==='min')UI.bottom='normal';layout();render();return;}});
+$('#m-guided').onclick=()=>setMode('guided');$('#m-expert').onclick=()=>setMode('expert');
+$('#t-select').onclick=()=>{UI.tool='select';UI.cfrom=null;render();};$('#t-connect').onclick=()=>{UI.tool='connect';render();};
+$('#undo').onclick=undo;$('#redo').onclick=redoit;$('#generate').onclick=generate;$('#theme').onclick=toggleTheme;$('#helpbtn').onclick=helpMenu;$('#importbtn').onclick=importDlg;$('#cmdbtn').onclick=openCmd;
+$('#delete').onclick=()=>{if(!UI.sel)return;UI.sel.k==='unit'?removeUnit(UI.sel.id):removeIface(UI.sel.id);};$('#redundant').onclick=()=>makeRedundant(UI.sel.id);
+$('#scale').onchange=e=>{document.body.style.zoom=parseInt(e.target.value)/100;autoLayout();};
+$('#lt-left').onclick=()=>{UI.hideL=!UI.hideL;layout();};$('#lt-right').onclick=()=>{UI.hideR=!UI.hideR;layout();};
+$('#bmin').onclick=()=>{UI.bottom=UI.bottom==='min'?'normal':'min';layout();};$('#bexp').onclick=()=>{UI.bottom=UI.bottom==='tall'?'normal':'tall';layout();};
+$('#zoomin').onclick=()=>{UI.vz=Math.min(2,UI.vz*1.2);render();};$('#zoomout').onclick=()=>{UI.vz=Math.max(.4,UI.vz/1.2);render();};$('#fit').onclick=()=>{UI.vz=1;UI.vx=0;UI.vy=0;render();};
+let drag=null;
+$('#canvas').addEventListener('pointerdown',e=>{
+ const pe=e.target.closest('.port'),ue=e.target.closest('.unit'),ie=e.target.closest('.ifc');
+ if(UI.tool==='connect'&&ue){const u=unit(ue.dataset.u);if(UI.mode==='expert'&&!pe){toast('Click a connector (the small square) on the unit.');return;}pickEnd(u,pe?u.ports.find(p=>p.id===pe.dataset.p):null);return;}
+ if(ie){UI.sel={k:'iface',id:ie.dataset.if};render();return;}
+ if(ue){const u=unit(ue.dataset.u);UI.sel={k:'unit',id:u.id};drag={u,sx:e.clientX,sy:e.clientY,ox:u.x,oy:u.y,before:snap(),moved:false};render();return;}
+ UI.sel=null;drag={pan:true,sx:e.clientX,sy:e.clientY,ox:UI.vx,oy:UI.vy};render();});
+addEventListener('pointermove',e=>{if(!drag)return;const dx=(e.clientX-drag.sx),dy=(e.clientY-drag.sy);
+ if(drag.pan){UI.vx=drag.ox+dx;UI.vy=drag.oy+dy;drawCanvas();return;}
+ if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;if(drag.moved){drag.u.x=Math.round((drag.ox+dx/UI.vz)/10)*10;drag.u.y=Math.round((drag.oy+dy/UI.vz)/10)*10;drawCanvas();}});
+addEventListener('pointerup',()=>{if(drag&&drag.moved){const z=zoneOf(drag.u);hist.push({label:'Move '+drag.u.id,before:drag.before});redo.length=0;saved();toast(drag.u.id+' is now in '+z+'.');render();}drag=null;});
+$('#canvas').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target.closest('.port,.unit,.ifc');if(!t)return;e.preventDefault();
+ const pe=t.closest('.port'),ue=t.closest('.unit');
+ if(UI.tool==='connect'&&ue){const u=unit(ue.dataset.u);if(UI.mode==='expert'&&!pe){toast('Press Enter on a connector of the unit.');return;}pickEnd(u,pe?u.ports.find(p=>p.id===pe.dataset.p):null);return;}
+ if(t.classList.contains('ifc'))UI.sel={k:'iface',id:t.dataset.if};else if(ue)UI.sel={k:'unit',id:ue.dataset.u};render();});
+$('#canvas').addEventListener('wheel',e=>{e.preventDefault();UI.vz=Math.max(.4,Math.min(2,UI.vz*(e.deltaY<0?1.1:1/1.1)));drawCanvas();},{passive:false});
+addEventListener('keydown',e=>{
+ const k=e.key.toLowerCase(),mod=e.ctrlKey||e.metaKey,typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+ if(mod&&k==='k'){e.preventDefault();openCmd();return;}
+ if($('#cmdk').open){if(k==='arrowdown'){cmdSel=Math.min(cmdList.length-1,cmdSel+1);fillCmd();e.preventDefault();}else if(k==='arrowup'){cmdSel=Math.max(0,cmdSel-1);fillCmd();e.preventDefault();}else if(k==='enter'){runCmd(cmdSel);e.preventDefault();}return;}
+ if(typing||$('#dlg').open)return;
+ if(mod&&k==='z'){e.preventDefault();e.shiftKey?redoit():undo();}else if(mod&&k==='y'){e.preventDefault();redoit();}
+ else if(k==='delete'||k==='backspace'){if(UI.sel){e.preventDefault();$('#delete').click();}}
+ else if(k==='escape'){UI.tool='select';UI.cfrom=null;UI.ctype=null;render();}
+ else if(k==='c'&&!mod){UI.tool='connect';render();}});
+$('#cmdin').oninput=()=>{cmdSel=0;fillCmd();};$('#cmdlist').onclick=e=>{const li=e.target.closest('li[data-i]');if(li)runCmd(+li.dataset.i);};
+$('#cmdk').addEventListener('click',e=>{if(e.target===$('#cmdk'))$('#cmdk').close();});
+render();autoLayout();setTimeout(()=>{if(!new URLSearchParams(location.search).has('notour'))tour(0);},300);
+window.__proto={get D(){return D;},get UI(){return UI;},hash,addUnit,generate,problems,todos,undo};

@@ -1,0 +1,113 @@
+"""M5 (GUI): export outputs from the Harness plans tab, with progress, independent check and
+a stale indicator."""
+
+import pytest
+from PySide6.QtWidgets import QPushButton
+
+pytest.importorskip("PySide6")
+pytestmark = pytest.mark.gui
+
+from harness_tool.core.commands import Put  # noqa: E402
+from harness_tool.core.generate.engine import generate_project  # noqa: E402
+from harness_tool.core.io.saver import save_project  # noqa: E402
+from harness_tool.core.model import evolve  # noqa: E402
+from harness_tool.core.samples import new_project, sat15  # noqa: E402
+from tests.gui_helpers import DialogScript, make_window  # noqa: E402
+
+
+@pytest.fixture
+def win(qtbot, tmp_path):  # type: ignore[no-untyped-def]
+    w = make_window(tmp_path)
+    qtbot.addWidget(w)
+    p = sat15()
+    generate_project(p)
+    save_project(p, tmp_path / "proj")
+    assert w.open_project(tmp_path / "proj")
+    return w
+
+
+def test_export_button_writes_outputs_and_status_turns_current(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    panel = win.harness_panel
+    panel.refresh()
+    assert "not exported" in panel.outputs.text()
+    panel.export_btn.click()
+    folder = tmp_path / "proj" / "outputs"
+    assert (folder / "manifest.json").is_file()
+    assert "up to date" in panel.outputs.text()
+    assert "files written" in win.toasts.messages[-1]
+
+
+def test_status_goes_stale_after_an_edit(win) -> None:  # type: ignore[no-untyped-def]
+    win.tabs.setCurrentWidget(win.harness_panel)  # hidden panels refresh lazily
+    win.harness_panel.export_btn.click()
+    unit = next(iter(win.ctl.project.units.values()))
+    win.ctl.run("rename", [Put("units", evolve(unit, name="Renamed"))])
+    win.harness_panel.refresh()
+    assert "out of date" in win.harness_panel.outputs.text()
+
+
+def test_export_needs_a_saved_project_and_harnesses(win, qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    win.ctl._install(new_project("x"), None, None)
+    win.export_flow()
+    assert "Save the project" in win.toasts.messages[-1]
+    win.ctl._install(sat15(), None, None)
+    win.ctl.root = tmp_path / "somewhere"
+    win.export_flow()
+    assert "no harnesses" in win.toasts.messages[-1].lower()
+
+
+def test_cancelled_export_writes_nothing(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    win.compute_outputs = lambda: None
+    win.export_flow()
+    assert not (tmp_path / "proj" / "outputs").exists()
+    assert "cancelled" in win.toasts.messages[-1].lower()
+
+
+def test_failed_independent_check_blocks_the_write(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from harness_tool.core.outputs.build import build_outputs
+    from harness_tool.core.outputs.verify import verify_outputs
+
+    built = build_outputs(win.ctl.project)
+    from harness_tool.core.outputs.stamp import csv_bytes, parse_csv
+
+    table = parse_csv(built.files["harnesses/W001/wirelist.csv"])
+    del table[1]
+    built.files["harnesses/W001/wirelist.csv"] = csv_bytes(table, built.stamp)
+    report = verify_outputs(win.ctl.project, built.files)
+    assert not report.ok
+    win.compute_outputs = lambda: (built, report)
+    DialogScript(win, accept=True)
+    win.export_flow()
+    assert not (tmp_path / "proj" / "outputs").exists()
+    assert "failed" in win.toasts.messages[-1]
+
+
+def test_real_worker_exports(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    result = win._compute_outputs()
+    assert result is not None and result[1].ok
+
+
+def test_export_button_hidden_until_there_are_harnesses(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    w = make_window(tmp_path)
+    qtbot.addWidget(w)
+    w.ctl._install(new_project("x"), None, None)
+    w.harness_panel.refresh()
+    assert w.harness_panel.export_btn.isHidden()
+    assert w.findChild(QPushButton, "export") is not None
+
+
+def test_a_toast_that_expires_after_the_window_is_gone_does_not_raise(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    """Regression: a late timer on a closed window raised in the Qt event loop and failed an
+    unrelated test that ran later (flaky full-suite failure)."""
+    from PySide6.QtWidgets import QApplication
+
+    w = make_window(tmp_path)
+    host = w.toasts
+    frame_count = {"n": 0}
+    host.show_message("hello", None, ms=10)
+    w.close()
+    w.deleteLater()
+    QApplication.processEvents()
+    qtbot.wait(60)  # the expiry timer fires after the window was deleted
+    frame_count["n"] += 1
+    assert frame_count["n"] == 1
