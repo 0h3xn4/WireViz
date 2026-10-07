@@ -24,3 +24,6 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-LIB-01 | Starter library is clearly unverified example data with no invented numbers. | SPEC Part 2 (parts library), Part 4 (rules) | `tests/test_library_config.py` |
 | REQ-CFG-01 | Rule configuration lives in files; standards numbers are placeholders. | SPEC Part 4 (architecture, rules) | `tests/test_library_config.py` |
 | REQ-CLI-01 | `harness validate` / `check` / `migrate` with meaningful exit codes. | SPEC Part 4 (architecture) | `tests/test_cli_project.py` |
+| REQ-UX-01 | Design tokens meet WCAG 2.2 AA and category colours stay distinguishable under simulated colour blindness (dE >= 20). | SPEC Part 3 (accessibility, visual design) | `tests/test_tokens.py` |
+| REQ-UX-02 | The prototype supports the ten journeys, works offline and logs no console errors. | SPEC Part 3 (UX process 1 and 2) | `tests/test_prototype.py` |
+| REQ-UX-03 | The committed prototype matches the generator and is self-contained. | SPEC Part 1 (offline) | `tests/test_prototype_build.py` |

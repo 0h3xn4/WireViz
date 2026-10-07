@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness Designer: clickable prototype</title>
+<style>
+:root{color-scheme:light;accent-color:var(--primary);/*TOKENS_LIGHT*/--font-ui:/*FONT_UI*/;--font-mono:/*FONT_MONO*/;--r:6px}
+:root[data-theme="dark"]{color-scheme:dark;/*TOKENS_DARK*/}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]):not([data-theme="dark"]){color-scheme:dark;/*TOKENS_DARK*/}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.4 var(--font-ui);display:flex;flex-direction:column;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px 12px;cursor:pointer;min-height:28px}
+button:hover:not(:disabled):not(.primary):not(.active):not([aria-pressed="true"]){background:var(--surface-2)}
+button.primary:hover:not(:disabled),button.active:hover,button[aria-pressed="true"]:hover{filter:brightness(.92)}
+button{white-space:nowrap}
+button:disabled{opacity:.55;cursor:not-allowed}
+button.primary{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-weight:600}
+button.danger{border-color:var(--error);color:var(--error)}
+button.ghost{border-color:transparent;background:transparent}
+button.ghost:hover:not(:disabled){background:var(--surface-2)}
+button[aria-pressed="true"],button.active{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:4px 8px;min-height:28px;width:100%}
+input[aria-invalid="true"]{border-color:var(--error);border-width:2px}
+.err{color:var(--error);font-size:12px;margin-top:2px}
+label{display:block;font-size:12px;color:var(--text-muted);margin:8px 0 2px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin:16px 0 8px}
+header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap}
+header .title{font-weight:700;font-size:16px}
+header .proj{color:var(--text-muted)}
+header .spacer{flex:1}
+#secondary{display:flex;align-items:center;gap:8px;flex-wrap:wrap}#morebtn{display:none}
+header{position:relative}
+header.compact .long{display:none}header.compact #morebtn{display:inline-flex}
+header.compact #secondary{display:none;position:absolute;right:8px;top:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:8px;z-index:40;flex-direction:column;align-items:stretch;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+header.compact.open #secondary{display:flex}
+.seg{display:inline-flex}.seg button{border-radius:0}.seg button:first-child{border-radius:var(--r) 0 0 var(--r)}.seg button:last-child{border-radius:0 var(--r) var(--r) 0}
+.main{flex:1;display:grid;grid-template-columns:232px 1fr 300px;grid-template-rows:1fr 232px;min-height:0}
+.main.nol #left,.main.nor #props{display:none}
+#left{grid-column:1;grid-row:1}#center{grid-column:2;grid-row:1}#props{grid-column:3;grid-row:1}#bottom{grid-row:2}
+.panel{overflow:auto;padding:8px 12px;border-right:1px solid var(--border);background:var(--surface);min-height:0}
+#props{border-right:0;border-left:1px solid var(--border)}
+#center{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
+#toolbar{display:flex;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid var(--surface-2);flex-wrap:wrap}
+#hint{flex:1;min-width:160px}#hint.warn{color:var(--warning);font-weight:600}
+#canvaswrap{flex:1;position:relative;min-height:0;overflow:hidden}
+svg#canvas{width:100%;height:100%;display:block;background:var(--bg);touch-action:none}
+#empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:var(--text-muted);padding:32px;pointer-events:none}
+#empty div{max-width:360px;font-size:16px}
+#bottom{grid-column:1 / 4;border-top:1px solid var(--border);display:flex;flex-direction:column;min-height:0;background:var(--surface)}
+#tabs{display:flex;gap:4px;padding:4px 8px}
+#bottomhead{border-bottom:1px solid var(--border)}
+#tabs button{border-color:transparent;background:transparent}
+#tabs button[aria-selected="true"]{border-bottom:3px solid var(--primary);border-radius:0;font-weight:600}
+#tabbody{flex:1;overflow:auto;padding:8px 12px}
+.badge{display:inline-block;border-radius:10px;padding:0 8px;font-size:12px;border:1px solid currentColor;margin-left:4px}
+.badge.err{color:var(--error)}.badge.warn{color:var(--warning)}.badge.ok{color:var(--success)}.badge.info{color:var(--info)}
+.badge.auto{color:var(--auto-fill);border-style:dashed}.badge.locked{color:var(--locked)}.badge.released{color:var(--released)}.badge.stale{color:var(--warning);border-width:2px}
+.palitem{display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin-bottom:4px;background:var(--bg)}
+.chip{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;border:2px solid currentColor;font-weight:700;font-size:11px;flex:none}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--surface-2);padding:4px 8px;text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--text-muted);position:sticky;top:0;background:var(--surface)}
+tr.sel td{background:var(--surface-2)}tr[data-sel]{cursor:pointer}
+td input,td select{min-height:24px;padding:0 4px}
+.todo{display:flex;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--surface-2);border-radius:var(--r);margin-bottom:6px;background:var(--bg);width:100%;text-align:left}
+.prob{display:flex;gap:8px;padding:8px;border:1px solid var(--border);border-left-width:6px;border-radius:var(--r);margin-bottom:8px;background:var(--bg)}
+.prob.error{border-left-color:var(--error)}.prob.warning{border-left-color:var(--warning)}.prob.info{border-left-color:var(--info)}
+.prob .sev{font-weight:700;min-width:72px}
+.prob .acts{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap}
+.muted{color:var(--text-muted)}
+.mono{font-family:var(--font-mono)}
+dialog{border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);padding:16px;max-width:760px;width:calc(100% - 32px);box-shadow:0 8px 32px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin:0 0 8px;font-size:18px}
+dialog .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#toast{position:absolute;left:50%;top:8px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;align-items:center;max-width:90%}
+.toastitem{background:var(--text);color:var(--bg);padding:8px 16px;border-radius:var(--r);display:flex;gap:12px;align-items:center}
+.toastitem button{background:transparent;color:var(--bg);border-color:var(--bg)}
+#status{display:flex;gap:16px;padding:2px 12px;border-top:1px solid var(--border);background:var(--surface);font-size:12px;color:var(--text-muted)}
+#tour{position:fixed;z-index:60;background:var(--bg);border:2px solid var(--primary);border-radius:8px;padding:12px 16px;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.35);display:none}
+#tour .row{display:flex;gap:8px;justify-content:space-between;margin-top:12px}
+.tourhl{outline:4px solid var(--primary)!important;outline-offset:2px;position:relative;z-index:55}
+#palette-list button{display:block;width:100%;text-align:left;margin:2px 0}
+#cmdk{padding:0}#cmdk input{border:0;border-bottom:1px solid var(--border);border-radius:8px 8px 0 0;padding:12px 16px;font-size:16px}
+#cmdk ul{list-style:none;margin:0;padding:4px;max-height:320px;overflow:auto}
+#cmdk li{padding:6px 12px;border-radius:var(--r);cursor:pointer;display:flex;justify-content:space-between}
+#cmdk li[aria-selected="true"]{background:var(--primary);color:var(--on-primary)}
+.progress{height:12px;border:1px solid var(--border);border-radius:6px;overflow:hidden}.progress div{height:100%;background:var(--primary);width:0}
+.expert-only{display:none}body.expert .expert-only{display:revert}body.expert .guided-only{display:none}
+.u-rect{fill:var(--surface);stroke:var(--border);stroke-width:2}
+.u-nominal .u-rect{stroke-width:2}.u-redundant .u-rect{stroke-dasharray:8 4}
+.u-sel .u-rect{stroke:var(--primary);stroke-width:4}
+.u-ok .u-rect{stroke:var(--primary);stroke-width:3}
+.u-no .u-rect{opacity:.45}.u-no text{opacity:.6}.u-from .u-rect{stroke:var(--primary);stroke-width:4;stroke-dasharray:10 4}.reason{fill:var(--error)!important;font-weight:600;opacity:1!important}
+.zone{fill:var(--surface);opacity:.55;stroke:var(--surface-2)}
+.link{fill:none}.link-sel{filter:drop-shadow(0 0 3px var(--primary))}
+text{fill:var(--text);font-family:var(--font-ui)}
+text.mutedt{fill:var(--text-muted)}
+.port rect{fill:var(--bg);stroke:var(--border);stroke-width:2}.port.auto rect{stroke:var(--auto-fill);stroke-dasharray:3 2}
+.port.ok rect{fill:var(--primary);stroke:var(--primary)}.port.no{opacity:.35}
+.chipbg{fill:var(--bg);stroke-width:2}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--text-muted);padding:4px 8px}
+@media (max-width: 1000px){.main{grid-template-columns:180px 1fr 240px}}
+</style>
+</head>
+<body>
+<header role="banner">
+  <span class="title">Harness Designer</span>
+  <span class="proj long" id="projname">mini3 (sample data)</span>
+  <span class="badge info" title="This is a clickable prototype with mock data, not the real tool">Prototype</span>
+  <span class="spacer"></span>
+  <div class="seg" role="group" aria-label="Mode">
+    <button id="m-guided" aria-pressed="true" title="Guided mode: logical layer only. Physical details are filled in for you and marked until you confirm them.">Guided</button>
+    <button id="m-expert" aria-pressed="false" title="Expert mode: all physical details (connectors, pins, parts).">Expert</button>
+  </div>
+  <button id="undo" class="ghost" title="Undo (Ctrl+Z)" aria-label="Undo">↶ Undo</button>
+  <button id="redo" class="ghost" title="Redo (Ctrl+Y)" aria-label="Redo">↷ Redo</button>
+  <button id="cmdbtn" title="Command palette (Ctrl+K)">Search<span class="long"> / commands</span> <span class="muted">Ctrl+K</span></button>
+  <button id="generate" class="primary" title="Create the harness plans from the current diagram">Generate harnesses</button>
+  <button id="helpbtn" class="ghost" title="Help, glossary and tour">? Help</button>
+  <button id="morebtn" class="ghost" aria-haspopup="true" aria-expanded="false" title="More: scale, theme, panels, help">⋯ More</button>
+  <span id="secondary"><label style="margin:0;display:flex;align-items:center;gap:4px">Scale <select id="scale" style="width:auto" aria-label="UI scale"><option>100%</option><option>125%</option><option>150%</option><option>200%</option></select></label>
+  <button id="lt-left" class="ghost" aria-pressed="true" title="Show or hide the palette">▤ Palette</button><button id="lt-right" class="ghost" aria-pressed="true" title="Show or hide the properties panel">▥ Properties</button>
+  <button id="theme" class="ghost" aria-label="Toggle dark theme" title="Light / dark theme">◐ Theme</button>
+  
+</span>
+</header>
+<div class="main">
+  <aside class="panel" id="left" aria-label="Palette">
+    <h2>Add a unit</h2>
+    <div id="palette-list"></div>
+    <h2>Connect with</h2>
+    <div id="types"></div>
+    <p class="muted" style="font-size:12px">Pick an interface type, then click the first and the second unit<span class="expert-only"> connector</span>.</p>
+    <h2>Bring in data</h2>
+    <button id="importbtn" style="width:100%">Import interfaces from CSV / XLSX…</button>
+  </aside>
+  <section id="center" aria-label="Block diagram">
+    <div id="toolbar">
+      <div class="seg" role="group" aria-label="Tool">
+        <button id="t-select" aria-pressed="true" title="Select and move (Esc)">Select</button>
+        <button id="t-connect" aria-pressed="false" title="Connect two units (C)">Connect</button>
+      </div>
+      <span id="hint" class="muted" role="status"></span>
+      <span class="spacer" style="flex:1"></span>
+      <button id="redundant" title="Create a redundant copy of the selected unit with mirrored names" disabled>Create redundant copy</button>
+      <button id="delete" class="danger" title="Delete the selected item (Del)" disabled>Delete</button>
+      <button id="zoomout" class="ghost" aria-label="Zoom out">−</button><button id="zoomin" class="ghost" aria-label="Zoom in">+</button><button id="fit" class="ghost">Fit</button>
+    </div>
+    <div id="canvaswrap">
+      <svg id="canvas" role="application" aria-label="Block diagram canvas. Tab to move between units, Enter to select."></svg>
+      <div id="toast" aria-live="polite"></div>
+      <div id="empty"><div><strong>Your diagram is empty.</strong><br>Add your first unit from the palette on the left.</div></div>
+    </div>
+    <div class="legend" id="legend" aria-label="Legend"></div>
+  </section>
+  <aside class="panel" id="props" aria-label="Properties"></aside>
+  <section id="bottom" aria-label="Problems and status">
+    <div id="bottomhead" style="display:flex;align-items:center"><div id="tabs" role="tablist" style="flex:1"></div><button id="bexp" class="ghost" title="Make the bottom panel taller or shorter">⤢ Taller</button><button id="bmin" class="ghost" title="Collapse or restore the bottom panel">▾ Collapse</button></div>
+    <div id="tabbody" role="tabpanel"></div>
+  </section>
+</div>
+<div id="status"><span id="saved">All changes saved</span><span id="selinfo"></span><span id="modelinfo"></span></div>
+<div id="tour" role="dialog" aria-label="Guided tour"></div>
+<dialog id="dlg"></dialog>
+<dialog id="cmdk" aria-label="Command palette"><input id="cmdin" placeholder="Type a command or an ID…" aria-label="Command or ID"><ul id="cmdlist" role="listbox"></ul></dialog>
+<script>
+const CATS=/*CATEGORIES_JSON*/;
+/*APP_JS*/
+</script>
+</body>
+</html>

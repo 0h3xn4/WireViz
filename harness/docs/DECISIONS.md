@@ -58,3 +58,11 @@ Format: ID, decision, one-line rationale. `Default` = chosen by Claude Code beca
 | D-54 | A project with unloadable parts cannot be saved over its folder, only "save as", which also writes the rejected data verbatim. | Never lose data silently; salvage the rest. |
 | D-55 | Saves with integrity errors are refused unless explicitly allowed (recovery copies). | Spec: validate on every save. |
 | D-56 | No new third-party dependencies in M1 (pydantic only); hypothesis is dev-only. | Keeps the SBOM small. |
+
+## M2 gate additions
+| ID | Decision | Rationale |
+| --- | --- | --- |
+| D-60 | Dev-only dependency: playwright 1.63.0 (Apache-2.0), driving the pre-installed Chromium, to test the clickable prototype. Not shipped. Tests skip when no Chromium is present. | Verifies the prototype journeys automatically. |
+| D-61 | Category colours were chosen by a small search that maximises the minimum colour difference under simulated colour blindness, subject to AA contrast on all surfaces; the test locks in dE >= 20. | A hand-picked palette had indistinguishable pairs for protanopia. |
+| D-62 | Zones are vertical lanes in the prototype (zone follows where a unit is placed). Free-form zones are an open question in UX.md. | Simplest model that makes "grouped by zone" visible. |
+| D-63 | The prototype's harness rule (one harness per interface) and all pin/gauge data are mock. The real rule is D-10. | Prototype only. |

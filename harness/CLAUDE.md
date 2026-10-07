@@ -3,13 +3,14 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0 and M1 done (`docs/demos/`). Next: M2 starts with `docs/UX.md` + clickable prototype for owner review (no editor code first).
+M0 and M1 done (`docs/demos/`). M2 gate: `docs/UX.md` + clickable prototype (`prototype/index.html`) are ready and WAIT FOR OWNER REVIEW. Do not start the Qt editor until the owner signs off (SPEC UX process step 2).
 
 ## Commands (run from `harness/`)
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
 - Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core, enforced)
 - Lint/type: `ruff format . && ruff check . && mypy`
 - CLI: `harness --version | validate DIR | check DIR | migrate DIR`; GUI: `harness-gui`
+- Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmark: `python -m tools.bench_stress`
 - Package: `python -m tools.build_installer`, then `dist/harness-tool/harness-tool --selftest`
 - SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`

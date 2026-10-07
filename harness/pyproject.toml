@@ -15,7 +15,7 @@ gui = ["PySide6-Essentials==6.11.2"]
 dev = [
   "pytest==9.1.1", "pytest-cov==7.1.0", "pytest-qt==4.5.0", "hypothesis==6.168.5",
   "mypy==2.4.0", "ruff==0.16.10", "cyclonedx-bom==7.5.0", "pip-licenses==5.5.5",
-  "pyinstaller==6.22.3",
+  "pyinstaller==6.22.3", "playwright==1.63.0",
 ]
 
 [project.scripts]
@@ -32,7 +32,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra --strict-markers"
 filterwarnings = ["error"]
-markers = ["gui: needs Qt (run with QT_QPA_PLATFORM=offscreen)"]
+markers = ["gui: needs Qt (run with QT_QPA_PLATFORM=offscreen)", "ux: drives the clickable prototype in a browser"]
 
 [tool.coverage.run]
 source = ["harness_tool.core"]
