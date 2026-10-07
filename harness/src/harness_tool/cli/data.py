@@ -162,13 +162,8 @@ def _config(project, args: argparse.Namespace) -> int:  # type: ignore[no-untype
 
 
 def read_table_raw(path: Path) -> list[list[str]]:
-    from harness_tool.core.imports import parse_csv
 
-    return (
-        parse_csv(path.read_text(encoding="utf-8-sig"))
-        if path.suffix.lower() == ".csv"
-        else read_table(path)
-    )
+    return read_table(path)  # one reader for every file: size limit, regular files only, delimiters
 
 
 def _parts(project, table: list[list[str]], args: argparse.Namespace) -> int:  # type: ignore[no-untyped-def]
@@ -204,6 +199,12 @@ def _parts(project, table: list[list[str]], args: argparse.Namespace) -> int:  #
 
 
 def _lengths(project, table: list[list[str]], args: argparse.Namespace) -> int:  # type: ignore[no-untyped-def]
+    if len(table) < 2:
+        print(
+            "error: the file has no rows to import (headings and at least one row).",
+            file=sys.stderr,
+        )
+        return 2
     plan = plan_length_import(project, table, scale=UNITS[args.unit])
     for r in plan.rows:
         print(f"row {r.row_number}: {'OK' if r.ok else 'ERROR ' + r.message}")

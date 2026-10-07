@@ -4,13 +4,15 @@ Exit codes: 0 ok (warnings allowed), 1 the project has errors, 2 usage error or 
 """
 
 import argparse
+import contextlib
 import sys
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from pathlib import Path
 
 from harness_tool import __version__
 from harness_tool.cli import changes, data
-from harness_tool.core.errors import HarnessError
+from harness_tool.core.errors import HarnessError, ProjectLockedError, TransactionError
+from harness_tool.core.io.fs import ProjectLock
 from harness_tool.core.io.loader import LoadResult, load_project, non_canonical_files
 from harness_tool.core.io.saver import migrate_project
 from harness_tool.core.issues import Issue
@@ -188,26 +190,96 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.print_usage(sys.stderr)
         return 2
     try:
-        if args.command == "migrate":
-            migrated = migrate_project(args.project)
-            print("Already up to date." if migrated is None else MIGRATED)
-            return 0
-        if args.command == "generate":
-            return _generate(args.project)
-        if args.command in data.COMMANDS:
-            return data.run(args)
-        if args.command in changes.COMMANDS:
-            return changes.run(args)
-        if args.command == "export":
-            return _export(args.project)
-        if args.command == "drc":
-            return _drc(args.project)
-        if args.command == "verify":
-            return _verify(args.project, args.outputs)
-        return _validate(args.project, merge_check=args.command == "check")
+        with _project_lock(args):
+            return _dispatch(args)
+    except (ProjectLockedError, TransactionError) as exc:  # blocked, not misused
+        print(f"error: {exc} {' '.join(getattr(exc, 'problems', []))}".strip(), file=sys.stderr)
+        return 1
     except HarnessError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+    except OSError as exc:  # a missing, unreadable or unwritable file: say it in words
+        print(
+            f"error: a file or folder could not be used ({exc.strerror or 'file problem'}).",
+            file=sys.stderr,
+        )
+        return 2
+    except ValueError as exc:  # includes validation errors of the data model and bad encodings
+        print(f"error: {_plain(exc)}", file=sys.stderr)
+        return 2
+    except (LookupError, RecursionError):
+        print("error: the input is not in a form the tool can read.", file=sys.stderr)
+        return 2
+
+
+def _plain(exc: ValueError) -> str:
+    """A validation error as field names and messages only (never the offending values)."""
+    errors = getattr(exc, "errors", None)
+    if callable(errors):
+        try:
+            parts = [
+                f"{'.'.join(str(p) for p in e['loc']) or 'value'}: {e['msg']}" for e in errors()
+            ]
+            return "; ".join(parts[:3]) + (f" (+{len(parts) - 3} more)" if len(parts) > 3 else "")
+        except (TypeError, KeyError):
+            pass
+    return str(exc).splitlines()[0][:200] if str(exc) else "a value is not acceptable."
+
+
+MUTATING = {
+    "generate", "export", "migrate", "review", "release", "revise",
+    "import-parts", "import-lengths", "import-netlist",
+}  # fmt: skip
+
+
+@contextlib.contextmanager
+def _project_lock(args: argparse.Namespace) -> Iterator[None]:
+    """Commands that write take the same lock as the editor, so two writers never overlap."""
+    path = getattr(args, "project", None)
+    writes = args.command in MUTATING or (
+        args.command == "config" and getattr(args, "ampacity_csv", None) is not None
+    )
+    if (
+        not writes
+        or getattr(args, "dry_run", False)
+        or not isinstance(path, Path)
+        or not path.is_dir()
+    ):
+        yield
+        return
+    lock = ProjectLock(path)
+    lock.acquire()
+    try:
+        yield
+    finally:
+        lock.release()
+
+
+def _dispatch(args: argparse.Namespace) -> int:
+    if args.command in ("migrate", "export"):
+        probe = load_project(args.project).project
+        if probe.read_only:
+            print(
+                "error: this project is read-only (saved by a newer tool version).", file=sys.stderr
+            )
+            return 2
+    if args.command == "migrate":
+        migrated = migrate_project(args.project)
+        print("Already up to date." if migrated is None else MIGRATED)
+        return 0
+    if args.command == "generate":
+        return _generate(args.project)
+    if args.command in data.COMMANDS:
+        return data.run(args)
+    if args.command in changes.COMMANDS:
+        return changes.run(args)
+    if args.command == "export":
+        return _export(args.project)
+    if args.command == "drc":
+        return _drc(args.project)
+    if args.command == "verify":
+        return _verify(args.project, args.outputs)
+    return _validate(args.project, merge_check=args.command == "check")
 
 
 if __name__ == "__main__":

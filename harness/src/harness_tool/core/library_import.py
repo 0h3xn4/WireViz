@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 
 from harness_tool.core.commands import Op, Put
 from harness_tool.core.ids import ID_RE
+from harness_tool.core.imports import ImportError_
 from harness_tool.core.model import Part, Project, evolve
 from harness_tool.core.model.library import PART_CATEGORIES
 
@@ -98,8 +99,15 @@ def plan_parts_import(
         _words(pending or []),
         _words(rejected or []),
     )
+    overlap = (ok_words & rej_words) | (ok_words & pend_words) | (pend_words & rej_words)
+    if overlap:
+        raise ImportError_(
+            f"'{sorted(overlap)[0]}' is listed under more than one of approved, pending and "
+            "rejected; a value can mean only one of them."
+        )
     plan = PartsPlan()
     seen: dict[str, Part] = {}
+    by_fold = {p.casefold(): p for p in project.parts}
     for n, row in enumerate(table[1:], start=2):
 
         def cell(key: str, row: list[str] = row) -> str:
@@ -118,6 +126,12 @@ def plan_parts_import(
                     f"'{pid}' cannot be used as a part ID (letters, digits, - _ . and a letter first); put a usable ID in the ID column",
                     pid,
                 )
+            )
+            continue
+        clash = by_fold.get(pid.casefold())
+        if clash is not None and clash != pid:
+            plan.rows.append(
+                PartRow(n, False, f"'{pid}' differs only in upper/lower case from '{clash}'", pid)
             )
             continue
         category = (cell("category") or default_category or "").lower()
@@ -184,6 +198,17 @@ def plan_parts_import(
             plan.rows.append(PartRow(n, False, str(exc).splitlines()[0][:120], pid))
             continue
         seen[pid] = part
+        by_fold.setdefault(pid.casefold(), pid)
         plan.rows.append(PartRow(n, True, "", pid, "updated" if pid in project.parts else "added"))
-    plan.ops = [Put("parts", part) for part in seen.values()]
+    for k, prow in enumerate(plan.rows):  # a mating part must exist (now or after this import)
+        cand = seen.get(prow.part_id or "") if prow.ok else None
+        if cand is not None and cand.mates_with and cand.mates_with not in {*project.parts, *seen}:
+            plan.rows[k] = PartRow(
+                prow.row_number,
+                False,
+                f"Mating part '{cand.mates_with}' is not in the library or in this file",
+                prow.part_id,
+            )
+    good = {r.part_id for r in plan.rows if r.ok}
+    plan.ops = [Put("parts", part) for part in seen.values() if part.id in good]
     return plan

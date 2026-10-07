@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 
 from harness_tool.core.commands import History
-from harness_tool.core.errors import HarnessError
+from harness_tool.core.errors import HarnessError, SaveError
 from harness_tool.core.io.loader import load_project
 from harness_tool.core.io.saver import save_project
 from harness_tool.core.vcs import diff as vdiff
@@ -77,7 +77,7 @@ def _apply(path: Path, plan: ReleasePlan) -> int:
     if not plan.ok:
         for b in plan.blockers:
             print(f"blocked: [{b.code}] {b.message}", file=sys.stderr)
-        return 1
+        return 2 if any(b.code == "no_harness" for b in plan.blockers) else 1
     return 0
 
 
@@ -94,6 +94,9 @@ def run(args: argparse.Namespace) -> int:
         return 0
     project = load_project(args.project).project
     if cmd == "log":
+        if args.harness is not None and args.harness not in project.harnesses:
+            print(f"error: harness {args.harness} does not exist.", file=sys.stderr)
+            return 2
         for row in changelog_rows(project, args.harness):
             print(" | ".join(row))
         return 0
@@ -118,14 +121,15 @@ def run(args: argparse.Namespace) -> int:
         )
     else:
         plan = plan_new_revision(project, args.harness, by=args.by, comment=args.comment, when=when)
-    if _apply(args.project, plan):
-        return 1
+    blocked = _apply(args.project, plan)
+    if blocked:
+        return blocked
     try:
         History(project).execute(plan.label, plan.ops)
         save_project(project, args.project)
     except HarnessError as exc:
         print(f"error: {exc} {' '.join(getattr(exc, 'problems', []))}".strip(), file=sys.stderr)
-        return 1
+        return 2 if isinstance(exc, SaveError) else 1
     print(f"{plan.label}: done.")
     if cmd == "release":
         return _restamp(args.project)

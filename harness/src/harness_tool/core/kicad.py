@@ -317,6 +317,10 @@ def plan_netlist_import(
             )
         )
         return plan
+    for what, given in (("--connector", connector_ids), ("--part", parts)):
+        for key in sorted(given or {}):
+            if key not in netlist.components or (refs and key not in refs):
+                plan.warnings.append(f"{what} {key}=... was ignored: {key} is not among the connectors being imported")  # fmt: skip
     wanted = known_signals(project)
     mapping = signal_map or {}
     taken: dict[str, str] = {}

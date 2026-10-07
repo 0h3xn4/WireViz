@@ -1,5 +1,6 @@
 """Wire lengths from routing segments, and CSV import of segment lengths (from CAD exports)."""
 
+import re
 from collections import deque
 from dataclasses import dataclass, field
 
@@ -66,6 +67,10 @@ class LengthPlan:
     ops: list[Op] = field(default_factory=list)
 
 
+_NUMBER = re.compile(r"[0-9]+([.,][0-9]+)?|[.,][0-9]+")  # no exponents, signs or underscores
+MAX_LENGTH_M = 10_000.0
+
+
 def plan_length_import(
     project: Project,
     table: Table,
@@ -75,6 +80,16 @@ def plan_length_import(
     """Rows: harness ID, segment ID, length. `scale` converts the file's unit to metres (0.001 for
     millimetres, D-13). Applies as one undo step after confirmation."""
     plan = LengthPlan()
+    if table and len(table[0]) > columns[2] and _NUMBER.fullmatch(table[0][columns[2]].strip()):
+        plan.rows.append(
+            LengthRow(
+                1,
+                False,
+                "The first row must be the column headings (harness, segment, length), not data",
+                tuple(table[0][c] if c < len(table[0]) else "" for c in columns),
+            )
+        )
+        return plan
     pending: dict[str, Harness] = {}
     for n, row in enumerate(table[1:], start=2):
         vals = tuple(row[c].strip() if c < len(row) else "" for c in columns)
@@ -89,11 +104,13 @@ def plan_length_import(
             error = f"Harness '{hid}' has no segment '{sid}'"
         else:
             try:
-                length = float(text.replace(",", ".")) * scale
-                if not length >= 0 or length == float("inf"):
+                if not _NUMBER.fullmatch(text.strip()):
+                    raise ValueError
+                length = round(float(text.strip().replace(",", ".")) * scale, 9)
+                if not 0 <= length <= MAX_LENGTH_M:
                     raise ValueError
             except ValueError:
-                error = f"'{text}' is not a length in metres"
+                error = f"'{text}' is not a length (digits with a decimal point or comma)"
         if not error and h is not None:
             segs = [evolve(s, length_m=length) if s.id == sid else s for s in h.segments]
             pending[hid] = evolve(h, segments=segs)

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from harness_tool.core import checks, drc
 from harness_tool.core.drc.report import render_markdown
-from harness_tool.core.errors import HarnessError
+from harness_tool.core.errors import HarnessError, SaveError
 from harness_tool.core.model import Harness, Project
 from harness_tool.core.vcs.hashing import content_hash
 from harness_tool.core.vcs.report import changelog_rows, revision_report
@@ -174,13 +174,23 @@ def write_outputs(
     root = Path(folder)
     result = result or build_outputs(project)
     old = _read_manifest(root)
-    root.mkdir(parents=True, exist_ok=True)
-    for rel, data in sorted(result.files.items()):
-        _atomic(root / rel, data)
-    for rel in sorted(old.files if old else {}):
-        if rel not in result.files and _safe_rel(rel):
-            (root / rel).unlink(missing_ok=True)
-    _atomic(root / MANIFEST, result.manifest(project))
+    # never write through a link: it could lead anywhere on the disk
+    top = {rel.split("/", 1)[0] for rel in result.files}
+    if root.is_symlink() or any((root / t).is_symlink() for t in top):
+        raise SaveError("The outputs folder (or a folder in it) is a link, so nothing was written.")
+    try:
+        root.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise SaveError(f"The outputs folder cannot be created ({exc.strerror}).") from exc
+    try:
+        for rel, data in sorted(result.files.items()):
+            _atomic(root / rel, data)
+        for rel in sorted(old.files if old else {}):
+            if rel not in result.files and _safe_rel(rel):
+                (root / rel).unlink(missing_ok=True)
+        _atomic(root / MANIFEST, result.manifest(project))
+    except OSError as exc:
+        raise SaveError(f"The outputs could not be written ({exc.strerror}).") from exc
     return result
 
 

@@ -89,7 +89,12 @@ def save_project(
                 shutil.copyfile(base / rel, dest)
         result.backup_dir = backup.name
 
-    for rel, data in sorted(files.items()):
+    # The record of what was generated and the project file go last: if a write fails half-way,
+    # the record still describes the older harnesses instead of claiming newer ones.
+    last = ("generated/generation.json", "project.json")
+    for rel, data in sorted(
+        files.items(), key=lambda kv: (kv[0] in last, kv[0] == "project.json", kv[0])
+    ):
         path = base / rel
         if path.is_file() and path.read_bytes() == data:
             continue

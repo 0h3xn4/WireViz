@@ -6,6 +6,7 @@ and returns per-row results plus the operations for the good rows, applied as on
 
 import csv
 import io
+import stat
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -50,29 +51,67 @@ def parse_csv(text: str) -> Table:
     try:
         rows = [
             [c.strip() for c in r]
-            for r in csv.reader(io.StringIO(text))
+            for r in csv.reader(io.StringIO(text), delimiter=_delimiter(text))
             if any(c.strip() for c in r)
         ]
     except csv.Error as exc:  # for example a stray NUL or a quote that never closes
-        raise ImportError_(f"The file is not valid CSV ({exc}).") from exc
+        raise ImportError_(f"The file is not valid CSV ({_plain(exc)}).") from exc
     if len(rows) > MAX_ROWS + 1:
         raise ImportError_(f"The file has more than {MAX_ROWS} rows.")
+    check_width(rows)
     return rows
+
+
+def _plain(exc: Exception) -> str:
+    return (
+        "a field is too long, or the quotes do not match"
+        if "field larger" in str(exc)
+        else str(exc)
+    )
+
+
+def _delimiter(text: str) -> str:
+    """Comma, semicolon or tab: whichever the header line uses most (European spreadsheet
+    programs write semicolons)."""
+    first = next((ln for ln in text.split("\n") if ln.strip()), "")
+    counts = {d: first.count(d) for d in (",", ";", "\t")}
+    best = max(counts, key=lambda d: counts[d])
+    return best if counts[best] > 0 else ","
+
+
+def check_width(rows: Table) -> None:
+    """A row wider than the header usually means a decimal comma that was not quoted
+    ("1,5" read as two cells); refuse instead of silently dropping the part after the comma."""
+    if not rows:
+        return
+    width = len(rows[0])
+    for n, row in enumerate(rows[1:], start=2):
+        if len(row) > width and any(c for c in row[width:]):
+            raise ImportError_(
+                f"Row {n} has more columns than the header. If a number uses a decimal comma "
+                "(1,5), put it in quotes or save the file with semicolons between the columns."
+            )
 
 
 def read_table(path: Path | str) -> Table:
     """Read a .csv or .xlsx file into rows of text. The first row is the header."""
     path = Path(path)
     try:
-        size = path.stat().st_size
+        info = path.stat()
     except OSError as exc:
         raise ImportError_(f"The file could not be read ({exc.strerror}).") from exc
-    if size > MAX_BYTES:
+    if not stat.S_ISREG(info.st_mode):  # a pipe or device would hang or never end
+        raise ImportError_("That is not a regular file.")
+    if info.st_size > MAX_BYTES:
         raise ImportError_("The file is too large to import (limit 8 MB).")
     suffix = path.suffix.lower()
     if suffix == ".csv":
         try:
-            return parse_csv(path.read_bytes().decode("utf-8-sig"))
+            with path.open("rb") as fh:
+                raw = fh.read(MAX_BYTES + 1)
+            if len(raw) > MAX_BYTES:
+                raise ImportError_("The file is too large to import (limit 8 MB).")
+            return parse_csv(raw.decode("utf-8-sig"))
         except UnicodeDecodeError as exc:
             raise ImportError_(
                 "The file is not UTF-8 text. Save it as CSV UTF-8 and try again."
@@ -98,12 +137,16 @@ def _read_xlsx(path: Path) -> Table:
         raise ImportError_("The file is not a valid .xlsx workbook.") from exc
     try:
         wb = load_workbook(path, read_only=True, data_only=True)
-    except (OSError, zipfile.BadZipFile, KeyError, ValueError) as exc:
+    except ImportError_:
+        raise
+    except Exception as exc:  # noqa: BLE001 - any parser failure of a damaged file is "not valid"
         raise ImportError_("The file is not a valid .xlsx workbook.") from exc
     try:
         ws = wb.active
         if ws is None:
             raise ImportError_("The workbook has no sheet.")
+        if hasattr(ws, "reset_dimensions"):  # some exporters declare a one-cell sheet
+            ws.reset_dimensions()
         rows: Table = []
         for seen, row in enumerate(ws.iter_rows(values_only=True), start=1):
             if seen > MAX_SCANNED_ROWS:
@@ -113,7 +156,12 @@ def _read_xlsx(path: Path) -> Table:
                 rows.append(cells)
             if len(rows) > MAX_ROWS + 1:
                 raise ImportError_(f"The sheet has more than {MAX_ROWS} rows.")
+        check_width(rows)
         return rows
+    except ImportError_:
+        raise
+    except Exception as exc:  # noqa: BLE001 - a half-written sheet must not show a traceback
+        raise ImportError_("The workbook could not be read; it may be damaged.") from exc
     finally:
         wb.close()
 
@@ -121,6 +169,10 @@ def _read_xlsx(path: Path) -> Table:
 def guess_mapping(header: list[str]) -> dict[str, int]:
     """Best column for each field, by header name; unknown fields default to the field's position."""
     norm = ["".join(ch for ch in h.lower() if ch.isalnum()) for h in header]
+    for key, _ in FIELDS:
+        names = [h for h in norm if h in _ALIASES[key]]
+        if len(names) > 1:
+            raise ImportError_(f"Two columns of the file are both about '{key}'; keep only one.")
     result: dict[str, int] = {}
     used: set[int] = set()
     for key, _ in FIELDS:
