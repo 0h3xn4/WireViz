@@ -2,11 +2,11 @@
 
 KiCad is used only for the electronics inside each unit. The pinout of a unit's external connectors (which signal sits on which pin) is defined there, so the tool reads it instead of asking you to retype it.
 
-**Status: unverified against a real KiCad file.** The reader was written from the documented structure of KiCad's XML netlist and tested on a hand-written fixture (`tests/fixtures/kicad/unit.net.xml`), not on a file exported by your KiCad version. Run `harness import-netlist` on one real unit first and check the printed rows. See "Open questions" below.
+**Status: checked against one real file.** The S-expression netlist of a KiCad 10.0.6 project (59 components, 248 pins on nets) was read correctly: connector pins, net names and pin numbers match the schematic. Tests use small hand-made fixtures in the same style (`tests/fixtures/kicad/unit.net`, `unit.net.xml`). One real file is not proof for every project: check the printed rows on each unit.
 
 ## Input
 
-The XML netlist (`kicadxml`), for example `kicad-cli sch export netlist --format kicadxml -o unit.net.xml unit.kicad_sch`. Reading `.kicad_sch` directly is not implemented: it would mean resolving wires, labels and sheets ourselves, where the netlist is KiCad's own computed connectivity.
+A KiCad netlist, in either format: the S-expression `.net` that KiCad's schematic editor writes by default (File, Export, Netlist), or the XML one (`kicad-cli sch export netlist --format kicadxml`). The tool tells them apart by the first character. Reading `.kicad_sch` directly is not implemented: it would mean resolving wires, labels and sheets ourselves, where the netlist is KiCad's own computed connectivity.
 
 ## Command
 
@@ -26,4 +26,4 @@ Generation connects each interface signal to the fixed pin with the same name an
 
 1. How KiCad connector references map to the unit connectors in this tool (today: by prefix, `--connector`, or the symbol field).
 2. The signal-name mapping (today: optional `--signal-map`).
-3. Whether the XML netlist is the right input for your KiCad version (see D-124).
+3. Hierarchical sheets and multi-unit symbols have not been tried on a real project.

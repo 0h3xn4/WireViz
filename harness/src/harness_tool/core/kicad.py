@@ -1,4 +1,4 @@
-"""Read unit connector pinouts from a KiCad XML netlist and apply them to a unit (D-123).
+"""Read unit connector pinouts from a KiCad netlist (S-expression or XML) and apply them to a unit (D-123).
 
 KiCad is where each unit's electronics, and so each connector's pinout, are designed. A netlist
 (`kicad-cli sch export netlist --format kicadxml`) says which net is on which pin of which
@@ -30,7 +30,7 @@ PART_FIELD = "harnesspart"
 
 
 class NetlistError(HarnessError):
-    """The file cannot be read as a KiCad XML netlist."""
+    """The file cannot be read as a KiCad netlist."""
 
 
 @dataclass
@@ -56,10 +56,126 @@ class Netlist:
     components: dict[str, Component] = field(default_factory=dict)
 
 
+MAX_DEPTH = 64
+MAX_ATOMS = 4_000_000
+
+Sexp = list["str | Sexp"]
+
+
+def _sexp(text: str) -> Sexp:
+    """Parse KiCad's S-expression text into nested lists (no recursion, so depth cannot crash it)."""
+    stack: list[Sexp] = []
+    root: Sexp | None = None
+    i, n, atoms = 0, len(text), 0
+    while i < n:
+        ch = text[i]
+        if ch in " \t\r\n":
+            i += 1
+        elif ch == "(":
+            if len(stack) >= MAX_DEPTH:
+                raise NetlistError("The netlist is nested too deeply to be a KiCad netlist.")
+            node: Sexp = []
+            if stack:
+                stack[-1].append(node)
+            elif root is not None:
+                raise NetlistError("The netlist has more than one top-level expression.")
+            stack.append(node)
+            i += 1
+        elif ch == ")":
+            if not stack:
+                raise NetlistError("The netlist has an unmatched closing bracket.")
+            done = stack.pop()
+            if not stack:
+                root = done
+            i += 1
+        else:
+            if not stack:
+                raise NetlistError("The netlist has text outside its top-level expression.")
+            atoms += 1
+            if atoms > MAX_ATOMS:
+                raise NetlistError("The netlist has too many entries.")
+            if ch == '"':
+                out, i = [], i + 1
+                while i < n and text[i] != '"':
+                    if text[i] == "\\" and i + 1 < n:
+                        i += 1
+                    out.append(text[i])
+                    i += 1
+                if i >= n:
+                    raise NetlistError("The netlist ends inside a quoted text.")
+                i += 1
+                stack[-1].append("".join(out))
+            else:
+                j = i
+                while j < n and text[j] not in " \t\r\n()":
+                    j += 1
+                stack[-1].append(text[i:j])
+                i = j
+    if stack or root is None:
+        raise NetlistError("The netlist ends before its brackets close.")
+    return root
+
+
+def _kids(node: Sexp, head: str) -> list[Sexp]:
+    return [c for c in node[1:] if isinstance(c, list) and c and c[0] == head]
+
+
+def _text(node: Sexp, head: str) -> str:
+    """Value of `(head "value")` inside node, or an empty string."""
+    for c in _kids(node, head):
+        if len(c) > 1 and isinstance(c[1], str):
+            return c[1].strip()
+    return ""
+
+
+def _parse_sexpr(data: bytes) -> Netlist:
+    try:
+        text = data.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise NetlistError("The netlist is not valid UTF-8 text.") from exc
+    root = _sexp(text)
+    if not root or root[0] != "export":
+        raise NetlistError("The file is not a KiCad netlist (no (export ...) at the top).")
+    result = Netlist()
+    for design in _kids(root, "design"):
+        result.source = _text(design, "source")
+    for comps in _kids(root, "components"):
+        for comp in _kids(comps, "comp"):
+            ref = _text(comp, "ref")
+            if not ref:
+                continue
+            c = Component(ref=ref, value=_text(comp, "value"), footprint=_text(comp, "footprint"))
+            for fields in _kids(comp, "fields"):
+                for f in _kids(fields, "field"):
+                    name = "".join(_text(f, "name").lower().split()).replace("_", "")
+                    value = next((x for x in f[1:] if isinstance(x, str)), "")
+                    if name:
+                        c.fields[name] = value.strip()
+            result.components[ref] = c
+    for nets in _kids(root, "nets"):
+        for net in _kids(nets, "net"):
+            name = _text(net, "name")
+            for node in _kids(net, "node"):
+                ref, pin = _text(node, "ref"), _text(node, "pin")
+                target = result.components.get(ref)
+                if target is None or not pin:
+                    continue
+                target.pins[pin] = PinInfo(
+                    pin, name, _text(node, "pinfunction"), _text(node, "pintype")
+                )
+    return result
+
+
 def parse_netlist(data: bytes) -> Netlist:
-    """Parse a KiCad XML netlist. Hostile input is refused: no DOCTYPE or entities, size limit."""
+    """Parse a KiCad netlist, S-expression (KiCad's default) or XML. Hostile input is refused."""
     if len(data) > MAX_BYTES:
         raise NetlistError("The netlist is too large (limit 32 MB).")
+    if data.lstrip()[:1] == b"(":
+        return _parse_sexpr(data)
+    return _parse_xml(data)
+
+
+def _parse_xml(data: bytes) -> Netlist:
     if b"<!doctype" in data[:100_000].lower() or b"<!entity" in data.lower():
         raise NetlistError(
             "The file contains a DOCTYPE or entity declaration, which a netlist never needs; it was not read."
@@ -69,9 +185,7 @@ def parse_netlist(data: bytes) -> Netlist:
     except ElementTree.ParseError as exc:
         raise NetlistError(f"The file is not valid XML ({exc}).") from exc
     if root.tag != "export":
-        raise NetlistError(
-            "The file is XML but not a KiCad netlist (no <export> element). Export it with: kicad-cli sch export netlist --format kicadxml"
-        )
+        raise NetlistError("The file is XML but not a KiCad netlist (no <export> element).")
     result = Netlist(source=(root.findtext("design/source") or "").strip())
     for comp in root.findall("components/comp"):
         ref = (comp.get("ref") or "").strip()

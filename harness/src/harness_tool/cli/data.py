@@ -57,8 +57,8 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
     pp.add_argument("--dry-run", action="store_true", help="show the preview only")
     nn = sub.add_parser(
         "import-netlist",
-        help="read unit connector pinouts from a KiCad XML netlist",
-        description="Create or update the box connectors of one unit from a KiCad XML netlist (kicad-cli sch export netlist --format kicadxml). Pins get fixed signals; generation connects interfaces to the pin of the same name. See docs/KICAD.md.",
+        help="read unit connector pinouts from a KiCad netlist",
+        description="Create or update the box connectors of one unit from a KiCad netlist (the .net file the schematic editor exports, or kicad-cli sch export netlist; S-expression and XML both work). Pins get fixed signals; generation connects interfaces to the pin of the same name. See docs/KICAD.md.",
     )
     nn.add_argument("project", type=Path)
     nn.add_argument("netlist", type=Path)

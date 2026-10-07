@@ -1,0 +1,144 @@
+(export
+	(version "E")
+	(design
+		(source "/home/user/projects/unit/unit.kicad_sch")
+		(tool "Eeschema 10.0.6")
+	)
+	(components
+		(comp
+			(ref "J1")
+			(value "Conn_01x09")
+			(footprint "Connector_Dsub:DSUB-9_Male_Horizontal")
+			(fields
+				(field
+					(name "HarnessConnector") "TST1-J01")
+				(field
+					(name "HarnessPart") "EX-DSUB-9-F")
+			)
+		)
+		(comp
+			(ref "J2")
+			(value "Conn_01x03")
+			(footprint "Connector_Dsub:DSUB-9_Male_Horizontal")
+		)
+		(comp
+			(ref "U1")
+			(value "MCU")
+			(footprint "Package_QFP:LQFP-64")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "/TX+")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "1")
+				(pinfunction "Pin_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "5")
+				(pinfunction "TXP")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "2")
+			(name "/TX-")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "2")
+				(pinfunction "Pin_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "6")
+				(pinfunction "TXN")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "3")
+			(name "/io/RX+")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "3")
+				(pinfunction "Pin_3")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "4")
+			(name "/io/RX-")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "4")
+				(pinfunction "Pin_4")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "5")
+			(name "Net-(J1-Pad9)")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "9")
+				(pinfunction "Pin_9")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "9")
+				(pinfunction "IO9")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "6")
+			(name "unconnected-(J1-Pin_8)")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "8")
+				(pinfunction "Pin_8")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "7")
+			(name "/28V")
+			(class "Default")
+			(node
+				(ref "J2")
+				(pin "1")
+				(pinfunction "Pin_1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "8")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "J2")
+				(pin "2")
+				(pinfunction "Pin_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "J2")
+				(pin "3")
+				(pinfunction "Pin_3")
+				(pintype "passive")
+			)
+		)
+	)
+)

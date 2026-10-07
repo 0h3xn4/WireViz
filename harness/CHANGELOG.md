@@ -6,7 +6,7 @@ Versions follow semantic versioning. Every project file records the tool version
 
 - **Release hardening**: fuzzing of loaders, importers, generation, rules, outputs and verifiers (found and fixed five crashes: CSV with bare carriage returns or stray characters, a damaged interface-type file stopping generation, damaged output files stopping the verifier, mixed connector keying in a rule, a harness without connectors in the drawing sketch); symlinked and oversized project files; zip-bomb and huge-sheet spreadsheets; a security review (`docs/SECURITY.md`) enforced by tests.
 - **Ready for the data still to come**: `harness config` (hand-over checklist, range and table validation, ampacity CSV), `config-invalid` rule, `harness import-parts` (approved parts list, you define what the approval values mean), `harness import-lengths` (millimetres, for lengths measured outside the tool); `docs/IMPORTS.md`, `docs/OPEN_DECISIONS.md` (options for D-10 and D-15).
-- **KiCad import** (`harness import-netlist`, `docs/KICAD.md`): unit connector pinouts from a KiCad XML netlist as fixed pins that generation respects. Tested on a hand-written fixture only.
+- **KiCad import** (`harness import-netlist`, `docs/KICAD.md`): unit connector pinouts from a KiCad netlist (S-expression or XML) as fixed pins that generation respects. Read correctly on one real KiCad 10.0.6 netlist.
 - Ubuntu 22.04 build image and clean-machine test scripts (`packaging/ubuntu/container/`; need Docker, not run here), `README.md`.
 
 ## 0.1.0rc2

@@ -358,3 +358,29 @@ def test_random_damage_to_a_real_netlist_never_raises_anything_but_netlist_error
         except NetlistError:
             continue
         plan_netlist_import(mini3(), n, "OBC", parts={"J1": "EX-DSUB-9-F", "J2": "EX-DSUB-9-F"})
+
+
+SEXPR = FIXTURE.with_name("unit.net")  # KiCad's default netlist format, as the editor writes it
+
+
+def test_the_default_s_expression_netlist_reads_like_the_xml_one() -> None:
+    a, b = read_netlist(SEXPR), read_netlist(FIXTURE)
+    assert a.components.keys() == b.components.keys()
+    assert {r: c.pins for r, c in a.components.items()} == {
+        r: c.pins for r, c in b.components.items()
+    }
+    assert a.components["J1"].fields == b.components["J1"].fields
+
+
+@pytest.mark.parametrize(
+    "text",
+    ['(export (design', "(export))", "(export) (export)", "hello", '(export (a "unterminated', "(" * 200 + ")" * 200, "(other)"],
+)  # fmt: skip
+def test_damaged_s_expressions_are_refused_with_a_message(text: str) -> None:
+    with pytest.raises(NetlistError):
+        parse_netlist(text.encode())
+
+
+def test_s_expression_with_quotes_and_escapes() -> None:
+    n = parse_netlist(b'(export (components (comp (ref "J1") (value "a \\"b\\" c")))(nets))')
+    assert n.components["J1"].value == 'a "b" c'

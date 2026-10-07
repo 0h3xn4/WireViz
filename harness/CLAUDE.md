@@ -71,7 +71,7 @@ M0 to M7 done (`docs/demos/`); version 0.1.0rc1. Platform: Ubuntu only (D-110). 
 - Add a diffable object kind in `vcs/diff.py` (`_flatten_*`) and its name in `KIND_NAMES`.
 
 ## KiCad import (M9+)
-`core/kicad.py` (XML netlist reader + import planner), `cli/data.py` `import-netlist`, `Pin.fixed` honoured in `generate/pins.py` and `engine.py`. Docs `docs/KICAD.md`, D-123/D-124. Fixture is hand-written; verify against a real export.
+`core/kicad.py` (S-expression and XML netlist reader + import planner), `cli/data.py` `import-netlist`, `Pin.fixed` honoured in `generate/pins.py` and `engine.py`. Docs `docs/KICAD.md`, D-123/D-124. Fixtures are hand-made; one real KiCad 10.0.6 file was checked.
 
 ## Polish layout (M7)
 User guide `docs/guide/USER_GUIDE.md` (HTML bundled in `src/harness_tool/resources/guide/`, F1), `docs/RULES.md` (generated), `docs/CONFIG.md`, `docs/usability/`, Ubuntu packaging in `packaging/ubuntu/` and `tools/build_deb.py`, `tools/release_check.py`, `tools/soak.py`.
