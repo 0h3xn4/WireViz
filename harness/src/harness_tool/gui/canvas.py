@@ -773,6 +773,8 @@ class DiagramView(QGraphicsView):
         self.empty.setProperty("muted", True)
         self.empty.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.minimap = MiniMap(self)
+        self.minimap_wanted = True  # the View menu can switch it off
+        self._fit_scale = 0.25
         ctl.changed.connect(self._on_changed)
         ctl.selectionChanged.connect(self._announce)
         theme.changed.connect(self._restyle)
@@ -783,7 +785,11 @@ class DiagramView(QGraphicsView):
         """Qt does not expose graphics items to screen readers, so the view itself says what it
         holds, what is selected, and where the full accessible alternative is."""
         p = self.ctl.project
-        self.setAccessibleName(strings.CANVAS_NAME.format(len(p.units), len(p.interfaces)))
+        self.setAccessibleName(
+            strings.CANVAS_NAME.format(
+                strings.units_text(len(p.units)), strings.interfaces_text(len(p.interfaces))
+            )
+        )
         sel = self.ctl.selection
         picked = strings.CANVAS_SELECTED.format(sel.kind, sel.id) if sel else strings.CANVAS_NONE
         self.setAccessibleDescription(f"{picked} {strings.CANVAS_HELP}")
@@ -799,8 +805,17 @@ class DiagramView(QGraphicsView):
         self.empty.setVisible(not self.ctl.project.units)
         self._layout_overlays()
         self.minimap.refit()
-        self.minimap.setVisible(len(self.ctl.project.units) > 0)
+        self._update_minimap_visibility()
         self.minimap.viewport().update()
+
+    def set_minimap_wanted(self, wanted: bool) -> None:
+        self.minimap_wanted = wanted
+        self._update_minimap_visibility()
+
+    def _update_minimap_visibility(self) -> None:
+        # it covers the bottom right corner, so a small view hides it automatically
+        room = self.viewport().height() >= 300 and self.viewport().width() >= 420
+        self.minimap.setVisible(self.minimap_wanted and room and len(self.ctl.project.units) > 0)
 
     def _layout_overlays(self) -> None:
         r = self.viewport().rect()
@@ -813,6 +828,7 @@ class DiagramView(QGraphicsView):
         super().resizeEvent(event)  # type: ignore[arg-type]
         self._layout_overlays()
         self.minimap.refit()
+        self._update_minimap_visibility()
 
     def scrollContentsBy(self, dx: int, dy: int) -> None:
         super().scrollContentsBy(dx, dy)
@@ -825,7 +841,9 @@ class DiagramView(QGraphicsView):
 
     def zoom_by(self, factor: float) -> None:
         current = self.transform().m11()
-        new = max(0.25, min(3.0, current * factor))
+        # a large diagram is fitted below 0.25; zooming out must never jump back in
+        lowest = max(0.02, min(0.25, self._fit_scale * 0.9))
+        new = max(lowest, min(3.0, current * factor))
         self.scale(new / current, new / current)
         self.minimap.viewport().update()
 
@@ -844,6 +862,7 @@ class DiagramView(QGraphicsView):
             if self.transform().m11() > 1.2:
                 self.resetTransform()
                 self.centerOn(rect.center())
+            self._fit_scale = self.transform().m11()
         self.minimap.viewport().update()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:

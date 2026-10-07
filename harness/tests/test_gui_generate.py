@@ -31,7 +31,7 @@ def test_generate_button_is_enabled_and_shows_a_preview(win) -> None:  # type: i
     assert script.seen, "a preview must be shown before anything changes"
     dlg = script.seen[0]
     assert isinstance(dlg, GeneratePreviewDialog)
-    assert "added" in dlg.summary.text()
+    assert "create" in dlg.summary.text() and "Undo" in dlg.summary.text()
     assert not dlg.placeholders.isHidden()  # placeholders in use are always disclosed
     assert model_hash(win.ctl.project) == before  # cancelled: nothing changed
     assert win.ctl.generation_status() == "none"

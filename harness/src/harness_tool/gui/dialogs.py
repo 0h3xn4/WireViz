@@ -528,14 +528,12 @@ class GeneratePreviewDialog(QDialog):
         self.setObjectName("generate-preview")
         lay = QVBoxLayout(self)
         lay.addWidget(QLabel(f"<h3>{strings.GEN_PREVIEW_TITLE}</h3>"))
-        self.summary = QLabel(plan.report.summary())
+        self.summary = QLabel(f"{plan.report.plain_summary()} {strings.GEN_PREVIEW_HEAD}")
         self.summary.setObjectName("generate-summary")
         self.summary.setWordWrap(True)
         lay.addWidget(self.summary)
         used = plan.record.placeholders_used
-        self.placeholders = QLabel(
-            strings.GEN_PLACEHOLDERS.format(names=", ".join(used)) if used else ""
-        )
+        self.placeholders = QLabel(strings.GEN_PLACEHOLDERS if used else "")
         self.placeholders.setWordWrap(True)
         self.placeholders.setVisible(bool(used))
         lay.addWidget(self.placeholders)

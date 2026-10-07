@@ -67,6 +67,28 @@ class RegenReport:
     def errors(self) -> list[Finding]:
         return [f for f in self.findings if f.severity == "error"]
 
+    def plain_summary(self) -> str:
+        """The same counts as `summary`, in a sentence for people (only what is not zero)."""
+
+        def n(count: int, one: str, many: str) -> str:
+            return f"{count} {one if count == 1 else many}"
+
+        parts = []
+        if self.added:
+            parts.append(f"create {n(len(self.added), 'harness plan', 'harness plans')}")
+        if self.changed:
+            parts.append(f"update {n(len(self.changed), 'harness plan', 'harness plans')}")
+        if self.removed:
+            parts.append(f"remove {n(len(self.removed), 'harness plan', 'harness plans')}")
+        text = ("This will " + ", ".join(parts) + ".") if parts else "Nothing needs to change."
+        if self.unchanged and parts:
+            text += f" {n(len(self.unchanged), 'plan stays', 'plans stay')} as it is."
+        if self.frozen:
+            text += f" {n(len(self.frozen), 'released harness is', 'released harnesses are')} left untouched."
+        if self.kept_locks:
+            text += f" {n(len(self.kept_locks), 'locked pin stays', 'locked pins stay')} where you put it."
+        return text
+
     def summary(self) -> str:
         return (
             f"{len(self.added)} added, {len(self.changed)} changed, {len(self.unchanged)} unchanged, "

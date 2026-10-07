@@ -163,7 +163,7 @@ def release_blockers(
         out.append(
             Blocker(
                 "gauge_pending",
-                f"{len(undecided)} wire(s) have no gauge decided (first: {undecided[0]}). Fill in the derating values or set the gauge by hand.",
+                f"{len(undecided)} wire(s) have no gauge decided (first: {undecided[0]}). Fill in the derating values (the file config/derating.json; `harness config DIR` lists what is missing) or set the gauge by hand.",
                 undecided[0],
             )
         )
@@ -172,7 +172,7 @@ def release_blockers(
         out.append(
             Blocker(
                 "length_unknown",
-                f"{len(no_length)} wire(s) have no length (first: {no_length[0]}). Enter the routing segment lengths.",
+                f"{len(no_length)} wire(s) have no length (first: {no_length[0]}). Enter the routing segment lengths (`harness import-lengths DIR FILE` loads them from a table).",
                 no_length[0],
             )
         )

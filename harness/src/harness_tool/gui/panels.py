@@ -128,7 +128,10 @@ class PalettePanel(QScrollArea):
         outer.addWidget(heading(strings.ADD_UNIT))
         self.add_buttons: dict[str, QPushButton] = {}
         for tid, tpl in edit.TEMPLATES.items():
-            b = QPushButton(f"＋ {tpl.label}")
+            shown = (
+                tpl.label if len(tpl.label) <= 22 else tpl.label[:21] + "…"
+            )  # full text in the tip
+            b = QPushButton(f"＋ {shown}")
             b.setObjectName(f"add-{tid}")
             b.setToolTip(strings.ADD_UNIT_TIP.format(tpl.label))
             b.clicked.connect(lambda _=False, t=tid: self.addUnit.emit(t))
@@ -582,10 +585,11 @@ class ProblemsPanel(QScrollArea):
         self.lay.addWidget(state)
         if not open_ and not checking:
             self.lay.addWidget(muted(strings.NO_PROBLEMS))
-        for f in open_[:MAX_CARDS]:
-            self.lay.addWidget(self._card(f))
-        if len(open_) > MAX_CARDS:
-            self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(len(open_) - MAX_CARDS)))
+        cards = self._cards(open_)
+        for widget in cards[:MAX_CARDS]:
+            self.lay.addWidget(widget)
+        if len(cards) > MAX_CARDS:
+            self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(len(cards) - MAX_CARDS)))
         waived = [f for f in findings if f.waiver is not None]
         if waived:
             self.lay.addWidget(heading(strings.WAIVED))
@@ -593,6 +597,50 @@ class ProblemsPanel(QScrollArea):
                 if f.waiver is not None:
                     self.lay.addWidget(muted(f"✓ {f.id}: “{f.waiver.justification}”"))
         self.lay.addStretch(1)
+
+    def _cards(self, open_: list[checks.Finding]) -> list[QFrame]:
+        """One card per finding, except that three or more unwaivable findings of one rule about
+        the same object (a wire missing for each signal of an interface) share a single card."""
+        groups: dict[tuple[str, str, str, str | None], list[checks.Finding]] = {}
+        for f in open_:
+            if f.can_waive:
+                continue
+            key = (f.rule, f.severity, f.object_id.split(".")[0], f.fix_label)
+            groups.setdefault(key, []).append(f)
+        grouped = {key: fs for key, fs in groups.items() if len(fs) >= 3}
+        done: set[tuple[str, str, str, str | None]] = set()
+        cards: list[QFrame] = []
+        for f in open_:
+            key = (f.rule, f.severity, f.object_id.split(".")[0], f.fix_label)
+            if not f.can_waive and key in grouped:
+                if key not in done:
+                    done.add(key)
+                    cards.append(self._group_card(grouped[key]))
+                continue
+            cards.append(self._card(f))
+        return cards
+
+    def _group_card(self, fs: list[checks.Finding]) -> QFrame:
+        first = fs[0]
+        card = self._card(first)
+        card.setObjectName(f"finding-group-{first.id}")
+        title = card.findChild(QLabel)
+        if title is not None:
+            sev = {
+                "warning": strings.SEV_WARNING,
+                "error": strings.SEV_ERROR,
+                "info": strings.SEV_INFO,
+            }[first.severity]
+            head = first.object_id.split(".")[0]
+            title.setText(f"<b>{sev} {strings.GROUPED_PROBLEMS.format(head, len(fs))}</b>")
+        lay = card.layout()
+        if isinstance(lay, QVBoxLayout):
+            listing = muted(
+                "\n".join(f"• {f.title}" for f in fs[:8])
+                + (f"\n… and {len(fs) - 8} more" if len(fs) > 8 else "")
+            )
+            lay.insertWidget(1, listing)
+        return card
 
     def _card(self, f: checks.Finding) -> QFrame:
         card = QFrame()
@@ -831,6 +879,7 @@ class InterfaceTable(QWidget):
         self.view.setAccessibleName(strings.INTERFACE_TABLE)
         self.view.setModel(self.proxy)
         self.view.setSortingEnabled(True)
+        self.view.sortByColumn(0, Qt.SortOrder.AscendingOrder)  # IF-001 first
         self.view.setAlternatingRowColors(True)
         self.view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.view.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
@@ -951,6 +1000,7 @@ class HarnessPanel(QWidget):
             ("revise", strings.NEW_REV, strings.NEW_REV_TIP),
             ("changes", strings.CHANGES, strings.CHANGES_TIP),
             ("history", strings.HISTORY, strings.HISTORY_TIP),
+            ("delete", strings.DELETE_HARNESS, strings.DELETE_HARNESS_TIP),
         ):
             b = QPushButton(text)
             b.setObjectName(f"plans-{action}")
@@ -1031,6 +1081,7 @@ class HarnessPanel(QWidget):
             "revise": status == "released",
             "changes": has_base,
             "history": h is not None,
+            "delete": status in ("draft", "in_review"),
         }
         for action, b in self.cc_buttons.items():
             b.setEnabled(on[action] and (action in ("changes", "history") or not ro))
@@ -1160,7 +1211,11 @@ class OutlinePanel(QWidget):
         for uid in sorted(p.units):
             u = p.units[uid]
             node = QTreeWidgetItem(
-                [f"{uid}: {u.name} ({u.side})" if u.side != "none" else f"{uid}: {u.name}"]
+                [
+                    f"{uid}: {u.name} ({u.side})"
+                    if u.side != "none" and u.side not in u.name  # "(redundant)" may be in the name
+                    else f"{uid}: {u.name}"
+                ]
             )
             node.setData(0, Qt.ItemDataRole.UserRole, ("unit", uid))
             for i in sorted(

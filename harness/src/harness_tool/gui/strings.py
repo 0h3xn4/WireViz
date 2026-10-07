@@ -184,7 +184,11 @@ GEN_APPLY = "Apply"
 GEN_RUNNING = "Generating harnesses…"
 GEN_CANCELLED = "Generation cancelled. Nothing was changed."
 GEN_UP_TO_DATE = "Harnesses are already up to date. Nothing to change."
-GEN_PLACEHOLDERS = "Placeholder values are in use ({names}). Wire gauges stay undecided until an engineer fills them in."
+GEN_PLACEHOLDERS = "Some engineering values are not filled in yet, so wire gauges stay blank and related checks say 'not checked'. Help > User guide, section 10, shows what to fill in."
+GEN_PREVIEW_HEAD = "Nothing changes until you press Apply, and Undo reverses it."
+RELEASE_CONFIRM = "Release"
+REVIEW_CONFIRM = "Submit for review"
+NEW_REV_CONFIRM = "Start new revision"
 GEN_STATUS = {
     "none": "Not generated yet.",
     "current": "Up to date with the diagram.",
@@ -198,7 +202,17 @@ EXPLAIN = "Why is it like this?"
 EXPLAIN_NONE = "No explanation recorded (this item was made by hand)."
 ALL_SAVED = "All changes saved"
 UNSAVED = "Unsaved changes (autosaved to the recovery journal)"
-STATUS_COUNTS = "{} units, {} interfaces · model {}"
+
+
+def units_text(n: int) -> str:
+    return f"{n} unit" if n == 1 else f"{n} units"
+
+
+def interfaces_text(n: int) -> str:
+    return f"{n} interface" if n == 1 else f"{n} interfaces"
+
+
+STATUS_COUNTS = "{} · {} · model {}"
 SELECTED = "Selected: {}"
 NOTHING_SEL = "Nothing selected"
 A_NEW = "New project…"
@@ -313,7 +327,7 @@ CLEAR_MARKS = "Clear marks"
 HISTORY_TITLE = "Change log of {0}"
 NO_HISTORY = "Nothing has been recorded yet."
 
-CANVAS_NAME = "Block diagram: {0} units, {1} interfaces"
+CANVAS_NAME = "Block diagram: {0}, {1}"
 CANVAS_SELECTED = "Selected: {0} {1}."
 CANVAS_NONE = "Nothing selected."
 HARNESS_LIST = "Harnesses"
@@ -338,3 +352,26 @@ OUTLINE_HELP = "Every unit with its interfaces as a tree. Arrow keys move, Enter
 A_ARRANGE = "Arrange diagram"
 ARRANGE_DONE = "Diagram arranged: units stay in their lanes, ordered to shorten links. Undo restores the old positions."
 ARRANGE_NOTHING = "The diagram is already arranged."
+
+TOAST_CLOSE = "Close this message"
+UNDO_STALE = "That change is no longer the latest one. Use Edit > Undo to step back."
+FILE_ERROR = (
+    "Could not save{where}: {reason}. Nothing was lost; choose another folder or free some space."
+)
+A_MINIMAP = "Show overview map"
+WHY_READ_ONLY = "This project is read-only."
+WHY_NO_SELECTION = "Select something in the diagram first."
+WHY_SELECT_UNIT = "Select a unit first."
+WHY_IS_REDUNDANT = "This unit is already a redundant copy."
+WHY_HAS_REDUNDANT = "This unit already has a redundant copy: {0}."
+REDUNDANT_TIP = "Make a redundant copy of the selected unit"
+DELETE_TIP = "Delete the selected item (shows what it affects first)"
+GEN_NO_INTERFACES = (
+    "There is nothing to generate yet. Add units and connect them with interfaces first."
+)
+DELETE_HARNESS = "Delete harness"
+DELETE_HARNESS_TIP = "Delete the selected harness (not possible once it is released). A generated one comes back the next time you generate."
+DELETE_HARNESS_TITLE = "Delete {0}"
+DELETE_HARNESS_BODY = "<b>{0}</b> and its {1} wire(s) will be deleted. You can undo this."
+HARNESS_DELETED = "{0} deleted."
+GROUPED_PROBLEMS = "{0}: {1} problems of the same kind"

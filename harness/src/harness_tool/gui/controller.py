@@ -566,9 +566,12 @@ class EditorController(QObject):
 
     def apply_generation(self, plan: GenerationPlan) -> bool:
         if plan.empty:
+            if not self.project.interfaces:
+                self.message.emit(strings.GEN_NO_INTERFACES, False)
+                return True
             self.message.emit(strings.GEN_UP_TO_DATE, False)
             return True
-        return self.run("Generate harnesses", plan.ops, message=plan.report.summary())
+        return self.run("Generate harnesses", plan.ops, message=plan.report.plain_summary())
 
     def apply_import(self, plan: ImportPlan) -> bool:
         n = plan.ok_count

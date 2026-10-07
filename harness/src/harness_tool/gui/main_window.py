@@ -149,7 +149,13 @@ class OutputsWorker(QThread):
 
 
 class ToastHost(QWidget):
-    """Short messages over the diagram; an optional Undo button; they never block."""
+    """Short messages over the diagram; an optional Undo button; they never block.
+
+    At most two are shown (the oldest goes first), a repeated message is not shown twice, a new
+    message with an Undo button replaces the older one that had one, and every message has a
+    close button."""
+
+    MAX_VISIBLE = 2
 
     def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
@@ -157,12 +163,22 @@ class ToastHost(QWidget):
         self.lay = QVBoxLayout(self)
         self.lay.setContentsMargins(0, 0, 0, 0)
         self.messages: list[str] = []
+        self._frames: list[tuple[QFrame, str, bool]] = []  # frame, text, has an Undo button
         self.hide()
 
     def show_message(
         self, text: str, undo: Callable[[], None] | None = None, ms: int = 5000
     ) -> None:
         self.messages.append(text)
+        self._frames = [f for f in self._frames if self._alive(f[0])]
+        if any(t == text and u == (undo is not None) for _f, t, u in self._frames):
+            return  # the same message is already showing
+        if undo is not None:  # an older Undo would now undo the wrong thing
+            for frame, _t, has_undo in list(self._frames):
+                if has_undo:
+                    self._remove(frame)
+        while len(self._frames) >= self.MAX_VISIBLE:
+            self._remove(self._frames[0][0])
         frame = QFrame()
         frame.setObjectName("toast")
         frame.setProperty("card", True)
@@ -170,34 +186,59 @@ class ToastHost(QWidget):
         label = QLabel(text)
         label.setWordWrap(True)
         host = self.parentWidget()
-        label.setMaximumWidth(max(240, min(720, (host.width() if host else 500) - 60)))
+        width = max(240, min(720, (host.width() if host else 500) - 120))
+        label.setFixedWidth(width)
+        label.setMinimumHeight(label.heightForWidth(width))  # never cut a long message off
         row.addWidget(label, 1)
         if undo is not None:
             b = QPushButton(strings.UNDO)
             b.setObjectName("toast-undo")
+            b.setAccessibleName(strings.UNDO)
 
             def do() -> None:
                 undo()
-                frame.deleteLater()
+                self._remove(frame)
 
             b.clicked.connect(do)
             row.addWidget(b)
+        close = QPushButton("×")
+        close.setObjectName("toast-close")
+        close.setFlat(True)
+        close.setAccessibleName(strings.TOAST_CLOSE)
+        close.setToolTip(strings.TOAST_CLOSE)
+        close.clicked.connect(lambda: self._remove(frame))
+        row.addWidget(close)
         self.lay.addWidget(frame)
+        frame.show()  # a widget added to a visible parent is otherwise shown only later
+        self._frames.append((frame, text, undo is not None))
         self.adjustSize()
         self.show()
         self.raise_()
         QTimer.singleShot(ms, lambda: self._expire(frame))
         self.reposition()
 
-    def _expire(self, frame: QFrame) -> None:
-        # the window may have been closed while the message was showing
+    @staticmethod
+    def _alive(frame: QFrame) -> bool:
+        try:
+            return frame.parent() is not None
+        except RuntimeError:  # deleted with its window
+            return False
+
+    def _remove(self, frame: QFrame) -> None:
         with contextlib.suppress(RuntimeError):
+            self._frames = [f for f in self._frames if f[0] is not frame]
+            self.lay.removeWidget(frame)
+            frame.hide()
             frame.deleteLater()
             QTimer.singleShot(0, self._shrink)
 
+    def _expire(self, frame: QFrame) -> None:
+        # the window may have been closed while the message was showing
+        self._remove(frame)
+
     def _shrink(self) -> None:
         with contextlib.suppress(RuntimeError):
-            if self.lay.count() <= 1:
+            if not self._frames:
                 self.hide()
             self.adjustSize()
 
@@ -387,7 +428,8 @@ class MainWindow(QMainWindow):
         self.dock_left.setMinimumWidth(240)
         self.dock_right.setMinimumWidth(260)
         self.resizeDocks([self.dock_left, self.dock_right], [250, 310], Qt.Orientation.Horizontal)
-        self.resizeDocks([self.dock_bottom], [230], Qt.Orientation.Vertical)
+        self.tabs.setMinimumHeight(90)  # without this the panels' own minimum takes ~430 px
+        self.resizeDocks([self.dock_bottom], [170], Qt.Orientation.Vertical)
 
     def _dock(self, title: str, widget: QWidget, area: Qt.DockWidgetArea, name: str) -> QDockWidget:
         dock = QDockWidget(title, self)
@@ -464,6 +506,10 @@ class MainWindow(QMainWindow):
         group.addAction(self.act_expert)
         self.act_guided.setChecked(True)
         self.act_dark = a(strings.A_DARK, self._toggle_dark, checkable=True, name="act-dark")
+        self.act_minimap = a(
+            strings.A_MINIMAP, self._toggle_minimap, checkable=True, name="act-minimap"
+        )
+        self.act_minimap.setChecked(True)
         self.scale_actions: dict[int, QAction] = {}
         sgroup = QActionGroup(self)
         for pct in SCALES:
@@ -540,6 +586,7 @@ class MainWindow(QMainWindow):
         v.addAction(self.act_expert)
         v.addSeparator()
         v.addAction(self.act_dark)
+        v.addAction(self.act_minimap)
         scale_menu = v.addMenu(strings.A_SCALE)
         for act in self.scale_actions.values():
             scale_menu.addAction(act)
@@ -565,6 +612,10 @@ class MainWindow(QMainWindow):
         tb.setMovable(False)
         tb.addAction(self.act_undo)
         tb.addAction(self.act_redo)
+        for act in (self.act_undo, self.act_redo):  # reachable with Tab, not only by shortcut
+            button = tb.widgetForAction(act)
+            if button is not None:
+                button.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         tb.addSeparator()
         self.mode_guided = QToolButton()
         self.mode_guided.setObjectName("mode-guided")
@@ -616,7 +667,17 @@ class MainWindow(QMainWindow):
 
     # ---- state reactions ---------------------------------------------------------------------
     def _on_message(self, text: str, undoable: bool) -> None:
-        self.toasts.show_message(text, self.ctl.undo if undoable else None)
+        revision = self.ctl.history.revision
+
+        def undo_that_change() -> None:
+            # the toast's Undo is for the change it reports; once anything else happened it must
+            # not undo something the user did not mean to undo
+            if self.ctl.history.revision == revision:
+                self.ctl.undo()
+            else:
+                self.toasts.show_message(strings.UNDO_STALE, None)
+
+        self.toasts.show_message(text, undo_that_change if undoable else None)
 
     def _on_state(self) -> None:
         c = self.ctl
@@ -665,7 +726,11 @@ class MainWindow(QMainWindow):
     def _update_hash(self) -> None:
         p = self.ctl.project
         self.status_counts.setText(
-            strings.STATUS_COUNTS.format(len(p.units), len(p.interfaces), model_hash(p)[:8])
+            strings.STATUS_COUNTS.format(
+                strings.units_text(len(p.units)),
+                strings.interfaces_text(len(p.interfaces)),
+                model_hash(p)[:8],
+            )
         )
 
     def _on_changed(self, _delta: Delta) -> None:
@@ -674,6 +739,12 @@ class MainWindow(QMainWindow):
         } else None
         self._update_tab_badges()
         self._update_selection_actions()
+        p = self.ctl.project  # the counts follow every edit at once; only the hash waits
+        self.status_counts.setText(
+            strings.STATUS_COUNTS.format(
+                strings.units_text(len(p.units)), strings.interfaces_text(len(p.interfaces)), "…"
+            )
+        )
 
     def _on_selection(self) -> None:
         s = self.ctl.selection
@@ -699,6 +770,23 @@ class MainWindow(QMainWindow):
         self.act_redundant.setEnabled(can_red and not ro)
         self.delete_btn.setEnabled(bool(s) and not ro)
         self.act_delete.setEnabled(bool(s) and not ro)
+        # a disabled control must say why
+        if ro:
+            why_red = why_del = strings.WHY_READ_ONLY
+        else:
+            why_del = "" if s else strings.WHY_NO_SELECTION
+            if not (s and s.kind == "unit" and s.id in c.project.units):
+                why_red = strings.WHY_SELECT_UNIT
+            elif c.project.units[s.id].side == "redundant":
+                why_red = strings.WHY_IS_REDUNDANT
+            elif f"{s.id}-R" in c.project.units:
+                why_red = strings.WHY_HAS_REDUNDANT.format(f"{s.id}-R")
+            else:
+                why_red = ""
+        self.redundant_btn.setToolTip(why_red or strings.REDUNDANT_TIP)
+        self.act_redundant.setToolTip(why_red or strings.REDUNDANT_TIP)
+        self.delete_btn.setToolTip(why_del or strings.DELETE_TIP)
+        self.act_delete.setToolTip(why_del or strings.DELETE_TIP)
 
     def _on_connect(self) -> None:
         c = self.ctl
@@ -827,6 +915,9 @@ class MainWindow(QMainWindow):
         if action == "changes":
             self._changes_flow(hid)
             return
+        if action == "delete":
+            self._delete_harness_flow(hid)
+            return
         if action == "review":
             dlg = ChangeDialog(
                 self,
@@ -834,7 +925,7 @@ class MainWindow(QMainWindow):
                 by=self._user_name(),
                 blockers=[],
                 ask_comment=False,
-                ok_text=strings.REVIEW,
+                ok_text=strings.REVIEW_CONFIRM,
             )
         elif action == "release":
             blockers = release_blockers(
@@ -846,7 +937,7 @@ class MainWindow(QMainWindow):
                 by=self._user_name(),
                 blockers=[b.message for b in blockers],
                 ask_checker=True,
-                ok_text=strings.RELEASE,
+                ok_text=strings.RELEASE_CONFIRM,
             )
         else:
             dlg = ChangeDialog(
@@ -854,7 +945,7 @@ class MainWindow(QMainWindow):
                 strings.NEW_REV_TITLE.format(hid),
                 by=self._user_name(),
                 blockers=[],
-                ok_text=strings.NEW_REV,
+                ok_text=strings.NEW_REV_CONFIRM,
             )
         if self.run_dialog(dlg) != QDialog.DialogCode.Accepted:
             return
@@ -878,6 +969,22 @@ class MainWindow(QMainWindow):
             plan = plan_new_revision(project, hid, by=by, comment=comment, when=today)
             msg = f"New revision of {hid} started; it can be edited again."
         if self.ctl.apply_change(plan, msg):
+            self.harness_panel.refresh()
+
+    def _delete_harness_flow(self, hid: str) -> None:
+        h = self.ctl.project.harnesses.get(hid)
+        if h is None:
+            return
+        body = strings.DELETE_HARNESS_BODY.format(hid, len(h.wires))
+        dlg = ConfirmDialog(self, strings.DELETE_HARNESS_TITLE.format(hid), body, strings.DELETE)
+        if self.run_dialog(dlg) != QDialog.DialogCode.Accepted:
+            return
+        try:
+            ops = edit.ops_delete_harness(self.ctl.project, hid)
+        except edit.EditError as exc:
+            self._error(str(exc))
+            return
+        if self.ctl.run(f"Delete {hid}", ops, message=strings.HARNESS_DELETED.format(hid)):
             self.harness_panel.refresh()
 
     def _changes_flow(self, hid: str) -> None:
@@ -924,8 +1031,8 @@ class MainWindow(QMainWindow):
             return
         try:
             write_outputs(self.ctl.project, folder, built)
-        except OSError as exc:
-            self.toasts.show_message(f"{exc}", None)
+        except (HarnessError, OSError) as exc:
+            self._error(self._explain(exc, folder))
             return
         self.harness_panel.refresh()
         self.toasts.show_message(
@@ -1077,8 +1184,8 @@ class MainWindow(QMainWindow):
             return
         try:
             self.ctl.new_project(Path(folder), name)
-        except HarnessError as exc:
-            self._error(str(exc))
+        except (HarnessError, OSError) as exc:
+            self._error(self._explain(exc, folder))
             return
         self._last_issues = []
         self.settings.setValue("project/last", folder)
@@ -1093,6 +1200,9 @@ class MainWindow(QMainWindow):
     def open_project(self, folder: Path) -> bool:
         try:
             result = self.ctl.open_path(folder)
+        except OSError as exc:
+            self._error(self._explain(exc, folder))
+            return False
         except ProjectLockedError:
             choice = self.ask_choice(
                 strings.LOCKED_TITLE, strings.LOCKED_BODY, [strings.OPEN_READ_ONLY, strings.CANCEL]
@@ -1128,7 +1238,7 @@ class MainWindow(QMainWindow):
             self.ctl.save()
         except NeedSaveAs:
             return self.save_as_flow()
-        except HarnessError as exc:
+        except (HarnessError, OSError) as exc:
             self._on_save_error(exc)
             return False
         self.toasts.show_message(strings.SAVED, None, 2500)
@@ -1140,15 +1250,24 @@ class MainWindow(QMainWindow):
             return False
         try:
             self.ctl.save_as(Path(folder))
-        except HarnessError as exc:
-            self._error(str(exc))
+        except (HarnessError, OSError) as exc:
+            self._error(self._explain(exc, folder))
             return False
         self.settings.setValue("project/last", folder)
         self.toasts.show_message(strings.SAVED, None, 2500)
         return True
 
-    def _on_save_error(self, exc: HarnessError) -> None:
-        self._error(str(exc))
+    def _on_save_error(self, exc: Exception) -> None:
+        self._error(self._explain(exc, None))
+
+    @staticmethod
+    def _explain(exc: Exception, folder: str | Path | None) -> str:
+        """An error as a sentence a person can act on (never a Python message)."""
+        if isinstance(exc, HarnessError):
+            return str(exc)
+        where = f" in {folder}" if folder else ""
+        reason = getattr(exc, "strerror", None) or "the folder cannot be used"
+        return strings.FILE_ERROR.format(where=where, reason=reason)
 
     def _error(self, text: str) -> None:
         self.toasts.show_message(text, None, 10000)
@@ -1186,6 +1305,9 @@ class MainWindow(QMainWindow):
         scale = int(str(self.settings.value("ui/scale", 100)))
         mode = str(self.settings.value("ui/mode", "guided"))
         self.act_dark.setChecked(dark)
+        wanted = bool(self.settings.value("ui/minimap", True, bool))
+        self.act_minimap.setChecked(wanted)
+        self.view.set_minimap_wanted(wanted)
         if scale in self.scale_actions:
             self.scale_actions[scale].setChecked(True)
         app = QApplication.instance()
@@ -1200,6 +1322,10 @@ class MainWindow(QMainWindow):
 
     def _save_settings(self) -> None:
         self.settings.setValue("ui/geometry", self.saveGeometry())
+
+    def _toggle_minimap(self) -> None:
+        self.view.set_minimap_wanted(self.act_minimap.isChecked())
+        self.settings.setValue("ui/minimap", self.act_minimap.isChecked())
 
     def _toggle_dark(self) -> None:
         app = QApplication.instance()
@@ -1232,10 +1358,10 @@ class MainWindow(QMainWindow):
         self.resizeDocks([self.dock_left], [self.theme.px(250)], Qt.Orientation.Horizontal)
         # the bottom panel never takes more than 45% of the window, so the diagram keeps room
         # at large UI scales (its content scrolls; the View menu can still hide it)
-        self.dock_bottom.setMaximumHeight(max(self.theme.px(160), int(self.height() * 0.45)))
+        self.dock_bottom.setMaximumHeight(max(self.theme.px(160), int(self.height() * 0.40)))
         self.resizeDocks(
             [self.dock_bottom],
-            [max(self.theme.px(120), int(self.height() * 0.32))],
+            [max(self.theme.px(110), int(self.height() * 0.22))],
             Qt.Orientation.Vertical,
         )
 
