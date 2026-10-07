@@ -25,6 +25,7 @@ Short recipes. Each says what you do, what you should see, and what to do if you
 ## 1. Install
 
 - `sudo apt install ./harness-tool_<version>_amd64.deb`, or unpack the `.tar.gz` and run `./harness-tool/install.sh`.
+- After `install.sh`, if it says `~/.local/bin` is not on your PATH, the commands `harness-tool` and `harness` are not found yet. Start the app from the application menu or `~/.local/bin/harness-tool`, and fix it for good with `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && . ~/.bashrc` (or log out and in).
 - Check: `harness --version` prints the version.
 - No network is used, so this works on an air-gapped machine once you have the package.
 

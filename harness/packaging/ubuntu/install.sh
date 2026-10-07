@@ -36,4 +36,12 @@ ln -sf "$prefix/cli/harness" "$bindir/harness"
 sed "s|@EXEC@|$prefix/harness-tool|; s|@ICON@|harness-tool|" "$here/harness-tool.desktop.in" > "$appdir/harness-tool.desktop"
 cp "$here/harness-tool.svg" "$icondir/harness-tool.svg"
 echo "Installed to $prefix. Start it from the application menu or run: harness-tool"
-case ":$PATH:" in *":$bindir:"*) ;; *) echo "Note: $bindir is not on your PATH." ;; esac
+case ":$PATH:" in
+  *":$bindir:"*) ;;
+  *)
+    echo "Note: $bindir is not on your PATH, so the commands harness-tool and harness are not found yet."
+    echo "  Run now:     $bindir/harness-tool"
+    echo "  Fix for good: echo 'export PATH=\"$bindir:\$PATH\"' >> ~/.bashrc && . ~/.bashrc"
+    echo "  (or log out and in again; Ubuntu adds ~/.local/bin at login when it exists)"
+    ;;
+esac
