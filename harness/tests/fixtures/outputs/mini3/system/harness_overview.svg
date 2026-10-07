@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297" font-family="Courier New, Courier, monospace">
+<title>Harness overview: mini3 (example data)</title>
+<desc>harness-tool 0.0.1 model b66767a865f9</desc>
+<rect x="0" y="0" width="420" height="297" fill="#ffffff"/>
+<rect x="2" y="2" width="416" height="293" fill="none" stroke="#000000" stroke-width="0.5"/>
+<text x="8" y="10" font-size="4.2" font-weight="bold" text-anchor="start" fill="#000000">Harness overview: mini3 (example data)</text>
+<text x="8" y="16" font-size="2.6" text-anchor="start" fill="#555555">harness-tool 0.0.1 model b66767a865f9</text>
+<text x="10" y="20" font-size="2.8" text-anchor="start" fill="#555555">panel-A</text>
+<text x="80" y="20" font-size="2.8" text-anchor="start" fill="#555555">panel-B</text>
+<line x1="54" y1="40.5" x2="80" y2="23.5" stroke="#08519c" stroke-width="0.3"/>
+<line x1="54" y1="23.5" x2="80" y2="24.786" stroke="#08519c" stroke-width="0.3"/>
+<rect x="10" y="22" width="44" height="12" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<text x="11.5" y="26.6" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">OBC</text>
+<text x="11.5" y="31" font-size="2.4" text-anchor="start" fill="#555555">On-board computer</text>
+<rect x="10" y="39" width="44" height="12" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<text x="11.5" y="43.6" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">PCDU</text>
+<text x="11.5" y="48" font-size="2.4" text-anchor="start" fill="#555555">Power control and distribut~</text>
+<rect x="80" y="22" width="44" height="12" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
+<text x="81.5" y="26.6" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">RW1</text>
+<text x="81.5" y="31" font-size="2.4" text-anchor="start" fill="#555555">Reaction wheel 1</text>
+<line x1="330" y1="9" x2="342" y2="9" stroke="#08519c" stroke-width="0.6"/>
+<text x="345" y="10" font-size="2.6" text-anchor="start" fill="#000000">nominal harness: solid</text>
+<line x1="330" y1="14" x2="342" y2="14" stroke="#8c4a00" stroke-width="0.6" stroke-dasharray="2.5 1.5"/>
+<text x="345" y="15" font-size="2.6" text-anchor="start" fill="#000000">redundant harness: dashed</text>
+</svg>

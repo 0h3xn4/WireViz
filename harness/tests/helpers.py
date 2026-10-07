@@ -18,3 +18,19 @@ def edit_json(path: Path, fn: Any) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     result = fn(data)
     path.write_text(json.dumps(data if result is None else result, indent=2), encoding="utf-8")
+
+
+def output_digests(files: dict[str, bytes]) -> dict[str, str]:
+    """Stable digest per output file. XLSX is hashed by its cell contents because compressed
+    bytes can differ between zlib versions; everything else is hashed as bytes."""
+    import hashlib
+    import json
+
+    from harness_tool.core.outputs.verify import _xlsx_sheets
+
+    out = {}
+    for rel, data in sorted(files.items()):
+        if rel.endswith(".xlsx"):
+            data = json.dumps(_xlsx_sheets(data), sort_keys=True).encode()
+        out[rel] = hashlib.sha256(data).hexdigest()
+    return out

@@ -43,7 +43,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - All rules listed in spec, each with plain-language what/why/fix and positive and negative tests; waivers with justification; background and on-demand runs; problems panel with click-to-select and one-click fixes where feasible.
 **Acceptance:** 100% rules have both tests; waivers persist and show in report; incremental DRC keeps edits < 100 ms on the stress project.
 
-## M5 Outputs
+## M5 Outputs (done; geometric branch drawing and dates/authors are open, see demos/M5.md)
 - Harness drawing (SVG + PDF, A4/A3 multi-sheet, title block), wire list, pinouts, BOM, mass/length, continuity and isolation tests, labels, DRC report; system diagrams and matrices; XLSX/CSV; WireViz YAML and documented JSON export.
 - Every artefact stamped with generator version and model hash; stale detection in GUI and CLI.
 - Verifier v2 covers all artefacts (BOM vs drawing, pinout vs wire list).

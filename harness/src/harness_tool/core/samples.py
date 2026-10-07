@@ -206,3 +206,56 @@ def stress_project(
         step = (step % 11) + 1
     p.config["segmentation"] = evolve(p.config["segmentation"], values={"mode": "per_zone_pair"})
     return p
+
+
+def sat15_full() -> Project:
+    """`sat15` generated, with EXAMPLE engineering values filled in so every output has content
+    (gauges, lengths, masses). The numbers are invented for demonstration and are not engineering
+    data; the project name says so."""
+    from .commands import Put, apply_ops
+    from .generate.engine import generate_project
+    from .model import Segment
+    from .model.config import ConfigFile
+
+    p = sat15()
+    p.meta = evolve(p.meta, name="sat15 full (EXAMPLE numbers, not engineering data)")
+
+    def cfg(name: str, **values: object) -> None:
+        old = p.config[name]
+        p.config[name] = ConfigFile(
+            name=name, placeholder=old.placeholder, values={**old.values, **values}
+        )
+
+    cfg("derating", ampacity_a_by_awg={"26": 1.0, "24": 2.0, "22": 3.0, "20": 5.0, "18": 7.0, "16": 10.0},
+        bundle_derating=0.6, temperature_derating=0.9, contact_current_factor=0.5, max_voltage_drop_v=1.0)  # fmt: skip
+    cfg("generation", conductor_resistivity_ohm_m=1.7e-8, service_loop_m=0.1, shield_end_a="backshell_360",
+        shield_end_b="floating", mass_margin_fraction=0.1, test_continuity_max_ohm=1.0,
+        test_isolation_min_mohm=100.0, test_isolation_voltage_v=500.0)  # fmt: skip
+    for iface in list(p.interfaces.values()):
+        category = p.interface_types[iface.type_id].category
+        if category in ("power", "thermal"):
+            apply_ops(
+                p,
+                [
+                    Put(
+                        "interfaces",
+                        evolve(iface, max_current_a=2.0 if category == "power" else 1.0),
+                    )
+                ],
+            )
+    for part in list(p.parts.values()):
+        if part.category == "connector":
+            apply_ops(
+                p, [Put("parts", evolve(part, mass_g=12.0, ratings={"contact_current_a": 5.0}))]
+            )
+        elif part.category == "wire":
+            apply_ops(p, [Put("parts", evolve(part, mass_per_m_g=4.0))])
+    generate_project(p)
+    for h in list(p.harnesses.values()):
+        segs = [
+            Segment(id=g.id, from_node=g.from_node, to_node=g.to_node, length_m=1.0 + 0.25 * k)
+            for k, g in enumerate(h.segments)
+        ]
+        apply_ops(p, [Put("harnesses", evolve(h, segments=segs))])
+    generate_project(p)
+    return p

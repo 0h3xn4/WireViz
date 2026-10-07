@@ -31,10 +31,20 @@ def build_parser() -> argparse.ArgumentParser:
         ("migrate", "upgrade an old-format project in place (originals are kept)"),
         ("generate", "generate harnesses from the interfaces and save the project"),
         ("drc", "run the design rule check and print the report (waived findings included)"),
+        (
+            "export",
+            "write all outputs (drawings, tables, exports) to <project>/outputs and verify them",
+        ),
         ("verify", "independently verify the generated harnesses against the interfaces"),
     ):
         p = sub.add_parser(name, help=text, description=text)
         p.add_argument("project", type=Path, help="project folder")
+        if name == "verify":
+            p.add_argument(
+                "--outputs",
+                action="store_true",
+                help="also check <project>/outputs against the design",
+            )
     return parser
 
 
@@ -98,6 +108,30 @@ def _generate(path: Path) -> int:
     return 0
 
 
+def _export(path: Path) -> int:
+    from harness_tool.core.outputs.build import DEFAULT_FOLDER, build_outputs, write_outputs
+    from harness_tool.core.outputs.verify import verify_outputs
+
+    project = load_project(path).project
+    if not project.harnesses:
+        print(
+            "error: there are no harnesses to export; run `harness generate` first.",
+            file=sys.stderr,
+        )
+        return 1
+    result = build_outputs(project)
+    report = verify_outputs(project, result.files)
+    for issue in report.issues:
+        print(f"{issue.severity}: [{issue.code}] {issue.message}")
+    if not report.ok:
+        print("Not written: the outputs failed their independent check.", file=sys.stderr)
+        return 1
+    write_outputs(project, path / DEFAULT_FOLDER, result)
+    target = path / DEFAULT_FOLDER
+    print(f"{len(result.files)} files written to {target} (model {result.stamp.short}).")
+    return 0
+
+
 def _drc(path: Path) -> int:
     from harness_tool.core.checks import find
     from harness_tool.core.drc import run
@@ -112,10 +146,22 @@ def _drc(path: Path) -> int:
     return 1 if any(f.severity == "error" and f.waiver is None for f in findings) else 0
 
 
-def _verify(path: Path) -> int:
+def _verify(path: Path, outputs: bool = False) -> int:
     from harness_tool.core.verify import verify_project
 
-    report = verify_project(load_project(path).project)
+    project = load_project(path).project
+    report = verify_project(project)
+    if outputs:
+        from harness_tool.core.outputs.build import DEFAULT_FOLDER
+        from harness_tool.core.outputs.verify import read_folder, verify_outputs
+
+        folder = path / DEFAULT_FOLDER
+        if not folder.is_dir():
+            print("error: no outputs folder; run `harness export` first.", file=sys.stderr)
+            return 1
+        out = verify_outputs(project, read_folder(folder))
+        report.issues += out.issues
+        report.stale = report.stale or out.stale
     for issue in report.issues:
         print(f"{issue.severity}: [{issue.code}] {issue.message}")
     print(report.summary())
@@ -141,10 +187,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if args.command == "generate":
             return _generate(args.project)
+        if args.command == "export":
+            return _export(args.project)
         if args.command == "drc":
             return _drc(args.project)
         if args.command == "verify":
-            return _verify(args.project)
+            return _verify(args.project, args.outputs)
         return _validate(args.project, merge_check=args.command == "check")
     except HarnessError as exc:
         print(f"error: {exc}", file=sys.stderr)

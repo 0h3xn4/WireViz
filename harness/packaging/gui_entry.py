@@ -33,9 +33,26 @@ def selftest() -> int:
         and len(loaded.project.interfaces) == 3
         and not loaded.has_errors
     )
+    ok = ok and _generate_and_export(ctl, tmp)
     ctl.release()
     print("selftest ok" if ok else "selftest FAILED")
     return 0 if ok else 1
+
+
+def _generate_and_export(ctl: object, tmp: Path) -> bool:
+    """Generate harnesses, build every output type, verify them independently and write them."""
+    from harness_tool.core.commands import apply_ops
+    from harness_tool.core.generate.engine import plan_generation
+    from harness_tool.core.outputs.build import build_outputs, write_outputs
+    from harness_tool.core.outputs.verify import read_folder, verify_outputs
+
+    project = ctl.project  # type: ignore[attr-defined]
+    apply_ops(project, plan_generation(project).ops)
+    built = build_outputs(project)
+    if not verify_outputs(project, built.files).ok:
+        return False
+    write_outputs(project, tmp / "outputs", built)
+    return verify_outputs(project, read_folder(tmp / "outputs")).ok
 
 
 if __name__ == "__main__":

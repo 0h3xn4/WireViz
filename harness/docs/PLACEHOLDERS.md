@@ -36,3 +36,10 @@ Library parts need `mass_g` and `mass_per_m_g` for a complete mass; otherwise th
 | `segregation.json` | `category_pairs_to_separate`, e.g. `[["power", "analog"]]` | category mixed |
 | `emc.json` | `conflicting_class_pairs`, e.g. `[["A", "B"]]` (format chosen by the tool; the owner may change it) | EMC mixed |
 Part ratings: `ratings.contact_current_a` on connector parts (key name set by `derating.contact_rating_key`).
+
+## Additions in M5
+| File (`config/`) | Key | Effect while `null` |
+| --- | --- | --- |
+| `generation.json` | `test_continuity_max_ohm`, `test_isolation_min_mohm`, `test_isolation_voltage_v` | test tables show "TBD (placeholder)" |
+| `titleblock.json` | `fields` (order and choice of title block fields; D-15) | default field list; date, author, checker, approver show "-" until M6 |
+| library | `mass_g`, `mass_per_m_g` on parts | mass tables say which data is missing |

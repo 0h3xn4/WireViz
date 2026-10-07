@@ -20,6 +20,7 @@ from harness_tool.core.io.fs import ProjectLock
 from harness_tool.core.io.loader import LoadResult, disk_fingerprint, load_project
 from harness_tool.core.io.saver import save_project
 from harness_tool.core.model import Project
+from harness_tool.core.outputs.build import DEFAULT_FOLDER, outputs_status
 from harness_tool.core.recovery import (
     clear_journal,
     has_journal,
@@ -532,6 +533,16 @@ class EditorController(QObject):
 
     def generation_status(self) -> str:
         return generation_status(self.project)
+
+    def outputs_folder(self) -> Path | None:
+        return None if self.root is None else self.root / DEFAULT_FOLDER
+
+    def outputs_state(self) -> str:
+        """Quick stale check (model hashes only); the CLI and verifier check file contents."""
+        folder = self.outputs_folder()
+        if folder is None:
+            return "unsaved"
+        return outputs_status(self.project, folder).state
 
     def apply_generation(self, plan: GenerationPlan) -> bool:
         if plan.empty:

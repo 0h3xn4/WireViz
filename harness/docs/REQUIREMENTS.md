@@ -44,3 +44,9 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-DRC-02 | Findings state what, why and how to fix; warnings are waivable with justification, errors are not; waivers persist and appear in the report. | SPEC Part 3 (DRC) | `tests/test_drc.py` |
 | REQ-DRC-03 | A check that cannot run because of placeholders says so. | SPEC placeholders rule | `tests/test_drc.py` |
 | REQ-DRC-04 | Design rules run in the background and never block edits; Show, Fix and Waive work from the Problems panel. | SPEC Part 3 (DRC, performance) | `tests/test_gui_drc.py` |
+| REQ-OUT-01 | Every output type is produced from the model, deterministically (equal model, equal bytes), and carries the generator version and model hash. | SPEC Part 3 (outputs) | `tests/test_outputs.py` |
+| REQ-OUT-02 | Golden-file tests for every output type on three reference projects. | PLAN M5 | `tests/test_outputs.py`, `tests/fixtures/outputs/` |
+| REQ-OUT-03 | Drawings print in greyscale; system diagrams use dark colours plus dash patterns. | SPEC Part 3 (accessibility, print) | `tests/test_outputs.py` |
+| REQ-OUT-04 | Stale and modified outputs are detected in the CLI and the editor. | PLAN M5 | `tests/test_outputs.py`, `tests/test_gui_outputs.py` |
+| REQ-VER-02 | Verifier v2 checks every artefact against the design; each check has a mutation test. | PLAN M5 | `tests/test_outputs.py` |
+| REQ-OUT-05 | Outputs never invent numbers: undecided gauges, unknown lengths, masses and test limits are written as such. | SPEC placeholders rule | `tests/test_outputs.py` |

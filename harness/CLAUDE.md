@@ -3,16 +3,17 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0 to M4 done (`docs/demos/`). Next is M5 (outputs). Generation runs on placeholders until the owner answers D-10 (harness boundary rule) and D-11 (derating numbers); results must say so.
+M0 to M5 done (`docs/demos/`). Next is M6 (change control: revisions, baselines, diff, release). Generation runs on placeholders until the owner answers D-10 (harness boundary rule) and D-11 (derating numbers); results must say so.
 
 ## Commands (run from `harness/`)
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
 - Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core, enforced)
 - Lint/type: `ruff format . && ruff check . && mypy`
-- CLI: `harness --version | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR | drc DIR`; GUI: `harness-gui`
+- CLI: `harness --version | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR | drc DIR | export DIR | verify DIR --outputs`; GUI: `harness-gui`
 - GUI tests: `QT_QPA_PLATFORM=offscreen pytest tests/test_gui_journeys.py` (conftest sets it); timings: `python -m tools.bench_gui`; screenshots of the real editor: `python -m tools.gui_screenshots` (docs/ux/qt)
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmarks: `python -m tools.bench_stress`, `python -m tools.bench_generate`
+- Output goldens: `PYTHONPATH=. python -m tools.gen_output_goldens` (on purpose; review the diff)
 - Package: `python -m tools.build_installer`, then `dist/harness-tool/harness-tool --selftest`
 - SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`
 - Offline wheelhouse: `python -m tools.vendor`
@@ -52,3 +53,10 @@ M0 to M4 done (`docs/demos/`). Next is M5 (outputs). Generation runs on placehol
 - `checks.find` stays the fast synchronous logical layer; the controller merges it with background DRC results (`DrcWorker`, 1.2 s after the last edit; waivers applied at display time).
 - A background Python thread slows the UI (GIL): do not shorten the DRC delay or add synchronous DRC calls to edit paths.
 - Regenerate the sat15 DRC report golden on purpose: `python -m harness_tool.cli.main drc tests/fixtures/projects/sat15 > tests/fixtures/drc/sat15.md`.
+
+## Outputs layout (M5)
+`core/outputs/` (`canvas` SVG/PDF writers, `drawing`, `system` diagrams, `tables`, `exports` YAML/JSON/XLSX, `stamp`, `build` build/write/status, `verify` independent verifier). Format and limits: `docs/OUTPUTS.md`.
+- `build_outputs` is pure and deterministic: no dates, sorted rows, uncompressed PDF, XLSX re-zipped with fixed timestamps. Keep it that way; goldens depend on it.
+- `core` must not import modules that import network code at import time (`xml.sax.saxutils` does; use `canvas.escape`). The offline test catches this.
+- `core/outputs/verify.py` must stay independent of `tables.py`/`drawing.py`: derive expectations from the project.
+- Adding an output file: build it in `build_outputs`, add its check to `verify.py` with a mutation test, regenerate goldens, document it in `docs/OUTPUTS.md`.

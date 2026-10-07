@@ -1,0 +1,1509 @@
+{
+ "box_connectors": [
+  {
+   "carries": [
+    "rs422",
+    "can",
+    "spacewire",
+    "discrete"
+   ],
+   "gender": "female",
+   "id": "OBC-J01",
+   "keying": null,
+   "mates_with": null,
+   "name": "J01",
+   "notes": "",
+   "part_id": "EX-DSUB-9-F",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "TX+",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "TX-",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "RX+",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "4",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "RX-",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "5",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "OBC"
+  },
+  {
+   "carries": [
+    "power_primary"
+   ],
+   "gender": "female",
+   "id": "OBC-J02",
+   "keying": null,
+   "mates_with": null,
+   "name": "J02",
+   "notes": "",
+   "part_id": "EX-DSUB-9-F",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "OBC"
+  },
+  {
+   "carries": [
+    "rs422",
+    "can"
+   ],
+   "gender": "female",
+   "id": "OBC-J03",
+   "keying": null,
+   "mates_with": null,
+   "name": "J03",
+   "notes": "",
+   "part_id": "EX-DSUB-9-F",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "OBC"
+  },
+  {
+   "carries": [
+    "power_primary"
+   ],
+   "gender": "female",
+   "id": "PCDU-J01",
+   "keying": null,
+   "mates_with": null,
+   "name": "J01",
+   "notes": "",
+   "part_id": "EX-DSUB-9-F",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": "IF-PWR-RW1",
+     "locked": false,
+     "signal": "PWR",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": "IF-PWR-RW1",
+     "locked": false,
+     "signal": "RTN",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "PCDU"
+  },
+  {
+   "carries": [
+    "power_primary"
+   ],
+   "gender": "female",
+   "id": "PCDU-J02",
+   "keying": null,
+   "mates_with": null,
+   "name": "J02",
+   "notes": "",
+   "part_id": "EX-DSUB-9-F",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "PCDU"
+  },
+  {
+   "carries": [
+    "discrete",
+    "rs422"
+   ],
+   "gender": "female",
+   "id": "PCDU-J03",
+   "keying": null,
+   "mates_with": null,
+   "name": "J03",
+   "notes": "",
+   "part_id": "EX-DSUB-9-F",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "PCDU"
+  },
+  {
+   "carries": [
+    "power_primary"
+   ],
+   "gender": "male",
+   "id": "RW1-J01",
+   "keying": null,
+   "mates_with": null,
+   "name": "J01",
+   "notes": "",
+   "part_id": "EX-DSUB-9-M",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": "IF-PWR-RW1",
+     "locked": false,
+     "signal": "PWR",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": "IF-PWR-RW1",
+     "locked": false,
+     "signal": "RTN",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "RW1"
+  },
+  {
+   "carries": [
+    "rs422",
+    "can"
+   ],
+   "gender": "male",
+   "id": "RW1-J02",
+   "keying": null,
+   "mates_with": null,
+   "name": "J02",
+   "notes": "",
+   "part_id": "EX-DSUB-9-M",
+   "pins": [
+    {
+     "contact_size": null,
+     "id": "1",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "TX+",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "2",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "TX-",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "3",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "RX+",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "4",
+     "interface_id": "IF-TM-RW1",
+     "locked": false,
+     "signal": "RX-",
+     "termination": "unspecified"
+    },
+    {
+     "contact_size": null,
+     "id": "5",
+     "interface_id": null,
+     "locked": false,
+     "signal": null,
+     "termination": "unspecified"
+    }
+   ],
+   "role": "box",
+   "unit_id": "RW1"
+  }
+ ],
+ "format": "harness-tool-export",
+ "format_version": 1,
+ "generator": {
+  "name": "harness-tool",
+  "version": "0.0.1"
+ },
+ "harnesses": [
+  {
+   "branch_points": [],
+   "connectors": [
+    {
+     "carries": [],
+     "gender": "male",
+     "id": "W001-P1",
+     "keying": null,
+     "mates_with": "PCDU-J01",
+     "name": "P1",
+     "notes": "",
+     "part_id": "EX-DSUB-9-M",
+     "pins": [
+      {
+       "contact_size": null,
+       "id": "1",
+       "interface_id": null,
+       "locked": false,
+       "signal": "PWR",
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "2",
+       "interface_id": null,
+       "locked": false,
+       "signal": "RTN",
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "3",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      }
+     ],
+     "role": "cable",
+     "unit_id": null
+    },
+    {
+     "carries": [],
+     "gender": "female",
+     "id": "W001-P2",
+     "keying": null,
+     "mates_with": "RW1-J01",
+     "name": "P2",
+     "notes": "",
+     "part_id": "EX-DSUB-9-F",
+     "pins": [
+      {
+       "contact_size": null,
+       "id": "1",
+       "interface_id": null,
+       "locked": false,
+       "signal": "PWR",
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "2",
+       "interface_id": null,
+       "locked": false,
+       "signal": "RTN",
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "3",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      }
+     ],
+     "role": "cable",
+     "unit_id": null
+    }
+   ],
+   "generated": false,
+   "group_key": "",
+   "id": "W001",
+   "interfaces": [],
+   "name": "PCDU to RW1 power",
+   "notes": "",
+   "revision": "A",
+   "segments": [],
+   "shields": [],
+   "splices": [],
+   "status": "draft",
+   "wires": [
+    {
+     "colour": null,
+     "from_connector": "W001-P1",
+     "from_pin": "1",
+     "gauge_awg": null,
+     "id": "W001-001",
+     "interface_id": "IF-PWR-RW1",
+     "length_m": null,
+     "locked": false,
+     "part_id": null,
+     "signal": "PWR",
+     "to_connector": "W001-P2",
+     "to_pin": "1"
+    },
+    {
+     "colour": null,
+     "from_connector": "W001-P1",
+     "from_pin": "2",
+     "gauge_awg": null,
+     "id": "W001-002",
+     "interface_id": "IF-PWR-RW1",
+     "length_m": null,
+     "locked": false,
+     "part_id": null,
+     "signal": "RTN",
+     "to_connector": "W001-P2",
+     "to_pin": "2"
+    }
+   ]
+  },
+  {
+   "branch_points": [],
+   "connectors": [
+    {
+     "carries": [],
+     "gender": "male",
+     "id": "W002-P1",
+     "keying": null,
+     "mates_with": "OBC-J01",
+     "name": "P1",
+     "notes": "",
+     "part_id": "EX-DSUB-9-M",
+     "pins": [
+      {
+       "contact_size": null,
+       "id": "1",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "2",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "3",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "4",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "5",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      }
+     ],
+     "role": "cable",
+     "unit_id": null
+    },
+    {
+     "carries": [],
+     "gender": "female",
+     "id": "W002-P2",
+     "keying": null,
+     "mates_with": "RW1-J02",
+     "name": "P2",
+     "notes": "",
+     "part_id": "EX-DSUB-9-F",
+     "pins": [
+      {
+       "contact_size": null,
+       "id": "1",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "2",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "3",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "4",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      },
+      {
+       "contact_size": null,
+       "id": "5",
+       "interface_id": null,
+       "locked": false,
+       "signal": null,
+       "termination": "unspecified"
+      }
+     ],
+     "role": "cable",
+     "unit_id": null
+    }
+   ],
+   "generated": true,
+   "group_key": "cp|nominal|OBC-J01|RW1-J02",
+   "id": "W002",
+   "interfaces": [
+    "IF-TM-RW1"
+   ],
+   "name": "OBC-J01 to RW1-J02",
+   "notes": "",
+   "revision": "A",
+   "segments": [
+    {
+     "from_node": "W002-P1",
+     "id": "W002-L1",
+     "length_m": null,
+     "to_node": "W002-P2"
+    }
+   ],
+   "shields": [
+    {
+     "end_a": "floating",
+     "end_b": "floating",
+     "id": "W002-S1",
+     "kind": "shielded_pair",
+     "wire_ids": [
+      "W002-001",
+      "W002-003"
+     ]
+    },
+    {
+     "end_a": "floating",
+     "end_b": "floating",
+     "id": "W002-S2",
+     "kind": "shielded_pair",
+     "wire_ids": [
+      "W002-002",
+      "W002-004"
+     ]
+    }
+   ],
+   "splices": [],
+   "status": "draft",
+   "wires": [
+    {
+     "colour": null,
+     "from_connector": "W002-P1",
+     "from_pin": "1",
+     "gauge_awg": null,
+     "id": "W002-001",
+     "interface_id": "IF-TM-RW1",
+     "length_m": null,
+     "locked": false,
+     "part_id": "EX-WIRE-TWISTED-SHIELDED",
+     "signal": "TX+/RX+",
+     "to_connector": "W002-P2",
+     "to_pin": "3"
+    },
+    {
+     "colour": null,
+     "from_connector": "W002-P2",
+     "from_pin": "1",
+     "gauge_awg": null,
+     "id": "W002-002",
+     "interface_id": "IF-TM-RW1",
+     "length_m": null,
+     "locked": false,
+     "part_id": "EX-WIRE-TWISTED-SHIELDED",
+     "signal": "TX+/RX+",
+     "to_connector": "W002-P1",
+     "to_pin": "3"
+    },
+    {
+     "colour": null,
+     "from_connector": "W002-P1",
+     "from_pin": "2",
+     "gauge_awg": null,
+     "id": "W002-003",
+     "interface_id": "IF-TM-RW1",
+     "length_m": null,
+     "locked": false,
+     "part_id": "EX-WIRE-TWISTED-SHIELDED",
+     "signal": "TX-/RX-",
+     "to_connector": "W002-P2",
+     "to_pin": "4"
+    },
+    {
+     "colour": null,
+     "from_connector": "W002-P2",
+     "from_pin": "2",
+     "gauge_awg": null,
+     "id": "W002-004",
+     "interface_id": "IF-TM-RW1",
+     "length_m": null,
+     "locked": false,
+     "part_id": "EX-WIRE-TWISTED-SHIELDED",
+     "signal": "TX-/RX-",
+     "to_connector": "W002-P1",
+     "to_pin": "4"
+    }
+   ]
+  }
+ ],
+ "interface_types": [
+  {
+   "category": "analog",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "analog",
+   "impedance_ohm": null,
+   "name": "Analog signal",
+   "notes": "",
+   "shielding": "overall",
+   "signals": [
+    {
+     "direction": "out",
+     "name": "SIG+",
+     "pair": "SIG"
+    },
+    {
+     "direction": "out",
+     "name": "SIG-",
+     "pair": "SIG"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "can",
+   "impedance_ohm": null,
+   "name": "CAN",
+   "notes": "",
+   "shielding": "overall",
+   "signals": [
+    {
+     "direction": "bidir",
+     "name": "CANH",
+     "pair": "BUS"
+    },
+    {
+     "direction": "bidir",
+     "name": "CANL",
+     "pair": "BUS"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "discrete",
+   "construction": "single",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "discrete",
+   "impedance_ohm": null,
+   "name": "Discrete / bilevel",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "out",
+     "name": "SIG",
+     "pair": null
+    },
+    {
+     "direction": "passive",
+     "name": "RTN",
+     "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "ground",
+   "construction": "single",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "ground",
+   "impedance_ohm": null,
+   "name": "Ground / chassis",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "passive",
+     "name": "GND",
+     "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "power",
+   "construction": "twisted_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "heater",
+   "impedance_ohm": null,
+   "name": "Heater",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "passive",
+     "name": "HTR+",
+     "pair": "H"
+    },
+    {
+     "direction": "passive",
+     "name": "HTR-",
+     "pair": "H"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "single",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "i2c",
+   "impedance_ohm": null,
+   "name": "I2C",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "bidir",
+     "name": "SDA",
+     "pair": null
+    },
+    {
+     "direction": "out",
+     "name": "SCL",
+     "pair": null
+    },
+    {
+     "direction": "passive",
+     "name": "GND",
+     "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "lvds",
+   "impedance_ohm": null,
+   "name": "LVDS",
+   "notes": "",
+   "shielding": "per_pair",
+   "signals": [
+    {
+     "direction": "out",
+     "name": "D+",
+     "pair": "D"
+    },
+    {
+     "direction": "out",
+     "name": "D-",
+     "pair": "D"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "mil1553b",
+   "impedance_ohm": null,
+   "name": "MIL-STD-1553B",
+   "notes": "",
+   "shielding": "overall",
+   "signals": [
+    {
+     "direction": "bidir",
+     "name": "BUS+",
+     "pair": "BUS"
+    },
+    {
+     "direction": "bidir",
+     "name": "BUS-",
+     "pair": "BUS"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "power",
+   "construction": "twisted_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "power_primary",
+   "impedance_ohm": null,
+   "name": "Primary power",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "passive",
+     "name": "PWR",
+     "pair": null
+    },
+    {
+     "direction": "passive",
+     "name": "RTN",
+     "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "power",
+   "construction": "twisted_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "power_secondary",
+   "impedance_ohm": null,
+   "name": "Secondary power",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "passive",
+     "name": "PWR",
+     "pair": null
+    },
+    {
+     "direction": "passive",
+     "name": "RTN",
+     "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "pyro",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "pyro",
+   "impedance_ohm": null,
+   "name": "Pyro initiator",
+   "notes": "",
+   "shielding": "overall",
+   "signals": [
+    {
+     "direction": "out",
+     "name": "FIRE+",
+     "pair": "FIRE"
+    },
+    {
+     "direction": "out",
+     "name": "FIRE-",
+     "pair": "FIRE"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "rf",
+   "construction": "coax",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "rf_coax",
+   "impedance_ohm": null,
+   "name": "RF coax",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "bidir",
+     "name": "RF",
+     "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "rs422",
+   "impedance_ohm": null,
+   "name": "RS-422",
+   "notes": "",
+   "shielding": "per_pair",
+   "signals": [
+    {
+     "direction": "out",
+     "name": "TX+",
+     "pair": "TX"
+    },
+    {
+     "direction": "out",
+     "name": "TX-",
+     "pair": "TX"
+    },
+    {
+     "direction": "in",
+     "name": "RX+",
+     "pair": "RX"
+    },
+    {
+     "direction": "in",
+     "name": "RX-",
+     "pair": "RX"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "rs485",
+   "impedance_ohm": null,
+   "name": "RS-485",
+   "notes": "",
+   "shielding": "overall",
+   "signals": [
+    {
+     "direction": "bidir",
+     "name": "A",
+     "pair": "BUS"
+    },
+    {
+     "direction": "bidir",
+     "name": "B",
+     "pair": "BUS"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "spacewire",
+   "impedance_ohm": null,
+   "name": "SpaceWire",
+   "notes": "",
+   "shielding": "per_pair",
+   "signals": [
+    {
+     "direction": "in",
+     "name": "DIN+",
+     "pair": "DIN"
+    },
+    {
+     "direction": "in",
+     "name": "DIN-",
+     "pair": "DIN"
+    },
+    {
+     "direction": "in",
+     "name": "SIN+",
+     "pair": "SIN"
+    },
+    {
+     "direction": "in",
+     "name": "SIN-",
+     "pair": "SIN"
+    },
+    {
+     "direction": "out",
+     "name": "DOUT+",
+     "pair": "DOUT"
+    },
+    {
+     "direction": "out",
+     "name": "DOUT-",
+     "pair": "DOUT"
+    },
+    {
+     "direction": "out",
+     "name": "SOUT+",
+     "pair": "SOUT"
+    },
+    {
+     "direction": "out",
+     "name": "SOUT-",
+     "pair": "SOUT"
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "thermal",
+   "construction": "twisted_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "thermistor",
+   "impedance_ohm": null,
+   "name": "Thermistor",
+   "notes": "",
+   "shielding": "none",
+   "signals": [
+    {
+     "direction": "passive",
+     "name": "T+",
+     "pair": "T"
+    },
+    {
+     "direction": "passive",
+     "name": "T-",
+     "pair": "T"
+    }
+   ],
+   "unverified": true
+  }
+ ],
+ "interfaces": [
+  {
+   "endpoints": [
+    {
+     "auto": false,
+     "connector_id": "PCDU-J01",
+     "role": null,
+     "unit_id": "PCDU"
+    },
+    {
+     "auto": false,
+     "connector_id": "RW1-J01",
+     "role": null,
+     "unit_id": "RW1"
+    }
+   ],
+   "flow": "a_to_b",
+   "id": "IF-PWR-RW1",
+   "max_current_a": null,
+   "name": "RW1 power",
+   "notes": "",
+   "redundancy": "nominal",
+   "requirement_id": null,
+   "type_id": "power_primary",
+   "voltage_v": null
+  },
+  {
+   "endpoints": [
+    {
+     "auto": false,
+     "connector_id": "OBC-J01",
+     "role": null,
+     "unit_id": "OBC"
+    },
+    {
+     "auto": false,
+     "connector_id": "RW1-J02",
+     "role": null,
+     "unit_id": "RW1"
+    }
+   ],
+   "flow": "bidirectional",
+   "id": "IF-TM-RW1",
+   "max_current_a": null,
+   "name": "RW1 command and telemetry",
+   "notes": "",
+   "redundancy": "nominal",
+   "requirement_id": null,
+   "type_id": "rs422",
+   "voltage_v": null
+  }
+ ],
+ "model_hash": "b66767a865f9566889015351f8ef7cf6f38377553cc4e699373681b2b0a2dc42",
+ "parts": [
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Circular MIL-DTL-38999-style, 19-pin, female (example)",
+   "id": "EX-CIRC-19-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-CIRC-19-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 19,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Circular MIL-DTL-38999-style, 19-pin, male (example)",
+   "id": "EX-CIRC-19-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-CIRC-19-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 19,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "D-sub 15-pin, female (example)",
+   "id": "EX-DSUB-15-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-DSUB-15-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 15,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "D-sub 15-pin, male (example)",
+   "id": "EX-DSUB-15-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-DSUB-15-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 15,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "D-sub 9-pin, female (example)",
+   "id": "EX-DSUB-9-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-DSUB-9-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 9,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "D-sub 9-pin, male (example)",
+   "id": "EX-DSUB-9-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-DSUB-9-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 9,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "label",
+   "description": "Wire marker sleeve (example)",
+   "id": "EX-LABEL",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": null,
+   "notes": "",
+   "part_number": null,
+   "pin_count": null,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "MDM 21-pin, female (example)",
+   "id": "EX-MDM-21-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MDM-21-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 21,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "MDM 21-pin, male (example)",
+   "id": "EX-MDM-21-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MDM-21-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 21,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 15-pin, female (example)",
+   "id": "EX-MICROD-15-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-15-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 15,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 15-pin, male (example)",
+   "id": "EX-MICROD-15-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-15-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 15,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "sleeving",
+   "description": "Braided sleeving (example)",
+   "id": "EX-SLEEVE",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": null,
+   "notes": "",
+   "part_number": null,
+   "pin_count": null,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "SMA coax, female (example)",
+   "id": "EX-SMA-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-SMA-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 1,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "SMA coax, male (example)",
+   "id": "EX-SMA-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-SMA-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 1,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "TNC coax, female (example)",
+   "id": "EX-TNC-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-TNC-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 1,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "TNC coax, male (example)",
+   "id": "EX-TNC-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-TNC-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 1,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "wire",
+   "description": "Single-conductor wire (example)",
+   "id": "EX-WIRE-SINGLE",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": null,
+   "notes": "",
+   "part_number": null,
+   "pin_count": null,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "wire",
+   "description": "Twisted shielded pair (example)",
+   "id": "EX-WIRE-TWISTED-SHIELDED",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": null,
+   "notes": "",
+   "part_number": null,
+   "pin_count": null,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  }
+ ],
+ "placeholder_config": [
+  "derating",
+  "emc",
+  "generation",
+  "segmentation",
+  "segregation",
+  "titleblock"
+ ],
+ "project": {
+  "description": "Minimal 3-unit example.",
+  "name": "mini3 (example data)"
+ },
+ "units": [
+  {
+   "id": "OBC",
+   "mass_relevant": true,
+   "name": "On-board computer",
+   "notes": "",
+   "side": "nominal",
+   "subsystem": "avionics",
+   "zone": "panel-A"
+  },
+  {
+   "id": "PCDU",
+   "mass_relevant": true,
+   "name": "Power control and distribution unit",
+   "notes": "",
+   "side": "nominal",
+   "subsystem": "power",
+   "zone": "panel-A"
+  },
+  {
+   "id": "RW1",
+   "mass_relevant": true,
+   "name": "Reaction wheel 1",
+   "notes": "",
+   "side": "nominal",
+   "subsystem": "aocs",
+   "zone": "panel-B"
+  }
+ ]
+}

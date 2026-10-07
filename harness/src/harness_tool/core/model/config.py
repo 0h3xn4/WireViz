@@ -65,6 +65,9 @@ def default_configs() -> dict[str, ConfigFile]:
                 "conductor_resistivity_ohm_m": None,
                 "power_signal_gap_pins": None,
                 "mass_margin_fraction": None,
+                "test_continuity_max_ohm": None,
+                "test_isolation_min_mohm": None,
+                "test_isolation_voltage_v": None,
                 "shield_end_a": None,  # grounding concept: backshell_360 | pigtail | floating
                 "shield_end_b": None,
             },

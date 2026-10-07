@@ -1,0 +1,9 @@
+# harness-tool 0.0.1 model b66767a865f9
+Finding,Rule,Severity,Object,Statement,Waived,Justification
+part-unapproved.EX-DSUB-9-F,part-unapproved,warning,EX-DSUB-9-F,Part EX-DSUB-9-F is not approved yet but is used (8 place(s)),,
+part-unapproved.EX-DSUB-9-M,part-unapproved,warning,EX-DSUB-9-M,Part EX-DSUB-9-M is not approved yet but is used (4 place(s)),,
+part-unapproved.EX-WIRE-TWISTED-SHIELDED,part-unapproved,warning,EX-WIRE-TWISTED-SHIELDED,Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (4 place(s)),,
+unchecked-config.emc,unchecked-config,info,emc,EMC class separation was not checked: the EMC rules are still a placeholder,,
+unchecked-config.grounding,unchecked-config,info,grounding,Shield grounding was not checked against a concept: it is still a placeholder,,
+unchecked-config.separation,unchecked-config,info,separation,"Power, signal and sensitive-analog separation was not checked: the category pairs are still a placeholder",,
+unchecked-config.spare-pins,unchecked-config,info,spare-pins,Spare pins were not checked: the required fraction is still a placeholder,,

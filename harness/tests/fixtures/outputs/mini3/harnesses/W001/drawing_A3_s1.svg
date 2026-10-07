@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297" font-family="Courier New, Courier, monospace">
+<title>W001 sheet 1/1</title>
+<desc>harness-tool 0.0.1 model b66767a865f9</desc>
+<rect x="0" y="0" width="420" height="297" fill="#ffffff"/>
+<rect x="4" y="4" width="412" height="289" fill="none" stroke="#000000" stroke-width="0.6"/>
+<text x="8" y="12" font-size="4.2" font-weight="bold" text-anchor="start" fill="#000000">W001  PCDU to RW1 power</text>
+<text x="8" y="17" font-size="2.8" text-anchor="start" fill="#555555">Revision A  status draft</text>
+<rect x="8" y="22" width="404" height="7" fill="#e6e6e6" stroke="#000000" stroke-width="0.3"/>
+<text x="9.5" y="27" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">W001-P1 (EX-DSUB-9-M)  to  W001-P2 (EX-DSUB-9-F)</text>
+<text x="9" y="36" font-size="2.6" text-anchor="start" fill="#000000">W001-P1:1 PWR</text>
+<text x="411" y="36" font-size="2.6" text-anchor="end" fill="#000000">W001-P2:1 PWR</text>
+<line x1="60" y1="35" x2="360" y2="35" stroke="#000000" stroke-width="0.5"/>
+<text x="210" y="34" font-size="2.6" font-weight="bold" text-anchor="middle" fill="#000000">W001-001  PWR</text>
+<text x="210" y="38.2" font-size="2.3" text-anchor="middle" fill="#555555">pending  colour n/a  length n/a  </text>
+<text x="9" y="44" font-size="2.6" text-anchor="start" fill="#000000">W001-P1:2 RTN</text>
+<text x="411" y="44" font-size="2.6" text-anchor="end" fill="#000000">W001-P2:2 RTN</text>
+<line x1="60" y1="43" x2="360" y2="43" stroke="#000000" stroke-width="0.5"/>
+<text x="210" y="42" font-size="2.6" font-weight="bold" text-anchor="middle" fill="#000000">W001-002  RTN</text>
+<text x="210" y="46.2" font-size="2.3" text-anchor="middle" fill="#555555">pending  colour n/a  length n/a  </text>
+<text x="9" y="53.2" font-size="2.6" text-anchor="start" fill="#000000">Spare pins W001-P1: 3</text>
+<text x="9" y="57.6" font-size="2.6" text-anchor="start" fill="#000000">Spare pins W001-P2: 3</text>
+<rect x="222" y="247" width="190" height="42" fill="none" stroke="#000000" stroke-width="0.5"/>
+<line x1="222" y1="247" x2="317" y2="247" stroke="#000000" stroke-width="0.2"/>
+<text x="223" y="249.2" font-size="1.8" text-anchor="start" fill="#555555">PROJECT</text>
+<text x="223" y="253" font-size="3" text-anchor="start" fill="#000000">mini3 (example data)</text>
+<line x1="317" y1="247" x2="412" y2="247" stroke="#000000" stroke-width="0.2"/>
+<text x="318" y="249.2" font-size="1.8" text-anchor="start" fill="#555555">HARNESS ID</text>
+<text x="318" y="253" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">W001</text>
+<line x1="222" y1="254.2" x2="317" y2="254.2" stroke="#000000" stroke-width="0.2"/>
+<text x="223" y="256.4" font-size="1.8" text-anchor="start" fill="#555555">TITLE</text>
+<text x="223" y="260.2" font-size="3" text-anchor="start" fill="#000000">PCDU to RW1 power</text>
+<line x1="317" y1="254.2" x2="412" y2="254.2" stroke="#000000" stroke-width="0.2"/>
+<text x="318" y="256.4" font-size="1.8" text-anchor="start" fill="#555555">REVISION</text>
+<text x="318" y="260.2" font-size="3" text-anchor="start" fill="#000000">A</text>
+<line x1="222" y1="261.4" x2="317" y2="261.4" stroke="#000000" stroke-width="0.2"/>
+<text x="223" y="263.6" font-size="1.8" text-anchor="start" fill="#555555">DATE</text>
+<text x="223" y="267.4" font-size="3" text-anchor="start" fill="#000000">-</text>
+<line x1="317" y1="261.4" x2="412" y2="261.4" stroke="#000000" stroke-width="0.2"/>
+<text x="318" y="263.6" font-size="1.8" text-anchor="start" fill="#555555">AUTHOR</text>
+<text x="318" y="267.4" font-size="3" text-anchor="start" fill="#000000">-</text>
+<line x1="222" y1="268.6" x2="317" y2="268.6" stroke="#000000" stroke-width="0.2"/>
+<text x="223" y="270.8" font-size="1.8" text-anchor="start" fill="#555555">CHECKER</text>
+<text x="223" y="274.6" font-size="3" text-anchor="start" fill="#000000">-</text>
+<line x1="317" y1="268.6" x2="412" y2="268.6" stroke="#000000" stroke-width="0.2"/>
+<text x="318" y="270.8" font-size="1.8" text-anchor="start" fill="#555555">APPROVER</text>
+<text x="318" y="274.6" font-size="3" text-anchor="start" fill="#000000">-</text>
+<line x1="222" y1="275.8" x2="317" y2="275.8" stroke="#000000" stroke-width="0.2"/>
+<text x="223" y="278" font-size="1.8" text-anchor="start" fill="#555555">SHEET</text>
+<text x="223" y="281.8" font-size="3" text-anchor="start" fill="#000000">1 / 1</text>
+<line x1="317" y1="275.8" x2="412" y2="275.8" stroke="#000000" stroke-width="0.2"/>
+<text x="318" y="278" font-size="1.8" text-anchor="start" fill="#555555">STATUS</text>
+<text x="318" y="281.8" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">draft</text>
+<line x1="317" y1="247" x2="317" y2="283" stroke="#000000" stroke-width="0.2"/>
+<line x1="222" y1="283" x2="412" y2="283" stroke="#000000" stroke-width="0.2"/>
+<text x="223" y="287" font-size="2.4" text-anchor="start" fill="#555555">harness-tool 0.0.1 model b66767a865f9</text>
+</svg>

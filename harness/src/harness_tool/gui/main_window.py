@@ -35,6 +35,14 @@ from harness_tool.core.generate.engine import (
 )
 from harness_tool.core.io.layout import model_hash
 from harness_tool.core.model import Project
+from harness_tool.core.outputs.build import (
+    OutputsCancelled,
+    OutputSet,
+    build_outputs,
+    write_outputs,
+)
+from harness_tool.core.outputs.verify import verify_outputs
+from harness_tool.core.verify import VerifyReport
 from harness_tool.gui import strings
 from harness_tool.gui.canvas import DiagramView
 from harness_tool.gui.controller import Delta, EditorController, NeedSaveAs
@@ -97,6 +105,34 @@ class PlanWorker(QThread):
             )
         except GenerationCancelled:
             self.plan = None
+
+
+class OutputsWorker(QThread):
+    """Builds and independently verifies the output set off the UI thread (read-only)."""
+
+    progressed = Signal(float, str)
+
+    def __init__(self, project: Project) -> None:
+        super().__init__()
+        self._project = project
+        self._cancelled = False
+        self.result: OutputSet | None = None
+        self.report: VerifyReport | None = None
+
+    def cancel(self) -> None:
+        self._cancelled = True
+
+    def run(self) -> None:
+        try:
+            self.result = build_outputs(
+                self._project,
+                cancel=lambda: self._cancelled,
+                progress=lambda f, t: self.progressed.emit(f, t),
+            )
+            self.progressed.emit(0.95, "Independent check")
+            self.report = verify_outputs(self._project, self.result.files)
+        except OutputsCancelled:
+            self.result = None
 
 
 class ToastHost(QWidget):
@@ -179,6 +215,9 @@ class MainWindow(QMainWindow):
         self.ask_choice: Callable[[str, str, list[str]], int] = self._ask_choice
         self.ask_file: Callable[[], str | None] = _no_file
         self.compute_plan: Callable[[], GenerationPlan | None] = self._compute_plan
+        self.compute_outputs: Callable[[], tuple[OutputSet, VerifyReport] | None] = (
+            self._compute_outputs
+        )
         self.palette_entries_extra: list[PaletteEntry] = []
 
         self._build_center()
@@ -313,6 +352,7 @@ class MainWindow(QMainWindow):
         self.todo = TodoPanel(self.ctl)
         self.table = InterfaceTable(self.ctl)
         self.harness_panel = HarnessPanel(self.ctl)
+        self.harness_panel.exportRequested.connect(self.export_flow)
         self.tabs = QTabWidget()
         self.tabs.setObjectName("bottom-tabs")
         self.tabs.addTab(self.problems, strings.PROBLEMS)
@@ -696,8 +736,12 @@ class MainWindow(QMainWindow):
     def _compute_plan(self) -> GenerationPlan | None:
         """Plan in a worker thread behind a cancellable progress dialog; None if cancelled."""
         worker = PlanWorker(self.ctl.project)
-        progress = QProgressDialog(strings.GEN_RUNNING, strings.CANCEL, 0, 100, self)
-        progress.setObjectName("generate-progress")
+        self._run_worker(worker, strings.GEN_RUNNING, "generate-progress")
+        return worker.plan
+
+    def _run_worker(self, worker: "PlanWorker | OutputsWorker", label: str, name: str) -> None:
+        progress = QProgressDialog(label, strings.CANCEL, 0, 100, self)
+        progress.setObjectName(name)
         progress.setWindowModality(Qt.WindowModality.WindowModal)
         progress.setMinimumDuration(400)  # quick runs never flash a dialog
         loop = QEventLoop(self)
@@ -713,7 +757,43 @@ class MainWindow(QMainWindow):
         loop.exec()
         worker.wait()
         progress.reset()
-        return worker.plan
+
+    def export_flow(self) -> None:
+        folder = self.ctl.outputs_folder()
+        if folder is None:
+            self.toasts.show_message(strings.EXPORT_SAVE_FIRST, None)
+            return
+        if not self.ctl.project.harnesses:
+            self.toasts.show_message(strings.EXPORT_NO_HARNESSES, None)
+            return
+        result = self.compute_outputs()
+        if result is None:
+            self.toasts.show_message(strings.EXPORT_CANCELLED, None)
+            return
+        built, report = result
+        if not report.ok:
+            body = "<br>".join(i.message for i in report.errors[:6])
+            self.run_dialog(ConfirmDialog(self, strings.EXPORT, body, strings.OK, danger=False))
+            self.toasts.show_message(strings.EXPORT_FAILED.format(len(report.errors)), None)
+            return
+        try:
+            write_outputs(self.ctl.project, folder, built)
+        except OSError as exc:
+            self.toasts.show_message(f"{exc}", None)
+            return
+        self.harness_panel.refresh()
+        self.toasts.show_message(
+            strings.EXPORT_DONE.format(len(built.files), built.stamp.short), None
+        )
+
+    def _compute_outputs(self) -> "tuple[OutputSet, VerifyReport] | None":
+        worker = OutputsWorker(self.ctl.project)
+        self._run_worker(worker, strings.EXPORT_RUNNING, "export-progress")
+        return (
+            None
+            if worker.result is None or worker.report is None
+            else (worker.result, worker.report)
+        )
 
     def waive_flow(self, finding: object) -> None:
         dlg = WaiverDialog(self, finding)  # type: ignore[arg-type]

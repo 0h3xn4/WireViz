@@ -263,3 +263,23 @@ MORE_PROBLEMS = "…and {} more. Resolve the ones above first."
 DRC_CHECKING = "Design rules: checking…"
 DRC_DONE = "Design rules: all {} rules checked."
 NOTHING_TO_SHOW = "This item has no place on the diagram (it is a setting or a part)."
+
+EXPORT = "Export outputs"
+EXPORT_TIP = "Write drawings, wire lists, BOM, tests, labels and exports to the project's outputs folder; they are checked independently first"
+EXPORT_SAVE_FIRST = "Save the project to a folder first; outputs are written next to it."
+EXPORT_NO_HARNESSES = "There are no harnesses yet. Generate harnesses first."
+EXPORT_RUNNING = "Exporting outputs…"
+EXPORT_CANCELLED = "Export cancelled. Nothing was written."
+EXPORT_DONE = "{0} files written to the outputs folder (design {1})."
+EXPORT_FAILED = (
+    "The outputs failed their independent check, so nothing was written ({0} problem(s))."
+)
+OUT_STATUS = {
+    "none": "Outputs: not exported yet.",
+    "current": "Outputs: up to date with the design.",
+    "stale": "Outputs: out of date, the design changed after the last export.",
+    "modified": "Outputs: files were changed after export.",
+    "unreadable": "Outputs: the manifest cannot be read; export again.",
+    "unsaved": "Outputs: save the project to export.",
+}
+OK = "OK"

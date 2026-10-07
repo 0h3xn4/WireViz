@@ -9,6 +9,9 @@
     "service_loop_m": null,
     "shield_end_a": null,
     "shield_end_b": null,
+    "test_continuity_max_ohm": null,
+    "test_isolation_min_mohm": null,
+    "test_isolation_voltage_v": null,
     "wire_part_by_construction": {
       "coax": "EX-WIRE-SINGLE",
       "quad": "EX-WIRE-TWISTED-SHIELDED",

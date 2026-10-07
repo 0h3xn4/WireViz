@@ -911,6 +911,8 @@ class InterfaceTable(QWidget):
 class HarnessPanel(QWidget):
     """Generated harnesses: status, independent check, harness list, wires and why they are so."""
 
+    exportRequested = Signal()
+
     def __init__(self, ctl: EditorController) -> None:
         super().__init__()
         self.ctl = ctl
@@ -925,6 +927,17 @@ class HarnessPanel(QWidget):
         self.verify.setWordWrap(True)
         lay.addWidget(self.status)
         lay.addWidget(self.verify)
+        out_row = QHBoxLayout()
+        self.outputs = QLabel()
+        self.outputs.setObjectName("plans-outputs")
+        self.outputs.setWordWrap(True)
+        self.export_btn = QPushButton(strings.EXPORT)
+        self.export_btn.setObjectName("export")
+        self.export_btn.setToolTip(strings.EXPORT_TIP)
+        self.export_btn.clicked.connect(self.exportRequested)
+        out_row.addWidget(self.outputs, 1)
+        out_row.addWidget(self.export_btn)
+        lay.addLayout(out_row)
         self.empty = muted(strings.NO_PLANS_BODY)
         self.empty.setObjectName("plans-empty")
         lay.addWidget(self.empty)
@@ -991,6 +1004,9 @@ class HarnessPanel(QWidget):
             fmt = strings.PLANS_VERIFY_OK if report.ok else strings.PLANS_VERIFY_BAD
             self.verify.setText(fmt.format(report.summary()))
         self.empty.setVisible(not p.harnesses)
+        self.outputs.setText(strings.OUT_STATUS[self.ctl.outputs_state()] if p.harnesses else "")
+        self.export_btn.setEnabled(bool(p.harnesses))
+        self.export_btn.setVisible(bool(p.harnesses))
         keep = self.selected_harness()
         self.harnesses.setRowCount(len(p.harnesses))
         for r, hid in enumerate(sorted(p.harnesses)):
