@@ -1,6 +1,7 @@
 """Shared test helpers."""
 
 import json
+import os
 import shutil
 from pathlib import Path
 from typing import Any
@@ -34,3 +35,8 @@ def output_digests(files: dict[str, bytes]) -> dict[str, str]:
             data = json.dumps(_xlsx_sheets(data), sort_keys=True).encode()
         out[rel] = hashlib.sha256(data).hexdigest()
     return out
+
+
+def time_limit(seconds: float) -> float:
+    """Performance limit; shared CI runners are slower, so HARNESS_TIME_FACTOR (CI sets 3) scales it."""
+    return seconds * float(os.environ.get("HARNESS_TIME_FACTOR", "1"))

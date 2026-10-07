@@ -8,6 +8,8 @@ import time
 
 import pytest
 
+from tests.helpers import time_limit
+
 pytestmark = [pytest.mark.gui, pytest.mark.perf]
 
 from PySide6.QtWidgets import QApplication  # noqa: E402
@@ -53,7 +55,7 @@ def test_loading_a_stress_project_is_reasonable(qtbot, tmp_path) -> None:  # typ
     win = make_window(tmp_path)
     qtbot.addWidget(win)
     t = elapsed_ms(lambda: win.ctl._install(build(), None, None))
-    assert t < 5000, t
+    assert t < time_limit(5000), t
 
 
 def test_problems_panel_is_capped(stress) -> None:  # type: ignore[no-untyped-def]

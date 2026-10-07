@@ -18,6 +18,8 @@ jobs:
         # Ubuntu only (docs/DECISIONS.md D-110). 22.04 builds the release packages (glibc 2.35), 24.04 checks they run.
         os: [ubuntu-22.04, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
+    env:
+      HARNESS_TIME_FACTOR: "3"  # shared runners are slower than a workstation; limits in tests scale by this
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
