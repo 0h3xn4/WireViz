@@ -32,7 +32,7 @@ Re-reads the finished files and compares them with the model without using the b
 
 ## Drawing
 One row per wire grouped by connector pair: pin and signal, wire ID, gauge, colour, length, part, pin and signal. Shields, routing segments, spare pins and notes follow. A title block closes every sheet (project, harness, title, revision, status, sheet n / N, stamp). Drawings are black and grey only; wire colour is printed as text. Long harnesses continue on further sheets with repeated headings. The text font is Courier (monospaced), so text widths are exact.
-Limits: the drawing is a wire-by-wire diagram, not a geometric layout of the branches; routing segments are listed, not drawn. Author, checker, approver and date come from the harness (set by review and release, see change control); they show "-" until then. The title block field list comes from `config/titleblock.json` (placeholder, D-15).
+The first sheet starts with a routing sketch (connectors and branch points as boxes, segments with lengths; schematic, not to scale; omitted above 14 nodes). Limits: the drawing is a wire-by-wire diagram plus this sketch, not a geometric layout of the branches. Author, checker, approver and date come from the harness (set by review and release, see change control); they show "-" until then. The title block field list comes from `config/titleblock.json` (placeholder, D-15).
 
 ## Tables
 - `wirelist.csv`: Wire, Signal, Interface, From connector/pin, To connector/pin, AWG ("pending" when undecided), Part, Colour, Length (m), Shield group, Locked.

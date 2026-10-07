@@ -25,7 +25,7 @@ No network access is needed or used.
 5. Look at **Problems** (bottom). Each card says what is wrong, why it matters and how to fix it. Many have a one-click **Fix**.
 6. Open the **To-do** tab for what is left to do.
 7. Press **Generate harnesses**. A preview shows what will be added; nothing changes until you press **Apply**. **Undo** takes it all back.
-8. Open the **Harness plans** tab: harnesses, their wires, and *Why is it like this?* for each wire.
+8. Open the **Harness plans** tab: harnesses, their wires, a preview of the drawing (**Drawing** tab; arrows page through sheets) and *Why is it like this?* for each wire (**Why** tab).
 9. Save with **Ctrl+S**.
 10. Press **Export outputs** to write drawings and lists into the project's `outputs` folder.
 
@@ -116,7 +116,7 @@ Some values must come from your program's standards. Until they are filled in, r
 | Delete | delete the selected item (after showing what it affects) |
 | F1 | this guide |
 
-The **Interface table** tab lists every interface in a table; it is the screen-reader friendly view of the diagram.
+The **Interface table** and **Outline** tabs list every interface and unit; they are the screen-reader friendly views of the diagram. **Arrange diagram** (View menu) tidies the units: they stay in their lanes and are ordered to shorten links; Undo restores the old positions.
 
 ## 13. Glossary
 

@@ -26,6 +26,9 @@ from PySide6.QtWidgets import (
     QTableView,
     QTableWidget,
     QTableWidgetItem,
+    QTabWidget,
+    QTreeWidget,
+    QTreeWidgetItem,
     QVBoxLayout,
     QWidget,
 )
@@ -36,6 +39,7 @@ from harness_tool.core.model import InterfaceInstance
 from harness_tool.core.verify import verify_project
 from harness_tool.gui import strings
 from harness_tool.gui.controller import Delta, EditorController
+from harness_tool.gui.preview import DrawingPreview
 from harness_tool.gui.theme import ThemeManager
 from harness_tool.gui.tokens import CATEGORIES, style_category
 
@@ -980,10 +984,22 @@ class HarnessPanel(QWidget):
         body = QHBoxLayout()
         body.addWidget(self.harnesses, 3)
         body.addWidget(self.wires, 4)
-        body.addWidget(self.explain, 3)
+        self.side = QTabWidget()
+        self.side.setObjectName("plans-side")
+        self.side.setAccessibleName(strings.TAB_DRAWING)
+        why = QScrollArea()
+        why.setWidgetResizable(True)
+        why.setWidget(self.explain)
+        why.setAccessibleName(strings.EXPLAIN)
+        self.preview = DrawingPreview()
+        self.side.addTab(self.preview, strings.TAB_DRAWING)
+        self.side.addTab(why, strings.TAB_WHY)
+        self.side.currentChanged.connect(lambda _i: self._update_preview())
+        body.addWidget(self.side, 5)
         lay.addLayout(body, 1)
         self.harnesses.itemSelectionChanged.connect(self._show_wires)
         self.harnesses.itemSelectionChanged.connect(self._update_cc_buttons)
+        self.harnesses.itemSelectionChanged.connect(self._update_preview)
         self.wires.itemSelectionChanged.connect(self._show_explain)
         ctl.changed.connect(lambda _d: self._invalidate())
         self.refresh()
@@ -1062,6 +1078,7 @@ class HarnessPanel(QWidget):
                 self.harnesses.selectRow(r)
         self._show_wires()
         self._update_cc_buttons()
+        self._update_preview()
 
     def _show_wires(self) -> None:
         p = self.ctl.project
@@ -1078,6 +1095,14 @@ class HarnessPanel(QWidget):
                 self.wires.setItem(r, c, QTableWidgetItem(text))
         self._show_explain()
 
+    def _update_preview(self) -> None:
+        """The drawing is rebuilt only while its tab is showing (selection or design changed)."""
+        if self.side.currentWidget() is not self.preview or not self.isVisible():
+            return
+        p = self.ctl.project
+        h = p.harnesses.get(self.selected_harness() or "")
+        self.preview.show_harness(p if h else None, h)
+
     def _show_explain(self) -> None:
         p = self.ctl.project
         h = p.harnesses.get(self.selected_harness() or "")
@@ -1092,3 +1117,90 @@ class HarnessPanel(QWidget):
         self.explain.setText(
             title + "<br>" + ("<br>".join(lines) if lines else strings.EXPLAIN_NONE)
         )
+
+
+class OutlinePanel(QWidget):
+    """The diagram as a tree: every unit with the interfaces it takes part in. Plain Qt tree, so
+    screen readers read it item by item (the canvas itself is one object to them)."""
+
+    def __init__(self, ctl: EditorController) -> None:
+        super().__init__()
+        self.ctl = ctl
+        self.setObjectName("outline")
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        self.tree = QTreeWidget()
+        self.tree.setObjectName("outline-tree")
+        self.tree.setHeaderHidden(True)
+        self.tree.setAccessibleName(strings.OUTLINE)
+        self.tree.setAccessibleDescription(strings.OUTLINE_HELP)
+        lay.addWidget(self.tree)
+        self._dirty = True
+        self._syncing = False
+        ctl.changed.connect(lambda _d: self._invalidate())
+        ctl.selectionChanged.connect(self._select_current)
+        self.tree.itemSelectionChanged.connect(self._picked)
+        self.refresh()
+
+    def _invalidate(self) -> None:
+        self._dirty = True
+        if self.isVisible():
+            self.refresh()
+
+    def showEvent(self, event: object) -> None:
+        super().showEvent(event)  # type: ignore[arg-type]
+        if self._dirty:
+            self.refresh()
+
+    def refresh(self) -> None:
+        self._dirty = False
+        p = self.ctl.project
+        self._syncing = True
+        self.tree.clear()
+        for uid in sorted(p.units):
+            u = p.units[uid]
+            node = QTreeWidgetItem(
+                [f"{uid}: {u.name} ({u.side})" if u.side != "none" else f"{uid}: {u.name}"]
+            )
+            node.setData(0, Qt.ItemDataRole.UserRole, ("unit", uid))
+            for i in sorted(
+                (i for i in p.interfaces.values() if any(e.unit_id == uid for e in i.endpoints)),
+                key=lambda x: x.id,
+            ):
+                other = next((e.unit_id for e in i.endpoints if e.unit_id != uid), "?")
+                t = p.interface_types.get(i.type_id)
+                child = QTreeWidgetItem([f"{i.id}: {t.name if t else i.type_id} to {other}"])
+                child.setData(0, Qt.ItemDataRole.UserRole, ("interface", i.id))
+                node.addChild(child)
+            self.tree.addTopLevelItem(node)
+        self._syncing = False
+        self._select_current()
+
+    def _picked(self) -> None:
+        if self._syncing:
+            return
+        items = self.tree.selectedItems()
+        if items:
+            kind, ident = items[0].data(0, Qt.ItemDataRole.UserRole)
+            self.ctl.select(kind, ident)
+
+    def _select_current(self) -> None:
+        sel = self.ctl.selection
+        if sel is None or not self.isVisible():
+            return
+        self._syncing = True
+        self.tree.clearSelection()
+        for k in range(self.tree.topLevelItemCount()):
+            node = self.tree.topLevelItem(k)
+            if node is None:
+                continue
+            for item in (node, *(node.child(c) for c in range(node.childCount()))):
+                if item is not None and item.data(0, Qt.ItemDataRole.UserRole) == (
+                    sel.kind,
+                    sel.id,
+                ):
+                    item.setSelected(True)
+                    self.tree.scrollToItem(item)
+                    self._syncing = False
+                    return
+        self._syncing = False

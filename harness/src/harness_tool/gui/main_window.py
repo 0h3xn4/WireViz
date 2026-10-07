@@ -1,5 +1,6 @@
 """Main window: palette (left), diagram (centre), properties (right), problems and tables (bottom)."""
 
+import contextlib
 from collections.abc import Callable
 from functools import partial
 from pathlib import Path
@@ -71,6 +72,7 @@ from harness_tool.gui.dialogs import (
 from harness_tool.gui.panels import (
     HarnessPanel,
     InterfaceTable,
+    OutlinePanel,
     PalettePanel,
     ProblemsPanel,
     PropertiesPanel,
@@ -167,7 +169,8 @@ class ToastHost(QWidget):
         row = QHBoxLayout(frame)
         label = QLabel(text)
         label.setWordWrap(True)
-        label.setMaximumWidth(460)
+        host = self.parentWidget()
+        label.setMaximumWidth(max(240, min(720, (host.width() if host else 500) - 60)))
         row.addWidget(label, 1)
         if undo is not None:
             b = QPushButton(strings.UNDO)
@@ -187,16 +190,16 @@ class ToastHost(QWidget):
         self.reposition()
 
     def _expire(self, frame: QFrame) -> None:
-        try:
+        # the window may have been closed while the message was showing
+        with contextlib.suppress(RuntimeError):
             frame.deleteLater()
-        except RuntimeError:
-            return
-        QTimer.singleShot(0, self._shrink)
+            QTimer.singleShot(0, self._shrink)
 
     def _shrink(self) -> None:
-        if self.lay.count() <= 1:
-            self.hide()
-        self.adjustSize()
+        with contextlib.suppress(RuntimeError):
+            if self.lay.count() <= 1:
+                self.hide()
+            self.adjustSize()
 
     def reposition(self) -> None:
         p = self.parentWidget()
@@ -364,6 +367,7 @@ class MainWindow(QMainWindow):
         self.problems = ProblemsPanel(self.ctl)
         self.todo = TodoPanel(self.ctl)
         self.table = InterfaceTable(self.ctl)
+        self.outline = OutlinePanel(self.ctl)
         self.harness_panel = HarnessPanel(self.ctl)
         self.harness_panel.exportRequested.connect(self.export_flow)
         self.harness_panel.changeRequested.connect(self.change_flow)
@@ -373,6 +377,7 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.todo, strings.TODO)
         self.tabs.addTab(self.table, strings.INTERFACE_TABLE)
         self.tabs.addTab(self.harness_panel, strings.HARNESS_PLANS)
+        self.tabs.addTab(self.outline, strings.OUTLINE)
         self.dock_bottom = self._dock(
             strings.PROBLEMS_AND_STATUS,
             self.tabs,
@@ -475,6 +480,7 @@ class MainWindow(QMainWindow):
             strings.ZOOM_OUT, lambda: self.view.zoom_by(1 / 1.2), "Ctrl+-", name="act-zoom-out"
         )
         self.act_fit = a(strings.FIT, self.view.fit, "Ctrl+0", name="act-fit")
+        self.act_arrange = a(strings.A_ARRANGE, self.arrange_flow, name="act-arrange")
         self.act_commands = a(strings.A_COMMANDS, self.open_commands, "Ctrl+K", name="act-commands")
         self.act_guide = a(strings.A_GUIDE, self.guide_flow, "F1", name="act-guide")
         self.act_tour = a(
@@ -486,6 +492,13 @@ class MainWindow(QMainWindow):
         self.act_sample = a(strings.A_SAMPLE, self.sample_flow, name="act-sample")
         self.act_about = a(strings.A_ABOUT, self.about_flow, name="act-about")
         self.act_issues = a(strings.A_ISSUES, self.issues_flow, name="act-issues")
+
+    def arrange_flow(self) -> None:
+        ops = edit.ops_arrange(self.ctl.project)
+        if not ops:
+            self.toasts.show_message(strings.ARRANGE_NOTHING, None)
+            return
+        self.ctl.run("Arrange diagram", ops, message=strings.ARRANGE_DONE)
 
     def guide_flow(self) -> None:
         path = guide_path()
@@ -531,7 +544,7 @@ class MainWindow(QMainWindow):
         for act in self.scale_actions.values():
             scale_menu.addAction(act)
         v.addSeparator()
-        for act in (self.act_zoom_in, self.act_zoom_out, self.act_fit):
+        for act in (self.act_zoom_in, self.act_zoom_out, self.act_fit, self.act_arrange):
             v.addAction(act)
         v.addSeparator()
         for dock in (self.dock_left, self.dock_right, self.dock_bottom):
@@ -775,8 +788,11 @@ class MainWindow(QMainWindow):
         loop = QEventLoop(self)
 
         def on_progress(fraction: float, text: str) -> None:
-            progress.setValue(int(fraction * 100))
-            progress.setLabelText(text)
+            try:
+                progress.setValue(int(fraction * 100))
+                progress.setLabelText(text)
+            except RuntimeError:  # a late progress message after the dialog is gone
+                return
 
         worker.progressed.connect(on_progress)
         progress.canceled.connect(worker.cancel)
@@ -784,7 +800,10 @@ class MainWindow(QMainWindow):
         worker.start()
         loop.exec()
         worker.wait()
+        with contextlib.suppress(RuntimeError, TypeError):
+            worker.progressed.disconnect(on_progress)  # no late messages into a closed dialog
         progress.reset()
+        progress.deleteLater()
 
     def _user_name(self) -> str:
         saved = str(self.settings.value("ui/user", "") or "")
@@ -1211,6 +1230,9 @@ class MainWindow(QMainWindow):
         self.dock_left.setMinimumWidth(self.theme.px(240))
         self.dock_right.setMinimumWidth(self.theme.px(260))
         self.resizeDocks([self.dock_left], [self.theme.px(250)], Qt.Orientation.Horizontal)
+        # the bottom panel never takes more than 45% of the window, so the diagram keeps room
+        # at large UI scales (its content scrolls; the View menu can still hide it)
+        self.dock_bottom.setMaximumHeight(max(self.theme.px(160), int(self.height() * 0.45)))
         self.resizeDocks(
             [self.dock_bottom],
             [max(self.theme.px(120), int(self.height() * 0.32))],

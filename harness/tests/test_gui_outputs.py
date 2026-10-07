@@ -94,3 +94,20 @@ def test_export_button_hidden_until_there_are_harnesses(qtbot, tmp_path) -> None
     w.harness_panel.refresh()
     assert w.harness_panel.export_btn.isHidden()
     assert w.findChild(QPushButton, "export") is not None
+
+
+def test_a_toast_that_expires_after_the_window_is_gone_does_not_raise(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    """Regression: a late timer on a closed window raised in the Qt event loop and failed an
+    unrelated test that ran later (flaky full-suite failure)."""
+    from PySide6.QtWidgets import QApplication
+
+    w = make_window(tmp_path)
+    host = w.toasts
+    frame_count = {"n": 0}
+    host.show_message("hello", None, ms=10)
+    w.close()
+    w.deleteLater()
+    QApplication.processEvents()
+    qtbot.wait(60)  # the expiry timer fires after the window was deleted
+    frame_count["n"] += 1
+    assert frame_count["n"] == 1

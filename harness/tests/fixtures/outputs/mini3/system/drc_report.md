@@ -1,7 +1,7 @@
-<!-- harness-tool 0.1.0rc1 model 30a3bc678c1e -->
+<!-- harness-tool 0.1.0rc2 model dfedd6888510 -->
 # Design rule check: mini3 (example data)
 
-Model hash: `30a3bc678c1e`. Rules run: 21.
+Model hash: `dfedd6888510`. Rules run: 21.
 Open: 0 error(s), 3 warning(s), 4 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.

@@ -27,13 +27,53 @@ class Row:
     text: str = ""
     wire: Wire | None = None
     group: tuple[str, str] | None = None
+    height: float | None = None  # overrides HEIGHT for rows whose size depends on content
 
 
-HEIGHT = {"heading": 9.0, "wire": 8.0, "text": 4.4, "gap": 3.0}
+HEIGHT = {"heading": 9.0, "wire": 8.0, "text": 4.4, "gap": 3.0, "sketch": 0.0}
+SKETCH_MAX_NODES = 14
+NODE_W, NODE_H, NODE_GAP_X, NODE_GAP_Y = 36.0, 7.0, 34.0, 4.0
+
+
+def sketch_layout(h: Harness) -> dict[str, tuple[int, int]] | None:
+    """Columns by distance from the first connector, rows in order; None if there is no tree or
+    it is too large to sketch. A schematic of the routing, not drawn to scale."""
+    nodes = sorted({c.id for c in h.connectors} | {b.id for b in h.branch_points})
+    if not h.segments or len(nodes) > SKETCH_MAX_NODES:
+        return None
+    adj: dict[str, list[str]] = {n: [] for n in nodes}
+    for g in h.segments:
+        if g.from_node in adj and g.to_node in adj:
+            adj[g.from_node].append(g.to_node)
+            adj[g.to_node].append(g.from_node)
+    start = sorted(c.id for c in h.connectors)[0]
+    depth = {start: 0}
+    queue = [start]
+    for n in queue:
+        for m in sorted(adj[n]):
+            if m not in depth:
+                depth[m] = depth[n] + 1
+                queue.append(m)
+    for n in nodes:  # nodes not reachable from the start sit in a column of their own
+        depth.setdefault(n, max(depth.values()) + 1)
+    per_col: dict[int, int] = {}
+    layout = {}
+    for n in sorted(nodes, key=lambda x: (depth[x], x)):
+        layout[n] = (depth[n], per_col.get(depth[n], 0))
+        per_col[depth[n]] = per_col.get(depth[n], 0) + 1
+    return layout
+
+
+def sketch_height(layout: dict[str, tuple[int, int]]) -> float:
+    rows = max(r for _, r in layout.values()) + 1
+    return 8.0 + rows * (NODE_H + NODE_GAP_Y) + 3.0
 
 
 def _rows(project: Project, h: Harness) -> list[Row]:
     rows: list[Row] = []
+    layout = sketch_layout(h)
+    if layout is not None:
+        rows.append(Row("sketch", height=sketch_height(layout)))
     cables = {c.id: c for c in h.connectors}
     groups: dict[tuple[str, str], list[Wire]] = {}
     for w in sorted(h.wires, key=lambda x: x.id):
@@ -84,7 +124,7 @@ def _paginate(rows: list[Row], capacity: float) -> list[list[Row]]:
     used = 0.0
     current: Row | None = None
     for r in rows:
-        need = HEIGHT[r.kind]
+        need = r.height if r.height is not None else HEIGHT[r.kind]
         if (
             r.kind == "wire"
             and (used == 0.0 or used + need > capacity)
@@ -182,7 +222,9 @@ def harness_sheets(project: Project, h: Harness, stamp: Stamp, size: str) -> lis
         right_w = 52.0
         mid_x1 = w_mm - MARGIN - right_w
         for r in rows:
-            hgt = HEIGHT[r.kind]
+            hgt = r.height if r.height is not None else HEIGHT[r.kind]
+            if r.kind == "sketch":
+                _draw_sketch(sh, h, y, w_mm)
             if r.kind == "heading":
                 sh.add(Rect(MARGIN, y, w_mm - 2 * MARGIN, hgt - 2.0, width=0.3, fill="#e6e6e6"))
                 sh.add(
@@ -263,3 +305,49 @@ def _pin_label(cid: str, pin: str, project: Project, h: Harness) -> str:
         if signal:
             break
     return f"{cid}:{pin}" + (f" {signal}" if signal else "")
+
+
+def _draw_sketch(sh: Sheet, h: Harness, y: float, width: float) -> None:
+    layout = sketch_layout(h)
+    if layout is None:
+        return
+    sh.add(Text(MARGIN + 1.0, y + 4.0, "Routing (schematic, not to scale):", size=SIZE, bold=True))
+    x0, y0 = MARGIN + 6.0, y + 7.0
+    pos = {
+        n: (x0 + col * (NODE_W + NODE_GAP_X), y0 + row * (NODE_H + NODE_GAP_Y))
+        for n, (col, row) in layout.items()
+    }
+    for g in sorted(h.segments, key=lambda x: x.id):
+        if g.from_node in pos and g.to_node in pos:
+            (ax, ay), (bx, by) = pos[g.from_node], pos[g.to_node]
+            if ax > bx:
+                (ax, ay), (bx, by) = (bx, by), (ax, ay)
+            xa, xb = ax + NODE_W, bx
+            ya, yb = ay + NODE_H / 2, by + NODE_H / 2
+            sh.add(Line(xa, ya, xb, yb, width=0.5))
+            length = f"{num(g.length_m)} m" if g.length_m is not None else "? m"
+            sh.add(
+                Text(
+                    (xa + xb) / 2,
+                    (ya + yb) / 2 - 1.0,
+                    fit(f"{g.id} {length}", NODE_GAP_X, 2.2),
+                    size=2.2,
+                    anchor="middle",
+                    color=GREY,
+                )
+            )
+    connector_ids = {c.id for c in h.connectors}
+    for n, (x, yy) in pos.items():
+        sh.add(
+            Rect(
+                x,
+                yy,
+                NODE_W,
+                NODE_H,
+                width=0.4,
+                fill="#ffffff" if n in connector_ids else "#e6e6e6",
+            )
+        )
+        sh.add(
+            Text(x + 1.0, yy + 4.6, fit(n, NODE_W - 2.0, SIZE), size=SIZE, bold=n in connector_ids)
+        )

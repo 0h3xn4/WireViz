@@ -2,7 +2,16 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## 0.1.0rc1 (release candidate; not yet signed off by the owner)
+## 0.1.0rc2 (release candidate; not yet signed off by the owner)
+
+- **Drawing preview** in the Harness plans tab: the exact sheet the export draws, with next/previous for multi-sheet harnesses.
+- **Routing sketch** on the first drawing sheet: connectors and branch points as boxes, segments with lengths (schematic, not to scale).
+- **Outline** tab: every unit with its interfaces as a tree that screen readers read item by item; selection follows the diagram.
+- **Arrange diagram** (Edit/View menu): units stay in their lanes, ordered to shorten links, one undo step.
+- Bottom panel capped at 45% of the window and wider toasts, so the diagram keeps room at large UI scales.
+- Multi-drop interfaces (more than two units) are still not generated; they need an engineering rule (see `docs/DECISIONS.md` D-116).
+
+## 0.1.0rc1
 
 First feature-complete version for Ubuntu 22.04 and 24.04 (Windows and RHEL are not targets).
 

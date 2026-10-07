@@ -156,6 +156,50 @@ def ops_autoplace(project: Project) -> list[Op]:
     return ops
 
 
+def ops_arrange(project: Project) -> list[Op]:
+    """Tidy the diagram: units stay in their lanes (zones); inside each lane they are ordered
+    to shorten and uncross links (barycenter ordering from the neighbouring lanes, a few sweeps),
+    then stacked top to bottom without overlap. Deterministic; one undo step."""
+    zones = effective_zones(project)
+    lanes: dict[int, list[str]] = {k: [] for k in range(len(zones))}
+    for uid in sorted(project.units):
+        zone = project.units[uid].zone
+        lane = (
+            zones.index(zone)
+            if zone in zones
+            else lane_index_of_x(project, position_of(project, uid)[0])
+        )
+        lanes[lane].append(uid)
+    lane_of = {u: k for k, units in lanes.items() for u in units}
+    neighbours: dict[str, set[str]] = {u: set() for u in project.units}
+    for i in project.interfaces.values():
+        ends = [e.unit_id for e in i.endpoints if e.unit_id in project.units]
+        for a in ends:
+            neighbours[a].update(b for b in ends if b != a)
+    order = {u: float(pos) for units in lanes.values() for pos, u in enumerate(units)}
+    # start from the current vertical order so a tidy diagram stays put
+    for units in lanes.values():
+        units.sort(key=lambda u: (position_of(project, u)[1], u))
+        order.update({u: float(pos) for pos, u in enumerate(units)})
+
+    def centre(u: str) -> float:
+        others = [order[n] for n in neighbours[u] if lane_of[n] != lane_of[u]]
+        return sum(others) / len(others) if others else order[u]
+
+    for _sweep in range(4):
+        for k in sorted(lanes):
+            lanes[k].sort(key=lambda u: (centre(u), u))
+            order.update({u: float(pos) for pos, u in enumerate(lanes[k])})
+    ops: list[Op] = []
+    for k, units in sorted(lanes.items()):
+        for row, uid in enumerate(units):
+            x, y = lane_x(k), 40.0 + row * (UNIT_FOOTPRINT_H - 10)
+            now = project.placements.get(uid)
+            if now is None or (now.x, now.y) != (x, y):
+                ops.append(Put("placements", Placement(id=uid, x=x, y=y)))
+    return ops
+
+
 def free_slot(project: Project, zone: str | None = None) -> tuple[float, float]:
     """First position in the preferred lane (then the others) that overlaps no placed unit."""
     zones = effective_zones(project)

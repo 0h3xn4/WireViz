@@ -1,4 +1,4 @@
-# harness-tool 0.1.0rc1 model 30a3bc678c1e
+# harness-tool 0.1.0rc2 model dfedd6888510
 Connector,Role,Mates with,Part,Pin,Signal,Interface,Wires,Spare
 W002-P1,cable,OBC-J01,EX-DSUB-9-M,1,,,W002-001,no
 W002-P1,cable,OBC-J01,EX-DSUB-9-M,2,,,W002-003,no
