@@ -28,6 +28,11 @@ def create_window(
 
 
 def main() -> int:
+    if "--version" in sys.argv[1:]:
+        from harness_tool import __version__
+
+        print(f"harness-tool {__version__}")
+        return 0
     app = QApplication.instance() or QApplication(sys.argv)
     settings = make_settings()
     win = create_window(settings)

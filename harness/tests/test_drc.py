@@ -16,6 +16,7 @@ from harness_tool.core.io.saver import save_project
 from harness_tool.core.model import Connector, Harness, Pin, Project, Wire, evolve
 from harness_tool.core.model.config import ConfigFile
 from harness_tool.core.samples import sat15, stress_project
+from tests.helpers import time_limit
 
 _BASE: Project | None = None
 
@@ -475,7 +476,7 @@ def test_drc_on_the_stress_project_is_fast_enough_for_background_runs() -> None:
     generate_project(p)
     t0 = time.perf_counter()
     found = drc.run(p)
-    assert time.perf_counter() - t0 < 5
+    assert time.perf_counter() - t0 < time_limit(5)
     assert not [f for f in found if f.severity == "error"]
     assert copy(p) is not p  # the copy used by background runs is cheap to make
     assert isinstance(Connector, type) and isinstance(Pin, type)

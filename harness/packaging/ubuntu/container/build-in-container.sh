@@ -3,7 +3,7 @@
 # dependencies, runs the whole release checklist and leaves the packages in dist/.
 set -eu
 cd /src
-python3.11 -m venv /tmp/venv
+python3.12 -m venv /tmp/venv
 . /tmp/venv/bin/activate
 pip install -e ".[gui,dev]"
 export QT_QPA_PLATFORM=offscreen

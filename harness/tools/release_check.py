@@ -201,6 +201,15 @@ def main() -> int:
         print(lines[-1], flush=True)
     out = ROOT / "dist" / "release-docs"
     out.mkdir(parents=True, exist_ok=True)
+    skipped = sum(line.startswith("- SKIPPED") for line in lines)
+    if quick:  # a partial run must not overwrite the report of a full one, or pass for a release
+        (out / "release-report-quick.md").write_text("\n".join(lines) + "\n")
+        print(
+            f"{failed} step(s) failed"
+            if failed
+            else f"quick checks passed ({skipped} steps skipped: NOT a release check)"
+        )
+        return 1 if failed else 0
     (out / "release-report.md").write_text("\n".join(lines) + "\n")
     print(f"{failed} step(s) failed" if failed else "release checklist passed")
     return 1 if failed else 0

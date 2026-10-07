@@ -42,13 +42,13 @@ def test_scene_has_all_items(stress) -> None:  # type: ignore[no-untyped-def]
 def test_selection_is_fast(stress) -> None:  # type: ignore[no-untyped-def]
     elapsed_ms(lambda: stress.ctl.select("unit", "U005"))  # warm-up
     t = min(elapsed_ms(lambda k=k: stress.ctl.select("unit", f"U0{k:02d}")) for k in range(10, 14))
-    assert t < 150, t
+    assert t < time_limit(150), t
 
 
 def test_edit_is_responsive(stress) -> None:  # type: ignore[no-untyped-def]
     elapsed_ms(lambda: stress.ctl.update_unit("U001", name="warm"))
     t = min(elapsed_ms(lambda k=k: stress.ctl.update_unit("U001", name=f"n{k}")) for k in range(3))
-    assert t < 400, t
+    assert t < time_limit(400), t
 
 
 def test_loading_a_stress_project_is_reasonable(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]

@@ -5,6 +5,7 @@ any request that is not a local file (the prototype must work fully offline).
 """
 
 import glob
+import os
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -15,7 +16,20 @@ pytest.importorskip("playwright")
 from playwright.sync_api import Page, Route, sync_playwright  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-CHROME = sorted(glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"))
+_ROOTS = [
+    os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or "",
+    "/opt/pw-browsers",
+    str(Path.home() / ".cache" / "ms-playwright"),
+]
+CHROME = sorted(
+    path
+    for root in _ROOTS
+    if root
+    for pattern in ("chromium-*/chrome-linux/chrome", "chromium-*/chrome-linux64/chrome")
+    for path in glob.glob(f"{root}/{pattern}")
+)
+if not CHROME and os.environ.get("HARNESS_REQUIRE_BROWSER"):  # CI sets this: no silent skipping
+    raise RuntimeError("HARNESS_REQUIRE_BROWSER is set but no Chromium was found")
 pytestmark = [pytest.mark.ux, pytest.mark.skipif(not CHROME, reason="no Chromium available")]
 URL = (ROOT / "prototype" / "index.html").as_uri()
 

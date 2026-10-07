@@ -49,7 +49,7 @@ def test_install_then_uninstall_leaves_nothing_behind(tmp_path: Path) -> None:
     assert link.is_symlink() and os.readlink(link) == str(prefix / "harness-tool")
     assert (root / "bin" / "harness").resolve() == (prefix / "cli" / "harness").resolve()
     desktop = (root / "share" / "applications" / "harness-tool.desktop").read_text()
-    assert f"Exec={prefix}/harness-tool %f" in desktop and "@" not in desktop
+    assert f'Exec="{prefix}/harness-tool"' in desktop and "@" not in desktop
     assert (root / "share" / "icons" / "harness-tool.svg").is_file()
     out = subprocess.run(
         [str(link), "--version"], capture_output=True, text=True, check=True
@@ -152,3 +152,109 @@ def test_install_refuses_a_folder_without_the_built_program(tmp_path: Path) -> N
     r = run_script(src / "install.sh", tmp_path)
     assert r.returncode == 1 and "no built program" in r.stderr
     assert not (tmp_path / "root").exists() and not (tmp_path / "home").exists()
+
+
+def test_uninstall_removes_only_what_was_installed(tmp_path: Path) -> None:
+    pkg = fake_package(tmp_path)
+    prefix = tmp_path / "shared folder"
+    prefix.mkdir()
+    (prefix / "mydata.txt").write_text("keep me")
+    assert run_script(pkg / "install.sh", tmp_path, "--prefix", str(prefix)).returncode == 0
+    r = run_script(pkg / "uninstall.sh", tmp_path, "--prefix", str(prefix))
+    assert r.returncode == 0
+    assert (prefix / "mydata.txt").read_text() == "keep me"
+    assert not (prefix / "harness-tool").exists() and not (prefix / "_internal").exists()
+
+
+def test_uninstall_never_removes_a_program_that_is_not_ours(tmp_path: Path) -> None:
+    pkg = fake_package(tmp_path)
+    root = tmp_path / "root"
+    (root / "bin").mkdir(parents=True)
+    mine = root / "bin" / "harness"
+    mine.write_text("#!/bin/sh\necho my own harness\n")
+    r = run_script(pkg / "install.sh", tmp_path, "--prefix", str(tmp_path / "opt"))
+    assert r.returncode == 1 and "not touching" in r.stderr
+    assert mine.read_text().endswith("my own harness\n")
+    r = run_script(pkg / "uninstall.sh", tmp_path, "--prefix", str(tmp_path / "opt"))
+    assert mine.exists()
+
+
+def test_a_prefix_with_spaces_and_symbols_gives_a_valid_launcher(tmp_path: Path) -> None:
+    pkg = fake_package(tmp_path)
+    prefix = tmp_path / "my apps & more" / "harness tool"
+    assert run_script(pkg / "install.sh", tmp_path, "--prefix", str(prefix)).returncode == 0
+    desktop = (tmp_path / "root" / "share" / "applications" / "harness-tool.desktop").read_text()
+    exec_line = next(ln for ln in desktop.splitlines() if ln.startswith("Exec="))
+    assert exec_line == f'Exec="{prefix}/harness-tool"' and "@" not in desktop
+    out = subprocess.run(
+        [str(tmp_path / "root" / "bin" / "harness-tool"), "--version"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    assert "stub" in out
+
+
+def test_a_relative_prefix_and_the_unpack_folder_are_handled(tmp_path: Path) -> None:
+    pkg = fake_package(tmp_path)
+    env = {
+        **os.environ,
+        "HARNESS_INSTALL_ROOT": str(tmp_path / "root"),
+        "HOME": str(tmp_path / "h"),
+    }
+    r = subprocess.run(
+        ["sh", str(pkg / "install.sh"), "--prefix", "rel/opt"],
+        capture_output=True,
+        text=True,
+        env=env,
+        cwd=tmp_path,
+        check=False,
+    )
+    assert r.returncode == 0
+    link = tmp_path / "root" / "bin" / "harness-tool"
+    assert os.path.isabs(os.readlink(link)) and link.resolve().is_file()
+    r = run_script(pkg / "install.sh", tmp_path, "--prefix", str(pkg))
+    assert r.returncode == 2 and (pkg / "harness-tool").is_file()  # its own source survives
+
+
+def test_uninstall_when_nothing_is_installed_says_so(tmp_path: Path) -> None:
+    pkg = fake_package(tmp_path)
+    r = run_script(pkg / "uninstall.sh", tmp_path, "--prefix", str(tmp_path / "never"))
+    assert r.returncode == 0 and "Nothing to remove" in r.stdout
+
+
+def test_the_local_system_install_does_not_share_the_debs_folder() -> None:
+    text = (PK / "install.sh").read_text()
+    assert "/usr/local/lib/harness-tool" in text and "prefix=/opt/harness-tool;" not in text
+
+
+@pytest.mark.skipif(shutil.which("dpkg-deb") is None, reason="dpkg-deb not installed")
+def test_the_deb_ships_licences_and_not_the_tarball_scripts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1700000000")
+    from tools.build_deb import DEPENDS, build
+
+    app = fake_package(tmp_path / "src")
+    (app / "LICENSES").mkdir()
+    (app / "LICENSES" / "README.txt").write_text("licences")
+    deb = build(app, tmp_path / "out")
+    listing = subprocess.run(
+        ["dpkg-deb", "-c", str(deb)], capture_output=True, text=True, check=True
+    ).stdout
+    assert "./usr/share/doc/harness-tool/copyright" in listing
+    assert "./usr/share/doc/harness-tool/LICENSES/README.txt" in listing
+    assert "opt/harness-tool/install.sh" not in listing
+    assert "libc6 (>= 2.35)" in DEPENDS and "libxcb-xinerama0" in DEPENDS
+
+
+def test_the_licence_collector_finds_the_runtime_packages_and_the_lgpl_text(tmp_path: Path) -> None:
+    from tools.collect_licences import collect, runtime_distributions
+
+    names = set(runtime_distributions())
+    assert {"pydantic", "openpyxl"} <= names and "pytest" not in names and "mypy" not in names
+    if not Path("/usr/share/common-licenses/LGPL-3").is_file():
+        pytest.skip("needs the Debian/Ubuntu common-licenses folder")
+    rows = collect(tmp_path / "LICENSES")
+    assert any("pydantic" in r for r in rows)
+    assert (tmp_path / "LICENSES" / "LGPL-3.txt").is_file()

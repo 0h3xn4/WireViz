@@ -2,7 +2,13 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## 0.1.0rc3 (release candidate; not yet signed off by the owner)
+## 0.1.0rc4 (release candidate; not yet signed off by the owner)
+
+- **Audit fixes** (`docs/AUDIT.md`): data loss and lock holes closed (unit IDs, baselines and change log, carried interfaces, recovery journal, project lock on every writing command, linked folders), wrong generation results fixed (released interfaces wired twice, locked pins, naming templates, harness numbers, provenance), the release gate now sees every error and checks the output files, the output verifier compares values, one function gives wire lengths, command line and importers show messages instead of tracebacks and read semicolon and tab files, the editor gives the diagram more room and has safer toasts, plain wording, reasons on disabled buttons, a Delete harness button and grouped problem cards.
+- **Packaging**: the uninstaller removes only what the installer put there; the launcher works with spaces in paths; development tools are kept out of the package and the licence texts (LGPL for Qt) are shipped; the local system install no longer shares a folder with the .deb; defusedxml is a runtime dependency (spreadsheet XML protection); CI runs the prototype tests, scales timing limits, has timeouts and runs the package built on 22.04 on 24.04.
+- `harness import-netlist` reads KiCad's default S-expression netlist as well as XML.
+
+## 0.1.0rc3
 
 - **Release hardening**: fuzzing of loaders, importers, generation, rules, outputs and verifiers (found and fixed five crashes: CSV with bare carriage returns or stray characters, a damaged interface-type file stopping generation, damaged output files stopping the verifier, mixed connector keying in a rule, a harness without connectors in the drawing sketch); symlinked and oversized project files; zip-bomb and huge-sheet spreadsheets; a security review (`docs/SECURITY.md`) enforced by tests.
 - **Ready for the data still to come**: `harness config` (hand-over checklist, range and table validation, ampacity CSV), `config-invalid` rule, `harness import-parts` (approved parts list, you define what the approval values mean), `harness import-lengths` (millimetres, for lengths measured outside the tool); `docs/IMPORTS.md`, `docs/OPEN_DECISIONS.md` (options for D-10 and D-15).

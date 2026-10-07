@@ -1,6 +1,6 @@
 # Open decisions and their options
 
-Status after M9. Decided by you: D-11 and D-12 will be supplied later (the tool is prepared, see below), D-13 KiCad is the CAD tool, D-20 not needed.
+Status after the October audit. Decided by you: D-11 and D-12 will be supplied later (the tool is prepared, see below), D-13 KiCad is the CAD tool, D-20 not needed.
 
 ## D-10 Harness boundary rule (what goes into one harness)
 | Option | Result | Good for | Cost |
@@ -28,4 +28,4 @@ My recommendation: B if a template exists (exact look, least rework), otherwise 
 ## Prepared for what you will supply
 - **D-11 values**: `harness config DIR` lists every missing value and what depends on it, validates values when they arrive (ranges, table order), loads the ampacity table from a CSV; invalid values are rule errors. See `docs/IMPORTS.md`.
 - **D-12 approved parts list**: `harness import-parts` with column matching and a statement from you of what each approval value means. A program-specific format can be added as a mapping once you can show a sample file.
-- **D-13 lengths**: `harness import-lengths` (CSV, millimetres by default). KiCad is the source of unit connector pinouts; the lengths come as a table. The KiCad reader is planned and needs a sample export (D-123).
+- **D-13 lengths**: `harness import-lengths` (CSV, millimetres by default). KiCad is the source of unit connector pinouts; the lengths come as a table. `harness import-netlist` reads the connector pinouts from a KiCad netlist (D-123, D-124, `docs/KICAD.md`); it was checked on one real KiCad 10.0.6 export.

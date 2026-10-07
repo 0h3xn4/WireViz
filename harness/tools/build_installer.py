@@ -15,7 +15,11 @@ from harness_tool import __version__
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDES = ["PySide6.QtNetwork", "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets",
             "PySide6.QtWebChannel", "PySide6.QtWebSockets", "PySide6.QtQml", "PySide6.QtQuick",
-            "PySide6.QtPdf", "PySide6.QtSvg", "tkinter"]  # fmt: skip
+            "PySide6.QtPdf", "PySide6.QtSvg", "tkinter",
+            # development tools that PyInstaller would otherwise pull in from the build environment
+            "mypy", "pydantic.mypy", "hypothesis", "pytest", "_pytest", "lxml", "setuptools",
+            "pkg_resources", "attr", "attrs", "pip"]  # fmt: skip
+FORBIDDEN = {"mypy", "hypothesis", "pytest", "_pytest", "lxml", "setuptools", "pip", "ruff"}
 
 
 def _pyinstaller(
@@ -28,6 +32,10 @@ def _pyinstaller(
            "--specpath", str(work), "--paths", str(ROOT / "src")]  # fmt: skip
     for mod in (*EXCLUDES, *extra_excludes):
         cmd += ["--exclude-module", mod]
+    cmd += [
+        "--hidden-import",
+        "defusedxml",
+    ]  # openpyxl imports it only if present: XML bomb protection
     guide = ROOT / "src" / "harness_tool" / "resources" / "guide"
     cmd += ["--add-data", f"{guide}:harness_tool/resources/guide"]
     cmd.append(str(entry))
@@ -50,6 +58,20 @@ def main() -> int:
         ROOT / "dist" / "harness", ROOT / "dist" / "harness-tool" / "cli", dirs_exist_ok=True
     )
     shutil.rmtree(ROOT / "dist" / "harness", ignore_errors=True)
+    app = ROOT / "dist" / "harness-tool"
+    leaked = sorted(
+        p.name for base in (app / "_internal", app / "cli" / "_internal") if base.is_dir()
+        for p in base.iterdir() if p.name.split(".")[0] in FORBIDDEN
+    )  # fmt: skip
+    if leaked:
+        print(
+            f"error: development tools ended up in the package: {', '.join(leaked)}",
+            file=sys.stderr,
+        )
+        return 1
+    from tools.collect_licences import collect
+
+    collect(app / "LICENSES")
     for item in (
         ROOT / "packaging" / "ubuntu"
     ).iterdir():  # install scripts, desktop file, icon, readme

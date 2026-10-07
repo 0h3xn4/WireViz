@@ -9,7 +9,7 @@ An offline desktop tool for designing the electrical harnesses of a spacecraft. 
 
 ## Status
 
-Release candidate `0.1.0rc3`, not yet signed off by the owner. Still needed from people: the harness boundary rule (D-10), real derating and EMC values (D-11), the approved parts list (D-12), the title block (D-15), usability sessions and a screen-reader pass. See `docs/OPEN_DECISIONS.md` and `docs/RELEASE.md`.
+Release candidate `0.1.0rc4`, not yet signed off by the owner. Still needed from people: the harness boundary rule (D-10), real derating and EMC values (D-11), the approved parts list (D-12), the title block (D-15), usability sessions and a screen-reader pass. See `docs/OPEN_DECISIONS.md` and `docs/RELEASE.md`.
 
 ## Documents
 
@@ -56,7 +56,7 @@ Clean-room project: never copy code from `../src/wireviz` (GPL-3.0). Start with 
 
 ```
 python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"
-pytest            # tests, 90% core coverage gate
+pytest --cov      # tests; the 90% core coverage gate applies with --cov
 ruff format . && ruff check . && mypy
 python -m tools.release_check --quick
 ```

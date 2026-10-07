@@ -109,7 +109,7 @@ The tool never invents derating factors, ampacity, EMC rules or masses. Until th
 harness import-parts DIR parts.xlsx --approved Yes --approved Approved --pending Review --rejected No --dry-run
 ```
 
-You say what the approval values in your list mean; a value in none of the lists is an error for that row, and the tool never decides on its own that something is approved. Columns are matched by header (part number, manufacturer, category, pin count, mass, approval status, ...). Details: `docs/IMPORTS.md`.
+You say what the approval values in your list mean; a value in none of the lists is an error for that row, and the tool never decides on its own that something is approved. Columns are matched by header (part number, manufacturer, category, pin count, mass, approval status, ...). Every row needs a category: a `category` column, or `--category connector` for the whole file. Details: `docs/IMPORTS.md`.
 
 ## 11. Import segment lengths
 

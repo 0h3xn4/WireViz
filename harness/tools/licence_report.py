@@ -9,8 +9,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Whole words only ("Miscellaneous" must not pass as MIT, "limited use" must not pass as ISC).
+# MPL is not listed: the policy is permissive or LGPL only.
 ALLOWED_WORDS = ("mit", "bsd", "apache", "isc", "python software foundation", "psf", "python-2.0",
-                 "lgpl", "lesser general public", "mpl", "unlicense", "zlib", "0bsd")  # fmt: skip
+                 "lgpl", "lesser general public", "unlicense", "zlib", "0bsd", "cc0",
+                 "public domain", "hpnd")  # fmt: skip
 REJECTED_RE = re.compile(r"(?<![a-z])(a?gpl)|general public license", re.IGNORECASE)
 OWN = {"harness-tool"}
 DEV_ONLY = OWN | {
@@ -38,7 +41,8 @@ def classify(licence: str) -> str:
         return "allowed"
     if REJECTED_RE.search(text):
         return "rejected"
-    return "allowed" if any(w in text for w in ALLOWED_WORDS) else "rejected"
+    words = (rf"(?<![a-z0-9]){re.escape(w)}(?![a-z0-9])" for w in ALLOWED_WORDS)
+    return "allowed" if any(re.search(p, text) for p in words) else "rejected"
 
 
 def main(out: str, python: str = sys.executable) -> int:

@@ -1,7 +1,7 @@
 Harness tool: Ubuntu package
 ============================
 Per-user install (no administrator rights):   ./install.sh
-System-wide install:                          sudo ./install.sh --system
+System-wide install:                          sudo ./install.sh --system   (into /usr/local/lib/harness-tool)
 Remove:                                       ./uninstall.sh   (or: sudo ./uninstall.sh --system)
 
 Needs these system libraries (already present on a normal Ubuntu desktop):

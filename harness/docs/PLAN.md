@@ -1,6 +1,6 @@
 # Milestone plan (proposal for owner review)
 
-Each milestone: tests first, ends with working tested software, a demo note in `docs/demos/Mx.md`, and a UX self-review where a GUI exists. A milestone is done only when all its acceptance criteria pass in CI.
+Each milestone: tests first, ends with working tested software, a demo note in `docs/demos/` (M0 to M7 have one), and a UX self-review where a GUI exists. A milestone is done only when all its acceptance criteria pass in CI.
 
 ## M0 Foundation
 - Repo skeleton (`src/harness_tool/{core,cli,gui}`), `pyproject.toml` with pinned deps, `CLAUDE.md`, ruff + mypy strict + pytest in CI (Windows + Linux).
@@ -59,4 +59,4 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 **Acceptance:** performance targets met on the stress project; soak test passes N thousand steps; release checklist completed; usability test results triaged.
 
 ## Items needing owner input (from DECISIONS.md)
-D-10 harness boundary rule (before M3), D-11 real derating/EMC numbers (before M3 results can be trusted), D-15 title-block format (before M5), D-20 qualification requirement (now), D-14/D-19 confirmations.
+D-10 harness boundary rule (before M3), D-11 real derating/EMC numbers (before M3 results can be trusted), D-15 title-block format (before M5), D-20 qualification requirement (not needed, decided by the owner), D-14/D-19 confirmations.

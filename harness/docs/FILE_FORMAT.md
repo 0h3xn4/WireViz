@@ -14,7 +14,10 @@ logical/units/<subsystem>.json    {"units": [...]}
 logical/interfaces/<subsystem>.json  {"interfaces": [...]}   grouped by the subsystem of the first endpoint
 physical/connectors/<subsystem>.json {"connectors": [...]}   box connectors, grouped by their unit's subsystem
 physical/harnesses/<id>.json      one harness with its connectors, wires, splices, shields, branch points, segments
-.gitignore                        written once: *.bak, .harness.lock, temp files
+generated/generation.json         the last generation record (provenance for Explain)
+changelog.json                    the change log (append-only; entries cannot be deleted)
+baselines/<harness ID>/<baseline ID>.json   frozen snapshot made at each release
+.gitignore                        written once: *.bak, lock files, temp files, .harness-recovery/, .migration-backup-v*/
 .harness-recovery/session.json    autosave journal of an open project (not part of the project; ignore in Git)
 ```
 
@@ -41,7 +44,7 @@ Each file is written to a temp file, flushed, `fsync`ed and renamed; the previou
 `.harness.lock` (pid, host name, start time; no design data) prevents opening one project twice. A lock whose process no longer exists on the same host is taken over; a lock from another host is respected.
 
 ## Hash
-`model_hash` is the SHA-256 of all canonical files with the saving tool's version blanked. Outputs (from M5) will carry it, so a printed sheet can be traced to the exact model.
+`model_hash` is the SHA-256 of all canonical files with the saving tool's version blanked. Every output file carries its first 12 characters, so a printed sheet can be traced to the exact model.
 
 ## Additions in M2 (schema version stays 1)
 All additions are optional with defaults, so projects saved by M1 load unchanged (tested against `tests/fixtures/m1_project`) and are upgraded on the next save.
@@ -59,7 +62,7 @@ All optional with defaults; projects from M2 load unchanged.
 - `Wire.locked`: gauge, part, colour and length were set by a person; regeneration keeps them.
 - `Harness.generated`, `group_key`, `interfaces`: set for generated harnesses; manual harnesses keep `generated: false`.
 - `Part.mates_with`: library connector parts that mate with it.
-- `generation.json`: the last generation record: `input_hash`, `generator_version`, `next_harness_number`, `placeholders_used`, and `provenance` (object key to list of "rule: reason" lines; the data behind Explain).
+- `generated/generation.json`: the last generation record: `input_hash`, `generator_version`, `next_harness_number`, `placeholders_used`, and `provenance` (object key to list of "rule: reason" lines; the data behind Explain).
 - `config/generation.json`: generation settings (see PLACEHOLDERS.md).
 
 ## Additions in M6 (schema version stays 1)

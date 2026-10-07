@@ -18,3 +18,15 @@ def test_allowed(lic: str) -> None:
 )
 def test_rejected(lic: str) -> None:
     assert classify(lic) == "rejected"
+
+
+@pytest.mark.parametrize(
+    "lic", ["Miscellaneous", "Proprietary - limited use", "Mozilla Public License 2.0 (MPL 2.0)"]
+)
+def test_substrings_do_not_pass_as_allowed_licences(lic: str) -> None:
+    assert classify(lic) == "rejected"
+
+
+@pytest.mark.parametrize("lic", ["CC0 1.0 Universal", "Public Domain", "HPND"])
+def test_other_permissive_licences_are_allowed(lic: str) -> None:
+    assert classify(lic) == "allowed"

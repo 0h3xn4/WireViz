@@ -12,7 +12,25 @@ from pathlib import Path
 from harness_tool import __version__
 
 ROOT = Path(__file__).resolve().parents[1]
-DEPENDS = "libegl1, libgl1, libxkbcommon0, libxkbcommon-x11-0, libfontconfig1, libdbus-1-3, libxcb-cursor0"
+DEPENDS = (
+    "libc6 (>= 2.35), libegl1, libgl1, libxkbcommon0, libxkbcommon-x11-0, libfontconfig1, "
+    "libdbus-1-3, libxcb-cursor0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, "
+    "libxcb-render-util0, libxcb-shape0, libxcb-xinerama0"
+)
+COPYRIGHT = """Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: harness-tool
+
+Files: *
+Copyright: the project owner (to be filled in before distribution)
+License: LicenseRef-Proprietary
+ The licence of Harness tool itself is decided by the project owner (see pyproject.toml).
+
+Files: opt/harness-tool/_internal/* opt/harness-tool/cli/_internal/*
+Copyright: the authors of the bundled libraries
+License: see /usr/share/doc/harness-tool/LICENSES/
+ Qt for Python (PySide6, shiboken6) is used under LGPL-3; the full text of every licence
+ is in /usr/share/doc/harness-tool/LICENSES/ (the file README.txt lists them).
+"""
 
 
 def control(size_kb: int) -> str:
@@ -46,6 +64,11 @@ def build(app: Path, out_dir: Path) -> Path:
     stage = Path(tempfile.mkdtemp(prefix="deb-")) / f"harness-tool_{__version__}_amd64"
     opt = stage / "opt" / "harness-tool"
     shutil.copytree(app, opt, symlinks=True)
+    for script in (
+        "install.sh",
+        "uninstall.sh",
+    ):  # dpkg owns these files; the scripts are for tarballs
+        (opt / script).unlink(missing_ok=True)
     (stage / "usr" / "bin").mkdir(parents=True)
     (stage / "usr" / "bin" / "harness-tool").symlink_to("/opt/harness-tool/harness-tool")
     (stage / "usr" / "bin" / "harness").symlink_to("/opt/harness-tool/cli/harness")
@@ -61,6 +84,11 @@ def build(app: Path, out_dir: Path) -> Path:
     icons = stage / "usr" / "share" / "icons" / "hicolor" / "scalable" / "apps"
     icons.mkdir(parents=True)
     shutil.copy(pk / "harness-tool.svg", icons / "harness-tool.svg")
+    doc = stage / "usr" / "share" / "doc" / "harness-tool"
+    doc.mkdir(parents=True)
+    (doc / "copyright").write_text(COPYRIGHT)
+    if (opt / "LICENSES").is_dir():
+        shutil.copytree(opt / "LICENSES", doc / "LICENSES")
     size_kb = sum(f.stat().st_size for f in stage.rglob("*") if f.is_file()) // 1024
     (stage / "DEBIAN").mkdir()
     (stage / "DEBIAN" / "control").write_text(control(size_kb))

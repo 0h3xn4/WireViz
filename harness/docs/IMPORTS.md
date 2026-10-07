@@ -5,9 +5,13 @@ Everything is previewed row by row and applied as one undo step (CLI: nothing is
 ## Interfaces (CSV or XLSX)
 Editor: File > Import interfaces. Columns: id, type, from, to, redundancy (optional); headers are matched by name.
 
+## File formats
+CSV files may use commas, semicolons or tabs between columns (the header line decides), UTF-8 with or without a byte order mark. A number with a decimal comma must be in quotes when commas separate the columns (`"1,5"`), or the file must use semicolons; a row with more columns than the header is refused rather than cut off. At most 20,000 rows and 8 MB; XLSX files are read from the first sheet. Only regular files are read (not pipes or devices).
+
 ## Approved parts list (D-12)
 `harness import-parts DIR FILE --approved A --approved Yes --pending Review --rejected X [--category connector] [--dry-run]`
 
+- Every row needs a category (a `category` column or `--category`); a row without one is refused ("Category '(empty)' is not one of ...").
 - Columns are matched by header: part ID or part number, manufacturer, description, category, specification, approval status, pin count, mass (g), mass per metre (g/m), mating part.
 - **You say what the approval values mean** with `--approved`, `--pending`, `--rejected` (repeat for several values). A value in none of the lists is an error for that row. The tool never decides that something is approved.
 - New parts are added; existing parts are updated with the columns that are filled in. Imported parts are no longer marked as example data.

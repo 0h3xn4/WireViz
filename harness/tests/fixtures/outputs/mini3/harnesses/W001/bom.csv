@@ -1,4 +1,4 @@
-# harness-tool 0.1.0rc3 model caa811c70937
+# harness-tool 0.1.0rc4 model 6c35cd91012b
 Part,Category,Manufacturer,Part number,Description,Approval,Quantity,Unit,Wires without length,Used in
 (no part),unknown,,,,missing from parts list,0,m,2,W001
 EX-DSUB-9-F,connector,,,"D-sub 9-pin, female (example)",pending (example data),1,ea,,W001

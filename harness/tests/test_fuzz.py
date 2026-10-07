@@ -27,6 +27,7 @@ from harness_tool.core.outputs.build import build_outputs, outputs_status
 from harness_tool.core.outputs.verify import verify_outputs
 from harness_tool.core.samples import mini3
 from harness_tool.core.verify import verify_project
+from tests.helpers import time_limit
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore::hypothesis.errors.HypothesisWarning"
@@ -200,7 +201,7 @@ def test_zip_bomb_workbook_is_refused_quickly(tmp_path: Path) -> None:
     t = time.perf_counter()
     with pytest.raises(ImportError_):
         read_table(f)
-    assert time.perf_counter() - t < 5
+    assert time.perf_counter() - t < time_limit(5)
 
 
 @FUZZ

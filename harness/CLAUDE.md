@@ -3,13 +3,13 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0 to M7 done (`docs/demos/`); version 0.1.0rc1. Platform: Ubuntu only (D-110). What is left needs people: owner answers on D-10, D-11, D-15, D-20, usability sessions, a screen-reader pass, sign-off (docs/RELEASE.md). Generation runs on placeholders until the owner answers D-10 (harness boundary rule) and D-11 (derating numbers); results must say so.
+M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version 0.1.0rc4. Platform: Ubuntu only (D-110). What is left needs people: owner answers on D-10 (harness boundary rule) and D-15 (title block), the real derating/EMC values (D-11) and approved parts list (D-12) which the owner will supply, usability sessions, a screen-reader pass, sign-off (docs/RELEASE.md). D-20 is not needed. Generation runs on placeholders until then; results must say so.
 
 ## Commands (run from `harness/`)
-- Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
+- Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 libxcb-cursor0 for Qt)
 - Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core, enforced)
 - Lint/type: `ruff format . && ruff check . && mypy`
-- CLI: `harness --version | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR | drc DIR | export DIR | verify DIR --outputs | review/release/revise/diff/log DIR HARNESS | compare OLD NEW`; GUI: `harness-gui`
+- CLI: `harness --version | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR | drc DIR | export DIR | verify DIR --outputs | review/release/revise/diff/log DIR HARNESS | compare OLD NEW | config DIR | import-parts/import-lengths/import-netlist DIR FILE`; GUI: `harness-gui`
 - GUI tests: `QT_QPA_PLATFORM=offscreen pytest tests/test_gui_journeys.py` (conftest sets it); timings: `python -m tools.bench_gui`; screenshots of the real editor: `python -m tools.gui_screenshots` (docs/ux/qt)
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmarks: `python -m tools.bench_stress`, `python -m tools.bench_generate`
