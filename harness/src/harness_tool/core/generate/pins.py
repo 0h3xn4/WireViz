@@ -28,7 +28,9 @@ class Allocation:
     warnings: list[tuple[str, str]] = field(default_factory=list)
 
 
-def _allocate_fixed(connector: Connector, requests: list[Request]) -> Allocation:
+def _allocate_fixed(
+    connector: Connector, requests: list[Request], previous: dict[tuple[str, str], str]
+) -> Allocation:
     """The pinout is fixed by the unit's design: every signal goes to the free pin of that name.
     A signal the connector has no pin for is an error; nothing is placed on unnamed pins."""
     result = Allocation()
@@ -47,8 +49,10 @@ def _allocate_fixed(connector: Connector, requests: list[Request]) -> Allocation
             if not free:
                 missing.append(sig)
                 continue
-            picked.append((sig, free[0]))
-            used.add(free[0])
+            before = previous.get((req.interface_id, sig))
+            chosen = before if before in free else free[0]  # keep the earlier pin: small diffs
+            picked.append((sig, chosen))
+            used.add(chosen)
         if missing:
             for _sig, pid in picked:  # all or nothing per interface
                 used.discard(pid)
@@ -89,11 +93,15 @@ def allocate(
     requests: list[Request],
     previous: dict[tuple[str, str], str],
     gap_pins: int,
+    held: dict[tuple[str, str], str] | None = None,
 ) -> Allocation:
-    """Allocate pins of `connector` for `requests`. Locked pins (and their signals) are untouched."""
+    """Allocate pins of `connector` for `requests`. Locked pins (and their signals) are untouched.
+    `held` maps (interface, signal) to a locked pin that already carries that signal: it is used
+    as it is instead of placing the signal on another pin."""
     result = Allocation()
-    if any(p.fixed and p.signal and not p.locked for p in connector.pins):
-        return _allocate_fixed(connector, requests)
+    if any(p.fixed and p.signal for p in connector.pins):  # even when a released harness holds some
+        return _allocate_fixed(connector, requests, previous)
+    held = held or {}
     order = [p.id for p in connector.pins]
     index = {pid: k for k, pid in enumerate(order)}
     taken = {p.id for p in connector.pins if p.locked}
@@ -105,6 +113,15 @@ def allocate(
         is_power = req.itype.category in ("power", "ground")
         min_start = 0 if is_power else (power_end + 1 + gap_pins if power_end >= 0 else 0)
         for why, signals in groups_of(req.itype):
+            for s in [s for s in signals if (req.interface_id, s) in held]:
+                pid = held[(req.interface_id, s)]
+                result.pins[(req.interface_id, s)] = pid
+                result.reasons.setdefault(pid, []).append(
+                    f"pin-allocation: {s} of {req.interface_id} stays on pin {pid} because the pin is locked"
+                )
+            signals = [s for s in signals if (req.interface_id, s) not in held]
+            if not signals:
+                continue
             k = len(signals)
             chosen: list[str] | None = None
             reason = ""  # only set when a rule had to be relaxed

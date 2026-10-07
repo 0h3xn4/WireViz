@@ -15,6 +15,7 @@ class Group:
     chain: str
     interface_ids: tuple[str, ...]
     label: str  # human name of the harness, e.g. "OBC to RW1"
+    zones: tuple[str, str] | None = None  # only for per_zone_pair
 
 
 @dataclass
@@ -30,6 +31,11 @@ class Segmentation:
     skipped: list[Skipped] = field(default_factory=list)
     mode: str = "per_connector_pair"
     notes: list[str] = field(default_factory=list)
+
+
+def _esc(name: str) -> str:
+    """Zone names may contain the key separator; escape so two different pairs never collide."""
+    return name.replace("%", "%25").replace("|", "%7C")
 
 
 def _cfg(project: Project, name: str) -> dict[str, object]:
@@ -72,6 +78,8 @@ def segment(project: Project) -> Segmentation:
     if mode not in MODES:
         result.notes.append(f"segmentation.mode '{mode}' is not known; using per_connector_pair")
     buckets: dict[str, list[str]] = {}
+    zone_pairs: dict[str, tuple[str, str]] = {}
+    classes: dict[str, dict[str, list[str]]] = {}
     labels: dict[str, str] = {}
     chains: dict[str, str] = {}
     manual = {
@@ -113,14 +121,30 @@ def segment(project: Project) -> Segmentation:
         elif result.mode == "per_unit_pair":
             key, label = f"up|{chain}|{cls}|{ua}|{ub}", f"{ua} to {ub}"
         else:
-            key, label = f"zp|{chain}|{cls}|{za}|{zb}", f"{za or 'no zone'} to {zb or 'no zone'}"
+            key, label = (
+                f"zp|{chain}|{cls}|{_esc(za)}|{_esc(zb)}",
+                f"{za or 'no zone'} to {zb or 'no zone'}",
+            )
+            zone_pairs[key] = (za, zb)
         if cls != "main":
             label += f" ({cls.removeprefix('cat-')})"
         if chain == "redundant":
             label += " (redundant)"
         buckets.setdefault(key, []).append(i.id)
+        classes.setdefault(key, {}).setdefault(cls, []).append(i.id)
         labels[key] = label
         chains[key] = chain
     for key in sorted(buckets):
-        result.groups.append(Group(key, result.mode, chains[key], tuple(buckets[key]), labels[key]))
+        result.groups.append(
+            Group(
+                key, result.mode, chains[key], tuple(buckets[key]), labels[key], zone_pairs.get(key)
+            )
+        )
+        if len(classes[key]) > 1:
+            parts = "; ".join(f"{c}: {', '.join(ids)}" for c, ids in sorted(classes[key].items()))
+            result.notes.append(
+                f"{labels[key]} mixes interface classes ({parts}). In this mode they share a "
+                "harness because they use the same pair of unit connectors; give the separated "
+                "class its own connector, or segment per unit pair or per zone pair."
+            )
     return result

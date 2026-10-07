@@ -144,6 +144,8 @@ def _parse_sexpr(data: bytes) -> Netlist:
             ref = _text(comp, "ref")
             if not ref:
                 continue
+            if ref in result.components:
+                raise NetlistError(f"Two components in the netlist have the reference '{ref}'.")
             c = Component(ref=ref, value=_text(comp, "value"), footprint=_text(comp, "footprint"))
             for fields in _kids(comp, "fields"):
                 for f in _kids(fields, "field"):
@@ -166,10 +168,23 @@ def _parse_sexpr(data: bytes) -> Netlist:
     return result
 
 
+def _to_utf8(data: bytes) -> bytes:
+    """Drop a byte order mark and convert UTF-16 text (some editors save it that way)."""
+    if data.startswith(b"\xef\xbb\xbf"):
+        return data[3:]
+    if data.startswith((b"\xff\xfe", b"\xfe\xff")):
+        try:
+            return data.decode("utf-16").encode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise NetlistError("The netlist is not valid UTF-16 text.") from exc
+    return data
+
+
 def parse_netlist(data: bytes) -> Netlist:
     """Parse a KiCad netlist, S-expression (KiCad's default) or XML. Hostile input is refused."""
     if len(data) > MAX_BYTES:
         raise NetlistError("The netlist is too large (limit 32 MB).")
+    data = _to_utf8(data)
     if data.lstrip()[:1] == b"(":
         return _parse_sexpr(data)
     return _parse_xml(data)
@@ -182,7 +197,7 @@ def _parse_xml(data: bytes) -> Netlist:
         )
     try:
         root = ElementTree.fromstring(data)  # noqa: S314
-    except ElementTree.ParseError as exc:
+    except (ElementTree.ParseError, LookupError, ValueError) as exc:
         raise NetlistError(f"The file is not valid XML ({exc}).") from exc
     if root.tag != "export":
         raise NetlistError("The file is XML but not a KiCad netlist (no <export> element).")
@@ -200,6 +215,8 @@ def _parse_xml(data: bytes) -> Netlist:
             name = "".join((f.get("name") or "").lower().split()).replace("_", "")
             if name:
                 c.fields[name] = (f.text or "").strip()
+        if ref in result.components:
+            raise NetlistError(f"Two components in the netlist have the reference '{ref}'.")
         result.components[ref] = c
     for net in root.findall("nets/net"):
         name = net.get("name") or ""
@@ -232,9 +249,12 @@ def clean_net(name: str) -> str | None:
     sheet paths are dropped ("/power/28V" -> "28V"); "Net-(J1-Pad3)" and "unconnected-(...)"
     are KiCad's own names for pins nobody named or connected."""
     n = name.strip()
-    if not n or n.startswith("unconnected-") or n.startswith("Net-(") or n.startswith("/Net-("):
+    if n.startswith("/"):  # a net of the root sheet or of a sub-sheet: drop the sheet path
+        n = n.rsplit("/", 1)[-1]
+    # (a global label such as "A/B" has no leading "/" and keeps its whole name)
+    if not n or n.startswith("unconnected-") or n.startswith("Net-("):
         return None
-    return n.rsplit("/", 1)[-1] or None
+    return n
 
 
 def natural_key(text: str) -> tuple[object, ...]:
@@ -342,7 +362,7 @@ def plan_netlist_import(
             plan.rows.append(RowResult(ref, False, f"Connector {cid} {why}", cid))
             continue
         pins: dict[str, Pin] = {}
-        bad = [n for n in comp.pins if not PIN_RE.fullmatch(n)]
+        bad = [n for n in comp.pins if not PIN_RE.fullmatch(n) or n.endswith(".")]
         if bad:
             plan.rows.append(
                 RowResult(
@@ -353,7 +373,21 @@ def plan_netlist_import(
                 )
             )
             continue
+        if part.pin_count and (
+            len(comp.pins) > part.pin_count
+            or any(n.isdigit() and int(n) > part.pin_count for n in comp.pins)
+        ):
+            plan.rows.append(
+                RowResult(
+                    ref,
+                    False,
+                    f"{ref} has {len(comp.pins)} pins in KiCad but part {part_id} has only {part.pin_count}; choose the part with --part {ref}=PART",
+                    cid,
+                )
+            )
+            continue
         seen_names: dict[str, str] = {}
+        failed = False
         for number in sorted(comp.pins, key=natural_key):
             info = comp.pins[number]
             raw = (info.function if use_pin_function else clean_net(info.net)) or None
@@ -368,12 +402,26 @@ def plan_netlist_import(
                 seen_names.setdefault(signal, number)
             was = next((p for p in (old.pins if old else []) if p.id == number), None)
             base = was or Pin(id=number)
-            pins[number] = evolve(
-                base,
-                signal=signal,
-                fixed=signal is not None,
-                interface_id=None if signal is not None else base.interface_id,
-            )
+            try:
+                pins[number] = evolve(
+                    base,
+                    signal=signal,
+                    fixed=signal is not None,
+                    interface_id=None if signal is not None else base.interface_id,
+                )
+            except ValueError:  # a signal name longer than a signal name may be, for example
+                plan.rows.append(
+                    RowResult(
+                        ref,
+                        False,
+                        f"The net name on pin {number} cannot be used as a signal name (too long, or unusual characters); rename the net or map it with --signal-map",
+                        cid,
+                    )
+                )
+                failed = True
+                break
+        if failed:
+            continue
         if part.pin_count and all(n.isdigit() for n in pins) and len(pins) < part.pin_count:
             for k in range(1, part.pin_count + 1):  # pins KiCad never mentions are spare
                 pins.setdefault(

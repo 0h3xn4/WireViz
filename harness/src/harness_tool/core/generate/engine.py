@@ -9,7 +9,7 @@ the same bytes. Released harnesses are frozen; locked pins and wires are never m
 import hashlib
 import json
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, cast
 
 from harness_tool import __version__
@@ -29,6 +29,7 @@ from harness_tool.core.model import (
     Wire,
     evolve,
 )
+from harness_tool.core.vcs.snapshot import carried_interfaces
 
 from .lengths import path_length
 from .naming import Namer, namer_for
@@ -221,7 +222,26 @@ def plan_generation(
     }  # manual harnesses own their pins
     tick(0.02, "Segmenting")
 
-    live = [g for g in seg.groups if not (old_by_key.get(g.key) and old_by_key[g.key].id in frozen)]
+    frozen_owned = {
+        iid: h.id for h in old_by_key.values() if h.id in frozen for iid in carried_interfaces(h)
+    }
+    live: list[Group] = []
+    for g in seg.groups:
+        if old_by_key.get(g.key) and old_by_key[g.key].id in frozen:
+            continue
+        # an interface a released harness already carries must not be wired a second time, even
+        # when a change (redundancy, segmentation mode) moved it into a different group
+        mine = tuple(i for i in g.interface_ids if i not in frozen_owned)
+        for iid in g.interface_ids:
+            if iid in frozen_owned:
+                ctx.finding(
+                    "warning",
+                    "frozen_changed",
+                    f"{iid} is carried by {frozen_owned[iid]}, which is released, so it was not wired again. A new revision of {frozen_owned[iid]} is needed.",
+                    iid,
+                )
+        if mine:
+            live.append(replace(g, interface_ids=mine))
     _allocate_pins(ctx, live, frozen_ifaces, tick)
 
     new_harnesses: dict[str, Harness] = {}
@@ -279,12 +299,14 @@ def plan_generation(
     )
     tick(0.95, "Recording provenance")
     scratch = clone_with(project, ops)
+    kept_prov = _frozen_provenance(project, old_by_key, frozen, frozen_ifaces)
+    provenance = {**kept_prov, **ctx.prov}
     record = GenerationRecord(
         input_hash=input_hash(scratch),
         generator_version=__version__,
         next_harness_number=ctx.next_n,
         placeholders_used=sorted(n for n, c in project.config.items() if c.placeholder),
-        provenance={k: ctx.prov[k] for k in sorted(ctx.prov)},
+        provenance={k: provenance[k] for k in sorted(provenance)},
     )
     if project.generation != record:
         ops.append(SetGeneration(record))
@@ -297,6 +319,32 @@ def plan_generation(
         )
     )
     return GenerationPlan(ops, report, record, new_harnesses)
+
+
+def _frozen_provenance(
+    project: Project,
+    old_by_key: dict[str, Harness],
+    frozen: set[str],
+    frozen_ifaces: set[str],
+) -> dict[str, list[str]]:
+    """Released harnesses are not regenerated, so the earlier explanation of their wires, pins and
+    connectors is carried over; dropping it would make 'Why is it like this?' go blank."""
+    prev = project.generation.provenance if project.generation else {}
+    ids: set[str] = set()
+    for h in old_by_key.values():
+        if h.id in frozen:
+            ids |= {h.id} | {c.id for c in h.connectors} | {w.id for w in h.wires}
+    pins = {
+        f"pin:{c.id}.{pin.id}"
+        for c in project.connectors.values()
+        for pin in c.pins
+        if pin.interface_id in frozen_ifaces
+    }
+    return {
+        k: v
+        for k, v in prev.items()
+        if k in pins or (k.split(":", 1)[-1] in ids and not k.startswith("pin:"))
+    }
 
 
 def _allocate_pins(
@@ -343,11 +391,21 @@ def _allocate_pins(
 
         pinned = [keep(pin) for pin in box.pins]
         work = evolve(box, pins=pinned)
+        held = {
+            (pin.interface_id, pin.signal): pin.id
+            for pin in box.pins
+            if pin.locked
+            and pin.interface_id
+            and pin.signal
+            and pin.interface_id not in frozen_ifaces
+            and not pin.fixed
+        }
         res = allocate(
             work,
             requests[cid],
             {k2: v for k2, v in previous.items() if k2[0] not in frozen_ifaces},
             gap,
+            held,
         )
         ctx.alloc[cid] = res
         for iid, msg in res.errors:
@@ -389,6 +447,10 @@ def _connector_ops(ctx: _Ctx, frozen_ifaces: set[str]) -> list[Op]:
                 or pin.interface_id in frozen_ifaces
                 or (pin.signal and pin.interface_id is None)
             ):
+                if pin.interface_id is not None and pin.interface_id not in p.interfaces:
+                    pin = evolve(
+                        pin, interface_id=None
+                    )  # its interface is gone; the pin stays locked
                 pins.append(pin)
             elif pin.id in assigned:
                 iid, sig = assigned[pin.id]
@@ -418,7 +480,8 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
         return None
     zones = None
     if group.mode == "per_zone_pair":
-        zones = (group.key.split("|")[-2], group.key.split("|")[-1])
+        zones = group.zones
+    start_n = ctx.next_n
     hid = old.id if old else _new_harness_id(ctx)
     ends: dict[str, list[str]] = {"X": [], "Y": []}
     oriented: dict[str, tuple[str, str]] = {}
@@ -566,6 +629,9 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
             )
     if not wires:
         ctx.finding("warning", "no_wires", f"{group.label} produced no wires.")
+        if old is None:  # give the number back, or every run would use up one more
+            ctx.next_n = start_n
+            ctx.used_ids.discard(hid)
         return None
     wires.sort(key=lambda w: w.id)
     shields = _shields(ctx, hid, ifaces, wires, old)
@@ -647,6 +713,19 @@ def _size(ctx: _Ctx, wire: Wire, i: InterfaceInstance, category: str) -> Wire:
     if sizing.error:
         ctx.finding("error", "wire_sizing", f"{wire.id}: {sizing.error}.", wire.id)
     out = wire if sizing.awg is None else evolve(wire, gauge_awg=sizing.awg)
+    if out.gauge_awg is None and i.max_current_a is None:
+        # no current to size for: the interface type's default, else the general default
+        itype = ctx.project.interface_types.get(i.type_id)
+        default = itype.default_gauge_awg if itype and itype.default_gauge_awg is not None else None
+        if default is None:
+            general = _num(ctx.gen.get("default_gauge_awg"))
+            default = int(general) if general is not None and general == int(general) else None
+        if default is not None:
+            out = evolve(out, gauge_awg=default)
+            ctx.note(
+                f"gauge:{wire.id}",
+                f"wire-sizing: {i.type_id} has no current to size for, so the default gauge AWG {default} from the configuration was used",
+            )
     _check_contacts(ctx, out, i)
     return out
 

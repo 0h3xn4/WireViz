@@ -51,7 +51,28 @@ class Namer:
         return self._fmt("segment", harness=harness, n=n)
 
 
+def _distinct(kind: str, template: str) -> bool:
+    """A template must give a different name for every harness and every number, or IDs collide
+    (and a template without a number would make generation search for a free name forever)."""
+    if kind == "harness":
+        samples: list[dict[str, object]] = [{"n": n} for n in (1, 2, 3)]
+    else:
+        samples = [{"harness": h, "n": n} for h in ("H1", "H2") for n in (1, 2)]
+    try:
+        names = {template.format(**kw) for kw in samples}
+    except (KeyError, IndexError, ValueError):
+        return False
+    return len(names) == len(samples)
+
+
 def namer_for(project: Project) -> Namer:
     cfg = project.config.get("naming")
     values = cfg.values if cfg is not None else {}
-    return Namer({k: v for k, v in values.items() if isinstance(v, str)})
+    templates = {k: v for k, v in values.items() if isinstance(v, str)}
+    namer = Namer({})
+    for kind, template in templates.items():
+        if kind in DEFAULTS and not _distinct(kind, template):
+            namer.warnings.append(f"naming.{kind}")  # reported; the default is used instead
+        else:
+            namer.templates[kind] = template
+    return namer
