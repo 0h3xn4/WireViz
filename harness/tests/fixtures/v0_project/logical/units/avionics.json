@@ -1,0 +1,6 @@
+{
+  "units": [
+    {"id": "OBC-A", "mass_relevant": true, "name": "OBC side A", "notes": "", "redundant": false, "subsystem": "avionics", "zone": null},
+    {"id": "OBC-B", "mass_relevant": true, "name": "OBC side B", "notes": "", "redundant": true, "subsystem": "avionics", "zone": null}
+  ]
+}

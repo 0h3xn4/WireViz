@@ -47,3 +47,14 @@ Format: ID, decision, one-line rationale. `Default` = chosen by Claude Code beca
 | D-43 | Licence classifier: SPDX `OR` needs any allowed, `AND` and `;` need all allowed, GPL/AGPL without LGPL rejected, unknown rejected. | Conservative allow-list. |
 | D-44 | Qt build excludes QtNetwork, WebEngine, WebChannel, WebSockets, QtQml/Quick, QtPdf, QtSvg. QtSvg may be re-enabled in M2 if the canvas needs it. | Offline guarantee and smaller package. |
 | D-45 | Coverage gate disabled until M1 (empty core has 0 statements). | Avoids a meaningless failure; enable in M1. |
+
+## M1 additions
+| ID | Decision | Rationale |
+| --- | --- | --- |
+| D-50 | Connector IDs (box and harness) and wire IDs are unique across the whole project. Default naming `UNIT-J01`, `W001-P1`, `W001-001` supports this. | Wires and interfaces can then reference connectors by one ID. Confirm. |
+| D-51 | IDs must also be unique ignoring case. | Windows and macOS file systems are case-insensitive; harness IDs are file names. |
+| D-52 | Models are immutable pydantic objects with strict types (no coercion); changes use `evolve()` and `commands`. | Cheap undo (store old objects), safe sharing, no silent type conversion of flight data. |
+| D-53 | Undo/redo stores operations (put/delete of whole objects), not project snapshots. | Memory stays small at stress size. |
+| D-54 | A project with unloadable parts cannot be saved over its folder, only "save as", which also writes the rejected data verbatim. | Never lose data silently; salvage the rest. |
+| D-55 | Saves with integrity errors are refused unless explicitly allowed (recovery copies). | Spec: validate on every save. |
+| D-56 | No new third-party dependencies in M1 (pydantic only); hypothesis is dev-only. | Keeps the SBOM small. |

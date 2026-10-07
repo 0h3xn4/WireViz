@@ -1,0 +1,167 @@
+"""Referential integrity of a project. Runs on every load, save and transaction."""
+
+from collections import Counter
+from collections.abc import Iterable
+
+from .issues import Issue
+from .model import Connector, Harness, Project
+
+
+def _err(code: str, message: str, object_id: str | None = None) -> Issue:
+    return Issue("error", code, message, None, object_id)
+
+
+def _casefold_duplicates(kind: str, ids: Iterable[str]) -> list[Issue]:
+    counts = Counter(i.casefold() for i in ids)
+    return [
+        _err(
+            "duplicate_id",
+            f"Two {kind} have IDs that differ only by upper/lower case ('{k}'). "
+            "Windows treats them as the same file name; rename one.",
+            k,
+        )
+        for k, n in sorted(counts.items())
+        if n > 1
+    ]
+
+
+def _check_connector(project: Project, c: Connector, owner: str) -> list[Issue]:
+    out: list[Issue] = []
+    part = project.parts.get(c.part_id)
+    if part is None:
+        out.append(
+            _err(
+                "unknown_part",
+                f"Connector '{c.id}' uses part '{c.part_id}', which is not in the parts library.",
+                c.id,
+            )
+        )
+    elif part.category != "connector":
+        out.append(
+            _err("wrong_part_category", f"Connector '{c.id}' uses '{c.part_id}', which is not a "
+                 "connector part.", c.id)
+        )  # fmt: skip
+    elif part.pin_count is not None and len(c.pins) > part.pin_count:
+        out.append(
+            _err(
+                "too_many_pins",
+                f"Connector '{c.id}' has {len(c.pins)} pins but part '{part.id}' only has "
+                f"{part.pin_count}.",
+                c.id,
+            )
+        )
+    if c.role == "box":
+        if c.unit_id is None or c.unit_id not in project.units:
+            out.append(
+                _err(
+                    "unknown_unit",
+                    f"Box connector '{c.id}' does not belong to an existing unit.",
+                    c.id,
+                )
+            )
+        if owner != "project":
+            out.append(_err("box_in_harness", f"Box connector '{c.id}' is stored inside harness '{owner}'.", c.id))  # fmt: skip
+    else:
+        if c.unit_id is not None:
+            out.append(_err("cable_connector_has_unit", f"Connector '{c.id}' is not a box connector but names a unit.", c.id))  # fmt: skip
+        if owner == "project":
+            out.append(_err("cable_connector_outside_harness", f"Connector '{c.id}' is a cable/in-line connector and must belong to a harness.", c.id))  # fmt: skip
+    pin_counts = Counter(p.id for p in c.pins)
+    out.extend(
+        _err("duplicate_pin", f"Connector '{c.id}' lists pin '{pid}' more than once.", c.id)
+        for pid, n in sorted(pin_counts.items())
+        if n > 1
+    )
+    return out
+
+
+def _check_harness(project: Project, h: Harness, all_wires: Counter[str]) -> list[Issue]:
+    out: list[Issue] = []
+    local = {c.id: c for c in h.connectors}
+    if len(local) != len(h.connectors):
+        out.append(
+            _err("duplicate_id", f"Harness '{h.id}' lists the same connector ID twice.", h.id)
+        )
+    reachable = {**project.connectors, **local}
+    wire_ids = {w.id for w in h.wires}
+    for w in h.wires:
+        if all_wires[w.id] > 1:
+            out.append(_err("duplicate_id", f"Wire ID '{w.id}' is used more than once in the project.", w.id))  # fmt: skip
+        for cid, pin in ((w.from_connector, w.from_pin), (w.to_connector, w.to_pin)):
+            conn = reachable.get(cid)
+            if conn is None:
+                out.append(_err("dangling_wire", f"Wire '{w.id}' ends on connector '{cid}', which does not exist (or is not part of harness '{h.id}').", w.id))  # fmt: skip
+            elif pin not in {p.id for p in conn.pins}:
+                out.append(_err("dangling_wire", f"Wire '{w.id}' ends on pin '{pin}' of connector '{cid}', but that pin does not exist.", w.id))  # fmt: skip
+        if w.part_id is not None:
+            part = project.parts.get(w.part_id)
+            if part is None or part.category != "wire":
+                out.append(_err("unknown_part", f"Wire '{w.id}' uses '{w.part_id}', which is not a wire part in the library.", w.id))  # fmt: skip
+        if w.interface_id is not None and w.interface_id not in project.interfaces:
+            out.append(_err("unknown_interface", f"Wire '{w.id}' traces to interface '{w.interface_id}', which does not exist.", w.id))  # fmt: skip
+    groups = [(g.id, g.wire_ids) for g in h.shields]
+    groups += [(g.id, g.wire_ids) for g in h.splices]
+    for gid, members in groups:
+        missing = sorted(set(members) - wire_ids)
+        if missing:
+            out.append(_err("dangling_wire", f"'{gid}' in harness '{h.id}' refers to wires that do not exist: {', '.join(missing)}.", gid))  # fmt: skip
+    nodes = set(local) | {b.id for b in h.branch_points}
+    for s in h.segments:
+        for node in (s.from_node, s.to_node):
+            if node not in nodes:
+                out.append(_err("dangling_segment", f"Segment '{s.id}' in harness '{h.id}' ends at '{node}', which is not a connector or branch point of this harness.", s.id))  # fmt: skip
+    for kind, ids in (
+        ("shield groups", [s.id for s in h.shields]),
+        ("splices", [s.id for s in h.splices]),
+        ("segments", [s.id for s in h.segments]),
+        ("branch points", [b.id for b in h.branch_points]),
+    ):
+        for dup, n in sorted(Counter(ids).items()):
+            if n > 1:
+                out.append(_err("duplicate_id", f"Harness '{h.id}' has {n} {kind} with ID '{dup}'.", dup))  # fmt: skip
+    return out
+
+
+def check_integrity(project: Project) -> list[Issue]:
+    """Return every consistency problem; an empty list means the model is internally consistent."""
+    out: list[Issue] = []
+    for kind, ids in (
+        ("units", project.units), ("interfaces", project.interfaces),
+        ("interface types", project.interface_types), ("parts", project.parts),
+        ("harnesses", project.harnesses),
+    ):  # fmt: skip
+        out.extend(_casefold_duplicates(kind, ids))
+    all_connectors = [c.id for c in project.connectors.values()]
+    all_connectors += [c.id for h in project.harnesses.values() for c in h.connectors]
+    out.extend(_casefold_duplicates("connectors", set(all_connectors)))
+    for cid, n in sorted(Counter(all_connectors).items()):
+        if n > 1:
+            out.append(_err("duplicate_id", f"Connector ID '{cid}' is used {n} times; connector IDs must be unique across the whole project.", cid))  # fmt: skip
+
+    for t in project.interface_types.values():
+        names = Counter(s.name for s in t.signals)
+        out.extend(
+            _err("duplicate_signal", f"Interface type '{t.id}' defines signal '{n}' twice.", t.id)
+            for n, c in sorted(names.items())
+            if c > 1
+        )
+    for i in project.interfaces.values():
+        if i.type_id not in project.interface_types:
+            out.append(_err("unknown_interface_type", f"Interface '{i.id}' uses interface type '{i.type_id}', which does not exist.", i.id))  # fmt: skip
+        if len(i.endpoints) < 2:
+            out.append(_err("too_few_endpoints", f"Interface '{i.id}' connects fewer than two units.", i.id))  # fmt: skip
+        for e in i.endpoints:
+            if e.unit_id not in project.units:
+                out.append(_err("unknown_unit", f"Interface '{i.id}' refers to unit '{e.unit_id}', which does not exist.", i.id))  # fmt: skip
+            if e.connector_id is not None:
+                conn = project.connectors.get(e.connector_id)
+                if conn is None or conn.unit_id != e.unit_id:
+                    out.append(_err("bad_endpoint_connector", f"Interface '{i.id}' uses connector '{e.connector_id}', which is not a connector of unit '{e.unit_id}'.", i.id))  # fmt: skip
+    for c in project.connectors.values():
+        out.extend(_check_connector(project, c, "project"))
+    wire_counts = Counter(w.id for h in project.harnesses.values() for w in h.wires)
+    for h in project.harnesses.values():
+        for c in h.connectors:
+            out.extend(_check_connector(project, c, h.id))
+        out.extend(_check_harness(project, h, wire_counts))
+    return out

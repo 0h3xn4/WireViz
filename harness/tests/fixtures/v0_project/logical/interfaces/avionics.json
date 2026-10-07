@@ -1,0 +1,19 @@
+{
+  "interfaces": [
+    {
+      "endpoints": [
+        {"connector_id": null, "role": null, "unit_id": "OBC-A"},
+        {"connector_id": null, "role": null, "unit_id": "OBC-B"}
+      ],
+      "flow": "unspecified",
+      "id": "IF-1",
+      "max_current_a": null,
+      "name": "cross strap",
+      "notes": "",
+      "redundancy": "none",
+      "requirement_id": null,
+      "type_id": "uart",
+      "voltage_v": null
+    }
+  ]
+}
