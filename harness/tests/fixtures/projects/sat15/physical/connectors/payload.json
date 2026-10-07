@@ -1,0 +1,268 @@
+{
+  "connectors": [
+    {
+      "carries": [
+        "power_primary"
+      ],
+      "gender": "unspecified",
+      "id": "PL1-J01",
+      "keying": null,
+      "mates_with": null,
+      "name": "J01",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-003",
+          "locked": false,
+          "signal": "PWR",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-003",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "PL1"
+    },
+    {
+      "carries": [
+        "spacewire"
+      ],
+      "gender": "unspecified",
+      "id": "PL1-J02",
+      "keying": null,
+      "mates_with": null,
+      "name": "J02",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DIN+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DIN-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SIN+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SIN-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DOUT+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DOUT-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SOUT+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SOUT-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "PL1"
+    },
+    {
+      "carries": [
+        "rf_coax"
+      ],
+      "gender": "unspecified",
+      "id": "PL1-J03",
+      "keying": null,
+      "mates_with": null,
+      "name": "J03",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "PL1"
+    }
+  ]
+}

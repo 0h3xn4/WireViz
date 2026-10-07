@@ -50,3 +50,13 @@ All additions are optional with defaults, so projects saved by M1 load unchanged
 - `logical/layout.json`: ordered `zones` (diagram lanes) and one `placements` entry per unit (`id` is the unit ID, `x`/`y` in scene units). Units without a placement are placed deterministically at load (`edit.ops_autoplace`).
 - `waivers.json`: `id` is `<rule>.<object>`; `justification` is mandatory (at least 10 characters).
 - Autosave journal: the full set of project files as text in `.harness-recovery/session.json`, written (atomically) 1.5 s after the last change while a project folder is open; removed on save; offered for restore on the next open if it differs from the files on disk. Never written for the unsaved sample project, so no project content leaves the project folder.
+
+## Additions in M3 (schema version stays 1)
+All optional with defaults; projects from M2 load unchanged.
+- `Pin.interface_id`: interface that owns the pin (set by generation; locked pins are never reassigned).
+- `Connector.mates_with`: on a cable connector, the box connector it mates with.
+- `Wire.locked`: gauge, part, colour and length were set by a person; regeneration keeps them.
+- `Harness.generated`, `group_key`, `interfaces`: set for generated harnesses; manual harnesses keep `generated: false`.
+- `Part.mates_with`: library connector parts that mate with it.
+- `generation.json`: the last generation record: `input_hash`, `generator_version`, `next_harness_number`, `placeholders_used`, and `provenance` (object key to list of "rule: reason" lines; the data behind Explain).
+- `config/generation.json`: generation settings (see PLACEHOLDERS.md).

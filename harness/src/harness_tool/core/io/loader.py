@@ -15,6 +15,7 @@ from harness_tool.core.model import (
     SCHEMA_VERSION,
     ConfigFile,
     Connector,
+    GenerationRecord,
     Harness,
     InterfaceInstance,
     InterfaceType,
@@ -180,6 +181,13 @@ def _build(files: dict[str, Any], project: Project, issues: list[Issue]) -> None
                 InterfaceType,
                 project.interface_types,
             )
+        elif rel == "generated/generation.json":
+            try:
+                project.generation = GenerationRecord.model_validate(data)
+            except (
+                ValidationError
+            ):  # derived data: drop it (plans show as outdated) instead of blocking
+                issues.append(Issue("warning", "generation_record_invalid", "The generation record could not be read; harness plans are treated as outdated until you generate again.", rel))  # fmt: skip
         elif rel == "waivers.json":
             b.items(rel, data, "waivers", "waiver", Waiver, project.waivers)
         elif rel == "logical/layout.json":

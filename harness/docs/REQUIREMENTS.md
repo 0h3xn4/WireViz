@@ -34,3 +34,9 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-IMPORT-01 | Imports show a per-row preview and apply as one undo step. | SPEC Part 4 (imports) | `tests/test_imports.py`, GUI import tests |
 | REQ-JOURNAL-01 | Autosave journal inside the project folder; restore after a crash. | SPEC Part 4 (data integrity) | `tests/test_recovery_journal.py`, GUI recovery tests |
 | REQ-PERF-01 | The editor stays responsive at 200 units, 2,000 interfaces, 20,000 wires. | SPEC Part 3 (performance) | `tests/test_gui_perf.py`, `tools/bench_gui.py` |
+| REQ-GEN-01 | Regeneration of an unchanged project is byte-identical and produces an empty plan. | SPEC Part 2 (deterministic generation) | `tests/test_generate.py` |
+| REQ-GEN-02 | Generated harnesses keep stable IDs; released harnesses, locked wires and locked pins are never changed. | SPEC Part 2 (regeneration merge) | `tests/test_generate.py`, `tests/test_generate_parts.py` |
+| REQ-GEN-03 | Sizing, mass and lengths never guess: missing inputs are listed. | SPEC placeholders rule | `tests/test_generate_parts.py` |
+| REQ-VER-01 | An independent verifier detects missing, swapped, duplicated and outdated wiring. | SPEC Part 2 (verification) | `tests/test_generate.py` |
+| REQ-PERF-02 | Generating 2,000 interfaces and 20,000 wires takes under 10 s. | SPEC Part 3 (performance) | `tests/test_generate.py`, `tools/bench_generate.py` |
+| REQ-GUI-02 | Generate shows a preview, applies as one undo step, shows status, the independent check and Explain. | UX.md | `tests/test_gui_generate.py` |

@@ -4,7 +4,7 @@ from collections.abc import Callable
 from functools import partial
 from pathlib import Path
 
-from PySide6.QtCore import QEvent, QSettings, Qt, QTimer
+from PySide6.QtCore import QEvent, QEventLoop, QSettings, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QAction, QActionGroup, QCloseEvent, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMessageBox,
+    QProgressDialog,
     QPushButton,
     QTabWidget,
     QToolButton,
@@ -27,7 +28,13 @@ from PySide6.QtWidgets import (
 from harness_tool import __version__
 from harness_tool.core import edit
 from harness_tool.core.errors import HarnessError, ProjectLockedError
+from harness_tool.core.generate.engine import (
+    GenerationCancelled,
+    GenerationPlan,
+    plan_generation,
+)
 from harness_tool.core.io.layout import model_hash
+from harness_tool.core.model import Project
 from harness_tool.gui import strings
 from harness_tool.gui.canvas import DiagramView
 from harness_tool.gui.controller import Delta, EditorController, NeedSaveAs
@@ -35,6 +42,7 @@ from harness_tool.gui.dialogs import (
     Banner,
     CommandPalette,
     ConfirmDialog,
+    GeneratePreviewDialog,
     GlossaryDialog,
     ImportDialog,
     IssuesDialog,
@@ -64,6 +72,31 @@ def _exec(dialog: QDialog) -> int:
 
 def _no_file() -> str | None:
     return None
+
+
+class PlanWorker(QThread):
+    """Computes a generation plan off the UI thread. It only reads the project; the UI is blocked
+    by a modal progress dialog meanwhile, so nothing can change under it."""
+
+    progressed = Signal(float, str)
+
+    def __init__(self, project: Project) -> None:
+        super().__init__()
+        self._project = project
+        self._cancelled = False
+        self.plan: GenerationPlan | None = None
+        self.error: str | None = None
+
+    def cancel(self) -> None:
+        self._cancelled = True
+
+    def run(self) -> None:
+        try:
+            self.plan = plan_generation(
+                self._project, lambda: self._cancelled, lambda f, t: self.progressed.emit(f, t)
+            )
+        except GenerationCancelled:
+            self.plan = None
 
 
 class ToastHost(QWidget):
@@ -145,6 +178,7 @@ class MainWindow(QMainWindow):
         self.ask_text: Callable[[str, str, str], str | None] = self._ask_text
         self.ask_choice: Callable[[str, str, list[str]], int] = self._ask_choice
         self.ask_file: Callable[[], str | None] = _no_file
+        self.compute_plan: Callable[[], GenerationPlan | None] = self._compute_plan
         self.palette_entries_extra: list[PaletteEntry] = []
 
         self._build_center()
@@ -277,7 +311,7 @@ class MainWindow(QMainWindow):
         self.problems = ProblemsPanel(self.ctl)
         self.todo = TodoPanel(self.ctl)
         self.table = InterfaceTable(self.ctl)
-        self.harness_panel = HarnessPanel()
+        self.harness_panel = HarnessPanel(self.ctl)
         self.tabs = QTabWidget()
         self.tabs.setObjectName("bottom-tabs")
         self.tabs.addTab(self.problems, strings.PROBLEMS)
@@ -483,8 +517,8 @@ class MainWindow(QMainWindow):
         tb.addWidget(spacer)
         self.generate_btn = QPushButton(strings.GENERATE)
         self.generate_btn.setObjectName("generate")
-        self.generate_btn.setEnabled(False)
         self.generate_btn.setToolTip(strings.GENERATE_TIP)
+        self.generate_btn.clicked.connect(self.generate_flow)
         tb.addWidget(self.generate_btn)
 
     def _rebuild_connect_menu(self) -> None:
@@ -643,6 +677,42 @@ class MainWindow(QMainWindow):
             if self.run_dialog(dlg) != QDialog.DialogCode.Accepted:
                 return
         self.ctl.delete_selected()
+
+    def generate_flow(self) -> None:
+        if self.ctl.read_only:
+            return
+        plan = self.compute_plan()
+        if plan is None:
+            self.toasts.show_message(strings.GEN_CANCELLED, None)
+            return
+        if plan.empty:
+            self.ctl.apply_generation(plan)
+            return
+        accepted = self.run_dialog(GeneratePreviewDialog(self, plan)) == QDialog.DialogCode.Accepted
+        if accepted and self.ctl.apply_generation(plan):
+            self.tabs.setCurrentWidget(self.harness_panel)
+
+    def _compute_plan(self) -> GenerationPlan | None:
+        """Plan in a worker thread behind a cancellable progress dialog; None if cancelled."""
+        worker = PlanWorker(self.ctl.project)
+        progress = QProgressDialog(strings.GEN_RUNNING, strings.CANCEL, 0, 100, self)
+        progress.setObjectName("generate-progress")
+        progress.setWindowModality(Qt.WindowModality.WindowModal)
+        progress.setMinimumDuration(400)  # quick runs never flash a dialog
+        loop = QEventLoop(self)
+
+        def on_progress(fraction: float, text: str) -> None:
+            progress.setValue(int(fraction * 100))
+            progress.setLabelText(text)
+
+        worker.progressed.connect(on_progress)
+        progress.canceled.connect(worker.cancel)
+        worker.finished.connect(loop.quit)
+        worker.start()
+        loop.exec()
+        worker.wait()
+        progress.reset()
+        return worker.plan
 
     def waive_flow(self, finding: object) -> None:
         dlg = WaiverDialog(self, finding)  # type: ignore[arg-type]

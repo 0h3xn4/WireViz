@@ -1,0 +1,2412 @@
+{
+  "connectors": [
+    {
+      "carries": [
+        "power_primary"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J01",
+      "keying": null,
+      "mates_with": null,
+      "name": "J01",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-001",
+          "locked": false,
+          "signal": "PWR",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-001",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J02",
+      "keying": null,
+      "mates_with": null,
+      "name": "J02",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-012",
+          "locked": false,
+          "signal": "CANH",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-012",
+          "locked": false,
+          "signal": "CANL",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J03",
+      "keying": null,
+      "mates_with": null,
+      "name": "J03",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-013",
+          "locked": false,
+          "signal": "CANH",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-013",
+          "locked": false,
+          "signal": "CANL",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J04",
+      "keying": null,
+      "mates_with": null,
+      "name": "J04",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-014",
+          "locked": false,
+          "signal": "TX+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-014",
+          "locked": false,
+          "signal": "TX-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": "IF-014",
+          "locked": false,
+          "signal": "RX+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": "IF-014",
+          "locked": false,
+          "signal": "RX-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J05",
+      "keying": null,
+      "mates_with": null,
+      "name": "J05",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DIN+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DIN-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SIN+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SIN-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DOUT+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "DOUT-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SOUT+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": "IF-015",
+          "locked": false,
+          "signal": "SOUT-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J06",
+      "keying": null,
+      "mates_with": null,
+      "name": "J06",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-016",
+          "locked": false,
+          "signal": "TX+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-016",
+          "locked": false,
+          "signal": "TX-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": "IF-016",
+          "locked": false,
+          "signal": "RX+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": "IF-016",
+          "locked": false,
+          "signal": "RX-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J07",
+      "keying": null,
+      "mates_with": null,
+      "name": "J07",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-017",
+          "locked": false,
+          "signal": "CANH",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-017",
+          "locked": false,
+          "signal": "CANL",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J08",
+      "keying": null,
+      "mates_with": null,
+      "name": "J08",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-018",
+          "locked": false,
+          "signal": "CANH",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-018",
+          "locked": false,
+          "signal": "CANL",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J09",
+      "keying": null,
+      "mates_with": null,
+      "name": "J09",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-019",
+          "locked": false,
+          "signal": "SIG+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-019",
+          "locked": false,
+          "signal": "SIG-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J10",
+      "keying": null,
+      "mates_with": null,
+      "name": "J10",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-020",
+          "locked": false,
+          "signal": "SIG",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-020",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J11",
+      "keying": null,
+      "mates_with": null,
+      "name": "J11",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-021",
+          "locked": false,
+          "signal": "T+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-021",
+          "locked": false,
+          "signal": "T-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J12",
+      "keying": null,
+      "mates_with": null,
+      "name": "J12",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-022",
+          "locked": false,
+          "signal": "T+",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-022",
+          "locked": false,
+          "signal": "T-",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-J13",
+      "keying": null,
+      "mates_with": null,
+      "name": "J13",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-012-R",
+          "locked": false,
+          "signal": "CANH",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-012-R",
+          "locked": false,
+          "signal": "CANL",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1"
+    },
+    {
+      "carries": [
+        "power_primary"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J01",
+      "keying": null,
+      "mates_with": null,
+      "name": "J01",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": "IF-001-R",
+          "locked": false,
+          "signal": "PWR",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": "IF-001-R",
+          "locked": false,
+          "signal": "RTN",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J02",
+      "keying": null,
+      "mates_with": null,
+      "name": "J02",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J03",
+      "keying": null,
+      "mates_with": null,
+      "name": "J03",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J04",
+      "keying": null,
+      "mates_with": null,
+      "name": "J04",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J05",
+      "keying": null,
+      "mates_with": null,
+      "name": "J05",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J06",
+      "keying": null,
+      "mates_with": null,
+      "name": "J06",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J07",
+      "keying": null,
+      "mates_with": null,
+      "name": "J07",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J08",
+      "keying": null,
+      "mates_with": null,
+      "name": "J08",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J09",
+      "keying": null,
+      "mates_with": null,
+      "name": "J09",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J10",
+      "keying": null,
+      "mates_with": null,
+      "name": "J10",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J11",
+      "keying": null,
+      "mates_with": null,
+      "name": "J11",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J12",
+      "keying": null,
+      "mates_with": null,
+      "name": "J12",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    },
+    {
+      "carries": [
+        "rs422",
+        "can",
+        "spacewire",
+        "discrete",
+        "analog",
+        "thermistor"
+      ],
+      "gender": "unspecified",
+      "id": "OBC1-R-J13",
+      "keying": null,
+      "mates_with": null,
+      "name": "J13",
+      "notes": "",
+      "part_id": "EX-DSUB-9-F",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "box",
+      "unit_id": "OBC1-R"
+    }
+  ]
+}

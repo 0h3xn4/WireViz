@@ -53,6 +53,12 @@ module = ["tests.*"]
 warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
+module = ["tests.test_generate"]
+disallow_untyped_defs = false
+disallow_untyped_calls = false
+disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
 module = ["openpyxl", "openpyxl.*"]
 ignore_missing_imports = true
 
@@ -70,6 +76,8 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "S"]
 "src/harness_tool/core/samples.py" = ["E501"]
 "src/harness_tool/core/edit.py" = ["E501"]
 "src/harness_tool/gui/*.py" = ["E501"]  # style sheet and UI text
+"src/harness_tool/core/generate/*.py" = ["E501"]  # long plain-language messages
+"src/harness_tool/core/verify.py" = ["E501"]
 "src/harness_tool/core/checks.py" = ["E501"]
 "src/harness_tool/core/imports.py" = ["E501"]
 "tools/*" = ["S101", "S603", "S607", "E501"]

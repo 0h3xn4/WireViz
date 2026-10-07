@@ -14,6 +14,7 @@ from PySide6.QtCore import QObject, QTimer, Signal
 from harness_tool.core import checks, edit
 from harness_tool.core.commands import Delete, History, Op, Put, SetZones, apply_ops
 from harness_tool.core.errors import HarnessError, TransactionError
+from harness_tool.core.generate.engine import GenerationPlan, generation_status
 from harness_tool.core.imports import ImportPlan
 from harness_tool.core.io.fs import ProjectLock
 from harness_tool.core.io.loader import LoadResult, disk_fingerprint, load_project
@@ -27,6 +28,8 @@ from harness_tool.core.recovery import (
     write_journal,
 )
 from harness_tool.core.samples import mini3, new_project
+
+from . import strings
 
 JOURNAL_DELAY_MS = 1500
 
@@ -447,6 +450,17 @@ class EditorController(QObject):
             self.select("interface", iid)
             return True
         return False
+
+    # ---- generation --------------------------------------------------------------------------
+
+    def generation_status(self) -> str:
+        return generation_status(self.project)
+
+    def apply_generation(self, plan: GenerationPlan) -> bool:
+        if plan.empty:
+            self.message.emit(strings.GEN_UP_TO_DATE, False)
+            return True
+        return self.run("Generate harnesses", plan.ops, message=plan.report.summary())
 
     def apply_import(self, plan: ImportPlan) -> bool:
         n = plan.ok_count

@@ -12,3 +12,15 @@ The tool never invents numbers from standards. These shipped values are placehol
 
 Library: every starter part is `unverified: true`, `approval: "pending"`, with no mass or ratings. Import or enter real parts before any result is trusted.
 Interface types: starter types are `unverified`; impedance, EMC class and default gauge are `null`.
+
+## Additions in M3 (all defaults are `null`; generation reports what is missing)
+| File (`config/`) | Key | Effect while `null` |
+| --- | --- | --- |
+| `derating.json` | `ampacity_a_by_awg` (e.g. `{"20": amps}`), `bundle_derating`, `temperature_derating`, `max_voltage_drop_v` | wire gauge stays "pending" |
+| `generation.json` | `conductor_resistivity_ohm_m` | voltage-drop check skipped, gauge pending |
+| `generation.json` | `power_signal_gap_pins` | 0 used, noted in the provenance |
+| `generation.json` | `service_loop_m` | 0 used; lengths exclude service loops |
+| `generation.json` | `mass_margin_fraction` | no margin shown |
+| `generation.json` | `shield_end_a`, `shield_end_b` | shield grounding concept left floating |
+| `generation.json` | `wire_part_by_construction` | example library parts (not qualified) |
+Library parts need `mass_g` and `mass_per_m_g` for a complete mass; otherwise the result lists what is missing.

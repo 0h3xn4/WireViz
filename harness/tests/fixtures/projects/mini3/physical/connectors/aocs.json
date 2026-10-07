@@ -7,6 +7,7 @@
       "gender": "male",
       "id": "RW1-J01",
       "keying": null,
+      "mates_with": null,
       "name": "J01",
       "notes": "",
       "part_id": "EX-DSUB-9-M",
@@ -14,6 +15,7 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": "IF-PWR-RW1",
           "locked": false,
           "signal": "PWR",
           "termination": "unspecified"
@@ -21,6 +23,7 @@
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": "IF-PWR-RW1",
           "locked": false,
           "signal": "RTN",
           "termination": "unspecified"
@@ -28,6 +31,7 @@
         {
           "contact_size": null,
           "id": "3",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -44,6 +48,7 @@
       "gender": "male",
       "id": "RW1-J02",
       "keying": null,
+      "mates_with": null,
       "name": "J02",
       "notes": "",
       "part_id": "EX-DSUB-9-M",
@@ -51,34 +56,39 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": null,
           "locked": false,
-          "signal": "TX+",
+          "signal": null,
           "termination": "unspecified"
         },
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": null,
           "locked": false,
-          "signal": "TX-",
+          "signal": null,
           "termination": "unspecified"
         },
         {
           "contact_size": null,
           "id": "3",
+          "interface_id": null,
           "locked": false,
-          "signal": "RX+",
+          "signal": null,
           "termination": "unspecified"
         },
         {
           "contact_size": null,
           "id": "4",
+          "interface_id": null,
           "locked": false,
-          "signal": "RX-",
+          "signal": null,
           "termination": "unspecified"
         },
         {
           "contact_size": null,
           "id": "5",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"

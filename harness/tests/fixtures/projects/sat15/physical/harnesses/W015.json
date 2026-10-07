@@ -1,0 +1,238 @@
+{
+  "branch_points": [],
+  "connectors": [
+    {
+      "carries": [],
+      "gender": "unspecified",
+      "id": "W015-P1",
+      "keying": null,
+      "mates_with": "OBC1-J12",
+      "name": "P1",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "cable",
+      "unit_id": null
+    },
+    {
+      "carries": [],
+      "gender": "unspecified",
+      "id": "W015-P2",
+      "keying": null,
+      "mates_with": "SA1-J02",
+      "name": "P2",
+      "notes": "",
+      "part_id": "EX-DSUB-9-M",
+      "pins": [
+        {
+          "contact_size": null,
+          "id": "1",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "2",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "4",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "5",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "6",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "7",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "8",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        }
+      ],
+      "role": "cable",
+      "unit_id": null
+    }
+  ],
+  "generated": true,
+  "group_key": "cp|nominal|OBC1-J12|SA1-J02",
+  "id": "W015",
+  "interfaces": [
+    "IF-022"
+  ],
+  "name": "OBC1-J12 to SA1-J02",
+  "notes": "",
+  "revision": "A",
+  "segments": [
+    {
+      "from_node": "W015-P1",
+      "id": "W015-L1",
+      "length_m": null,
+      "to_node": "W015-P2"
+    }
+  ],
+  "shields": [
+    {
+      "end_a": "floating",
+      "end_b": "floating",
+      "id": "W015-S1",
+      "kind": "twisted_pair",
+      "wire_ids": [
+        "W015-001",
+        "W015-002"
+      ]
+    }
+  ],
+  "splices": [],
+  "status": "draft",
+  "wires": [
+    {
+      "colour": null,
+      "from_connector": "W015-P1",
+      "from_pin": "1",
+      "gauge_awg": null,
+      "id": "W015-001",
+      "interface_id": "IF-022",
+      "length_m": null,
+      "locked": false,
+      "part_id": "EX-WIRE-SINGLE",
+      "signal": "T+",
+      "to_connector": "W015-P2",
+      "to_pin": "1"
+    },
+    {
+      "colour": null,
+      "from_connector": "W015-P1",
+      "from_pin": "2",
+      "gauge_awg": null,
+      "id": "W015-002",
+      "interface_id": "IF-022",
+      "length_m": null,
+      "locked": false,
+      "part_id": "EX-WIRE-SINGLE",
+      "signal": "T-",
+      "to_connector": "W015-P2",
+      "to_pin": "2"
+    }
+  ]
+}

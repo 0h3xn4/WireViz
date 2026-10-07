@@ -66,6 +66,13 @@ TEMPLATES: dict[str, UnitTemplate] = {
         _t("payload", "Payload", "PL", "payload", ("power_primary",), ("spacewire",), ("rf_coax",)),
         _t("transceiver", "Transceiver", "TRX", "comms", ("power_primary",), ("rs422", "can"), ("rf_coax",)),
         _t("pyro", "Pyro unit", "PYRO", "mechanisms", ("power_primary",), ("pyro",), ("discrete",)),
+        _t("computer_xl", "Computer (many interfaces)", "OBC", "avionics", ("power_primary",), *[("rs422", "can", "spacewire", "discrete", "analog", "thermistor")] * 12),
+        _t("pdu", "Power distribution unit", "PCDU", "power", *[("power_primary",)] * 10, ("heater",), ("can", "rs422")),
+        _t("battery", "Battery", "BAT", "power", ("power_primary",), ("can", "rs422")),
+        _t("solar_array", "Solar array", "SA", "power", ("power_primary",), ("thermistor",)),
+        _t("sun_sensor", "Sun sensor", "SS", "aocs", ("power_primary",), ("analog",)),
+        _t("magnetorquer", "Magnetorquer", "MTQ", "aocs", ("power_primary",), ("discrete",)),
+        _t("heater_panel", "Heater panel", "HTR", "thermal", ("heater",), ("thermistor",)),
     )
 }  # fmt: skip
 
@@ -323,7 +330,8 @@ def delete_impact(project: Project, unit_id: str) -> DeleteImpact:
     blocked = sorted(
         h.id
         for h in project.harnesses.values()
-        if any(
+        if (not h.generated or h.status == "released")  # generated plans just become outdated
+        and any(
             w.from_connector in conns or w.to_connector in conns or w.interface_id in ifs
             for w in h.wires
         )
@@ -354,7 +362,8 @@ def ops_delete_interface(project: Project, interface_id: str) -> list[Op]:
     users = sorted(
         h.id
         for h in project.harnesses.values()
-        if any(w.interface_id == interface_id for w in h.wires)
+        if (not h.generated or h.status == "released")
+        and any(w.interface_id == interface_id for w in h.wires)
     )
     if users:
         raise EditError(

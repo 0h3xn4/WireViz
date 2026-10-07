@@ -1,5 +1,6 @@
 from .base import Entity, evolve
 from .config import CONFIG_NAMES, ConfigFile, default_configs
+from .generation import GenerationRecord
 from .library import PART_CATEGORIES, LibraryInfo, Part
 from .logical import Endpoint, InterfaceInstance, InterfaceType, SignalDef, Unit
 from .physical import (
@@ -24,6 +25,7 @@ __all__ = [
     "ConfigFile",
     "Connector",
     "Endpoint",
+    "GenerationRecord",
     "Entity",
     "Harness",
     "InterfaceInstance",

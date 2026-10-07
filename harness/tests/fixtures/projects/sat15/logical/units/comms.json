@@ -1,0 +1,13 @@
+{
+  "units": [
+    {
+      "id": "TRX1",
+      "mass_relevant": true,
+      "name": "Transceiver 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "comms",
+      "zone": "payload"
+    }
+  ]
+}

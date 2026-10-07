@@ -46,8 +46,12 @@ def mini3() -> Project:
         return Connector(id=cid, name=cid.rsplit("-", 1)[1], role="box", part_id=part, unit_id=unit,
                          gender="female" if part.endswith("-F") else "male", carries=carries, pins=pins)  # fmt: skip
 
-    data_pins = _pins(("1", "TX+"), ("2", "TX-"), ("3", "RX+"), ("4", "RX-"), ("5", None))
-    pwr_pins = _pins(("1", "PWR"), ("2", "RTN"), ("3", None))
+    data_pins = _pins(("1", None), ("2", None), ("3", None), ("4", None), ("5", None))
+    pwr_pins = [
+        Pin(id="1", signal="PWR", interface_id="IF-PWR-RW1"),
+        Pin(id="2", signal="RTN", interface_id="IF-PWR-RW1"),
+        Pin(id="3"),
+    ]  # allocated by hand for the manual harness W001
     free = _pins(("1", None), ("2", None), ("3", None))
     for conn in (
         box("OBC-J01", "OBC", "EX-DSUB-9-F", ["rs422", "can", "spacewire", "discrete"], data_pins),
@@ -82,9 +86,9 @@ def mini3() -> Project:
     p.harnesses["W001"] = Harness(
         id="W001", name="PCDU to RW1 power",
         connectors=[
-            Connector(id="W001-P1", name="P1", role="cable", part_id="EX-DSUB-9-M", gender="male",
+            Connector(id="W001-P1", name="P1", role="cable", part_id="EX-DSUB-9-M", gender="male", mates_with="PCDU-J01",
                       pins=_pins(("1", "PWR"), ("2", "RTN"))),
-            Connector(id="W001-P2", name="P2", role="cable", part_id="EX-DSUB-9-F", gender="female",
+            Connector(id="W001-P2", name="P2", role="cable", part_id="EX-DSUB-9-F", gender="female", mates_with="RW1-J01",
                       pins=_pins(("1", "PWR"), ("2", "RTN"))),
         ],
         wires=[
@@ -94,4 +98,111 @@ def mini3() -> Project:
                  to_connector="W001-P2", to_pin="2", interface_id="IF-PWR-RW1"),
         ],
     )  # fmt: skip
+    return p
+
+
+def _run(p: Project, ops: list) -> None:  # type: ignore[type-arg]
+    from .commands import History
+
+    History(p).execute("build sample", ops)
+
+
+def sat15() -> Project:
+    """A realistic small satellite (example data): redundant OBC and PCDU, battery, solar array,
+    transceiver, payload, star tracker, two wheels, sun sensor, magnetorquer and a heater panel."""
+    from . import edit
+    from .commands import SetZones
+
+    p = new_project("sat15 (example data)")
+    p.meta = evolve(p.meta, description="About 15 units with nominal and redundant chains.")
+    _run(p, [SetZones(("bus", "aocs", "payload"))])
+    layout: list[tuple[str, int, float]] = [  # template, lane, y
+        ("computer_xl", 0, 40), ("pdu", 0, 260), ("battery", 0, 480), ("solar_array", 0, 650),
+        ("star_tracker", 1, 40), ("actuator", 1, 200), ("actuator", 1, 360), ("sun_sensor", 1, 520),
+        ("magnetorquer", 1, 680), ("transceiver", 2, 40), ("payload", 2, 220), ("heater_panel", 2, 400),
+    ]  # fmt: skip
+    for tpl, lane, y in layout:
+        key = "sensor" if tpl == "star_tracker" else tpl
+        ops, _ = edit.ops_add_unit(p, key, edit.lane_x(lane), y)
+        _run(p, ops)
+    u = {t: sorted(x for x in p.units if x.startswith(edit.TEMPLATES[t].prefix))
+         for t in ("computer_xl", "pdu", "battery", "solar_array", "sensor", "actuator", "sun_sensor", "magnetorquer", "transceiver", "payload", "heater_panel")}  # fmt: skip
+    obc, pcdu, bat, sa = u["computer_xl"][0], u["pdu"][0], u["battery"][0], u["solar_array"][0]
+    st, rw1, rw2 = u["sensor"][0], u["actuator"][0], u["actuator"][1]
+    ss, mtq, trx, pl, htr = (
+        u["sun_sensor"][0],
+        u["magnetorquer"][0],
+        u["transceiver"][0],
+        u["payload"][0],
+        u["heater_panel"][0],
+    )
+    wiring = [
+        ("power_primary", pcdu, obc), ("power_primary", pcdu, trx), ("power_primary", pcdu, pl), ("power_primary", pcdu, st),
+        ("power_primary", pcdu, rw1), ("power_primary", pcdu, rw2), ("power_primary", pcdu, ss), ("power_primary", pcdu, mtq),
+        ("heater", pcdu, htr), ("power_primary", bat, pcdu), ("power_primary", sa, pcdu),
+        ("can", obc, pcdu), ("can", obc, bat), ("rs422", obc, trx), ("spacewire", obc, pl), ("rs422", obc, st),
+        ("can", obc, rw1), ("can", obc, rw2), ("analog", obc, ss), ("discrete", obc, mtq), ("thermistor", obc, htr),
+        ("thermistor", obc, sa),
+    ]  # fmt: skip
+    for type_id, a, b in wiring:
+        ops, iid = edit.ops_add_interface(p, type_id, a, b)
+        if type_id.startswith("power") or type_id == "heater":
+            ops = [o for o in ops]
+        _run(p, ops)
+    for unit in (pcdu, obc):  # redundant chains for the two critical units
+        result = edit.ops_redundant_copy(p, unit)
+        _run(p, result.ops)
+    return p
+
+
+def stress_project(
+    units: int = 200, interfaces: int = 2000, zones: int = 12, signals: int = 10
+) -> Project:
+    """Stress-size example (SPEC: 200 units, 2,000 interfaces, about 150 harnesses, 20,000 wires).
+
+    Interfaces use one multi-core type with `signals` passive conductors, so 2,000 of them make
+    20,000 wires. Zone-pair segmentation then yields a few dozen to about 150 harnesses.
+    """
+    from .model import InterfaceType, SignalDef
+
+    p = new_project(f"stress ({units} units, example data)")
+    zone_names = [f"zone-{k:02d}" for k in range(zones)]
+    p.zones = zone_names
+    p.interface_types["multicore"] = InterfaceType(
+        id="multicore", name="Multi-core cable", category="discrete", construction="single",
+        signals=[SignalDef(name=f"C{k + 1}", direction="passive") for k in range(signals)], unverified=True,
+    )  # fmt: skip
+    per_unit = -(-2 * interfaces // units) + 2  # connector ends per unit, with some slack
+    pins = [Pin(id=str(k)) for k in range(1, 22)]
+    for n in range(units):
+        uid = f"U{n:03d}"
+        p.units[uid] = Unit(id=uid, name=f"Unit {n}", subsystem=f"sub{n % 12}", zone=zone_names[n % zones], side="redundant" if n % 7 == 0 else "nominal")  # fmt: skip
+        p.placements[uid] = Placement(
+            id=uid, x=10 + (n % zones) * 430 + 20, y=40 + (n // zones) * 160
+        )
+        for k in range(per_unit):
+            cid = f"{uid}-J{k + 1:02d}"
+            p.connectors[cid] = Connector(id=cid, name=f"J{k + 1:02d}", role="box", part_id="EX-MDM-21-F", unit_id=uid, gender="female", carries=["multicore"], pins=pins)  # fmt: skip
+    free = {uid: [f"{uid}-J{k + 1:02d}" for k in range(per_unit)] for uid in p.units}
+    ids = sorted(p.units)
+    made = 0
+    step = 1
+    while made < interfaces:
+        a = ids[(made * 7) % units]
+        b = ids[(made * 7 + step) % units]
+        if a == b or not free[a] or not free[b]:
+            step += 1
+            if step > units:
+                break
+            continue
+        ca, cb = free[a].pop(0), free[b].pop(0)
+        iid = f"IF-{made + 1:04d}"
+        side = p.units[a].side
+        p.interfaces[iid] = InterfaceInstance(
+            id=iid, name=f"link {made + 1}", type_id="multicore", redundancy=side,
+            endpoints=[Endpoint(unit_id=a, connector_id=ca), Endpoint(unit_id=b, connector_id=cb)],
+        )  # fmt: skip
+        made += 1
+        step = (step % 11) + 1
+    p.config["segmentation"] = evolve(p.config["segmentation"], values={"mode": "per_zone_pair"})
     return p

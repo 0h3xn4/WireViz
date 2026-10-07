@@ -23,6 +23,7 @@ class Part(Entity):
     approval: Approval = "pending"
     unverified: bool = False  # example data that no engineer has checked
     pin_count: int | None = None
+    mates_with: Id | None = None  # connector parts: the mating counterpart (e.g. male for female)
     mass_g: float | None = None
     mass_per_m_g: float | None = None
     ratings: dict[Name, float] = {}

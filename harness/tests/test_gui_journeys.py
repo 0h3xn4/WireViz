@@ -753,8 +753,8 @@ def test_minimap_and_zoom_controls(win) -> None:  # type: ignore[no-untyped-def]
     QTest.mouseClick(win.view.minimap.viewport(), Qt.MouseButton.LeftButton, pos=QPoint(20, 20))
 
 
-def test_generate_button_is_honest_about_m3(win) -> None:  # type: ignore[no-untyped-def]
-    assert not win.generate_btn.isEnabled() and "later release" in win.generate_btn.toolTip()
+def test_generate_button_is_live_since_m3(win) -> None:  # type: ignore[no-untyped-def]
+    assert win.generate_btn.isEnabled() and "preview" in win.generate_btn.toolTip()
 
 
 def test_glossary_and_about(win) -> None:  # type: ignore[no-untyped-def]

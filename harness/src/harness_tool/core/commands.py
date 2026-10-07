@@ -9,6 +9,7 @@ from .issues import errors
 from .model import (
     ConfigFile,
     Connector,
+    GenerationRecord,
     Harness,
     InterfaceInstance,
     InterfaceType,
@@ -72,7 +73,12 @@ class SetZones:
     zones: tuple[str, ...]
 
 
-Op = Put | Delete | SetConfig | SetMeta | SetZones
+@dataclass(frozen=True)
+class SetGeneration:
+    record: GenerationRecord | None
+
+
+Op = Put | Delete | SetConfig | SetMeta | SetZones | SetGeneration
 
 
 def _apply(project: Project, op: Op) -> Op:
@@ -81,6 +87,10 @@ def _apply(project: Project, op: Op) -> Op:
         before_meta = project.meta
         project.meta = op.meta
         return SetMeta(before_meta)
+    if isinstance(op, SetGeneration):
+        before_gen = project.generation
+        project.generation = op.record
+        return SetGeneration(before_gen)
     if isinstance(op, SetZones):
         before_zones = tuple(project.zones)
         project.zones = list(op.zones)

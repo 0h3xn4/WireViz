@@ -20,6 +20,7 @@ class Pin(Entity):
     contact_size: Name | None = None
     termination: Termination = "unspecified"
     locked: bool = False  # manual allocation that generation must never move
+    interface_id: Id | None = None  # interface this pin was allocated for (set by generation)
 
 
 class Connector(Entity):
@@ -31,6 +32,7 @@ class Connector(Entity):
     gender: Gender = "unspecified"
     keying: Name | None = None
     carries: list[Id] = []  # interface types this connector is meant for (empty = any)
+    mates_with: Id | None = None  # cable connectors: the box connector this one plugs into
     pins: list[Pin] = []
     notes: Text = ""
 
@@ -47,6 +49,7 @@ class Wire(Entity):
     colour: Name | None = None
     length_m: float | None = None
     interface_id: Id | None = None
+    locked: bool = False  # user-set gauge, colour, part and length: regeneration keeps them
 
 
 class ShieldGroup(Entity):
@@ -86,4 +89,7 @@ class Harness(Entity):
     shields: list[ShieldGroup] = []
     branch_points: list[BranchPoint] = []
     segments: list[Segment] = []
+    generated: bool = False  # created by generation (regeneration may replace it)
+    group_key: str = ""  # segmentation key it was generated for
+    interfaces: list[Id] = []  # interfaces this harness carries
     notes: Text = ""

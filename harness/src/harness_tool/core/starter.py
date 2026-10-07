@@ -15,12 +15,22 @@ def starter_parts() -> list[Part]:
         ("EX-MDM-21-M", "connector", "MDM 21-pin, male (example)", 21),
         ("EX-CIRC-19-F", "connector", "Circular MIL-DTL-38999-style, 19-pin, female (example)", 19),
         ("EX-SMA-F", "connector", "SMA coax, female (example)", 1),
+        ("EX-SMA-M", "connector", "SMA coax, male (example)", 1),
         ("EX-TNC-M", "connector", "TNC coax, male (example)", 1),
+        ("EX-TNC-F", "connector", "TNC coax, female (example)", 1),
+        ("EX-MDM-21-F", "connector", "MDM 21-pin, female (example)", 21),
+        ("EX-CIRC-19-M", "connector", "Circular MIL-DTL-38999-style, 19-pin, male (example)", 19),
         ("EX-WIRE-SINGLE", "wire", "Single-conductor wire (example)", None),
         ("EX-WIRE-TWISTED-SHIELDED", "wire", "Twisted shielded pair (example)", None),
         ("EX-SLEEVE", "sleeving", "Braided sleeving (example)", None),
         ("EX-LABEL", "label", "Wire marker sleeve (example)", None),
     ]
+    mates = {
+        pid: pid[:-1] + ("F" if pid.endswith("M") else "M")
+        for pid, cat, _d, _p in spec
+        if cat == "connector"
+    }
+    mates = {k: v for k, v in mates.items() if v in {p for p, *_ in spec}}
     return [
         Part(
             id=pid,
@@ -29,6 +39,7 @@ def starter_parts() -> list[Part]:
             approval="pending",
             unverified=True,
             pin_count=pins,
+            mates_with=mates.get(pid),
         )
         for pid, cat, desc, pins in spec
     ]

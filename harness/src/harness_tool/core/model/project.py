@@ -5,6 +5,7 @@ from typing import Any
 
 from .base import Entity, Name, Text
 from .config import ConfigFile, default_configs
+from .generation import GenerationRecord
 from .library import LibraryInfo, Part
 from .logical import InterfaceInstance, InterfaceType, Unit
 from .physical import Connector, Harness
@@ -45,6 +46,7 @@ class Project:
     placements: dict[str, Placement] = field(default_factory=dict)
     waivers: dict[str, Waiver] = field(default_factory=dict)
     config: dict[str, ConfigFile] = field(default_factory=default_configs)
+    generation: GenerationRecord | None = None
     quarantine: list[QuarantinedItem] = field(default_factory=list)
     quarantine_files: dict[str, bytes] = field(default_factory=dict)
     read_only: bool = False  # written by a newer tool version

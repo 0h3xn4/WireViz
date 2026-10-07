@@ -1,0 +1,978 @@
+{
+  "generator_version": "0.0.1",
+  "input_hash": "6187d0a9b80dea49c3e395d68d1044edb3402839d0399d46bc137cb10402a421",
+  "next_harness_number": 25,
+  "placeholders_used": [
+    "derating",
+    "emc",
+    "generation",
+    "segmentation",
+    "segregation",
+    "titleblock"
+  ],
+  "provenance": {
+    "connector:W001-P1": [
+      "mating: cable end for BAT1-J01 (BAT1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W001-P2": [
+      "mating: cable end for PCDU1-J09 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W002-P1": [
+      "mating: cable end for BAT1-J02 (BAT1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W002-P2": [
+      "mating: cable end for OBC1-J03 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W003-P1": [
+      "mating: cable end for HTR1-J01 (HTR1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W003-P2": [
+      "mating: cable end for PCDU1-J11 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W004-P1": [
+      "mating: cable end for HTR1-J02 (HTR1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W004-P2": [
+      "mating: cable end for OBC1-J11 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W005-P1": [
+      "mating: cable end for MTQ1-J01 (MTQ1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W005-P2": [
+      "mating: cable end for PCDU1-J08 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W006-P1": [
+      "mating: cable end for MTQ1-J02 (MTQ1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W006-P2": [
+      "mating: cable end for OBC1-J10 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W007-P1": [
+      "mating: cable end for OBC1-J01 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W007-P2": [
+      "mating: cable end for PCDU1-J01 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W008-P1": [
+      "mating: cable end for OBC1-J02 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W008-P2": [
+      "mating: cable end for PCDU1-J12 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W009-P1": [
+      "mating: cable end for OBC1-J04 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W009-P2": [
+      "mating: cable end for TRX1-J02 (TRX1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W010-P1": [
+      "mating: cable end for OBC1-J05 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W010-P2": [
+      "mating: cable end for PL1-J02 (PL1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W011-P1": [
+      "mating: cable end for OBC1-J06 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W011-P2": [
+      "mating: cable end for ST1-J02 (ST1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W012-P1": [
+      "mating: cable end for OBC1-J07 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W012-P2": [
+      "mating: cable end for RW1-J02 (RW1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W013-P1": [
+      "mating: cable end for OBC1-J08 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W013-P2": [
+      "mating: cable end for RW2-J02 (RW2); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W014-P1": [
+      "mating: cable end for OBC1-J09 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W014-P2": [
+      "mating: cable end for SS1-J02 (SS1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W015-P1": [
+      "mating: cable end for OBC1-J12 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W015-P2": [
+      "mating: cable end for SA1-J02 (SA1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W016-P1": [
+      "mating: cable end for PCDU1-J02 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W016-P2": [
+      "mating: cable end for TRX1-J01 (TRX1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W017-P1": [
+      "mating: cable end for PCDU1-J03 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W017-P2": [
+      "mating: cable end for PL1-J01 (PL1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W018-P1": [
+      "mating: cable end for PCDU1-J04 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W018-P2": [
+      "mating: cable end for ST1-J01 (ST1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W019-P1": [
+      "mating: cable end for PCDU1-J05 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W019-P2": [
+      "mating: cable end for RW1-J01 (RW1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W020-P1": [
+      "mating: cable end for PCDU1-J06 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W020-P2": [
+      "mating: cable end for RW2-J01 (RW2); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W021-P1": [
+      "mating: cable end for PCDU1-J07 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W021-P2": [
+      "mating: cable end for SS1-J01 (SS1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W022-P1": [
+      "mating: cable end for PCDU1-J10 (PCDU1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W022-P2": [
+      "mating: cable end for SA1-J01 (SA1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W023-P1": [
+      "mating: cable end for OBC1-J13 (OBC1); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W023-P2": [
+      "mating: cable end for PCDU1-R-J12 (PCDU1-R); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W024-P1": [
+      "mating: cable end for OBC1-R-J01 (OBC1-R); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "connector:W024-P2": [
+      "mating: cable end for PCDU1-R-J01 (PCDU1-R); part EX-DSUB-9-M mates with EX-DSUB-9-F"
+    ],
+    "gauge:W001-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W001-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W003-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W003-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W008-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W008-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W009-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W009-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W009-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W009-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-005": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-006": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-007": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W010-008": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W011-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W011-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W011-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W011-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W012-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W012-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W013-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W013-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W014-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W014-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W015-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W015-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W016-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W016-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W017-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W017-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W018-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W018-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W019-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W019-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W020-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W020-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W021-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W021-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W022-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W022-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W023-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W023-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W024-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W024-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "harness:W001": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-010 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W002": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-013 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W003": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-009 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W004": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-021 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W005": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-008 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W006": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-020 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W007": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-001 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W008": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-012 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W009": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-014 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W010": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-015 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W011": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-016 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W012": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-017 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W013": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-018 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W014": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-019 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W015": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-022 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W016": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-002 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W017": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-003 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W018": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-004 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W019": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-005 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W020": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-006 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W021": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-007 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W022": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-011 share a harness because they have the same pair of unit connectors and chain (nominal)"
+    ],
+    "harness:W023": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-012-R share a harness because they have the same pair of unit connectors and chain (redundant)"
+    ],
+    "harness:W024": [
+      "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+      "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+      "segmentation: IF-001-R share a harness because they have the same pair of unit connectors and chain (redundant)"
+    ],
+    "pin:BAT1-J01.1": [
+      "pin-allocation: PWR of IF-010 (power and return grouped)"
+    ],
+    "pin:BAT1-J01.2": [
+      "pin-allocation: RTN of IF-010 (power and return grouped)"
+    ],
+    "pin:BAT1-J02.1": [
+      "pin-allocation: CANH of IF-013 (pair BUS on adjacent pins)"
+    ],
+    "pin:BAT1-J02.2": [
+      "pin-allocation: CANL of IF-013 (pair BUS on adjacent pins)"
+    ],
+    "pin:HTR1-J01.1": [
+      "pin-allocation: HTR+ of IF-009 (power and return grouped)"
+    ],
+    "pin:HTR1-J01.2": [
+      "pin-allocation: HTR- of IF-009 (power and return grouped)"
+    ],
+    "pin:HTR1-J02.1": [
+      "pin-allocation: T+ of IF-021 (pair T on adjacent pins)"
+    ],
+    "pin:HTR1-J02.2": [
+      "pin-allocation: T- of IF-021 (pair T on adjacent pins)"
+    ],
+    "pin:MTQ1-J01.1": [
+      "pin-allocation: PWR of IF-008 (power and return grouped)"
+    ],
+    "pin:MTQ1-J01.2": [
+      "pin-allocation: RTN of IF-008 (power and return grouped)"
+    ],
+    "pin:MTQ1-J02.1": [
+      "pin-allocation: SIG of IF-020 (single signal)"
+    ],
+    "pin:MTQ1-J02.2": [
+      "pin-allocation: RTN of IF-020 (single signal)"
+    ],
+    "pin:OBC1-J01.1": [
+      "pin-allocation: PWR of IF-001 (power and return grouped)"
+    ],
+    "pin:OBC1-J01.2": [
+      "pin-allocation: RTN of IF-001 (power and return grouped)"
+    ],
+    "pin:OBC1-J02.1": [
+      "pin-allocation: CANH of IF-012 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J02.2": [
+      "pin-allocation: CANL of IF-012 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J03.1": [
+      "pin-allocation: CANH of IF-013 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J03.2": [
+      "pin-allocation: CANL of IF-013 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J04.1": [
+      "pin-allocation: TX+ of IF-014 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J04.2": [
+      "pin-allocation: TX- of IF-014 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J04.3": [
+      "pin-allocation: RX+ of IF-014 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J04.4": [
+      "pin-allocation: RX- of IF-014 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J05.1": [
+      "pin-allocation: DIN+ of IF-015 (pair DIN on adjacent pins)"
+    ],
+    "pin:OBC1-J05.2": [
+      "pin-allocation: DIN- of IF-015 (pair DIN on adjacent pins)"
+    ],
+    "pin:OBC1-J05.3": [
+      "pin-allocation: SIN+ of IF-015 (pair SIN on adjacent pins)"
+    ],
+    "pin:OBC1-J05.4": [
+      "pin-allocation: SIN- of IF-015 (pair SIN on adjacent pins)"
+    ],
+    "pin:OBC1-J05.5": [
+      "pin-allocation: DOUT+ of IF-015 (pair DOUT on adjacent pins)"
+    ],
+    "pin:OBC1-J05.6": [
+      "pin-allocation: DOUT- of IF-015 (pair DOUT on adjacent pins)"
+    ],
+    "pin:OBC1-J05.7": [
+      "pin-allocation: SOUT+ of IF-015 (pair SOUT on adjacent pins)"
+    ],
+    "pin:OBC1-J05.8": [
+      "pin-allocation: SOUT- of IF-015 (pair SOUT on adjacent pins)"
+    ],
+    "pin:OBC1-J06.1": [
+      "pin-allocation: TX+ of IF-016 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J06.2": [
+      "pin-allocation: TX- of IF-016 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J06.3": [
+      "pin-allocation: RX+ of IF-016 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J06.4": [
+      "pin-allocation: RX- of IF-016 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J07.1": [
+      "pin-allocation: CANH of IF-017 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J07.2": [
+      "pin-allocation: CANL of IF-017 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J08.1": [
+      "pin-allocation: CANH of IF-018 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J08.2": [
+      "pin-allocation: CANL of IF-018 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J09.1": [
+      "pin-allocation: SIG+ of IF-019 (pair SIG on adjacent pins)"
+    ],
+    "pin:OBC1-J09.2": [
+      "pin-allocation: SIG- of IF-019 (pair SIG on adjacent pins)"
+    ],
+    "pin:OBC1-J10.1": [
+      "pin-allocation: SIG of IF-020 (single signal)"
+    ],
+    "pin:OBC1-J10.2": [
+      "pin-allocation: RTN of IF-020 (single signal)"
+    ],
+    "pin:OBC1-J11.1": [
+      "pin-allocation: T+ of IF-021 (pair T on adjacent pins)"
+    ],
+    "pin:OBC1-J11.2": [
+      "pin-allocation: T- of IF-021 (pair T on adjacent pins)"
+    ],
+    "pin:OBC1-J12.1": [
+      "pin-allocation: T+ of IF-022 (pair T on adjacent pins)"
+    ],
+    "pin:OBC1-J12.2": [
+      "pin-allocation: T- of IF-022 (pair T on adjacent pins)"
+    ],
+    "pin:OBC1-J13.1": [
+      "pin-allocation: CANH of IF-012-R (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J13.2": [
+      "pin-allocation: CANL of IF-012-R (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-R-J01.1": [
+      "pin-allocation: PWR of IF-001-R (power and return grouped)"
+    ],
+    "pin:OBC1-R-J01.2": [
+      "pin-allocation: RTN of IF-001-R (power and return grouped)"
+    ],
+    "pin:PCDU1-J01.1": [
+      "pin-allocation: PWR of IF-001 (power and return grouped)"
+    ],
+    "pin:PCDU1-J01.2": [
+      "pin-allocation: RTN of IF-001 (power and return grouped)"
+    ],
+    "pin:PCDU1-J02.1": [
+      "pin-allocation: PWR of IF-002 (power and return grouped)"
+    ],
+    "pin:PCDU1-J02.2": [
+      "pin-allocation: RTN of IF-002 (power and return grouped)"
+    ],
+    "pin:PCDU1-J03.1": [
+      "pin-allocation: PWR of IF-003 (power and return grouped)"
+    ],
+    "pin:PCDU1-J03.2": [
+      "pin-allocation: RTN of IF-003 (power and return grouped)"
+    ],
+    "pin:PCDU1-J04.1": [
+      "pin-allocation: PWR of IF-004 (power and return grouped)"
+    ],
+    "pin:PCDU1-J04.2": [
+      "pin-allocation: RTN of IF-004 (power and return grouped)"
+    ],
+    "pin:PCDU1-J05.1": [
+      "pin-allocation: PWR of IF-005 (power and return grouped)"
+    ],
+    "pin:PCDU1-J05.2": [
+      "pin-allocation: RTN of IF-005 (power and return grouped)"
+    ],
+    "pin:PCDU1-J06.1": [
+      "pin-allocation: PWR of IF-006 (power and return grouped)"
+    ],
+    "pin:PCDU1-J06.2": [
+      "pin-allocation: RTN of IF-006 (power and return grouped)"
+    ],
+    "pin:PCDU1-J07.1": [
+      "pin-allocation: PWR of IF-007 (power and return grouped)"
+    ],
+    "pin:PCDU1-J07.2": [
+      "pin-allocation: RTN of IF-007 (power and return grouped)"
+    ],
+    "pin:PCDU1-J08.1": [
+      "pin-allocation: PWR of IF-008 (power and return grouped)"
+    ],
+    "pin:PCDU1-J08.2": [
+      "pin-allocation: RTN of IF-008 (power and return grouped)"
+    ],
+    "pin:PCDU1-J09.1": [
+      "pin-allocation: PWR of IF-010 (power and return grouped)"
+    ],
+    "pin:PCDU1-J09.2": [
+      "pin-allocation: RTN of IF-010 (power and return grouped)"
+    ],
+    "pin:PCDU1-J10.1": [
+      "pin-allocation: PWR of IF-011 (power and return grouped)"
+    ],
+    "pin:PCDU1-J10.2": [
+      "pin-allocation: RTN of IF-011 (power and return grouped)"
+    ],
+    "pin:PCDU1-J11.1": [
+      "pin-allocation: HTR+ of IF-009 (power and return grouped)"
+    ],
+    "pin:PCDU1-J11.2": [
+      "pin-allocation: HTR- of IF-009 (power and return grouped)"
+    ],
+    "pin:PCDU1-J12.1": [
+      "pin-allocation: CANH of IF-012 (pair BUS on adjacent pins)"
+    ],
+    "pin:PCDU1-J12.2": [
+      "pin-allocation: CANL of IF-012 (pair BUS on adjacent pins)"
+    ],
+    "pin:PCDU1-R-J01.1": [
+      "pin-allocation: PWR of IF-001-R (power and return grouped)"
+    ],
+    "pin:PCDU1-R-J01.2": [
+      "pin-allocation: RTN of IF-001-R (power and return grouped)"
+    ],
+    "pin:PCDU1-R-J12.1": [
+      "pin-allocation: CANH of IF-012-R (pair BUS on adjacent pins)"
+    ],
+    "pin:PCDU1-R-J12.2": [
+      "pin-allocation: CANL of IF-012-R (pair BUS on adjacent pins)"
+    ],
+    "pin:PL1-J01.1": [
+      "pin-allocation: PWR of IF-003 (power and return grouped)"
+    ],
+    "pin:PL1-J01.2": [
+      "pin-allocation: RTN of IF-003 (power and return grouped)"
+    ],
+    "pin:PL1-J02.1": [
+      "pin-allocation: DIN+ of IF-015 (pair DIN on adjacent pins)"
+    ],
+    "pin:PL1-J02.2": [
+      "pin-allocation: DIN- of IF-015 (pair DIN on adjacent pins)"
+    ],
+    "pin:PL1-J02.3": [
+      "pin-allocation: SIN+ of IF-015 (pair SIN on adjacent pins)"
+    ],
+    "pin:PL1-J02.4": [
+      "pin-allocation: SIN- of IF-015 (pair SIN on adjacent pins)"
+    ],
+    "pin:PL1-J02.5": [
+      "pin-allocation: DOUT+ of IF-015 (pair DOUT on adjacent pins)"
+    ],
+    "pin:PL1-J02.6": [
+      "pin-allocation: DOUT- of IF-015 (pair DOUT on adjacent pins)"
+    ],
+    "pin:PL1-J02.7": [
+      "pin-allocation: SOUT+ of IF-015 (pair SOUT on adjacent pins)"
+    ],
+    "pin:PL1-J02.8": [
+      "pin-allocation: SOUT- of IF-015 (pair SOUT on adjacent pins)"
+    ],
+    "pin:RW1-J01.1": [
+      "pin-allocation: PWR of IF-005 (power and return grouped)"
+    ],
+    "pin:RW1-J01.2": [
+      "pin-allocation: RTN of IF-005 (power and return grouped)"
+    ],
+    "pin:RW1-J02.1": [
+      "pin-allocation: CANH of IF-017 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW1-J02.2": [
+      "pin-allocation: CANL of IF-017 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW2-J01.1": [
+      "pin-allocation: PWR of IF-006 (power and return grouped)"
+    ],
+    "pin:RW2-J01.2": [
+      "pin-allocation: RTN of IF-006 (power and return grouped)"
+    ],
+    "pin:RW2-J02.1": [
+      "pin-allocation: CANH of IF-018 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW2-J02.2": [
+      "pin-allocation: CANL of IF-018 (pair BUS on adjacent pins)"
+    ],
+    "pin:SA1-J01.1": [
+      "pin-allocation: PWR of IF-011 (power and return grouped)"
+    ],
+    "pin:SA1-J01.2": [
+      "pin-allocation: RTN of IF-011 (power and return grouped)"
+    ],
+    "pin:SA1-J02.1": [
+      "pin-allocation: T+ of IF-022 (pair T on adjacent pins)"
+    ],
+    "pin:SA1-J02.2": [
+      "pin-allocation: T- of IF-022 (pair T on adjacent pins)"
+    ],
+    "pin:SS1-J01.1": [
+      "pin-allocation: PWR of IF-007 (power and return grouped)"
+    ],
+    "pin:SS1-J01.2": [
+      "pin-allocation: RTN of IF-007 (power and return grouped)"
+    ],
+    "pin:SS1-J02.1": [
+      "pin-allocation: SIG+ of IF-019 (pair SIG on adjacent pins)"
+    ],
+    "pin:SS1-J02.2": [
+      "pin-allocation: SIG- of IF-019 (pair SIG on adjacent pins)"
+    ],
+    "pin:ST1-J01.1": [
+      "pin-allocation: PWR of IF-004 (power and return grouped)"
+    ],
+    "pin:ST1-J01.2": [
+      "pin-allocation: RTN of IF-004 (power and return grouped)"
+    ],
+    "pin:ST1-J02.1": [
+      "pin-allocation: TX+ of IF-016 (pair TX on adjacent pins)"
+    ],
+    "pin:ST1-J02.2": [
+      "pin-allocation: TX- of IF-016 (pair TX on adjacent pins)"
+    ],
+    "pin:ST1-J02.3": [
+      "pin-allocation: RX+ of IF-016 (pair RX on adjacent pins)"
+    ],
+    "pin:ST1-J02.4": [
+      "pin-allocation: RX- of IF-016 (pair RX on adjacent pins)"
+    ],
+    "pin:TRX1-J01.1": [
+      "pin-allocation: PWR of IF-002 (power and return grouped)"
+    ],
+    "pin:TRX1-J01.2": [
+      "pin-allocation: RTN of IF-002 (power and return grouped)"
+    ],
+    "pin:TRX1-J02.1": [
+      "pin-allocation: TX+ of IF-014 (pair TX on adjacent pins)"
+    ],
+    "pin:TRX1-J02.2": [
+      "pin-allocation: TX- of IF-014 (pair TX on adjacent pins)"
+    ],
+    "pin:TRX1-J02.3": [
+      "pin-allocation: RX+ of IF-014 (pair RX on adjacent pins)"
+    ],
+    "pin:TRX1-J02.4": [
+      "pin-allocation: RX- of IF-014 (pair RX on adjacent pins)"
+    ],
+    "rules": [
+      "pin-allocation: power-to-signal pin gap is a placeholder (0 used)"
+    ],
+    "wire:W001-001": [
+      "wiring: PWR of IF-010 connects BAT1-J01 pin 1 to PCDU1-J09 pin 1 (X drives)"
+    ],
+    "wire:W001-002": [
+      "wiring: RTN of IF-010 connects BAT1-J01 pin 2 to PCDU1-J09 pin 2 (X drives)"
+    ],
+    "wire:W002-001": [
+      "wiring: CANH of IF-013 connects BAT1-J02 pin 1 to OBC1-J03 pin 1 (X drives)"
+    ],
+    "wire:W002-002": [
+      "wiring: CANL of IF-013 connects BAT1-J02 pin 2 to OBC1-J03 pin 2 (X drives)"
+    ],
+    "wire:W003-001": [
+      "wiring: HTR+ of IF-009 connects HTR1-J01 pin 1 to PCDU1-J11 pin 1 (X drives)"
+    ],
+    "wire:W003-002": [
+      "wiring: HTR- of IF-009 connects HTR1-J01 pin 2 to PCDU1-J11 pin 2 (X drives)"
+    ],
+    "wire:W004-001": [
+      "wiring: T+ of IF-021 connects HTR1-J02 pin 1 to OBC1-J11 pin 1 (X drives)"
+    ],
+    "wire:W004-002": [
+      "wiring: T- of IF-021 connects HTR1-J02 pin 2 to OBC1-J11 pin 2 (X drives)"
+    ],
+    "wire:W005-001": [
+      "wiring: PWR of IF-008 connects MTQ1-J01 pin 1 to PCDU1-J08 pin 1 (X drives)"
+    ],
+    "wire:W005-002": [
+      "wiring: RTN of IF-008 connects MTQ1-J01 pin 2 to PCDU1-J08 pin 2 (X drives)"
+    ],
+    "wire:W006-001": [
+      "wiring: SIG of IF-020 connects MTQ1-J02 pin 1 to OBC1-J10 pin 1 (X drives)"
+    ],
+    "wire:W006-002": [
+      "wiring: RTN of IF-020 connects MTQ1-J02 pin 2 to OBC1-J10 pin 2 (X drives)"
+    ],
+    "wire:W007-001": [
+      "wiring: PWR of IF-001 connects OBC1-J01 pin 1 to PCDU1-J01 pin 1 (X drives)"
+    ],
+    "wire:W007-002": [
+      "wiring: RTN of IF-001 connects OBC1-J01 pin 2 to PCDU1-J01 pin 2 (X drives)"
+    ],
+    "wire:W008-001": [
+      "wiring: CANH of IF-012 connects OBC1-J02 pin 1 to PCDU1-J12 pin 1 (X drives)"
+    ],
+    "wire:W008-002": [
+      "wiring: CANL of IF-012 connects OBC1-J02 pin 2 to PCDU1-J12 pin 2 (X drives)"
+    ],
+    "wire:W009-001": [
+      "wiring: TX+/RX+ of IF-014 connects OBC1-J04 pin 1 to TRX1-J02 pin 3 (X drives)"
+    ],
+    "wire:W009-002": [
+      "wiring: TX+/RX+ of IF-014 connects TRX1-J02 pin 1 to OBC1-J04 pin 3 (Y drives)"
+    ],
+    "wire:W009-003": [
+      "wiring: TX-/RX- of IF-014 connects OBC1-J04 pin 2 to TRX1-J02 pin 4 (X drives)"
+    ],
+    "wire:W009-004": [
+      "wiring: TX-/RX- of IF-014 connects TRX1-J02 pin 2 to OBC1-J04 pin 4 (Y drives)"
+    ],
+    "wire:W010-001": [
+      "wiring: DOUT+/DIN+ of IF-015 connects OBC1-J05 pin 5 to PL1-J02 pin 1 (X drives)"
+    ],
+    "wire:W010-002": [
+      "wiring: DOUT+/DIN+ of IF-015 connects PL1-J02 pin 5 to OBC1-J05 pin 1 (Y drives)"
+    ],
+    "wire:W010-003": [
+      "wiring: DOUT-/DIN- of IF-015 connects OBC1-J05 pin 6 to PL1-J02 pin 2 (X drives)"
+    ],
+    "wire:W010-004": [
+      "wiring: DOUT-/DIN- of IF-015 connects PL1-J02 pin 6 to OBC1-J05 pin 2 (Y drives)"
+    ],
+    "wire:W010-005": [
+      "wiring: SOUT+/SIN+ of IF-015 connects OBC1-J05 pin 7 to PL1-J02 pin 3 (X drives)"
+    ],
+    "wire:W010-006": [
+      "wiring: SOUT+/SIN+ of IF-015 connects PL1-J02 pin 7 to OBC1-J05 pin 3 (Y drives)"
+    ],
+    "wire:W010-007": [
+      "wiring: SOUT-/SIN- of IF-015 connects OBC1-J05 pin 8 to PL1-J02 pin 4 (X drives)"
+    ],
+    "wire:W010-008": [
+      "wiring: SOUT-/SIN- of IF-015 connects PL1-J02 pin 8 to OBC1-J05 pin 4 (Y drives)"
+    ],
+    "wire:W011-001": [
+      "wiring: TX+/RX+ of IF-016 connects OBC1-J06 pin 1 to ST1-J02 pin 3 (X drives)"
+    ],
+    "wire:W011-002": [
+      "wiring: TX+/RX+ of IF-016 connects ST1-J02 pin 1 to OBC1-J06 pin 3 (Y drives)"
+    ],
+    "wire:W011-003": [
+      "wiring: TX-/RX- of IF-016 connects OBC1-J06 pin 2 to ST1-J02 pin 4 (X drives)"
+    ],
+    "wire:W011-004": [
+      "wiring: TX-/RX- of IF-016 connects ST1-J02 pin 2 to OBC1-J06 pin 4 (Y drives)"
+    ],
+    "wire:W012-001": [
+      "wiring: CANH of IF-017 connects OBC1-J07 pin 1 to RW1-J02 pin 1 (X drives)"
+    ],
+    "wire:W012-002": [
+      "wiring: CANL of IF-017 connects OBC1-J07 pin 2 to RW1-J02 pin 2 (X drives)"
+    ],
+    "wire:W013-001": [
+      "wiring: CANH of IF-018 connects OBC1-J08 pin 1 to RW2-J02 pin 1 (X drives)"
+    ],
+    "wire:W013-002": [
+      "wiring: CANL of IF-018 connects OBC1-J08 pin 2 to RW2-J02 pin 2 (X drives)"
+    ],
+    "wire:W014-001": [
+      "wiring: SIG+ of IF-019 connects OBC1-J09 pin 1 to SS1-J02 pin 1 (X drives)"
+    ],
+    "wire:W014-002": [
+      "wiring: SIG- of IF-019 connects OBC1-J09 pin 2 to SS1-J02 pin 2 (X drives)"
+    ],
+    "wire:W015-001": [
+      "wiring: T+ of IF-022 connects OBC1-J12 pin 1 to SA1-J02 pin 1 (X drives)"
+    ],
+    "wire:W015-002": [
+      "wiring: T- of IF-022 connects OBC1-J12 pin 2 to SA1-J02 pin 2 (X drives)"
+    ],
+    "wire:W016-001": [
+      "wiring: PWR of IF-002 connects PCDU1-J02 pin 1 to TRX1-J01 pin 1 (X drives)"
+    ],
+    "wire:W016-002": [
+      "wiring: RTN of IF-002 connects PCDU1-J02 pin 2 to TRX1-J01 pin 2 (X drives)"
+    ],
+    "wire:W017-001": [
+      "wiring: PWR of IF-003 connects PCDU1-J03 pin 1 to PL1-J01 pin 1 (X drives)"
+    ],
+    "wire:W017-002": [
+      "wiring: RTN of IF-003 connects PCDU1-J03 pin 2 to PL1-J01 pin 2 (X drives)"
+    ],
+    "wire:W018-001": [
+      "wiring: PWR of IF-004 connects PCDU1-J04 pin 1 to ST1-J01 pin 1 (X drives)"
+    ],
+    "wire:W018-002": [
+      "wiring: RTN of IF-004 connects PCDU1-J04 pin 2 to ST1-J01 pin 2 (X drives)"
+    ],
+    "wire:W019-001": [
+      "wiring: PWR of IF-005 connects PCDU1-J05 pin 1 to RW1-J01 pin 1 (X drives)"
+    ],
+    "wire:W019-002": [
+      "wiring: RTN of IF-005 connects PCDU1-J05 pin 2 to RW1-J01 pin 2 (X drives)"
+    ],
+    "wire:W020-001": [
+      "wiring: PWR of IF-006 connects PCDU1-J06 pin 1 to RW2-J01 pin 1 (X drives)"
+    ],
+    "wire:W020-002": [
+      "wiring: RTN of IF-006 connects PCDU1-J06 pin 2 to RW2-J01 pin 2 (X drives)"
+    ],
+    "wire:W021-001": [
+      "wiring: PWR of IF-007 connects PCDU1-J07 pin 1 to SS1-J01 pin 1 (X drives)"
+    ],
+    "wire:W021-002": [
+      "wiring: RTN of IF-007 connects PCDU1-J07 pin 2 to SS1-J01 pin 2 (X drives)"
+    ],
+    "wire:W022-001": [
+      "wiring: PWR of IF-011 connects PCDU1-J10 pin 1 to SA1-J01 pin 1 (X drives)"
+    ],
+    "wire:W022-002": [
+      "wiring: RTN of IF-011 connects PCDU1-J10 pin 2 to SA1-J01 pin 2 (X drives)"
+    ],
+    "wire:W023-001": [
+      "wiring: CANH of IF-012-R connects OBC1-J13 pin 1 to PCDU1-R-J12 pin 1 (X drives)"
+    ],
+    "wire:W023-002": [
+      "wiring: CANL of IF-012-R connects OBC1-J13 pin 2 to PCDU1-R-J12 pin 2 (X drives)"
+    ],
+    "wire:W024-001": [
+      "wiring: PWR of IF-001-R connects OBC1-R-J01 pin 1 to PCDU1-R-J01 pin 1 (X drives)"
+    ],
+    "wire:W024-002": [
+      "wiring: RTN of IF-001-R connects OBC1-R-J01 pin 2 to PCDU1-R-J01 pin 2 (X drives)"
+    ]
+  }
+}

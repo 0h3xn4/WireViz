@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (
 )
 
 from harness_tool.core import checks, edit
+from harness_tool.core.generate.engine import GenerationPlan
 from harness_tool.core.imports import (
     FIELDS,
     ImportError_,
@@ -514,3 +515,36 @@ class Banner(QFrame):
         if button_text:
             self.button.setText(button_text)
         self.show()
+
+
+class GeneratePreviewDialog(QDialog):
+    """What generation will do, shown before anything changes. Apply is one undoable step."""
+
+    def __init__(self, parent: QWidget | None, plan: GenerationPlan) -> None:
+        super().__init__(parent)
+        self.plan = plan
+        self.setWindowTitle(strings.GEN_PREVIEW_TITLE)
+        self.setObjectName("generate-preview")
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel(f"<h3>{strings.GEN_PREVIEW_TITLE}</h3>"))
+        self.summary = QLabel(plan.report.summary())
+        self.summary.setObjectName("generate-summary")
+        self.summary.setWordWrap(True)
+        lay.addWidget(self.summary)
+        used = plan.record.placeholders_used
+        self.placeholders = QLabel(
+            strings.GEN_PLACEHOLDERS.format(names=", ".join(used)) if used else ""
+        )
+        self.placeholders.setWordWrap(True)
+        self.placeholders.setVisible(bool(used))
+        lay.addWidget(self.placeholders)
+        self.findings = QListWidget()
+        self.findings.setObjectName("generate-findings")
+        order = {"error": 0, "warning": 1, "info": 2}
+        for f in sorted(plan.report.findings, key=lambda x: (order.get(x.severity, 3), x.message)):
+            self.findings.addItem(f"{f.severity.capitalize()}: {f.message}")
+        self.findings.setVisible(self.findings.count() > 0)
+        lay.addWidget(self.findings)
+        self.ok, self.cancel, row = _buttons(self, strings.GEN_APPLY, danger=False, primary=True)
+        lay.addLayout(row)
+        self.setMinimumWidth(520)

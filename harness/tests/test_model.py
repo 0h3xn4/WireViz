@@ -60,5 +60,18 @@ def test_pin_ids() -> None:
 def test_default_configs_are_marked_placeholder() -> None:
     cfg = default_configs()
     assert cfg["derating"].placeholder and cfg["emc"].placeholder
-    assert all(v is None for v in cfg["derating"].values.values())  # no invented numbers
+
+    def numbers(node: object) -> list[float]:
+        if isinstance(node, bool):
+            return []
+        if isinstance(node, int | float):
+            return [float(node)]
+        if isinstance(node, dict):
+            return [n for v in node.values() for n in numbers(v)]
+        if isinstance(node, list):
+            return [n for v in node for n in numbers(v)]
+        return []
+
+    for name in ("derating", "generation", "emc"):  # no invented numbers from standards
+        assert numbers(cfg[name].values) == [], name
     assert not cfg["naming"].placeholder

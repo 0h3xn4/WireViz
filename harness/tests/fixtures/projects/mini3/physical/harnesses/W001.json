@@ -6,6 +6,7 @@
       "gender": "male",
       "id": "W001-P1",
       "keying": null,
+      "mates_with": "PCDU-J01",
       "name": "P1",
       "notes": "",
       "part_id": "EX-DSUB-9-M",
@@ -13,6 +14,7 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": null,
           "locked": false,
           "signal": "PWR",
           "termination": "unspecified"
@@ -20,6 +22,7 @@
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": null,
           "locked": false,
           "signal": "RTN",
           "termination": "unspecified"
@@ -33,6 +36,7 @@
       "gender": "female",
       "id": "W001-P2",
       "keying": null,
+      "mates_with": "RW1-J01",
       "name": "P2",
       "notes": "",
       "part_id": "EX-DSUB-9-F",
@@ -40,6 +44,7 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": null,
           "locked": false,
           "signal": "PWR",
           "termination": "unspecified"
@@ -47,6 +52,7 @@
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": null,
           "locked": false,
           "signal": "RTN",
           "termination": "unspecified"
@@ -56,7 +62,10 @@
       "unit_id": null
     }
   ],
+  "generated": false,
+  "group_key": "",
   "id": "W001",
+  "interfaces": [],
   "name": "PCDU to RW1 power",
   "notes": "",
   "revision": "A",
@@ -73,6 +82,7 @@
       "id": "W001-001",
       "interface_id": "IF-PWR-RW1",
       "length_m": null,
+      "locked": false,
       "part_id": null,
       "signal": "PWR",
       "to_connector": "W001-P2",
@@ -86,6 +96,7 @@
       "id": "W001-002",
       "interface_id": "IF-PWR-RW1",
       "length_m": null,
+      "locked": false,
       "part_id": null,
       "signal": "RTN",
       "to_connector": "W001-P2",

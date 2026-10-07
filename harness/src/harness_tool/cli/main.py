@@ -29,6 +29,8 @@ def build_parser() -> argparse.ArgumentParser:
         ("validate", "check a project folder for errors and inconsistencies"),
         ("check", "validate, plus detect problems left behind by Git merges"),
         ("migrate", "upgrade an old-format project in place (originals are kept)"),
+        ("generate", "generate harnesses from the interfaces and save the project"),
+        ("verify", "independently verify the generated harnesses against the interfaces"),
     ):
         p = sub.add_parser(name, help=text, description=text)
         p.add_argument("project", type=Path, help="project folder")
@@ -73,6 +75,38 @@ def _validate(path: Path, *, merge_check: bool) -> int:
     return _print_report(result, extra)
 
 
+def _generate(path: Path) -> int:
+    from harness_tool.core.generate.engine import generate_project
+    from harness_tool.core.io.saver import save_project
+    from harness_tool.core.verify import verify_project
+
+    project = load_project(path).project
+    if project.read_only:
+        print("error: this project is read-only (saved by a newer tool version).", file=sys.stderr)
+        return 2
+    plan = generate_project(project)
+    for f in plan.report.findings:
+        print(f"{f.severity}: [{f.code}] {f.message}")
+    print(plan.report.summary())
+    report = verify_project(project)
+    print(report.summary())
+    if plan.report.errors or not report.ok:
+        print("Not saved: fix the errors above first.", file=sys.stderr)
+        return 1
+    save_project(project, path)
+    return 0
+
+
+def _verify(path: Path) -> int:
+    from harness_tool.core.verify import verify_project
+
+    report = verify_project(load_project(path).project)
+    for issue in report.issues:
+        print(f"{issue.severity}: [{issue.code}] {issue.message}")
+    print(report.summary())
+    return 0 if report.ok else 1
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     try:
@@ -90,6 +124,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             migrated = migrate_project(args.project)
             print("Already up to date." if migrated is None else MIGRATED)
             return 0
+        if args.command == "generate":
+            return _generate(args.project)
+        if args.command == "verify":
+            return _verify(args.project)
         return _validate(args.project, merge_check=args.command == "check")
     except HarnessError as exc:
         print(f"error: {exc}", file=sys.stderr)

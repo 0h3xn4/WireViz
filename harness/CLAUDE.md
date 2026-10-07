@@ -3,16 +3,16 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0, M1, M2 done (`docs/demos/`). Qt editor implemented; next is M3 (generation). M3 needs the owner's answers on D-10 (harness boundary rule) and D-11 (derating numbers); until then use placeholders and say so.
+M0 to M3 done (`docs/demos/`). Next is M4 (rule checks). Generation runs on placeholders until the owner answers D-10 (harness boundary rule) and D-11 (derating numbers); results must say so.
 
 ## Commands (run from `harness/`)
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libfontconfig1 libdbus-1-3 for Qt)
 - Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core, enforced)
 - Lint/type: `ruff format . && ruff check . && mypy`
-- CLI: `harness --version | validate DIR | check DIR | migrate DIR`; GUI: `harness-gui`
+- CLI: `harness --version | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR`; GUI: `harness-gui`
 - GUI tests: `QT_QPA_PLATFORM=offscreen pytest tests/test_gui_journeys.py` (conftest sets it); timings: `python -m tools.bench_gui`; screenshots of the real editor: `python -m tools.gui_screenshots` (docs/ux/qt)
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
-- Stress benchmark: `python -m tools.bench_stress`
+- Stress benchmarks: `python -m tools.bench_stress`, `python -m tools.bench_generate`
 - Package: `python -m tools.build_installer`, then `dist/harness-tool/harness-tool --selftest`
 - SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`
 - Offline wheelhouse: `python -m tools.vendor`
@@ -39,3 +39,10 @@ M0, M1, M2 done (`docs/demos/`). Qt editor implemented; next is M3 (generation).
 - Panels that are not visible refresh lazily (on show). Tests that read a tab's widgets must switch to that tab first.
 - Dialog hooks (`run_dialog`, `ask_folder`, `ask_text`, `ask_choice`, `ask_file`) exist so tests can drive the UI without blocking.
 - Keep edits under 100 ms at stress size: use the Delta, never rebuild the whole scene for a local change.
+
+## Generation layout (M3)
+`core/generate/` (`segmentation`, `wiring`, `pins`, `sizing`, `lengths`, `mass`, `naming`, `explain`, `engine`), `core/verify.py` (independent verifier), `core/model/generation.py` (record with provenance). `plan_generation(project)` is pure and returns ops + `RegenReport` + record; the GUI previews it (`GeneratePreviewDialog`), runs it in `PlanWorker` and applies it through `History`.
+- Never put timestamps or history wording into provenance: a second plan must be empty and byte-identical.
+- Verifier must stay independent of the generator: do not import wiring/pin logic into `core/verify.py`.
+- Goldens: `tests/fixtures/projects/mini3` (hand-made, not generated) and `sat15` (generated). Regenerate sat15 on purpose: `python -c "from harness_tool.core.samples import sat15; from harness_tool.core.generate.engine import generate_project; from harness_tool.core.io.saver import save_project; p=sat15(); generate_project(p); save_project(p,'tests/fixtures/projects/sat15')"` (delete the folder first) and review the diff.
+- Text-replace patches fail silently after `ruff format`; grep to confirm they applied.

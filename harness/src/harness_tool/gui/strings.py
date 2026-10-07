@@ -64,7 +64,7 @@ TOUR_STEPS: list[tuple[str, str]] = [
     ),
     (
         "generate",
-        "Harness plans are generated from this diagram in a later release. Until then, build and review your diagram here.",
+        "Generate harnesses builds the harness plans from this diagram. You see a preview first, and one Undo takes it back.",
     ),
 ]
 
@@ -120,7 +120,9 @@ ALL_DONE = "Nothing left to do."
 FILTER_PLACEHOLDER = "Filter by ID, unit or type"
 NEW_INTERFACE = "＋ Interface…"
 NO_PLANS_TITLE = "No harness plans yet."
-NO_PLANS_BODY = "Harness plans are generated from your diagram in a later release (milestone M3). Until then, build the diagram, resolve the problems and review the to-do list."
+NO_PLANS_BODY = (
+    "No harnesses yet. Build the diagram, resolve the problems, then press Generate harnesses."
+)
 
 CANCEL = "Cancel"
 CLOSE = "Close"
@@ -176,7 +178,24 @@ PROBLEMS_AND_STATUS = "Problems and status"
 TOOLBAR = "Main toolbar"
 SEARCH_BUTTON = "Search / commands  Ctrl+K"
 GENERATE = "Generate harnesses"
-GENERATE_TIP = "Harness generation arrives in a later release (milestone M3). Build and review your diagram until then."
+GENERATE_TIP = "Build harness plans from the diagram (you see a preview first; Undo reverts it)"
+GEN_PREVIEW_TITLE = "Generate harnesses"
+GEN_APPLY = "Apply"
+GEN_RUNNING = "Generating harnesses…"
+GEN_CANCELLED = "Generation cancelled. Nothing was changed."
+GEN_UP_TO_DATE = "Harnesses are already up to date. Nothing to change."
+GEN_PLACEHOLDERS = "Placeholder values are in use ({names}). Wire gauges stay undecided until an engineer fills them in."
+GEN_STATUS = {
+    "none": "Not generated yet.",
+    "current": "Up to date with the diagram.",
+    "stale": "Out of date: the diagram changed since the last generation. Press Generate harnesses.",
+}
+PLANS_VERIFY_OK = "Independent check: {0}"
+PLANS_VERIFY_BAD = "Independent check found problems: {0}"
+PLANS_COLUMNS = ["Harness", "Name", "Wires", "Interfaces", "Status", "Origin"]
+WIRE_COLUMNS = ["Wire", "Signal", "From", "To", "AWG", "Length (m)", "Locked"]
+EXPLAIN = "Why is it like this?"
+EXPLAIN_NONE = "No explanation recorded (this item was made by hand)."
 ALL_SAVED = "All changes saved"
 UNSAVED = "Unsaved changes (autosaved to the recovery journal)"
 STATUS_COUNTS = "{} units, {} interfaces · model {}"

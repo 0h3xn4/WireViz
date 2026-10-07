@@ -1,0 +1,721 @@
+"""Generation: logical interfaces in, physical harnesses out, as a plan that can be previewed.
+
+`plan_generation` never changes the project. It returns the operations (one transaction), a
+report of what is kept, added, changed and removed, and provenance explaining every decision.
+Everything is sorted by stable IDs and nothing depends on time, so the same inputs always give
+the same bytes. Released harnesses are frozen; locked pins and wires are never moved.
+"""
+
+import hashlib
+import json
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any, cast
+
+from harness_tool import __version__
+from harness_tool.core.commands import Delete, Op, Put, SetGeneration
+from harness_tool.core.edit import clone_with
+from harness_tool.core.errors import HarnessError
+from harness_tool.core.model import (
+    BranchPoint,
+    Connector,
+    GenerationRecord,
+    Harness,
+    InterfaceInstance,
+    Pin,
+    Project,
+    Segment,
+    ShieldGroup,
+    Wire,
+    evolve,
+)
+
+from .lengths import path_length
+from .naming import Namer, namer_for
+from .pins import Allocation, Request, allocate
+from .segmentation import Group, orient, segment
+from .sizing import size_wire
+from .wiring import links_of
+
+
+class GenerationCancelled(HarnessError):
+    """The user cancelled; nothing was changed."""
+
+
+@dataclass
+class Finding:
+    severity: str  # "error" | "warning" | "info"
+    code: str
+    message: str
+    object_id: str | None = None
+
+
+@dataclass
+class RegenReport:
+    added: list[str] = field(default_factory=list)
+    removed: list[str] = field(default_factory=list)
+    changed: list[str] = field(default_factory=list)
+    unchanged: list[str] = field(default_factory=list)
+    frozen: list[str] = field(default_factory=list)  # released harnesses left exactly as they are
+    kept_locks: list[str] = field(
+        default_factory=list
+    )  # "connector.pin" that stayed where the user put it
+    findings: list[Finding] = field(default_factory=list)
+
+    @property
+    def errors(self) -> list[Finding]:
+        return [f for f in self.findings if f.severity == "error"]
+
+    def summary(self) -> str:
+        return (
+            f"{len(self.added)} added, {len(self.changed)} changed, {len(self.unchanged)} unchanged, "
+            f"{len(self.removed)} removed, {len(self.frozen)} frozen (released); "
+            f"{len(self.kept_locks)} locked pin(s) kept"
+        )
+
+
+@dataclass
+class GenerationPlan:
+    ops: list[Op]
+    report: RegenReport
+    record: GenerationRecord
+    harnesses: dict[str, Harness]
+
+    @property
+    def empty(self) -> bool:
+        """True if applying the plan would change nothing but (possibly) the record."""
+        return (
+            not (self.report.added or self.report.changed or self.report.removed)
+            and len(self.ops) <= 1
+        )
+
+
+# ---- inputs and status ---------------------------------------------------------------------------
+
+
+def input_hash(project: Project) -> str:
+    """Hash of everything generation reads. Outputs (generated pins, wires) are excluded."""
+
+    def dump(objs: Any) -> list[object]:
+        return [o.model_dump(mode="json") for o in sorted(objs, key=lambda x: x.id)]
+
+    boxes = []
+    for c in sorted(project.connectors.values(), key=lambda x: x.id):
+        d = c.model_dump(mode="json")
+        d["pins"] = [
+            {
+                **p.model_dump(mode="json"),
+                "interface_id": None,
+                "signal": p.signal if (p.locked or p.interface_id is None) else None,
+            }
+            for p in c.pins
+        ]
+        boxes.append(d)
+    generated = [h for h in project.harnesses.values() if h.generated]
+    payload = {
+        "units": dump(project.units.values()),
+        "interfaces": dump(project.interfaces.values()),
+        "interface_types": dump(project.interface_types.values()),
+        "parts": dump(project.parts.values()),
+        "zones": list(project.zones),
+        "config": {n: c.model_dump(mode="json") for n, c in sorted(project.config.items())},
+        "box_connectors": boxes,
+        "locked_wires": sorted(
+            (w.model_dump(mode="json") for h in generated for w in h.wires if w.locked),
+            key=lambda d: d["id"],
+        ),
+        "segment_lengths": {
+            h.id: sorted((s.id, s.length_m) for s in h.segments) for h in generated
+        },
+        "status": {h.id: h.status for h in generated},
+    }
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def generation_status(project: Project) -> str:
+    """ "none" (never generated), "current" or "stale" (the model changed since)."""
+    if project.generation is None:
+        return "none"
+    return "current" if project.generation.input_hash == input_hash(project) else "stale"
+
+
+# ---- helpers ---------------------------------------------------------------------------------------
+
+
+def _opposite(gender: str) -> Any:
+    return {"male": "female", "female": "male"}.get(gender, "unspecified")
+
+
+def _cfg(project: Project, name: str) -> dict[str, object]:
+    c = project.config.get(name)
+    return dict(c.values) if c is not None else {}
+
+
+def _num(v: object) -> float | None:
+    return float(v) if isinstance(v, int | float) and not isinstance(v, bool) else None
+
+
+@dataclass
+class _Ctx:
+    project: Project
+    namer: Namer
+    gen: dict[str, object]
+    der: dict[str, object]
+    report: RegenReport
+    prov: dict[str, list[str]]
+    alloc: dict[str, Allocation]  # box connector id -> allocation
+    failed: set[str]  # interface ids that could not be allocated
+    next_n: int
+    used_ids: set[str]
+
+    def note(self, key: str, line: str) -> None:
+        self.prov.setdefault(key, []).append(line)
+
+    def finding(self, severity: str, code: str, message: str, obj: str | None = None) -> None:
+        self.report.findings.append(Finding(severity, code, message, obj))
+
+
+# ---- planning ------------------------------------------------------------------------------------
+
+
+def plan_generation(
+    project: Project,
+    cancel: Callable[[], bool] | None = None,
+    progress: Callable[[float, str], None] | None = None,
+) -> GenerationPlan:
+    def tick(frac: float, text: str) -> None:
+        if cancel is not None and cancel():
+            raise GenerationCancelled("Generation was cancelled. Nothing was changed.")
+        if progress is not None:
+            progress(frac, text)
+
+    report = RegenReport()
+    seg = segment(project)
+    namer = namer_for(project)
+    prev = project.generation
+    ctx = _Ctx(
+        project, namer, _cfg(project, "generation"), _cfg(project, "derating"), report, {}, {}, set(),
+        max(1, prev.next_harness_number if prev else 1), set(project.harnesses),
+    )  # fmt: skip
+    for note in seg.notes:
+        ctx.finding("warning", "segmentation", note)
+    for s in seg.skipped:
+        ctx.finding(
+            s.severity,
+            "interface_skipped",
+            f"{s.interface_id} was not generated: {s.reason}.",
+            s.interface_id,
+        )
+    for w in namer.warnings:
+        ctx.finding(
+            "warning", "naming", f"The naming template '{w}' is not valid; the default was used."
+        )
+
+    old_by_key = {h.group_key: h for h in project.harnesses.values() if h.generated}
+    frozen = {h.id for h in old_by_key.values() if h.status == "released"}
+    frozen_ifaces = {i for h in old_by_key.values() if h.id in frozen for i in h.interfaces}
+    frozen_ifaces |= {
+        w.interface_id
+        for h in project.harnesses.values()
+        if not h.generated
+        for w in h.wires
+        if w.interface_id
+    }  # manual harnesses own their pins
+    tick(0.02, "Segmenting")
+
+    live = [g for g in seg.groups if not (old_by_key.get(g.key) and old_by_key[g.key].id in frozen)]
+    _allocate_pins(ctx, live, frozen_ifaces, tick)
+
+    new_harnesses: dict[str, Harness] = {}
+    for n, group in enumerate(live):
+        tick(0.2 + 0.7 * n / max(1, len(live)), f"Building {group.label}")
+        h = _build_harness(ctx, group, old_by_key.get(group.key))
+        if h is not None:
+            new_harnesses[h.id] = h
+
+    # report: frozen, removed, added/changed/unchanged
+    for g in seg.groups:
+        old = old_by_key.get(g.key)
+        if old is not None and old.id in frozen:
+            report.frozen.append(old.id)
+            if tuple(sorted(old.interfaces)) != tuple(sorted(g.interface_ids)):
+                ctx.finding(
+                    "warning",
+                    "frozen_changed",
+                    f"{old.id} is released, so it was not updated although its interfaces changed. A new revision is needed.",
+                    old.id,
+                )
+    kept_keys = {g.key for g in seg.groups}
+    for old in old_by_key.values():
+        if old.id in frozen and old.group_key not in kept_keys:
+            report.frozen.append(old.id)
+            ctx.finding(
+                "warning",
+                "frozen_orphan",
+                f"{old.id} is released but its interfaces no longer exist; it was kept.",
+                old.id,
+            )
+    report.frozen = sorted(set(report.frozen))
+    ops: list[Op] = []
+    for old in sorted(old_by_key.values(), key=lambda x: x.id):
+        if old.id not in new_harnesses and old.id not in frozen:
+            report.removed.append(old.id)
+            ops.append(Delete("harnesses", old.id))
+    for hid in sorted(new_harnesses):
+        h = new_harnesses[hid]
+        existing = project.harnesses.get(hid)
+        if existing is None:
+            report.added.append(hid)
+        elif existing != h:
+            report.changed.append(hid)
+        else:
+            report.unchanged.append(hid)
+        if existing != h:
+            ops.append(Put("harnesses", h))
+    ops += _connector_ops(ctx, frozen_ifaces)
+    report.kept_locks = sorted(
+        f"{c.id}.{p.id}"
+        for c in project.connectors.values()
+        for p in c.pins
+        if p.locked and p.signal
+    )
+    tick(0.95, "Recording provenance")
+    scratch = clone_with(project, ops)
+    record = GenerationRecord(
+        input_hash=input_hash(scratch),
+        generator_version=__version__,
+        next_harness_number=ctx.next_n,
+        placeholders_used=sorted(n for n, c in project.config.items() if c.placeholder),
+        provenance={k: ctx.prov[k] for k in sorted(ctx.prov)},
+    )
+    if project.generation != record:
+        ops.append(SetGeneration(record))
+    report.findings.sort(
+        key=lambda f: (
+            {"error": 0, "warning": 1, "info": 2}[f.severity],
+            f.code,
+            f.object_id or "",
+            f.message,
+        )
+    )
+    return GenerationPlan(ops, report, record, new_harnesses)
+
+
+def _allocate_pins(
+    ctx: _Ctx, groups: list[Group], frozen_ifaces: set[str], tick: Callable[[float, str], None]
+) -> None:
+    p = ctx.project
+    requests: dict[str, list[Request]] = {}
+    for g in groups:
+        for iid in g.interface_ids:
+            i = p.interfaces[iid]
+            for e in i.endpoints:
+                if e.connector_id is None:  # filtered out by segmentation already
+                    continue
+                requests.setdefault(e.connector_id, []).append(
+                    Request(iid, p.interface_types[i.type_id])
+                )
+    gap = int(_num(ctx.gen.get("power_signal_gap_pins")) or 0)
+    if ctx.gen.get("power_signal_gap_pins") is None:
+        ctx.note("rules", "pin-allocation: power-to-signal pin gap is a placeholder (0 used)")
+    for k, cid in enumerate(sorted(requests)):
+        tick(0.05 + 0.15 * k / max(1, len(requests)), f"Allocating pins of {cid}")
+        box = p.connectors[cid]
+        previous = {
+            (pin.interface_id, pin.signal): pin.id
+            for pin in box.pins
+            if pin.interface_id and pin.signal and not pin.locked
+        }
+        # pins that must stay: locked, frozen-owned, or typed in by a person without a lock
+        pinned = [
+            evolve(pin, locked=True)
+            if (
+                pin.locked
+                or pin.interface_id in frozen_ifaces
+                or (pin.signal and pin.interface_id is None)
+            )
+            else pin
+            for pin in box.pins
+        ]
+        work = evolve(box, pins=pinned)
+        res = allocate(
+            work,
+            requests[cid],
+            {k2: v for k2, v in previous.items() if k2[0] not in frozen_ifaces},
+            gap,
+        )
+        ctx.alloc[cid] = res
+        for iid, msg in res.errors:
+            ctx.failed.add(iid)
+            ctx.finding("error", "pin_allocation", f"{iid}: {msg}.", iid)
+        for iid, msg in res.warnings:
+            ctx.finding("warning", "pin_adjacency", f"{iid}: {msg}.", iid)
+
+
+def _connector_ops(ctx: _Ctx, frozen_ifaces: set[str]) -> list[Op]:
+    """Box connectors whose pin assignments changed (generated assignments are rewritten)."""
+    ops: list[Op] = []
+    p = ctx.project
+    touched = set(ctx.alloc) | {
+        c.id for c in p.connectors.values() if any(pin.interface_id for pin in c.pins)
+    }
+    for cid in sorted(touched):
+        box = p.connectors[cid]
+        res = ctx.alloc.get(cid)
+        assigned = {}
+        if res is not None:
+            for (iid, sig), pid in res.pins.items():
+                if iid not in ctx.failed:
+                    assigned[pid] = (iid, sig)
+        pins: list[Pin] = []
+        for pin in box.pins:
+            if (
+                pin.locked
+                or pin.interface_id in frozen_ifaces
+                or (pin.signal and pin.interface_id is None)
+            ):
+                pins.append(pin)
+            elif pin.id in assigned:
+                iid, sig = assigned[pin.id]
+                pins.append(evolve(pin, signal=sig, interface_id=iid))
+                for line in res.reasons.get(pin.id, []) if res else []:
+                    ctx.note(f"pin:{cid}.{pin.id}", line)
+            elif pin.interface_id is not None or pin.signal is not None:
+                pins.append(evolve(pin, signal=None, interface_id=None))
+            else:
+                pins.append(pin)
+        if pins != box.pins:
+            ops.append(Put("connectors", evolve(box, pins=pins)))
+    return ops
+
+
+def _pin_of(ctx: _Ctx, connector_id: str, interface_id: str, signal: str) -> str | None:
+    res = ctx.alloc.get(connector_id)
+    return res.pins.get((interface_id, signal)) if res else None
+
+
+def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | None:
+    p = ctx.project
+    ifaces = [
+        i for iid in group.interface_ids if iid not in ctx.failed for i in [p.interfaces[iid]]
+    ]
+    if not ifaces:
+        return None
+    zones = None
+    if group.mode == "per_zone_pair":
+        zones = (group.key.split("|")[-2], group.key.split("|")[-1])
+    hid = old.id if old else _new_harness_id(ctx)
+    ends: dict[str, list[str]] = {"X": [], "Y": []}
+    oriented: dict[str, tuple[str, str]] = {}
+    for i in ifaces:
+        x, y = orient(p, i, group.mode, zones)
+        oriented[i.id] = (x.connector_id or "", y.connector_id or "")
+        ends["X"].append(x.connector_id or "")
+        ends["Y"].append(y.connector_id or "")
+    ends = {k: sorted(set(v)) for k, v in ends.items()}
+    old_cables = {c.mates_with: c for c in (old.connectors if old else []) if c.mates_with}
+    used_cables = {c.id for c in old_cables.values()}
+    cables: dict[str, Connector] = {}
+    n = 1
+    for side in ("X", "Y"):
+        for box_id in ends[side]:
+            if box_id in cables:
+                continue
+            box = p.connectors[box_id]
+            if box_id in old_cables:
+                cid = old_cables[box_id].id
+            else:
+                while (
+                    ctx.namer.cable_connector(hid, n) in used_cables
+                    or ctx.namer.cable_connector(hid, n) in ctx.used_ids
+                ):
+                    n += 1
+                cid = ctx.namer.cable_connector(hid, n)
+                used_cables.add(cid)
+            part = p.parts.get(box.part_id)
+            mate = part.mates_with if part is not None and part.mates_with else box.part_id
+            if mate not in p.parts:
+                ctx.finding(
+                    "warning",
+                    "no_mating_part",
+                    f"{box.part_id} has no mating part in the library; {box_id}'s cable end uses the same part.",
+                    box_id,
+                )
+                mate = box.part_id
+            cables[box_id] = Connector(
+                id=cid, name=cid.rsplit("-", 1)[-1], role="cable", part_id=mate, gender=_opposite(box.gender),
+                keying=box.keying, mates_with=box_id, pins=[Pin(id=pin.id, contact_size=pin.contact_size, termination=pin.termination) for pin in box.pins],
+            )  # fmt: skip
+            ctx.note(
+                f"connector:{cid}",
+                f"mating: cable end for {box_id} ({box.unit_id}); part {mate} mates with {box.part_id}",
+            )
+    # ---- routing: branch points and segments, keeping user-entered lengths
+    old_len = {(s.from_node, s.to_node): s.length_m for s in (old.segments if old else [])}
+    branches: list[BranchPoint] = []
+    segments: list[Segment] = []
+    end_node: dict[str, str] = {}
+    for k, side in enumerate(("X", "Y"), start=1):
+        conns = [cables[b].id for b in ends[side]]
+        if len(conns) == 1:
+            end_node[side] = conns[0]
+        else:
+            bid = ctx.namer.branch(hid, k)
+            branches.append(BranchPoint(id=bid, name=f"Branch {side}"))
+            end_node[side] = bid
+    pairs = [(end_node["X"], end_node["Y"])]
+    for side in ("X", "Y"):
+        if end_node[side] not in {cables[b].id for b in ends[side]}:
+            pairs += [(cables[b].id, end_node[side]) for b in ends[side]]
+    for sn, (a, b) in enumerate(pairs, start=1):
+        segments.append(
+            Segment(
+                id=ctx.namer.segment(hid, sn), from_node=a, to_node=b, length_m=old_len.get((a, b))
+            )
+        )
+    # ---- wires
+    old_wires = {}
+    for w in old.wires if old else []:
+        src = next(
+            (c.mates_with for c in (old.connectors if old else []) if c.id == w.from_connector), ""
+        )
+        old_wires[f"{w.interface_id}|{w.signal}|{src}"] = w
+    used_wires = {w.id for w in old_wires.values()}
+    wire_n = 1
+    wires: list[Wire] = []
+    skeleton = Harness(
+        id=hid,
+        name=group.label,
+        connectors=list(cables.values()),
+        branch_points=branches,
+        segments=segments,
+    )
+    loop = _num(ctx.gen.get("service_loop_m"))
+    if ctx.gen.get("service_loop_m") is None:
+        ctx.note(
+            f"harness:{hid}",
+            "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
+        )
+    for i in ifaces:
+        itype = p.interface_types[i.type_id]
+        links, notes = links_of(itype)
+        for note in notes:
+            ctx.finding("warning", "wiring", note, i.id)
+        bx, by = oriented[i.id]
+        part_id = _wire_part(ctx, itype.construction, i.id)
+        for link in links:
+            src_box, dst_box = (bx, by) if link.from_end == "X" else (by, bx)
+            pin_src = _pin_of(ctx, src_box, i.id, link.from_signal)
+            pin_dst = _pin_of(ctx, dst_box, i.id, link.to_signal)
+            if pin_src is None or pin_dst is None:
+                continue
+            key = f"{i.id}|{link.label}|{src_box}"
+            prev_w = old_wires.get(key)
+            if prev_w is not None:
+                wid = prev_w.id
+            else:
+                while (
+                    ctx.namer.wire(hid, wire_n) in used_wires
+                    or ctx.namer.wire(hid, wire_n) in ctx.used_ids
+                ):
+                    wire_n += 1
+                wid = ctx.namer.wire(hid, wire_n)
+                used_wires.add(wid)
+            length = path_length(skeleton, cables[src_box].id, cables[dst_box].id)
+            if length is not None and loop is not None:
+                length += 2 * loop
+            wire = Wire(
+                id=wid, signal=link.label, from_connector=cables[src_box].id, from_pin=pin_src, to_connector=cables[dst_box].id,
+                to_pin=pin_dst, part_id=part_id, interface_id=i.id, length_m=length,
+            )  # fmt: skip
+            if prev_w is not None and prev_w.locked:
+                wire = evolve(
+                    prev_w,
+                    from_pin=pin_src,
+                    to_pin=pin_dst,
+                    from_connector=wire.from_connector,
+                    to_connector=wire.to_connector,
+                    signal=link.label,
+                    interface_id=i.id,
+                )
+                ctx.note(
+                    f"wire:{wid}",
+                    "override: the wire is locked, so its gauge, part, colour and length were kept",
+                )
+            else:
+                wire = _size(ctx, wire, i, itype.category)
+            wires.append(wire)
+            ctx.note(
+                f"wire:{wid}",
+                f"wiring: {link.label} of {i.id} connects {src_box} pin {pin_src} to {dst_box} pin {pin_dst} ({link.from_end} drives)",
+            )
+    if not wires:
+        ctx.finding("warning", "no_wires", f"{group.label} produced no wires.")
+        return None
+    wires.sort(key=lambda w: w.id)
+    shields = _shields(ctx, hid, ifaces, wires, old)
+    interfaces = sorted(i.id for i in ifaces)
+    ctx.note(
+        f"harness:{hid}",
+        f"segmentation: {', '.join(interfaces)} share a harness because they have the same {_describe(group)} and chain ({group.chain})",
+    )
+    return Harness(
+        id=hid, name=group.label, revision=old.revision if old else "A", status=old.status if old else "draft",
+        connectors=sorted(cables.values(), key=lambda c: c.id), wires=wires, shields=shields, branch_points=branches, segments=segments,
+        generated=True, group_key=group.key, interfaces=interfaces, notes=old.notes if old else "",
+    )  # fmt: skip
+
+
+def _describe(group: Group) -> str:
+    return {
+        "per_connector_pair": "pair of unit connectors",
+        "per_unit_pair": "pair of units",
+        "per_zone_pair": "pair of zones",
+    }[group.mode]
+
+
+def _new_harness_id(ctx: _Ctx) -> str:
+    while ctx.namer.harness(ctx.next_n) in ctx.used_ids:
+        ctx.next_n += 1
+    hid = ctx.namer.harness(ctx.next_n)
+    ctx.next_n += 1
+    ctx.used_ids.add(hid)
+    return hid
+
+
+def _wire_part(ctx: _Ctx, construction: str, iid: str) -> str | None:
+    table = ctx.gen.get("wire_part_by_construction")
+    part = table.get(construction) if isinstance(table, dict) else None
+    if (
+        not isinstance(part, str)
+        or part not in ctx.project.parts
+        or ctx.project.parts[part].category != "wire"
+    ):
+        ctx.finding(
+            "warning",
+            "wire_part",
+            f"No wire part is configured for {construction} wires (generation.wire_part_by_construction).",
+            iid,
+        )
+        return None
+    return part
+
+
+def _size(ctx: _Ctx, wire: Wire, i: InterfaceInstance, category: str) -> Wire:
+    conductors = 2 if category in ("power", "ground") else 1
+    sizing = size_wire(
+        ctx.der,
+        ctx.gen,
+        current_a=i.max_current_a,
+        length_m=wire.length_m,
+        path_conductors=conductors,
+    )
+    for line in sizing.notes:
+        ctx.note(f"gauge:{wire.id}", f"wire-sizing: {line}")
+    if sizing.pending:
+        ctx.note(
+            f"gauge:{wire.id}", f"wire-sizing: undecided, waiting for {', '.join(sizing.pending)}"
+        )
+    if sizing.error:
+        ctx.finding("error", "wire_sizing", f"{wire.id}: {sizing.error}.", wire.id)
+    out = wire if sizing.awg is None else evolve(wire, gauge_awg=sizing.awg)
+    _check_contacts(ctx, out, i)
+    return out
+
+
+def _check_contacts(ctx: _Ctx, wire: Wire, i: InterfaceInstance) -> None:
+    """Current against the contact rating of both box connectors (rating and factor from config)."""
+    current = i.max_current_a
+    factor = _num(ctx.der.get("contact_current_factor"))
+    key = str(ctx.der.get("contact_rating_key", "contact_current_a"))
+    if current is None:
+        return
+    for end in i.endpoints:
+        box = ctx.project.connectors.get(end.connector_id or "")
+        part = ctx.project.parts.get(box.part_id) if box else None
+        rating = part.ratings.get(key) if part else None
+        if rating is None or factor is None:
+            ctx.note(
+                f"gauge:{wire.id}",
+                f"contact-check: not done for {end.connector_id} (contact rating or derating factor is a placeholder)",
+            )
+        elif current > rating * factor:
+            ctx.finding(
+                "error",
+                "contact_overload",
+                f"{wire.id}: {current:g} A exceeds the derated contact rating of {end.connector_id}.",
+                wire.id,
+            )
+
+
+def _shields(
+    ctx: _Ctx, hid: str, ifaces: list[InterfaceInstance], wires: list[Wire], old: Harness | None
+) -> list[ShieldGroup]:
+    p = ctx.project
+    ends = [ctx.gen.get("shield_end_a"), ctx.gen.get("shield_end_b")]
+    valid = {"backshell_360", "pigtail", "floating"}
+    a, b = (cast(Any, e if isinstance(e, str) and e in valid else "floating") for e in ends)
+    if ends[0] is None or ends[1] is None:
+        ctx.note(
+            f"harness:{hid}",
+            "shielding: shield termination is a placeholder (floating used); the grounding concept decides it",
+        )
+    out: list[ShieldGroup] = []
+    n = 1
+
+    def add(kind: str, members: list[Wire]) -> None:
+        nonlocal n
+        if members:
+            out.append(
+                ShieldGroup(
+                    id=ctx.namer.shield(hid, n),
+                    kind=cast(Any, kind),
+                    wire_ids=sorted(w.id for w in members),
+                    end_a=a,
+                    end_b=b,
+                )
+            )
+            n += 1
+
+    for i in ifaces:
+        t = p.interface_types[i.type_id]
+        mine = [w for w in wires if w.interface_id == i.id]
+        if t.construction in ("single",):
+            continue
+        if t.construction == "coax":
+            for w in mine:
+                add("coax", [w])
+            continue
+        if t.construction == "quad":
+            add("quad", mine)
+            continue
+        pair_of = {
+            s.name: (s.pair or ("power" if t.category in ("power", "ground") else None))
+            for s in t.signals
+        }
+        groups: dict[str, list[Wire]] = {}
+        for w in mine:
+            src = w.signal.split("/")[0] if w.signal else ""
+            name = pair_of.get(src)
+            if name is not None:
+                groups.setdefault(f"{name}|{w.from_connector}", []).append(w)
+        kind = "shielded_pair" if t.shielding == "per_pair" else "twisted_pair"
+        for key in sorted(groups):
+            add(kind, groups[key])
+        if t.shielding == "overall":
+            add("overall_shield", mine)
+    return out
+
+
+# ---- convenience -----------------------------------------------------------------------------------
+
+
+def generate_project(project: Project) -> GenerationPlan:
+    """Plan, apply (not undoable) and verify. For scripts and tests; the GUI uses History."""
+    from harness_tool.core.commands import apply_ops
+
+    plan = plan_generation(project)
+    apply_ops(project, plan.ops)
+    return plan

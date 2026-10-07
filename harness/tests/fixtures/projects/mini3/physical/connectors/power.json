@@ -7,6 +7,7 @@
       "gender": "female",
       "id": "PCDU-J01",
       "keying": null,
+      "mates_with": null,
       "name": "J01",
       "notes": "",
       "part_id": "EX-DSUB-9-F",
@@ -14,6 +15,7 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": "IF-PWR-RW1",
           "locked": false,
           "signal": "PWR",
           "termination": "unspecified"
@@ -21,6 +23,7 @@
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": "IF-PWR-RW1",
           "locked": false,
           "signal": "RTN",
           "termination": "unspecified"
@@ -28,6 +31,7 @@
         {
           "contact_size": null,
           "id": "3",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -43,6 +47,7 @@
       "gender": "female",
       "id": "PCDU-J02",
       "keying": null,
+      "mates_with": null,
       "name": "J02",
       "notes": "",
       "part_id": "EX-DSUB-9-F",
@@ -50,6 +55,7 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -57,6 +63,7 @@
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -64,6 +71,7 @@
         {
           "contact_size": null,
           "id": "3",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -80,6 +88,7 @@
       "gender": "female",
       "id": "PCDU-J03",
       "keying": null,
+      "mates_with": null,
       "name": "J03",
       "notes": "",
       "part_id": "EX-DSUB-9-F",
@@ -87,6 +96,7 @@
         {
           "contact_size": null,
           "id": "1",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -94,6 +104,7 @@
         {
           "contact_size": null,
           "id": "2",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"
@@ -101,6 +112,7 @@
         {
           "contact_size": null,
           "id": "3",
+          "interface_id": null,
           "locked": false,
           "signal": null,
           "termination": "unspecified"

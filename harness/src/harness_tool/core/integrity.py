@@ -25,6 +25,19 @@ def _casefold_duplicates(kind: str, ids: Iterable[str]) -> list[Issue]:
     ]
 
 
+def _orphan(h: Harness | None, code: str, message: str, object_id: str | None = None) -> Issue:
+    """Data left behind in *generated* harnesses by a later edit is stale (warning), otherwise an error."""
+    if h is not None and h.generated:
+        return Issue(
+            "warning",
+            code,
+            message + " The harness plans are outdated; generate again.",
+            None,
+            object_id,
+        )
+    return _err(code, message, object_id)
+
+
 def _check_connector(project: Project, c: Connector, owner: str) -> list[Issue]:
     out: list[Issue] = []
     part = project.parts.get(c.part_id)
@@ -66,6 +79,19 @@ def _check_connector(project: Project, c: Connector, owner: str) -> list[Issue]:
             out.append(_err("cable_connector_has_unit", f"Connector '{c.id}' is not a box connector but names a unit.", c.id))  # fmt: skip
         if owner == "project":
             out.append(_err("cable_connector_outside_harness", f"Connector '{c.id}' is a cable/in-line connector and must belong to a harness.", c.id))  # fmt: skip
+    if c.mates_with is not None and c.mates_with not in project.connectors:
+        owner_h = project.harnesses.get(owner)
+        out.append(
+            _orphan(
+                owner_h,
+                "unknown_mate",
+                f"Connector '{c.id}' mates with '{c.mates_with}', which does not exist.",
+                c.id,
+            )
+        )
+    for pin in c.pins:
+        if pin.interface_id is not None and pin.interface_id not in project.interfaces:
+            out.append(Issue("warning", "orphan_pin_assignment", f"Pin {pin.id} of '{c.id}' was allocated for interface '{pin.interface_id}', which no longer exists. Generate again to release it.", None, c.id))  # fmt: skip
     pin_counts = Counter(p.id for p in c.pins)
     out.extend(
         _err("duplicate_pin", f"Connector '{c.id}' lists pin '{pid}' more than once.", c.id)
@@ -101,7 +127,7 @@ def _check_harness(
             if part is None or part.category != "wire":
                 out.append(_err("unknown_part", f"Wire '{w.id}' uses '{w.part_id}', which is not a wire part in the library.", w.id))  # fmt: skip
         if w.interface_id is not None and w.interface_id not in project.interfaces:
-            out.append(_err("unknown_interface", f"Wire '{w.id}' traces to interface '{w.interface_id}', which does not exist.", w.id))  # fmt: skip
+            out.append(_orphan(h, "unknown_interface", f"Wire '{w.id}' traces to interface '{w.interface_id}', which does not exist.", w.id))  # fmt: skip
     groups = [(g.id, g.wire_ids) for g in h.shields]
     groups += [(g.id, g.wire_ids) for g in h.splices]
     for gid, members in groups:

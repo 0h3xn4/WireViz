@@ -16,12 +16,12 @@ from . import canonical
 from .fs import slug
 
 MANAGED_RE = re.compile(
-    r"^(project\.json|waivers\.json|logical/layout\.json|config/[^/]+\.json|library/[^/]+\.json|logical/interface_types\.json"
+    r"^(project\.json|waivers\.json|logical/layout\.json|generated/generation\.json|config/[^/]+\.json|library/[^/]+\.json|logical/interface_types\.json"
     r"|logical/(units|interfaces)/[^/]+\.json|physical/(connectors|harnesses)/[^/]+\.json)$"
 )
 # Serialized harness files by object identity (harnesses are immutable); keeps hashing cheap.
 _HARNESS_CACHE: dict[int, tuple[Any, bytes]] = {}
-MANAGED_DIRS = ("config", "library", "logical", "physical")
+MANAGED_DIRS = ("config", "library", "logical", "physical", "generated")
 
 
 def is_managed(rel: str) -> bool:
@@ -60,6 +60,10 @@ def serialize(project: Project, *, tool_version: str | None = None) -> dict[str,
     files["logical/layout.json"] = canonical.dumps(
         {"zones": list(project.zones), "placements": _dump(list(project.placements.values()))}
     )
+    if project.generation is not None:
+        files["generated/generation.json"] = canonical.dumps(
+            project.generation.model_dump(mode="json")
+        )
     if project.waivers:
         files["waivers.json"] = canonical.dumps({"waivers": _dump(list(project.waivers.values()))})
     files.update(_grouped(project.units, "logical/units", "units", lambda u: u.subsystem))

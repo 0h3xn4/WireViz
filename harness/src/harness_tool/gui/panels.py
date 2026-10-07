@@ -24,12 +24,16 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QStyledItemDelegate,
     QTableView,
+    QTableWidget,
+    QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
 
 from harness_tool.core import checks, edit
+from harness_tool.core.generate.explain import explain_harness, explain_wire
 from harness_tool.core.model import InterfaceInstance
+from harness_tool.core.verify import verify_project
 from harness_tool.gui import strings
 from harness_tool.gui.controller import Delta, EditorController
 from harness_tool.gui.theme import ThemeManager
@@ -897,10 +901,117 @@ class InterfaceTable(QWidget):
 
 
 class HarnessPanel(QWidget):
-    def __init__(self) -> None:
+    """Generated harnesses: status, independent check, harness list, wires and why they are so."""
+
+    def __init__(self, ctl: EditorController) -> None:
         super().__init__()
+        self.ctl = ctl
         self.setObjectName("harness-plans")
+        self._dirty = True
         lay = QVBoxLayout(self)
-        lay.addWidget(QLabel(f"<b>{strings.NO_PLANS_TITLE}</b>"))
-        lay.addWidget(muted(strings.NO_PLANS_BODY))
-        lay.addStretch(1)
+        self.status = QLabel()
+        self.status.setObjectName("plans-status")
+        self.status.setWordWrap(True)
+        self.verify = QLabel()
+        self.verify.setObjectName("plans-verify")
+        self.verify.setWordWrap(True)
+        lay.addWidget(self.status)
+        lay.addWidget(self.verify)
+        self.empty = muted(strings.NO_PLANS_BODY)
+        self.empty.setObjectName("plans-empty")
+        lay.addWidget(self.empty)
+        self.harnesses = QTableWidget(0, len(strings.PLANS_COLUMNS))
+        self.harnesses.setObjectName("plans-harnesses")
+        self.harnesses.setHorizontalHeaderLabels(strings.PLANS_COLUMNS)
+        self.wires = QTableWidget(0, len(strings.WIRE_COLUMNS))
+        self.wires.setObjectName("plans-wires")
+        self.wires.setHorizontalHeaderLabels(strings.WIRE_COLUMNS)
+        for t in (self.harnesses, self.wires):
+            t.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+            t.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+            t.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+            t.verticalHeader().setVisible(False)
+            t.horizontalHeader().setStretchLastSection(True)
+        self.explain = QLabel()
+        self.explain.setObjectName("plans-explain")
+        self.explain.setWordWrap(True)
+        self.explain.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        body = QHBoxLayout()
+        body.addWidget(self.harnesses, 3)
+        body.addWidget(self.wires, 4)
+        body.addWidget(self.explain, 3)
+        lay.addLayout(body, 1)
+        self.harnesses.itemSelectionChanged.connect(self._show_wires)
+        self.wires.itemSelectionChanged.connect(self._show_explain)
+        ctl.changed.connect(lambda _d: self._invalidate())
+        self.refresh()
+
+    def _invalidate(self) -> None:
+        self._dirty = True
+        if self.isVisible():
+            self.refresh()
+
+    def showEvent(self, event: object) -> None:
+        super().showEvent(event)  # type: ignore[arg-type]
+        if self._dirty:
+            self.refresh()
+
+    def selected_harness(self) -> str | None:
+        rows = self.harnesses.selectionModel().selectedRows()
+        item = self.harnesses.item(rows[0].row(), 0) if rows else None
+        return item.text() if item else None
+
+    def refresh(self) -> None:
+        self._dirty = False
+        p = self.ctl.project
+        status = self.ctl.generation_status()
+        self.status.setText(strings.GEN_STATUS[status])
+        self.status.setProperty("state", status)
+        report = verify_project(p) if p.harnesses else None
+        if report is None:
+            self.verify.setText("")
+        else:
+            fmt = strings.PLANS_VERIFY_OK if report.ok else strings.PLANS_VERIFY_BAD
+            self.verify.setText(fmt.format(report.summary()))
+        self.empty.setVisible(not p.harnesses)
+        keep = self.selected_harness()
+        self.harnesses.setRowCount(len(p.harnesses))
+        for r, hid in enumerate(sorted(p.harnesses)):
+            h = p.harnesses[hid]
+            cells = [hid, h.name, str(len(h.wires)), str(len(h.interfaces)), h.status,
+                     "generated" if h.generated else "by hand"]  # fmt: skip
+            for c, text in enumerate(cells):
+                self.harnesses.setItem(r, c, QTableWidgetItem(text))
+            if hid == keep:
+                self.harnesses.selectRow(r)
+        self._show_wires()
+
+    def _show_wires(self) -> None:
+        p = self.ctl.project
+        h = p.harnesses.get(self.selected_harness() or "")
+        wires = h.wires if h else []
+        self.wires.setRowCount(len(wires))
+        for r, w in enumerate(wires):
+            cells = [w.id, w.signal or "", f"{w.from_connector}.{w.from_pin}",
+                     f"{w.to_connector}.{w.to_pin}",
+                     "pending" if w.gauge_awg is None else str(w.gauge_awg),
+                     "" if w.length_m is None else f"{w.length_m:g}",
+                     "yes" if w.locked else ""]  # fmt: skip
+            for c, text in enumerate(cells):
+                self.wires.setItem(r, c, QTableWidgetItem(text))
+        self._show_explain()
+
+    def _show_explain(self) -> None:
+        p = self.ctl.project
+        h = p.harnesses.get(self.selected_harness() or "")
+        rows = self.wires.selectionModel().selectedRows()
+        item = self.wires.item(rows[0].row(), 0) if rows else None
+        if h is None:
+            self.explain.setText("")
+            return
+        wire = next((w for w in h.wires if item and w.id == item.text()), None)
+        lines = explain_wire(p, h, wire) if wire else explain_harness(p, h)
+        title = f"<b>{strings.EXPLAIN}</b>"
+        self.explain.setText(
+            title + "<br>" + ("<br>".join(lines) if lines else strings.EXPLAIN_NONE)
+        )

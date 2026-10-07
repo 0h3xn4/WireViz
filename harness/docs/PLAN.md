@@ -30,7 +30,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - pytest-qt tests for journeys J1 to J4; screenshots via offscreen; UX issue list.
 **Acceptance:** 5-unit diagram can be built from the sample project tour; no direct model mutation outside commands; UX high-severity issues fixed.
 
-## M3 Generation
+## M3 Generation (done; spare-pin fraction and a length-import screen are open)
 - Segmentation (configurable), deterministic IDs and naming schemes.
 - Pin allocator with rules, locks, spare pins, provenance.
 - Wire sizing (config-driven derating, voltage drop), lengths from routing segments, mass with margin.

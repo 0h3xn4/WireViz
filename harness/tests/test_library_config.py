@@ -38,5 +38,5 @@ def test_config_set_complete_and_placeholders_flagged() -> None:
     cfg = default_configs()
     assert set(cfg) == set(CONFIG_NAMES)
     assert {n for n, c in cfg.items() if c.placeholder} == {
-        "segmentation", "segregation", "derating", "emc", "titleblock"
+        "segmentation", "segregation", "derating", "emc", "titleblock", "generation"
     }  # fmt: skip
