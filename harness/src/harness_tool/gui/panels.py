@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from harness_tool.core import checks, edit
+from harness_tool.core import checks, drc, edit
 from harness_tool.core.generate.explain import explain_harness, explain_wire
 from harness_tool.core.model import InterfaceInstance
 from harness_tool.core.verify import verify_project
@@ -541,6 +541,8 @@ class ProblemsPanel(QScrollArea):
         self._signature: object = None
         ctl.changed.connect(lambda _d: self._invalidate())
         ctl.stateChanged.connect(self._invalidate)
+        ctl.drcChanged.connect(self._invalidate)
+        ctl.drcStateChanged.connect(self._invalidate)
         self.refresh()
 
     def _invalidate(self) -> None:
@@ -560,16 +562,21 @@ class ProblemsPanel(QScrollArea):
     def refresh(self) -> None:
         self._dirty = False
         findings = self.ctl.findings()
+        checking = not self.ctl.drc_current
         signature = (
             tuple((f.id, f.waiver is not None, f.title) for f in findings),
             self.ctl.read_only,
+            checking,
         )
         if signature == self._signature:
             return  # same findings as last time: keep the widgets
         self._signature = signature
         clear_layout(self.lay)
         open_ = [f for f in findings if f.waiver is None]
-        if not open_:
+        state = muted(strings.DRC_CHECKING if checking else strings.DRC_DONE.format(len(drc.RULES)))
+        state.setObjectName("drc-state")
+        self.lay.addWidget(state)
+        if not open_ and not checking:
             self.lay.addWidget(muted(strings.NO_PROBLEMS))
         for f in open_[:MAX_CARDS]:
             self.lay.addWidget(self._card(f))
@@ -632,6 +639,7 @@ class TodoPanel(QScrollArea):
         self.lay = scroll_body(self)
         self._dirty = True
         ctl.changed.connect(lambda _d: self._invalidate())
+        ctl.drcChanged.connect(self._invalidate)
         self.refresh()
 
     def _invalidate(self) -> None:
@@ -955,6 +963,15 @@ class HarnessPanel(QWidget):
         super().showEvent(event)  # type: ignore[arg-type]
         if self._dirty:
             self.refresh()
+
+    def select_harness(self, harness_id: str) -> None:
+        if self._dirty:
+            self.refresh()
+        for r in range(self.harnesses.rowCount()):
+            item = self.harnesses.item(r, 0)
+            if item and item.text() == harness_id:
+                self.harnesses.selectRow(r)
+                return
 
     def selected_harness(self) -> str | None:
         rows = self.harnesses.selectionModel().selectedRows()

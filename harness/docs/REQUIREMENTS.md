@@ -40,3 +40,7 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-VER-01 | An independent verifier detects missing, swapped, duplicated and outdated wiring. | SPEC Part 2 (verification) | `tests/test_generate.py` |
 | REQ-PERF-02 | Generating 2,000 interfaces and 20,000 wires takes under 10 s. | SPEC Part 3 (performance) | `tests/test_generate.py`, `tools/bench_generate.py` |
 | REQ-GUI-02 | Generate shows a preview, applies as one undo step, shows status, the independent check and Explain. | UX.md | `tests/test_gui_generate.py` |
+| REQ-DRC-01 | Every design rule has a positive test (fires on a violation) and a negative test (quiet on a clean project). | SPEC Part 3 (DRC), Part 5 (tests) | `tests/test_drc.py` |
+| REQ-DRC-02 | Findings state what, why and how to fix; warnings are waivable with justification, errors are not; waivers persist and appear in the report. | SPEC Part 3 (DRC) | `tests/test_drc.py` |
+| REQ-DRC-03 | A check that cannot run because of placeholders says so. | SPEC placeholders rule | `tests/test_drc.py` |
+| REQ-DRC-04 | Design rules run in the background and never block edits; Show, Fix and Waive work from the Problems panel. | SPEC Part 3 (DRC, performance) | `tests/test_gui_drc.py` |

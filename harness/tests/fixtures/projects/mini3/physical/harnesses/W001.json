@@ -26,6 +26,14 @@
           "locked": false,
           "signal": "RTN",
           "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
         }
       ],
       "role": "cable",
@@ -55,6 +63,14 @@
           "interface_id": null,
           "locked": false,
           "signal": "RTN",
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "id": "3",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
           "termination": "unspecified"
         }
       ],

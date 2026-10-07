@@ -24,3 +24,15 @@ Interface types: starter types are `unverified`; impedance, EMC class and defaul
 | `generation.json` | `shield_end_a`, `shield_end_b` | shield grounding concept left floating |
 | `generation.json` | `wire_part_by_construction` | example library parts (not qualified) |
 Library parts need `mass_g` and `mass_per_m_g` for a complete mass; otherwise the result lists what is missing.
+
+## Additions in M4
+| File (`config/`) | Key | Rules that stay silent (and say "not checked") while `null` |
+| --- | --- | --- |
+| `derating.json` | `contact_current_factor` | current over contact |
+| `derating.json` | `ampacity_a_by_awg`, `bundle_derating`, `temperature_derating` | current over wire |
+| `derating.json` | `max_voltage_drop_v` (with `generation.conductor_resistivity_ohm_m`) | voltage drop |
+| `derating.json` | `spare_pin_fraction` | spare pins low |
+| `generation.json` | `shield_end_a`, `shield_end_b` (grounding concept) | shield unterminated, shield wrong end |
+| `segregation.json` | `category_pairs_to_separate`, e.g. `[["power", "analog"]]` | category mixed |
+| `emc.json` | `conflicting_class_pairs`, e.g. `[["A", "B"]]` (format chosen by the tool; the owner may change it) | EMC mixed |
+Part ratings: `ratings.contact_current_a` on connector parts (key name set by `derating.contact_rating_key`).

@@ -84,10 +84,7 @@ class GenerationPlan:
     @property
     def empty(self) -> bool:
         """True if applying the plan would change nothing but (possibly) the record."""
-        return (
-            not (self.report.added or self.report.changed or self.report.removed)
-            and len(self.ops) <= 1
-        )
+        return all(isinstance(op, SetGeneration) for op in self.ops)
 
 
 # ---- inputs and status ---------------------------------------------------------------------------

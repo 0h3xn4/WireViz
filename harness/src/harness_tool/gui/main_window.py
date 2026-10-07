@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (
 )
 
 from harness_tool import __version__
-from harness_tool.core import edit
+from harness_tool.core import drc, edit
 from harness_tool.core.errors import HarnessError, ProjectLockedError
 from harness_tool.core.generate.engine import (
     GenerationCancelled,
@@ -190,6 +190,7 @@ class MainWindow(QMainWindow):
         self.tour = Tour(self, theme, self._tour_targets())
 
         self.ctl.message.connect(self._on_message)
+        self.ctl.drcChanged.connect(self._update_tab_badges)
         self.ctl.stateChanged.connect(self._on_state)
         self.ctl.changed.connect(self._on_changed)
         self.ctl.selectionChanged.connect(self._on_selection)
@@ -738,10 +739,18 @@ class MainWindow(QMainWindow):
             self.ctl.apply_import(dlg.plan)
 
     def show_object(self, object_id: str) -> None:
-        kind = "unit" if object_id in self.ctl.project.units else "interface"
-        self.ctl.select(kind, object_id)
+        place = drc.locate(self.ctl.project, object_id)
+        if place is None:
+            self.toasts.show_message(strings.NOTHING_TO_SHOW, None)
+            return
+        kind, target = place
+        if kind == "harness":
+            self.tabs.setCurrentWidget(self.harness_panel)
+            self.harness_panel.select_harness(target)
+            return
+        self.ctl.select(kind, target)
         if kind == "unit":
-            self.view.focus_unit(object_id)
+            self.view.focus_unit(target)
 
     def _todo_activated(self, kind: str, target: str) -> None:
         if kind == "tab":

@@ -8,6 +8,7 @@
     "contact_rating_key": "contact_current_a",
     "max_ambient_temperature_c": null,
     "max_voltage_drop_v": null,
-    "spare_pin_fraction": null
+    "spare_pin_fraction": null,
+    "temperature_derating": null
   }
 }

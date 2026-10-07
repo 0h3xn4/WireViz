@@ -1,0 +1,526 @@
+"""The design rules. One function per rule, registered in `RULES` (order = report order).
+
+Rules that need engineering numbers (derating, grounding concept, EMC classes, spare pins) check
+nothing while those configuration values are placeholders; `unchecked-config` then says so, so a
+clean report can never be mistaken for a passed check.
+"""
+
+from collections import Counter, defaultdict
+from collections.abc import Iterator
+
+from harness_tool.core.generate.sizing import ampacity_table
+from harness_tool.core.integrity import check_integrity
+from harness_tool.core.model import Connector, Harness, InterfaceInstance, Project, Wire
+from harness_tool.core.units import awg_to_area_mm2
+
+from .base import Hit, Rule, cfg, number
+
+# ---- helpers ---------------------------------------------------------------------------------------
+
+
+def _wire_interfaces(project: Project, h: Harness) -> set[str]:
+    return {w.interface_id for w in h.wires if w.interface_id} | set(h.interfaces)
+
+
+def _end_signal(project: Project, h: Harness, connector_id: str, pin_id: str) -> str | None:
+    """Signal at a wire end: from the mated box connector's pin, else the pin's own signal."""
+    cable = next((c for c in h.connectors if c.id == connector_id), None)
+    if cable is None:
+        return None
+    box = project.connectors.get(cable.mates_with or "")
+    for conn in (box, cable):
+        pin = next((p for p in conn.pins if p.id == pin_id), None) if conn else None
+        if pin is not None and pin.signal:
+            return pin.signal
+    return None
+
+
+def _has_harnesses(project: Project) -> bool:
+    return bool(project.harnesses)
+
+
+# ---- structure -------------------------------------------------------------------------------------
+
+
+def _duplicate_ids(project: Project) -> Iterator[Hit]:
+    seen = Counter(c.id for c in project.connectors.values())
+    seen.update(c.id for h in project.harnesses.values() for c in h.connectors)
+    for cid, n in sorted(seen.items()):
+        if n > 1:
+            yield Hit(cid, f"The connector ID {cid} is used {n} times")
+    wires = Counter(w.id for h in project.harnesses.values() for w in h.wires)
+    for wid, n in sorted(wires.items()):
+        if n > 1:
+            yield Hit(wid, f"The wire ID {wid} is used {n} times")
+    for c in sorted(project.connectors.values(), key=lambda x: x.id):
+        for pid, n in sorted(Counter(p.id for p in c.pins).items()):
+            if n > 1:
+                yield Hit(f"{c.id}.{pid}", f"Connector {c.id} has pin {pid} {n} times")
+
+
+def _dangling_wires(project: Project) -> Iterator[Hit]:
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        pins = {c.id: {p.id for p in c.pins} for c in h.connectors}
+        for w in h.wires:
+            for cid, pid in ((w.from_connector, w.from_pin), (w.to_connector, w.to_pin)):
+                if cid not in pins:
+                    yield Hit(w.id, f"Wire {w.id} ends on connector {cid}, which is not in {h.id}")
+                elif pid not in pins[cid]:
+                    yield Hit(w.id, f"Wire {w.id} ends on pin {pid} of {cid}, which does not exist")
+
+
+def _signal_unassigned(project: Project) -> Iterator[Hit]:
+    if not _has_harnesses(project):
+        return
+    routed = {i for h in project.harnesses.values() for i in _wire_interfaces(project, h)}
+    for i in sorted(project.interfaces.values(), key=lambda x: x.id):
+        if i.id not in routed or i.type_id not in project.interface_types:
+            continue
+        for e in i.endpoints:
+            conn = project.connectors.get(e.connector_id or "")
+            if conn is None:
+                continue
+            have = {p.signal for p in conn.pins if p.interface_id == i.id}
+            for s in project.interface_types[i.type_id].signals:
+                if s.name not in have:
+                    yield Hit(
+                        f"{i.id}.{conn.id}.{s.name}",
+                        f"Signal {s.name} of {i.id} has no pin on {conn.id}",
+                        "Regenerate harnesses",
+                    )
+
+
+def _floating_pins(project: Project) -> Iterator[Hit]:
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        used = {(w.from_connector, w.from_pin) for w in h.wires}
+        used |= {(w.to_connector, w.to_pin) for w in h.wires}
+        for c in h.connectors:
+            for p in c.pins:
+                if p.signal and (c.id, p.id) not in used:
+                    yield Hit(
+                        f"{c.id}.{p.id}",
+                        f"Pin {p.id} of {c.id} is named {p.signal} but no wire is attached",
+                    )
+
+
+def _model_inconsistent(project: Project) -> Iterator[Hit]:
+    for n, issue in enumerate(i for i in check_integrity(project) if i.severity != "error"):
+        yield Hit(issue.object_id or f"{issue.code}-{n}", issue.message)
+
+
+# ---- connectors ------------------------------------------------------------------------------------
+
+
+def _mate_mismatch(project: Project) -> Iterator[Hit]:
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for c in h.connectors:
+            box = project.connectors.get(c.mates_with or "")
+            if c.mates_with is None:
+                continue
+            if box is None:
+                yield Hit(c.id, f"{c.id} should plug into {c.mates_with}, which does not exist")
+                continue
+            problems = []
+            if {c.gender, box.gender} <= {"male", "female"} and c.gender == box.gender:
+                problems.append(f"both are {c.gender}")
+            part = project.parts.get(box.part_id)
+            if part is not None and part.mates_with and part.mates_with != c.part_id:
+                problems.append(
+                    f"{c.part_id} is not the mating part ({part.mates_with}) of {box.part_id}"
+                )
+            if len(c.pins) != len(box.pins):
+                problems.append(f"{len(c.pins)} pins against {len(box.pins)}")
+            if c.keying != box.keying:
+                problems.append("keying differs")
+            if problems:
+                yield Hit(c.id, f"{c.id} does not fit {box.id}: {'; '.join(problems)}")
+
+
+def _lookalike(project: Project) -> Iterator[Hit]:
+    groups: dict[tuple[str, str, str | None, str, int], list[Connector]] = defaultdict(list)
+    in_use = {e.connector_id for i in project.interfaces.values() for e in i.endpoints}
+    for c in project.connectors.values():
+        if c.unit_id and c.id in in_use:  # unused connectors cannot be mis-mated
+            groups[(c.unit_id, c.part_id, c.keying, c.gender, len(c.pins))].append(c)
+    for (unit, part, _k, _g, _n), conns in sorted(groups.items(), key=lambda kv: kv[0][:3]):
+        if len(conns) > 1:
+            ids = sorted(c.id for c in conns)
+            names = ", ".join(ids[:3]) + (f" and {len(ids) - 3} more" if len(ids) > 3 else "")
+            yield Hit(
+                ids[0],
+                f"{names} on {unit} are identical ({part}, same keying) and could be plugged in the wrong place",
+            )
+
+
+def _unapproved_parts(project: Project) -> Iterator[Hit]:
+    used: dict[str, set[str]] = defaultdict(set)
+    for c in project.connectors.values():
+        used[c.part_id].add(c.id)
+    for h in project.harnesses.values():
+        for c in h.connectors:
+            used[c.part_id].add(c.id)
+        for w in h.wires:
+            if w.part_id:
+                used[w.part_id].add(w.id)
+    for pid in sorted(used):
+        part = project.parts.get(pid)
+        if part is None:
+            yield Hit(pid, f"Part {pid} is used but is not in the parts list")
+        elif part.approval != "approved":
+            state = "rejected" if part.approval == "not_approved" else "not approved yet"
+            yield Hit(pid, f"Part {pid} is {state} but is used ({len(used[pid])} place(s))")
+
+
+# ---- signals ---------------------------------------------------------------------------------------
+
+
+def _direction_conflict(project: Project) -> Iterator[Hit]:
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for w in h.wires:
+            i = project.interfaces.get(w.interface_id or "")
+            itype = project.interface_types.get(i.type_id) if i else None
+            if itype is None or not {"out", "in"} <= {s.direction for s in itype.signals}:
+                continue  # one-directional types (analog, discrete) cannot be judged by direction
+            dirs = {s.name: s.direction for s in itype.signals}
+            a = dirs.get(_end_signal(project, h, w.from_connector, w.from_pin) or "")
+            b = dirs.get(_end_signal(project, h, w.to_connector, w.to_pin) or "")
+            if a == b and a in ("out", "in"):
+                what = (
+                    "two outputs (driver against driver)"
+                    if a == "out"
+                    else "two inputs (nothing drives the wire)"
+                )
+                yield Hit(w.id, f"Wire {w.id} joins {what}")
+
+
+# ---- ratings ---------------------------------------------------------------------------------------
+
+
+def _contact_rating(project: Project, conn: Connector) -> float | None:
+    key = str(cfg(project, "derating").get("contact_rating_key") or "contact_current_a")
+    part = project.parts.get(conn.part_id)
+    return part.ratings.get(key) if part else None
+
+
+def _derated_limit_ready(project: Project) -> bool:
+    d = cfg(project, "derating")
+    return (
+        ampacity_table(d.get("ampacity_a_by_awg")) is not None
+        and number(d.get("bundle_derating")) is not None
+        and number(d.get("temperature_derating")) is not None
+    )
+
+
+def _current_over_contact(project: Project) -> Iterator[Hit]:
+    factor = number(cfg(project, "derating").get("contact_current_factor"))
+    if factor is None:
+        return
+    for i in sorted(project.interfaces.values(), key=lambda x: x.id):
+        if i.max_current_a is None:
+            continue
+        for e in i.endpoints:
+            conn = project.connectors.get(e.connector_id or "")
+            rating = _contact_rating(project, conn) if conn else None
+            if conn is not None and rating is not None and rating * factor < i.max_current_a:
+                yield Hit(
+                    f"{i.id}.{conn.id}",
+                    f"{i.id} carries {i.max_current_a:g} A but contacts of {conn.id} allow {rating * factor:g} A after derating",
+                )
+
+
+def _wire_current_limit(project: Project, w: Wire) -> float | None:
+    d = cfg(project, "derating")
+    table = ampacity_table(d.get("ampacity_a_by_awg"))
+    bundle, temp = number(d.get("bundle_derating")), number(d.get("temperature_derating"))
+    if table is None or bundle is None or temp is None or w.gauge_awg not in table:
+        return None
+    return table[w.gauge_awg] * bundle * temp
+
+
+def _current_over_wire(project: Project) -> Iterator[Hit]:
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for w in h.wires:
+            i = project.interfaces.get(w.interface_id or "")
+            limit = _wire_current_limit(project, w)
+            if i and i.max_current_a is not None and limit is not None and limit < i.max_current_a:
+                yield Hit(
+                    w.id,
+                    f"Wire {w.id} (AWG {w.gauge_awg}) carries {i.max_current_a:g} A but allows {limit:g} A after derating",
+                )
+
+
+def _voltage_drop(project: Project) -> Iterator[Hit]:
+    limit = number(cfg(project, "derating").get("max_voltage_drop_v"))
+    rho = number(cfg(project, "generation").get("conductor_resistivity_ohm_m"))
+    if limit is None or rho is None:
+        return
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for w in h.wires:
+            i = project.interfaces.get(w.interface_id or "")
+            itype = project.interface_types.get(i.type_id) if i else None
+            if not (i and itype and i.max_current_a is not None and w.length_m and w.gauge_awg):
+                continue
+            n = 2 if itype.category in ("power", "ground") else 1
+            drop = i.max_current_a * rho * w.length_m / (awg_to_area_mm2(w.gauge_awg) * 1e-6) * n
+            if drop > limit:
+                yield Hit(w.id, f"Wire {w.id} drops {drop:.3g} V, more than the {limit:g} V limit")
+
+
+def _spare_pins(project: Project) -> Iterator[Hit]:
+    fraction = number(cfg(project, "derating").get("spare_pin_fraction"))
+    if fraction is None:
+        return
+    for c in sorted(project.connectors.values(), key=lambda x: x.id):
+        if not c.pins or not any(p.interface_id for p in c.pins):
+            continue
+        spare = sum(1 for p in c.pins if p.interface_id is None and not p.signal)
+        if spare < fraction * len(c.pins):
+            yield Hit(
+                c.id,
+                f"{c.id} has {spare} spare pin(s) of {len(c.pins)}, fewer than the required {fraction:.0%}",
+            )
+
+
+# ---- shields ---------------------------------------------------------------------------------------
+
+
+def _shield_unterminated(project: Project) -> Iterator[Hit]:
+    g = cfg(project, "generation")
+    if g.get("shield_end_a") is None and g.get("shield_end_b") is None:
+        return  # no grounding concept yet: "not checked" is reported instead
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for s in h.shields:
+            if s.end_a == "floating" and s.end_b == "floating":
+                yield Hit(
+                    f"{h.id}.{s.id}", f"Shield {s.id} in {h.id} is not connected at either end"
+                )
+
+
+def _shield_wrong_end(project: Project) -> Iterator[Hit]:
+    g = cfg(project, "generation")
+    want = (g.get("shield_end_a"), g.get("shield_end_b"))
+    if None in want:
+        return
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for s in h.shields:
+            if (s.end_a, s.end_b) != want:
+                yield Hit(
+                    f"{h.id}.{s.id}",
+                    f"Shield {s.id} in {h.id} is {s.end_a}/{s.end_b} but the grounding concept says {want[0]}/{want[1]}",
+                )
+
+
+# ---- segregation -----------------------------------------------------------------------------------
+
+
+def _carried(project: Project, h: Harness) -> list[InterfaceInstance]:
+    return [
+        project.interfaces[i]
+        for i in sorted(_wire_interfaces(project, h))
+        if i in project.interfaces
+    ]
+
+
+def _chains_mixed(project: Project) -> Iterator[Hit]:
+    if not cfg(project, "segregation").get("forbid_nominal_with_redundant", True):
+        return
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        if {i.redundancy for i in _carried(project, h)} >= {"nominal", "redundant"}:
+            yield Hit(h.id, f"{h.id} carries both nominal and redundant interfaces")
+    for c in sorted(project.connectors.values(), key=lambda x: x.id):
+        sides = {
+            project.interfaces[p.interface_id].redundancy
+            for p in c.pins
+            if p.interface_id in project.interfaces
+        }
+        if {"nominal", "redundant"} <= sides:
+            yield Hit(c.id, f"Connector {c.id} carries both nominal and redundant interfaces")
+
+
+def _pyro_mixed(project: Project) -> Iterator[Hit]:
+    if not cfg(project, "segregation").get("forbid_pyro_with_other", True):
+        return
+
+    def cats(ids: list[InterfaceInstance]) -> set[str]:
+        return {
+            project.interface_types[i.type_id].category
+            for i in ids
+            if i.type_id in project.interface_types
+        }
+
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        c = cats(_carried(project, h))
+        if "pyro" in c and len(c) > 1:
+            yield Hit(h.id, f"{h.id} mixes pyro (firing) lines with other interfaces")
+    for conn in sorted(project.connectors.values(), key=lambda x: x.id):
+        c = cats(
+            [
+                project.interfaces[p.interface_id]
+                for p in conn.pins
+                if p.interface_id in project.interfaces
+            ]
+        )
+        if "pyro" in c and len(c) > 1:
+            yield Hit(
+                conn.id, f"Connector {conn.id} mixes pyro (firing) lines with other interfaces"
+            )
+
+
+def _category_pairs(project: Project) -> list[tuple[str, str]]:
+    raw = cfg(project, "segregation").get("category_pairs_to_separate")
+    pairs = (
+        [tuple(p) for p in raw if isinstance(p, list) and len(p) == 2]
+        if isinstance(raw, list)
+        else []
+    )
+    return [(str(a), str(b)) for a, b in pairs]
+
+
+def _category_mixed(project: Project) -> Iterator[Hit]:
+    pairs = _category_pairs(project)
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        cats = {
+            project.interface_types[i.type_id].category
+            for i in _carried(project, h)
+            if i.type_id in project.interface_types
+        }
+        for a, b in pairs:
+            if a in cats and b in cats:
+                yield Hit(
+                    f"{h.id}.{a}+{b}",
+                    f"{h.id} mixes {a} and {b} interfaces, which the project keeps apart",
+                )
+
+
+def _emc_pairs(project: Project) -> list[tuple[str, str]]:
+    raw = cfg(project, "emc").get("conflicting_class_pairs")
+    pairs = (
+        [tuple(p) for p in raw if isinstance(p, list) and len(p) == 2]
+        if isinstance(raw, list)
+        else []
+    )
+    return [(str(a), str(b)) for a, b in pairs]
+
+
+def _emc_mixed(project: Project) -> Iterator[Hit]:
+    pairs = _emc_pairs(project)
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        classes = {
+            project.interface_types[i.type_id].emc_class
+            for i in _carried(project, h)
+            if i.type_id in project.interface_types
+        }
+        for a, b in pairs:
+            if a in classes and b in classes:
+                yield Hit(f"{h.id}.{a}+{b}", f"{h.id} mixes EMC classes {a} and {b}")
+
+
+# ---- what could not be checked ---------------------------------------------------------------------
+
+
+def _unchecked(project: Project) -> Iterator[Hit]:
+    d, g = cfg(project, "derating"), cfg(project, "generation")
+    has_current = any(i.max_current_a is not None for i in project.interfaces.values())
+    if has_current and (
+        number(d.get("contact_current_factor")) is None or not _derated_limit_ready(project)
+    ):
+        yield Hit(
+            "derating",
+            "Current and derating limits were not checked: the derating values are still placeholders",
+        )
+    if has_current and (
+        number(d.get("max_voltage_drop_v")) is None
+        or number(g.get("conductor_resistivity_ohm_m")) is None
+    ):
+        yield Hit(
+            "voltage-drop",
+            "Voltage drop was not checked: the limit or the conductor resistivity is still a placeholder",
+        )
+    if any(h.shields for h in project.harnesses.values()) and None in (
+        g.get("shield_end_a"),
+        g.get("shield_end_b"),
+    ):
+        yield Hit(
+            "grounding",
+            "Shield grounding was not checked against a concept: it is still a placeholder",
+        )
+    if project.interfaces and not _category_pairs(project):
+        yield Hit(
+            "separation",
+            "Power, signal and sensitive-analog separation was not checked: the category pairs are still a placeholder",
+        )
+    if project.harnesses and not _emc_pairs(project):
+        yield Hit(
+            "emc", "EMC class separation was not checked: the EMC rules are still a placeholder"
+        )
+    if (
+        any(c.pins for c in project.connectors.values())
+        and number(d.get("spare_pin_fraction")) is None
+    ):
+        yield Hit(
+            "spare-pins",
+            "Spare pins were not checked: the required fraction is still a placeholder",
+        )
+
+
+RULES: tuple[Rule, ...] = (
+    Rule("duplicate-id", "error", "Duplicate IDs",
+         "Two objects with the same ID make every table, label and drawing ambiguous.",
+         "Rename one of them.", _duplicate_ids),
+    Rule("wire-dangling", "error", "Dangling wires",
+         "A wire that ends nowhere cannot be built or tested.",
+         "Connect the wire end to an existing pin or delete the wire.", _dangling_wires),
+    Rule("model-inconsistent", "warning", "Model consistency",
+         "The logical and physical parts of the model disagree, so later outputs may be wrong.",
+         "Open the object and correct the mismatch.", _model_inconsistent),
+    Rule("signal-unassigned", "warning", "Unassigned signals",
+         "A signal without a pin never reaches a wire.",
+         "Regenerate the harnesses, or assign the pin by hand.", _signal_unassigned),
+    Rule("pin-floating", "warning", "Floating pins",
+         "A named pin with no wire looks connected on the drawing but carries nothing.",
+         "Attach a wire or clear the signal name.", _floating_pins),
+    Rule("mate-mismatch", "error", "Mating halves",
+         "Connectors that do not fit, or fit only by force, damage hardware.",
+         "Choose the mating part, opposite gender and the same pin count and keying.", _mate_mismatch),
+    Rule("direction-conflict", "error", "Signal directions",
+         "Two drivers fight each other, or nothing drives a receiver.",
+         "Swap the wire to the correct pin of the interface.", _direction_conflict),
+    Rule("current-over-contact", "error", "Contact current",
+         "An overloaded contact overheats.", "Use a larger contact or split the load over more pins.",
+         _current_over_contact),
+    Rule("current-over-wire", "error", "Wire current",
+         "An overloaded wire overheats.", "Choose a larger gauge.", _current_over_wire),
+    Rule("voltage-drop", "error", "Voltage drop",
+         "Too much drop leaves the load under-supplied.", "Choose a larger gauge or shorten the run.",
+         _voltage_drop),
+    Rule("spare-pins-low", "warning", "Spare pins",
+         "Without spares there is no room for late changes.", "Use a connector with more pins.",
+         _spare_pins),
+    Rule("shield-unterminated", "warning", "Shield termination",
+         "A shield connected at neither end does not shield.", "Terminate the shield at one or both ends.",
+         _shield_unterminated),
+    Rule("shield-wrong-end", "warning", "Shield grounding",
+         "The grounding concept decides which end of a shield is grounded.", "Change the shield ends.",
+         _shield_wrong_end),
+    Rule("chains-mixed", "error", "Nominal and redundant chains",
+         "A shared harness or connector lets one failure hit both chains.",
+         "Move one chain to its own harness or connector.", _chains_mixed),
+    Rule("pyro-mixed", "error", "Pyro lines",
+         "Firing lines next to other wires risk accidental firing.",
+         "Give the pyro lines their own harness and connector.", _pyro_mixed),
+    Rule("category-mixed", "warning", "Category separation",
+         "Noisy and sensitive interfaces in one bundle couple into each other.",
+         "Split them into separate harnesses.", _category_mixed),
+    Rule("emc-mixed", "warning", "EMC classes",
+         "EMC classes that must stay apart couple when bundled.", "Split them into separate harnesses.",
+         _emc_mixed),
+    Rule("connector-lookalike", "warning", "Look-alike connectors",
+         "Identical connectors on one unit can be swapped by mistake.",
+         "Use different keying or a different insert on one of them.", _lookalike),
+    Rule("part-unapproved", "warning", "Approved parts",
+         "Only approved parts may be built into flight hardware.",
+         "Approve the part in the parts list, or choose an approved one.", _unapproved_parts),
+    Rule("unchecked-config", "info", "Checks not run",
+         "A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass.",
+         "Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).", _unchecked),
+)  # fmt: skip

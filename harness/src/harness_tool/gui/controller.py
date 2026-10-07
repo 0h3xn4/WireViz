@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from pydantic import ValidationError
-from PySide6.QtCore import QObject, QTimer, Signal
+from PySide6.QtCore import QObject, QThread, QTimer, Signal
 
-from harness_tool.core import checks, edit
+from harness_tool.core import checks, drc, edit
 from harness_tool.core.commands import Delete, History, Op, Put, SetZones, apply_ops
 from harness_tool.core.errors import HarnessError, TransactionError
 from harness_tool.core.generate.engine import GenerationPlan, generation_status
@@ -32,6 +32,20 @@ from harness_tool.core.samples import mini3, new_project
 from . import strings
 
 JOURNAL_DELAY_MS = 1500
+DRC_DELAY_MS = 1200  # run only after the user pauses: the check shares the interpreter with the UI
+
+
+class DrcWorker(QThread):
+    """Runs the design rule check on a private copy of the project (entities are immutable)."""
+
+    def __init__(self, snapshot: Project, token: tuple[int, int]) -> None:
+        super().__init__()
+        self.snapshot = snapshot
+        self.token = token
+        self.found: list[checks.Finding] = []
+
+    def run(self) -> None:
+        self.found = drc.run(self.snapshot)
 
 
 @dataclass
@@ -67,8 +81,12 @@ class EditorController(QObject):
     modeChanged = Signal()
     message = Signal(str, bool)  # text, offer an Undo button
     stateChanged = Signal()  # title, dirty, read-only, banners
+    drcChanged = Signal()  # new design rule results arrived
+    drcStateChanged = Signal()  # checking started or finished
 
-    def __init__(self, journal_delay_ms: int = JOURNAL_DELAY_MS) -> None:
+    def __init__(
+        self, journal_delay_ms: int = JOURNAL_DELAY_MS, drc_delay_ms: int = DRC_DELAY_MS
+    ) -> None:
         super().__init__()
         self.project: Project = new_project()
         self.history = History(self.project)
@@ -86,6 +104,14 @@ class EditorController(QObject):
         self._findings_cache: tuple[object, list[checks.Finding]] | None = None
         self._owners: dict[str, str] = {}
         self._installs = 0
+        self._drc_raw: list[checks.Finding] = []
+        self._drc_token: tuple[int, int] | None = None  # (installs, revision) the result is for
+        self._drc_worker: DrcWorker | None = None
+        self._drc_version = 0
+        self._drc_timer = QTimer(self)
+        self._drc_timer.setSingleShot(True)
+        self._drc_timer.setInterval(drc_delay_ms)
+        self._drc_timer.timeout.connect(self._start_drc)
         self._timer = QTimer(self)
         self._timer.setSingleShot(True)
         self._timer.setInterval(journal_delay_ms)
@@ -94,11 +120,61 @@ class EditorController(QObject):
     # ---- state ------------------------------------------------------------------------------
 
     def findings(self) -> list[checks.Finding]:
-        """Logical findings for the current state, computed once per change."""
-        key = (self._installs, self.history.revision, id(self.project))
+        """Logical findings plus the latest design rule findings, computed once per change."""
+        key = (self._installs, self.history.revision, id(self.project), self._drc_version)
         if self._findings_cache is None or self._findings_cache[0] != key:
-            self._findings_cache = (key, checks.find(self.project))
+            merged = [*checks.find(self.project), *drc.apply_waivers(self.project, self._drc_raw)]
+            order = {"error": 0, "warning": 1, "info": 2}
+            merged.sort(key=lambda f: (order[f.severity], f.id))
+            self._findings_cache = (key, merged)
         return self._findings_cache[1]
+
+    # ---- design rule check (background) --------------------------------------------------------
+
+    @property
+    def drc_current(self) -> bool:
+        return self._drc_token == (self._installs, self.history.revision)
+
+    def _schedule_drc(self) -> None:
+        self._drc_timer.start()
+        self.drcStateChanged.emit()
+
+    def _start_drc(self) -> None:
+        if self._drc_worker is not None:  # one at a time; the finished handler reschedules
+            return
+        token = (self._installs, self.history.revision)
+        worker = DrcWorker(edit.clone_with(self.project, []), token)
+        worker.finished.connect(self._drc_done)
+        self._drc_worker = worker
+        worker.start()
+
+    def _drc_done(self) -> None:
+        worker, self._drc_worker = self._drc_worker, None
+        if worker is None:
+            return
+        worker.wait()
+        if worker.token[0] == self._installs:
+            self._drc_raw, self._drc_token = worker.found, worker.token
+            self._drc_version += 1
+        if not self.drc_current:
+            self._schedule_drc()
+        self.drcChanged.emit()
+        self.drcStateChanged.emit()
+
+    def run_drc_now(self) -> None:
+        """Synchronous check (tests, scripts); the editor itself uses the background worker."""
+        self._drc_timer.stop()
+        self.wait_drc()
+        self._drc_raw = drc.run(self.project)
+        self._drc_token = (self._installs, self.history.revision)
+        self._drc_version += 1
+        self.drcChanged.emit()
+        self.drcStateChanged.emit()
+
+    def wait_drc(self) -> None:
+        if self._drc_worker is not None:
+            self._drc_worker.wait()
+            self._drc_worker = None
 
     def open_findings(self) -> list[checks.Finding]:
         return [f for f in self.findings() if f.waiver is None]
@@ -184,6 +260,7 @@ class EditorController(QObject):
         self.changed.emit(delta)
         self.stateChanged.emit()
         self._schedule_journal()
+        self._schedule_drc()
 
     def _selection_exists(self) -> bool:
         s = self.selection
@@ -489,9 +566,13 @@ class EditorController(QObject):
         self.selection = None
         self.end_connect()
         self.journal_error_shown = False
+        self.wait_drc()
+        self._drc_raw, self._drc_token = [], None
+        self._drc_version += 1
         self.changed.emit(Delta(full=True))
         self.selectionChanged.emit()
         self.stateChanged.emit()
+        self._schedule_drc()
 
     def open_sample(self) -> None:
         self._install(mini3(), None, None, sample=True)
@@ -605,6 +686,8 @@ class EditorController(QObject):
 
     def release(self) -> None:
         self._timer.stop()
+        self._drc_timer.stop()
+        self.wait_drc()
         if self._lock:
             self._lock.release()
             self._lock = None

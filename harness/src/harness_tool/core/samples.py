@@ -87,9 +87,9 @@ def mini3() -> Project:
         id="W001", name="PCDU to RW1 power",
         connectors=[
             Connector(id="W001-P1", name="P1", role="cable", part_id="EX-DSUB-9-M", gender="male", mates_with="PCDU-J01",
-                      pins=_pins(("1", "PWR"), ("2", "RTN"))),
+                      pins=_pins(("1", "PWR"), ("2", "RTN"), ("3", None))),
             Connector(id="W001-P2", name="P2", role="cable", part_id="EX-DSUB-9-F", gender="female", mates_with="RW1-J01",
-                      pins=_pins(("1", "PWR"), ("2", "RTN"))),
+                      pins=_pins(("1", "PWR"), ("2", "RTN"), ("3", None))),
         ],
         wires=[
             Wire(id="W001-001", signal="PWR", from_connector="W001-P1", from_pin="1",

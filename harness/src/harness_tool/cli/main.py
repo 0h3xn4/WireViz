@@ -30,6 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("check", "validate, plus detect problems left behind by Git merges"),
         ("migrate", "upgrade an old-format project in place (originals are kept)"),
         ("generate", "generate harnesses from the interfaces and save the project"),
+        ("drc", "run the design rule check and print the report (waived findings included)"),
         ("verify", "independently verify the generated harnesses against the interfaces"),
     ):
         p = sub.add_parser(name, help=text, description=text)
@@ -97,6 +98,20 @@ def _generate(path: Path) -> int:
     return 0
 
 
+def _drc(path: Path) -> int:
+    from harness_tool.core.checks import find
+    from harness_tool.core.drc import run
+    from harness_tool.core.drc.report import render_markdown
+
+    project = load_project(path).project
+    findings = sorted(
+        [*find(project), *run(project)],
+        key=lambda f: ({"error": 0, "warning": 1, "info": 2}[f.severity], f.id),
+    )
+    print(render_markdown(project, findings), end="")
+    return 1 if any(f.severity == "error" and f.waiver is None for f in findings) else 0
+
+
 def _verify(path: Path) -> int:
     from harness_tool.core.verify import verify_project
 
@@ -126,6 +141,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if args.command == "generate":
             return _generate(args.project)
+        if args.command == "drc":
+            return _drc(args.project)
         if args.command == "verify":
             return _verify(args.project)
         return _validate(args.project, merge_check=args.command == "check")

@@ -39,7 +39,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - Independent verifier v1 (connectivity, pin uniqueness) runs after generation.
 **Acceptance:** byte-identical regeneration (property test); verifier clean on `mini3` and `sat15`; stress project regenerates < 10 s on reference laptop or a profiling note explains the gap.
 
-## M4 DRC
+## M4 DRC (done; incremental per-rule caching is open, see demos/M4.md)
 - All rules listed in spec, each with plain-language what/why/fix and positive and negative tests; waivers with justification; background and on-demand runs; problems panel with click-to-select and one-click fixes where feasible.
 **Acceptance:** 100% rules have both tests; waivers persist and show in report; incremental DRC keeps edits < 100 ms on the stress project.
 

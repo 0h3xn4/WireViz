@@ -120,6 +120,11 @@ def fix_ops(project: Project, finding: Finding) -> tuple[list[Op], str]:
         return _assign_connectors(
             project, finding.object_id
         ), f"Chose connectors for {finding.object_id}."
+    from . import drc
+
+    fixed = drc.fix_ops(project, finding)
+    if fixed is not None:
+        return fixed
     raise edit.EditError("There is no one-click fix for this finding.")
 
 

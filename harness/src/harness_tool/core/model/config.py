@@ -40,6 +40,7 @@ def default_configs() -> dict[str, ConfigFile]:
             values={
                 "contact_current_factor": None,
                 "bundle_derating": None,
+                "temperature_derating": None,
                 "max_ambient_temperature_c": None,
                 "max_voltage_drop_v": None,
                 "spare_pin_fraction": None,
@@ -78,7 +79,9 @@ def default_configs() -> dict[str, ConfigFile]:
                 "wire": "{harness}-{n:03d}",
             },
         ),
-        "emc": ConfigFile(name="emc", placeholder=True, values={"classes": None}),
+        "emc": ConfigFile(
+            name="emc", placeholder=True, values={"classes": None, "conflicting_class_pairs": None}
+        ),
         "titleblock": ConfigFile(
             name="titleblock",
             placeholder=True,  # DECISIONS D-15

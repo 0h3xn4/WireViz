@@ -259,3 +259,7 @@ KEEP_MINE = "Keep my version"
 KEEP_MINE_NOTE = "Keeping your version. Saving will be refused until you reload or save a copy, so nobody's changes are overwritten."
 ABOUT_TEXT = "Harness Designer {}\nOffline spacecraft harness design tool. No data ever leaves this computer."
 MORE_PROBLEMS = "…and {} more. Resolve the ones above first."
+
+DRC_CHECKING = "Design rules: checking…"
+DRC_DONE = "Design rules: all {} rules checked."
+NOTHING_TO_SHOW = "This item has no place on the diagram (it is a setting or a part)."
