@@ -384,3 +384,13 @@ def test_damaged_s_expressions_are_refused_with_a_message(text: str) -> None:
 def test_s_expression_with_quotes_and_escapes() -> None:
     n = parse_netlist(b'(export (components (comp (ref "J1") (value "a \\"b\\" c")))(nets))')
     assert n.components["J1"].value == 'a "b" c'
+
+
+def test_cli_signal_map_pairs_on_the_command_line(tmp_path: Path) -> None:
+    save_project(mini3(), tmp_path / "p")
+    base = ["import-netlist", str(tmp_path / "p"), str(FIXTURE), "--unit", "OBC", "--ref", "J2"]
+    args = [*base, "--part", "J2=EX-DSUB-9-F", "--signal-map", "28V=PWR", "--signal-map", "GND=RTN"]
+    assert cli_main(args) == 0
+    pins = load_project(tmp_path / "p").project.connectors["OBC-J2"].pins
+    assert {x.id: x.signal for x in pins if x.signal} == {"1": "PWR", "2": "RTN", "3": "RTN"}
+    assert cli_main([*base, "--part", "J2=EX-DSUB-9-F", "--signal-map", "=PWR"]) == 2

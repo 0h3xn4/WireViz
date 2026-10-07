@@ -11,11 +11,11 @@ A KiCad netlist, in either format: the S-expression `.net` that KiCad's schemati
 ## Command
 
     harness import-netlist DIR FILE --unit OBC [--prefix J] [--connector J1=OBC-J01]
-                           [--part J1=PART-ID] [--signal-map NET=SIGNAL]
+                           [--part J1=PART-ID] [--signal-map NET=SIGNAL | FILE]
 
 - Which components are connectors: those whose reference starts with `--prefix` (default `J`), or the `--connector` list. A symbol field `HarnessConnector` sets the connector ID, `HarnessPart` the part.
 - Net names are cleaned (`/io/TX+` becomes `TX+`); unnamed nets (`Net-(J1-Pad9)`) and `unconnected-...` give a pin with no signal.
-- `--signal-map` renames net names to signal names of the interface types (`28V=PWR`). Names that match no known signal are listed, never guessed.
+- `--signal-map` (repeatable) renames net names to signal names of the interface types, either as `NET=SIGNAL` pairs (`--signal-map CAN_H=CANH --signal-map CAN_L=CANL`) or as a CSV or JSON file of pairs. The name is the cleaned net name (`/CAN_H` is `CAN_H`). Names that match no known signal are listed, never guessed.
 - The result is one undoable transaction. Imported pins are marked `fixed`.
 
 ## What "fixed" does

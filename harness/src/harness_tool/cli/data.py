@@ -90,9 +90,10 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
     )
     nn.add_argument(
         "--signal-map",
-        type=Path,
-        default=None,
-        help="CSV (net name, signal) or JSON object that translates KiCad names to interface signal names",
+        action="append",
+        default=[],
+        metavar="NAME=SIGNAL|FILE",
+        help="translate a KiCad net name to an interface signal name (repeatable), or a CSV (net name, signal) or JSON object file of such pairs",
     )
     nn.add_argument(
         "--pin-function",
@@ -227,9 +228,20 @@ def _pairs(items: list[str], what: str) -> dict[str, str]:
     return out
 
 
-def _signal_map(path: Path | None) -> dict[str, str]:
-    if path is None:
-        return {}
+def _signal_map(items: list[str]) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for item in items:
+        if "=" in item:
+            key, _, value = item.partition("=")
+            if not key.strip() or not value.strip():
+                raise ImportError_(f"Signal map '{item}' must look like NAME=SIGNAL.")
+            out[key.strip()] = value.strip()
+        else:
+            out.update(_signal_map_file(Path(item)))
+    return out
+
+
+def _signal_map_file(path: Path) -> dict[str, str]:
     import json
 
     try:

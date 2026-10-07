@@ -89,7 +89,7 @@ All commands take the project folder. Exit code 0 means success, 1 means the pro
 | `harness config DIR [--ampacity-csv FILE]` | list missing or invalid engineering values; load a current-by-gauge table |
 | `harness import-parts DIR FILE --approved VALUE ...` | import an approved-parts list; you say what the approval values mean |
 | `harness import-lengths DIR FILE [--unit mm]` | import routing segment lengths from a table |
-| `harness import-netlist DIR FILE --unit U [--prefix J] [--connector J1=ID] [--part J1=PART] [--signal-map NAME=SIGNAL]` | read connector pinouts of a unit from a KiCad netlist (.net or .xml); the pins become fixed |
+| `harness import-netlist DIR FILE --unit U [--prefix J] [--connector J1=ID] [--part J1=PART] [--signal-map NAME=SIGNAL|FILE]` | read connector pinouts of a unit from a KiCad netlist (.net or .xml); the pins become fixed |
 
 ## 10. What an engineer must fill in
 
