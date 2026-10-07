@@ -64,6 +64,9 @@ jobs:
     needs: test
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}  # this job has no checkout, so there is no harness/ folder
     steps:
       - uses: actions/download-artifact@v4
         with:
