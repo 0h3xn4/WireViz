@@ -21,6 +21,9 @@ class Pin(Entity):
     termination: Termination = "unspecified"
     locked: bool = False  # manual allocation that generation must never move
     interface_id: Id | None = None  # interface this pin was allocated for (set by generation)
+    fixed: bool = (
+        False  # signal fixed by the unit design (KiCad): interfaces connect to it, it never moves
+    )
 
 
 class Connector(Entity):

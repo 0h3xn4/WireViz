@@ -103,7 +103,7 @@ def input_hash(project: Project) -> str:
             {
                 **p.model_dump(mode="json"),
                 "interface_id": None,
-                "signal": p.signal if (p.locked or p.interface_id is None) else None,
+                "signal": p.signal if (p.locked or p.fixed or p.interface_id is None) else None,
             }
             for p in c.pins
         ]
@@ -324,17 +324,24 @@ def _allocate_pins(
             for pin in box.pins
             if pin.interface_id and pin.signal and not pin.locked
         }
+
         # pins that must stay: locked, frozen-owned, or typed in by a person without a lock
-        pinned = [
-            evolve(pin, locked=True)
+        def keep(pin: Pin) -> Pin:
+            if pin.fixed:  # a fixed pin is free for its signal unless a released harness uses it
+                return (
+                    evolve(pin, locked=True)
+                    if pin.interface_id in frozen_ifaces
+                    else evolve(pin, interface_id=None)
+                )
             if (
                 pin.locked
                 or pin.interface_id in frozen_ifaces
                 or (pin.signal and pin.interface_id is None)
-            )
-            else pin
-            for pin in box.pins
-        ]
+            ):
+                return evolve(pin, locked=True)
+            return pin
+
+        pinned = [keep(pin) for pin in box.pins]
         work = evolve(box, pins=pinned)
         res = allocate(
             work,
@@ -367,6 +374,16 @@ def _connector_ops(ctx: _Ctx, frozen_ifaces: set[str]) -> list[Op]:
                     assigned[pid] = (iid, sig)
         pins: list[Pin] = []
         for pin in box.pins:
+            if pin.fixed:
+                if pin.interface_id in frozen_ifaces:
+                    pins.append(pin)
+                elif pin.id in assigned:
+                    pins.append(evolve(pin, interface_id=assigned[pin.id][0]))
+                    for line in res.reasons.get(pin.id, []) if res else []:
+                        ctx.note(f"pin:{cid}.{pin.id}", line)
+                else:
+                    pins.append(evolve(pin, interface_id=None) if pin.interface_id else pin)
+                continue
             if (
                 pin.locked
                 or pin.interface_id in frozen_ifaces

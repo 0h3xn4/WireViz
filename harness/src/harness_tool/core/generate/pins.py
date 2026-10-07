@@ -28,6 +28,45 @@ class Allocation:
     warnings: list[tuple[str, str]] = field(default_factory=list)
 
 
+def _allocate_fixed(connector: Connector, requests: list[Request]) -> Allocation:
+    """The pinout is fixed by the unit's design: every signal goes to the free pin of that name.
+    A signal the connector has no pin for is an error; nothing is placed on unnamed pins."""
+    result = Allocation()
+    by_signal: dict[str, list[str]] = {}
+    for p in connector.pins:
+        if p.fixed and p.signal and not p.locked:
+            by_signal.setdefault(p.signal, []).append(p.id)
+    used: set[str] = set()
+    for req in sorted(
+        requests, key=lambda r: (CATEGORY_RANK.get(r.itype.category, 2), r.interface_id)
+    ):
+        missing = []
+        picked: list[tuple[str, str]] = []
+        for sig in (s.name for s in req.itype.signals):
+            free = [pid for pid in by_signal.get(sig, []) if pid not in used]
+            if not free:
+                missing.append(sig)
+                continue
+            picked.append((sig, free[0]))
+            used.add(free[0])
+        if missing:
+            for _sig, pid in picked:  # all or nothing per interface
+                used.discard(pid)
+            result.errors.append(
+                (
+                    req.interface_id,
+                    f"{connector.id} has a fixed pinout and no free pin named {', '.join(missing)}",
+                )
+            )
+            continue
+        for sig, pid in picked:
+            result.pins[(req.interface_id, sig)] = pid
+            result.reasons.setdefault(pid, []).append(
+                f"pin-allocation: {sig} of {req.interface_id} uses pin {pid} because the pinout of {connector.id} is fixed by the unit design"
+            )
+    return result
+
+
 def groups_of(itype: InterfaceType) -> list[tuple[str, list[str]]]:
     """Signal groups that must sit together: power as one block, else pairs, else singles."""
     if itype.category in ("power", "ground"):
@@ -53,6 +92,8 @@ def allocate(
 ) -> Allocation:
     """Allocate pins of `connector` for `requests`. Locked pins (and their signals) are untouched."""
     result = Allocation()
+    if any(p.fixed and p.signal and not p.locked for p in connector.pins):
+        return _allocate_fixed(connector, requests)
     order = [p.id for p in connector.pins]
     index = {pid: k for k, pid in enumerate(order)}
     taken = {p.id for p in connector.pins if p.locked}

@@ -14,6 +14,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-001",
           "locked": false,
@@ -22,6 +23,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-001",
           "locked": false,
@@ -30,6 +32,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -38,6 +41,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -46,6 +50,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -54,6 +59,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -62,6 +68,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -70,6 +77,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -78,6 +86,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -107,6 +116,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-012",
           "locked": false,
@@ -115,6 +125,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-012",
           "locked": false,
@@ -123,6 +134,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -131,6 +143,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -139,6 +152,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -147,6 +161,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -155,6 +170,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -163,6 +179,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -171,6 +188,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -200,6 +218,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-013",
           "locked": false,
@@ -208,6 +227,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-013",
           "locked": false,
@@ -216,6 +236,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -224,6 +245,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -232,6 +254,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -240,6 +263,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -248,6 +272,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -256,6 +281,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -264,6 +290,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -293,6 +320,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-014",
           "locked": false,
@@ -301,6 +329,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-014",
           "locked": false,
@@ -309,6 +338,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": "IF-014",
           "locked": false,
@@ -317,6 +347,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": "IF-014",
           "locked": false,
@@ -325,6 +356,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -333,6 +365,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -341,6 +374,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -349,6 +383,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -357,6 +392,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -386,6 +422,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-015",
           "locked": false,
@@ -394,6 +431,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-015",
           "locked": false,
@@ -402,6 +440,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": "IF-015",
           "locked": false,
@@ -410,6 +449,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": "IF-015",
           "locked": false,
@@ -418,6 +458,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": "IF-015",
           "locked": false,
@@ -426,6 +467,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": "IF-015",
           "locked": false,
@@ -434,6 +476,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": "IF-015",
           "locked": false,
@@ -442,6 +485,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": "IF-015",
           "locked": false,
@@ -450,6 +494,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -479,6 +524,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-016",
           "locked": false,
@@ -487,6 +533,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-016",
           "locked": false,
@@ -495,6 +542,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": "IF-016",
           "locked": false,
@@ -503,6 +551,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": "IF-016",
           "locked": false,
@@ -511,6 +560,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -519,6 +569,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -527,6 +578,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -535,6 +587,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -543,6 +596,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -572,6 +626,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-017",
           "locked": false,
@@ -580,6 +635,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-017",
           "locked": false,
@@ -588,6 +644,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -596,6 +653,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -604,6 +662,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -612,6 +671,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -620,6 +680,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -628,6 +689,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -636,6 +698,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -665,6 +728,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-018",
           "locked": false,
@@ -673,6 +737,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-018",
           "locked": false,
@@ -681,6 +746,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -689,6 +755,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -697,6 +764,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -705,6 +773,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -713,6 +782,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -721,6 +791,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -729,6 +800,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -758,6 +830,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-019",
           "locked": false,
@@ -766,6 +839,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-019",
           "locked": false,
@@ -774,6 +848,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -782,6 +857,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -790,6 +866,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -798,6 +875,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -806,6 +884,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -814,6 +893,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -822,6 +902,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -851,6 +932,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-020",
           "locked": false,
@@ -859,6 +941,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-020",
           "locked": false,
@@ -867,6 +950,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -875,6 +959,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -883,6 +968,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -891,6 +977,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -899,6 +986,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -907,6 +995,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -915,6 +1004,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -944,6 +1034,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-021",
           "locked": false,
@@ -952,6 +1043,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-021",
           "locked": false,
@@ -960,6 +1052,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -968,6 +1061,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -976,6 +1070,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -984,6 +1079,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -992,6 +1088,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1000,6 +1097,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1008,6 +1106,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1037,6 +1136,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-022",
           "locked": false,
@@ -1045,6 +1145,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-022",
           "locked": false,
@@ -1053,6 +1154,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1061,6 +1163,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1069,6 +1172,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1077,6 +1181,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1085,6 +1190,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1093,6 +1199,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1101,6 +1208,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1130,6 +1238,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-012-R",
           "locked": false,
@@ -1138,6 +1247,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-012-R",
           "locked": false,
@@ -1146,6 +1256,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1154,6 +1265,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1162,6 +1274,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1170,6 +1283,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1178,6 +1292,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1186,6 +1301,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1194,6 +1310,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1218,6 +1335,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-001-R",
           "locked": false,
@@ -1226,6 +1344,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-001-R",
           "locked": false,
@@ -1234,6 +1353,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1242,6 +1362,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1250,6 +1371,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1258,6 +1380,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1266,6 +1389,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1274,6 +1398,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1282,6 +1407,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1311,6 +1437,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1319,6 +1446,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1327,6 +1455,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1335,6 +1464,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1343,6 +1473,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1351,6 +1482,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1359,6 +1491,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1367,6 +1500,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1375,6 +1509,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1404,6 +1539,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1412,6 +1548,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1420,6 +1557,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1428,6 +1566,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1436,6 +1575,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1444,6 +1584,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1452,6 +1593,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1460,6 +1602,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1468,6 +1611,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1497,6 +1641,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1505,6 +1650,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1513,6 +1659,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1521,6 +1668,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1529,6 +1677,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1537,6 +1686,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1545,6 +1695,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1553,6 +1704,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1561,6 +1713,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1590,6 +1743,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1598,6 +1752,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1606,6 +1761,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1614,6 +1770,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1622,6 +1779,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1630,6 +1788,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1638,6 +1797,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1646,6 +1806,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1654,6 +1815,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1683,6 +1845,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1691,6 +1854,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1699,6 +1863,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1707,6 +1872,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1715,6 +1881,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1723,6 +1890,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1731,6 +1899,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1739,6 +1908,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1747,6 +1917,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1776,6 +1947,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1784,6 +1956,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1792,6 +1965,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1800,6 +1974,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1808,6 +1983,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1816,6 +1992,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1824,6 +2001,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1832,6 +2010,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1840,6 +2019,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1869,6 +2049,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1877,6 +2058,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1885,6 +2067,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1893,6 +2076,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1901,6 +2085,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -1909,6 +2094,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -1917,6 +2103,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -1925,6 +2112,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -1933,6 +2121,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -1962,6 +2151,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -1970,6 +2160,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -1978,6 +2169,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -1986,6 +2178,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -1994,6 +2187,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -2002,6 +2196,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -2010,6 +2205,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -2018,6 +2214,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -2026,6 +2223,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -2055,6 +2253,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -2063,6 +2262,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -2071,6 +2271,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -2079,6 +2280,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -2087,6 +2289,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -2095,6 +2298,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -2103,6 +2307,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -2111,6 +2316,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -2119,6 +2325,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -2148,6 +2355,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -2156,6 +2364,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -2164,6 +2373,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -2172,6 +2382,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -2180,6 +2391,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -2188,6 +2400,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -2196,6 +2409,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -2204,6 +2418,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -2212,6 +2427,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -2241,6 +2457,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -2249,6 +2466,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -2257,6 +2475,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -2265,6 +2484,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -2273,6 +2493,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -2281,6 +2502,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -2289,6 +2511,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -2297,6 +2520,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -2305,6 +2529,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,
@@ -2334,6 +2559,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -2342,6 +2568,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -2350,6 +2577,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -2358,6 +2586,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -2366,6 +2595,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,
@@ -2374,6 +2604,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "6",
           "interface_id": null,
           "locked": false,
@@ -2382,6 +2613,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "7",
           "interface_id": null,
           "locked": false,
@@ -2390,6 +2622,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "8",
           "interface_id": null,
           "locked": false,
@@ -2398,6 +2631,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "9",
           "interface_id": null,
           "locked": false,

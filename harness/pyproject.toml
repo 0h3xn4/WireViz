@@ -75,6 +75,7 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "S"]
 "src/harness_tool/core/vcs/*.py" = ["E501"]  # plain-language messages
 "src/harness_tool/core/library_import.py" = ["E501"]  # plain-language messages
 "src/harness_tool/core/configcheck.py" = ["E501"]  # plain-language messages
+"src/harness_tool/core/kicad.py" = ["E501"]  # plain-language messages
 "src/harness_tool/cli/*.py" = ["E501"]  # help texts
 "src/harness_tool/core/integrity.py" = ["E501"]  # long plain-language messages
 "src/harness_tool/core/io/loader.py" = ["E501"]

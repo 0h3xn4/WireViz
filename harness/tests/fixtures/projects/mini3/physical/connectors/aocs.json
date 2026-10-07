@@ -14,6 +14,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": "IF-PWR-RW1",
           "locked": false,
@@ -22,6 +23,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": "IF-PWR-RW1",
           "locked": false,
@@ -30,6 +32,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -55,6 +58,7 @@
       "pins": [
         {
           "contact_size": null,
+          "fixed": false,
           "id": "1",
           "interface_id": null,
           "locked": false,
@@ -63,6 +67,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "2",
           "interface_id": null,
           "locked": false,
@@ -71,6 +76,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "3",
           "interface_id": null,
           "locked": false,
@@ -79,6 +85,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "4",
           "interface_id": null,
           "locked": false,
@@ -87,6 +94,7 @@
         },
         {
           "contact_size": null,
+          "fixed": false,
           "id": "5",
           "interface_id": null,
           "locked": false,

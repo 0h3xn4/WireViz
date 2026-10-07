@@ -13,7 +13,7 @@ from harness_tool.core.io.loader import load_project
 from harness_tool.core.io.saver import save_project
 from harness_tool.core.library_import import guess_mapping, plan_parts_import
 
-COMMANDS = ("config", "import-parts", "import-lengths")
+COMMANDS = ("config", "import-parts", "import-lengths", "import-netlist")
 UNITS = {"mm": 0.001, "m": 1.0, "cm": 0.01}
 
 
@@ -55,6 +55,51 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
         help="category for rows that have none (connector, contact, backshell, wire, sleeving, label)",
     )
     pp.add_argument("--dry-run", action="store_true", help="show the preview only")
+    nn = sub.add_parser(
+        "import-netlist",
+        help="read unit connector pinouts from a KiCad XML netlist",
+        description="Create or update the box connectors of one unit from a KiCad XML netlist (kicad-cli sch export netlist --format kicadxml). Pins get fixed signals; generation connects interfaces to the pin of the same name. See docs/KICAD.md.",
+    )
+    nn.add_argument("project", type=Path)
+    nn.add_argument("netlist", type=Path)
+    nn.add_argument(
+        "--unit", required=True, help="the unit these connectors belong to, for example OBC1"
+    )
+    nn.add_argument(
+        "--ref",
+        action="append",
+        default=[],
+        help="reference of a connector in the netlist, for example J1 (repeat; default: every component starting with --prefix)",
+    )
+    nn.add_argument(
+        "--prefix", default="J", help="reference prefix that marks connectors (default J)"
+    )
+    nn.add_argument(
+        "--connector",
+        action="append",
+        default=[],
+        metavar="REF=ID",
+        help="connector ID for a reference, for example J1=OBC1-J01 (default: the symbol field HarnessConnector, else <unit>-<ref>)",
+    )
+    nn.add_argument(
+        "--part",
+        action="append",
+        default=[],
+        metavar="REF=PART",
+        help="library part for a new connector (default: the symbol field HarnessPart, or the existing connector's part)",
+    )
+    nn.add_argument(
+        "--signal-map",
+        type=Path,
+        default=None,
+        help="CSV (net name, signal) or JSON object that translates KiCad names to interface signal names",
+    )
+    nn.add_argument(
+        "--pin-function",
+        action="store_true",
+        help="use the pin names of the symbol instead of the net names as signals",
+    )
+    nn.add_argument("--dry-run", action="store_true")
     ll = sub.add_parser(
         "import-lengths",
         help="import routing segment lengths (CSV or XLSX: harness, segment, length)",
@@ -78,6 +123,8 @@ def run(args: argparse.Namespace) -> int:
                 "error: this project is read-only (saved by a newer tool version).", file=sys.stderr
             )
             return 2
+        if args.command == "import-netlist":
+            return _netlist(project, args)
         table = read_table(args.file)
         if args.command == "import-parts":
             return _parts(project, table, args)
@@ -167,4 +214,80 @@ def _lengths(project, table: list[list[str]], args: argparse.Namespace) -> int: 
     History(project).execute("Import segment lengths", plan.ops)
     save_project(project, args.project)
     print("Lengths imported. Generate harnesses again to update the wire lengths.")
+    return 0
+
+
+def _pairs(items: list[str], what: str) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for item in items:
+        key, sep, value = item.partition("=")
+        if not sep or not key.strip() or not value.strip():
+            raise ImportError_(f"{what} '{item}' must look like REF=VALUE")
+        out[key.strip()] = value.strip()
+    return out
+
+
+def _signal_map(path: Path | None) -> dict[str, str]:
+    if path is None:
+        return {}
+    import json
+
+    try:
+        if path.suffix.lower() == ".json":
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(raw, dict) or not all(
+                isinstance(k, str) and isinstance(v, str) for k, v in raw.items()
+            ):
+                raise ImportError_("The signal map must be a JSON object of text to text.")
+            return dict(raw)
+        rows = read_table_raw(path)
+    except (OSError, ValueError, RecursionError) as exc:
+        raise ImportError_(f"The signal map could not be read ({exc}).") from exc
+    if rows and rows[0][0].strip().lower() in ("net", "name", "kicad", "from", "net name"):
+        rows = rows[1:]
+    return {
+        r[0].strip(): r[1].strip() for r in rows if len(r) >= 2 and r[0].strip() and r[1].strip()
+    }
+
+
+def _netlist(project, args: argparse.Namespace) -> int:  # type: ignore[no-untyped-def]
+    from harness_tool.core.kicad import plan_netlist_import, read_netlist
+
+    plan = plan_netlist_import(
+        project, read_netlist(args.netlist), args.unit, refs=args.ref or None, prefix=args.prefix,
+        connector_ids=_pairs(args.connector, "--connector"), parts=_pairs(args.part, "--part"),
+        signal_map=_signal_map(args.signal_map), use_pin_function=args.pin_function,
+    )  # fmt: skip
+    for r in plan.rows:
+        print(
+            f"{r.ref or '-'}: "
+            + (
+                f"OK {r.action} {r.connector_id} ({r.pins} signal pin(s))"
+                if r.ok
+                else f"ERROR {r.message}"
+            )
+        )
+    for w in plan.warnings:
+        print(f"warning: {w}")
+    if plan.unmatched_signals:
+        print(
+            "Signals that match no interface type (map them with --signal-map, or ignore if they are not interfaces):"
+        )
+        for name in sorted(plan.unmatched_signals):
+            print(f"  {name}: {', '.join(plan.unmatched_signals[name][:4])}")
+    bad = [r for r in plan.rows if not r.ok]
+    if args.dry_run or bad or not plan.ops:
+        print(
+            "Nothing was changed."
+            if bad
+            else "Dry run: nothing was changed."
+            if args.dry_run
+            else "Nothing to import."
+        )
+        return 1 if bad or not plan.ops else 0
+    History(project).execute("Import connector pinouts from KiCad", plan.ops)
+    save_project(project, args.project)
+    print(
+        f"Imported {plan.ok_count} connector(s). Generate harnesses again to connect interfaces to the fixed pins."
+    )
     return 0

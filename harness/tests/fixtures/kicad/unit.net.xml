@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/home/user/projects/unit/unit.kicad_sch</source>
+    <date>2026-03-01T10:00:00+0100</date>
+    <tool>Eeschema 8.0.4</tool>
+  </design>
+  <components>
+    <comp ref="J1">
+      <value>Conn_01x09</value>
+      <footprint>Connector_Dsub:DSUB-9_Male_Horizontal</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x09" description="Generic connector, single row, 01x09"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="unit.kicad_sch"/>
+      <fields>
+        <field name="HarnessConnector">TST1-J01</field>
+        <field name="HarnessPart">EX-DSUB-9-F</field>
+      </fields>
+    </comp>
+    <comp ref="J2">
+      <value>Conn_01x03</value>
+      <footprint>Connector_Dsub:DSUB-9_Male_Horizontal</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x03"/>
+      <fields/>
+    </comp>
+    <comp ref="U1">
+      <value>MCU</value>
+      <footprint>Package_QFP:LQFP-64</footprint>
+    </comp>
+  </components>
+  <nets>
+    <net code="1" name="/TX+" class="Default">
+      <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="U1" pin="5" pinfunction="TXP" pintype="output"/>
+    </net>
+    <net code="2" name="/TX-" class="Default">
+      <node ref="J1" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="U1" pin="6" pinfunction="TXN" pintype="output"/>
+    </net>
+    <net code="3" name="/io/RX+" class="Default">
+      <node ref="J1" pin="3" pinfunction="Pin_3" pintype="passive"/>
+    </net>
+    <net code="4" name="/io/RX-" class="Default">
+      <node ref="J1" pin="4" pinfunction="Pin_4" pintype="passive"/>
+    </net>
+    <net code="5" name="Net-(J1-Pad9)" class="Default">
+      <node ref="J1" pin="9" pinfunction="Pin_9" pintype="passive"/>
+      <node ref="U1" pin="9" pinfunction="IO9" pintype="bidirectional"/>
+    </net>
+    <net code="6" name="unconnected-(J1-Pin_8)" class="Default">
+      <node ref="J1" pin="8" pinfunction="Pin_8" pintype="passive"/>
+    </net>
+    <net code="7" name="/28V" class="Default">
+      <node ref="J2" pin="1" pinfunction="Pin_1" pintype="passive"/>
+    </net>
+    <net code="8" name="GND" class="Default">
+      <node ref="J2" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J2" pin="3" pinfunction="Pin_3" pintype="passive"/>
+    </net>
+  </nets>
+</export>

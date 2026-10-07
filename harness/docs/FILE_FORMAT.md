@@ -54,6 +54,7 @@ All additions are optional with defaults, so projects saved by M1 load unchanged
 ## Additions in M3 (schema version stays 1)
 All optional with defaults; projects from M2 load unchanged.
 - `Pin.interface_id`: interface that owns the pin (set by generation; locked pins are never reassigned).
+- `Pin.fixed`: the signal is defined by the unit design (imported from KiCad, `docs/KICAD.md`). Generation connects interfaces to the pin of the same name and never moves it. Default `false`.
 - `Connector.mates_with`: on a cable connector, the box connector it mates with.
 - `Wire.locked`: gauge, part, colour and length were set by a person; regeneration keeps them.
 - `Harness.generated`, `group_key`, `interfaces`: set for generated harnesses; manual harnesses keep `generated: false`.
