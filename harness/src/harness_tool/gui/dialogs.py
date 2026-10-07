@@ -41,6 +41,7 @@ from harness_tool.core.imports import (
 )
 from harness_tool.core.issues import Issue
 from harness_tool.core.model import Project
+from harness_tool.core.vcs.diff import KIND_NAMES, Diff
 from harness_tool.gui import strings
 from harness_tool.gui.theme import ThemeManager
 
@@ -548,3 +549,152 @@ class GeneratePreviewDialog(QDialog):
         self.ok, self.cancel, row = _buttons(self, strings.GEN_APPLY, danger=False, primary=True)
         lay.addLayout(row)
         self.setMinimumWidth(520)
+
+
+class ChangeDialog(QDialog):
+    """Review, release and new-revision steps: who, optional checker, mandatory comment, and
+    anything that blocks the step (shown as plain sentences; OK stays disabled until clear)."""
+
+    def __init__(
+        self,
+        parent: QWidget | None,
+        title: str,
+        *,
+        by: str,
+        blockers: list[str],
+        ask_checker: bool = False,
+        ask_comment: bool = True,
+        ok_text: str = strings.OK,
+    ) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setObjectName("change-dialog")
+        self._comment_needed = ask_comment
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel(f"<h3>{title}</h3>"))
+        self.blockers = blockers
+        self.status = QLabel()
+        self.status.setObjectName("change-status")
+        self.status.setWordWrap(True)
+        self.status.setTextFormat(Qt.TextFormat.RichText)
+        if blockers:
+            self.status.setText(
+                strings.BLOCKED + "<ul>" + "".join(f"<li>{b}</li>" for b in blockers[:8]) + "</ul>"
+            )
+        else:
+            self.status.setText(strings.READY_TO_RELEASE if ask_comment else "")
+        lay.addWidget(self.status)
+        lay.addWidget(QLabel(strings.YOUR_NAME))
+        self.by = QLineEdit(by)
+        self.by.setObjectName("change-by")
+        lay.addWidget(self.by)
+        self.checker = QLineEdit()
+        self.checker.setObjectName("change-checker")
+        if ask_checker:
+            lay.addWidget(QLabel(strings.CHECKED_BY))
+            lay.addWidget(self.checker)
+        self.comment = QPlainTextEdit()
+        self.comment.setObjectName("change-comment")
+        self.comment.setFixedHeight(80)
+        if ask_comment:
+            lay.addWidget(QLabel(strings.COMMENT))
+            lay.addWidget(self.comment)
+        self.ok, self.cancel, row = _buttons(self, ok_text, danger=False, primary=True)
+        lay.addLayout(row)
+        self.by.textChanged.connect(self._validate)
+        self.comment.textChanged.connect(self._validate)
+        self.setMinimumWidth(480)
+        self._validate()
+
+    def _validate(self) -> None:
+        good = not self.blockers and bool(self.by.text().strip())
+        if self._comment_needed:
+            good = good and len(self.comment.toPlainText().strip()) >= 10
+        self.ok.setEnabled(good)
+
+    def values(self) -> tuple[str, str, str]:
+        return (
+            self.by.text().strip(),
+            self.checker.text().strip(),
+            self.comment.toPlainText().strip(),
+        )
+
+
+class DiffDialog(QDialog):
+    """What changed: added, removed and changed objects with their field changes."""
+
+    markRequested = Signal(object)  # dict[str, str]
+
+    def __init__(
+        self, parent: QWidget | None, title: str, diff: "Diff", baselines: list[str], current: str
+    ) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setObjectName("diff-dialog")
+        self.diff = diff
+        self.resize(720, 520)
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel(f"<h3>{title}</h3>"))
+        self.baseline = QComboBox()
+        self.baseline.setObjectName("diff-baseline")
+        self.baseline.addItems(baselines)
+        self.baseline.setCurrentText(current)
+        row0 = QHBoxLayout()
+        row0.addWidget(QLabel(strings.COMPARE_WITH))
+        row0.addWidget(self.baseline)
+        row0.addStretch(1)
+        lay.addLayout(row0)
+        self.summary = QLabel(diff.summary())
+        self.summary.setObjectName("diff-summary")
+        lay.addWidget(self.summary)
+        self.list = QListWidget()
+        self.list.setObjectName("diff-list")
+        self.set_diff(diff)
+        lay.addWidget(self.list, 1)
+        row = QHBoxLayout()
+        self.mark = QPushButton(strings.MARK_DIAGRAM)
+        self.mark.setObjectName("diff-mark")
+        self.mark.clicked.connect(lambda: self.markRequested.emit(self.diff.affected()))
+        clear = QPushButton(strings.CLEAR_MARKS)
+        clear.setObjectName("diff-clear")
+        clear.clicked.connect(lambda: self.markRequested.emit({}))
+        close = QPushButton(strings.CLOSE)
+        close.clicked.connect(self.accept)
+        row.addWidget(self.mark)
+        row.addWidget(clear)
+        row.addStretch(1)
+        row.addWidget(close)
+        lay.addLayout(row)
+
+    def set_diff(self, diff: "Diff") -> None:
+        self.diff = diff
+        self.summary.setText(diff.summary() if not diff.empty else strings.NO_DIFF)
+        self.list.clear()
+        sym = {"added": "+", "removed": "−", "changed": "~"}
+        for c in diff.changes:
+            QListWidgetItem(f"{sym[c.change]} {KIND_NAMES.get(c.kind, c.kind)} {c.id}", self.list)
+            for f in c.fields:
+                QListWidgetItem(f"      {f.name}: {f.before} → {f.after}", self.list)
+
+
+class HistoryDialog(QDialog):
+    """The change log of one harness (or all)."""
+
+    def __init__(self, parent: QWidget | None, title: str, rows: list[list[str]]) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setObjectName("history-dialog")
+        self.resize(720, 400)
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel(f"<h3>{title}</h3>"))
+        self.list = QListWidget()
+        self.list.setObjectName("history-list")
+        for r in rows[1:]:
+            tail = f": {r[6]}" if r[6] else ""
+            QListWidgetItem(f"{r[5]}  {r[1]} rev {r[2]}  {r[3]} by {r[4]}{tail}", self.list)
+        if len(rows) == 1:
+            QListWidgetItem(strings.NO_HISTORY, self.list)
+        lay.addWidget(self.list, 1)
+        close = QPushButton(strings.CLOSE)
+        close.clicked.connect(self.accept)
+        lay.addWidget(close)

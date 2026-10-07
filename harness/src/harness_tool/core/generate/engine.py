@@ -124,7 +124,6 @@ def input_hash(project: Project) -> str:
         "segment_lengths": {
             h.id: sorted((s.id, s.length_m) for s in h.segments) for h in generated
         },
-        "status": {h.id: h.status for h in generated},
     }
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
@@ -558,11 +557,24 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
         f"harness:{hid}",
         f"segmentation: {', '.join(interfaces)} share a harness because they have the same {_describe(group)} and chain ({group.chain})",
     )
-    return Harness(
+    built = Harness(
         id=hid, name=group.label, revision=old.revision if old else "A", status=old.status if old else "draft",
         connectors=sorted(cables.values(), key=lambda c: c.id), wires=wires, shields=shields, branch_points=branches, segments=segments,
         generated=True, group_key=group.key, interfaces=interfaces, notes=old.notes if old else "",
+        author=old.author if old else None, checker=old.checker if old else None,
+        approver=old.approver if old else None, released_on=old.released_on if old else None,
     )  # fmt: skip
+    if old is not None and old.status == "in_review":
+        meta = {"status", "checker", "approver", "released_on", "author"}
+        if built.model_dump(exclude=meta) != old.model_dump(exclude=meta):
+            ctx.finding(
+                "info",
+                "review_reset",
+                f"{hid} changed while in review, so it is a draft again and needs a new review.",
+                hid,
+            )
+            built = evolve(built, status="draft", checker=None)
+    return built
 
 
 def _describe(group: Group) -> str:

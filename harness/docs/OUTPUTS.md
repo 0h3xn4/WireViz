@@ -15,6 +15,7 @@ outputs/
     block_diagram.svg|pdf          units in zone lanes, interfaces coloured by category
     harness_overview.svg|pdf       harnesses between units, solid = nominal, dashed = redundant
     bom.csv  mass_length.csv  mating_matrix.csv  traceability.csv  box_pinouts.csv
+    changelog.csv  revision_report.md   change log and per-harness history with differences between revisions
     drc_findings.csv  drc_report.md
     export.json                    the whole model in one documented JSON file
     system.xlsx                    BOM, mass and length, matrices, box pinouts, DRC findings
@@ -31,7 +32,7 @@ Re-reads the finished files and compares them with the model without using the b
 
 ## Drawing
 One row per wire grouped by connector pair: pin and signal, wire ID, gauge, colour, length, part, pin and signal. Shields, routing segments, spare pins and notes follow. A title block closes every sheet (project, harness, title, revision, status, sheet n / N, stamp). Drawings are black and grey only; wire colour is printed as text. Long harnesses continue on further sheets with repeated headings. The text font is Courier (monospaced), so text widths are exact.
-Limits: the drawing is a wire-by-wire diagram, not a geometric layout of the branches; routing segments are listed, not drawn. Date, author, checker and approver show "-" until M6 (change control) stores them. The title block field list comes from `config/titleblock.json` (placeholder, D-15).
+Limits: the drawing is a wire-by-wire diagram, not a geometric layout of the branches; routing segments are listed, not drawn. Author, checker, approver and date come from the harness (set by review and release, see change control); they show "-" until then. The title block field list comes from `config/titleblock.json` (placeholder, D-15).
 
 ## Tables
 - `wirelist.csv`: Wire, Signal, Interface, From connector/pin, To connector/pin, AWG ("pending" when undecided), Part, Colour, Length (m), Shield group, Locked.
@@ -57,3 +58,6 @@ Each list holds the model objects exactly as in the project files (sorted by ID)
 
 ## Print
 Dark colours and dash patterns carry every distinction (category, nominal/redundant), so greyscale prints stay readable. Tests check contrast against white (at least 3:1) and that drawings use only grey.
+
+## Change control in the outputs
+`system/changelog.csv` lists every change log entry. `system/revision_report.md` gives, per harness, the history and the differences between consecutive baselines and between the working design and the latest baseline. The manifest also stores `content_hash` (model hash without release bookkeeping) which the release gate compares; see DECISIONS D-104.

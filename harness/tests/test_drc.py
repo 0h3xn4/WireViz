@@ -262,6 +262,13 @@ def pos_emc_mixed() -> Project:
     return p
 
 
+def pos_released_modified() -> Project:
+    p = base()
+    h = next(x for x in p.harnesses.values() if x.generated)
+    put_harness(p, h, status="released")  # released but no baseline
+    return p
+
+
 def pos_lookalike() -> Project:
     return base()
 
@@ -312,6 +319,7 @@ POSITIVE: dict[str, Callable[[], Project]] = {
     "pyro-mixed": pos_pyro_mixed,
     "category-mixed": pos_category_mixed,
     "emc-mixed": pos_emc_mixed,
+    "released-modified": pos_released_modified,
     "connector-lookalike": pos_lookalike,
     "part-unapproved": pos_unapproved,
     "unchecked-config": pos_unchecked,

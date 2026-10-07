@@ -12,6 +12,7 @@ from harness_tool.core.generate.sizing import ampacity_table
 from harness_tool.core.integrity import check_integrity
 from harness_tool.core.model import Connector, Harness, InterfaceInstance, Project, Wire
 from harness_tool.core.units import awg_to_area_mm2
+from harness_tool.core.vcs.consistency import release_integrity
 
 from .base import Hit, Rule, cfg, number
 
@@ -415,6 +416,11 @@ def _emc_mixed(project: Project) -> Iterator[Hit]:
                 yield Hit(f"{h.id}.{a}+{b}", f"{h.id} mixes EMC classes {a} and {b}")
 
 
+def _released_modified(project: Project) -> Iterator[Hit]:
+    for issue in release_integrity(project):
+        yield Hit(issue.object_id or issue.code, issue.message)
+
+
 # ---- what could not be checked ---------------------------------------------------------------------
 
 
@@ -520,6 +526,9 @@ RULES: tuple[Rule, ...] = (
     Rule("part-unapproved", "warning", "Approved parts",
          "Only approved parts may be built into flight hardware.",
          "Approve the part in the parts list, or choose an approved one.", _unapproved_parts),
+    Rule("released-modified", "error", "Released items",
+         "A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored.",
+         "Restore the harness from its baseline, or start a new revision for the change.", _released_modified),
     Rule("unchecked-config", "info", "Checks not run",
          "A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass.",
          "Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).", _unchecked),

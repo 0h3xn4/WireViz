@@ -31,7 +31,7 @@ HARNESS_FILES = (
 )
 SYSTEM_FILES = (
     "bom.csv", "mass_length.csv", "mating_matrix.csv", "traceability.csv", "box_pinouts.csv",
-    "drc_findings.csv", "drc_report.md", "export.json", "system.xlsx", "block_diagram.svg",
+    "drc_findings.csv", "drc_report.md", "changelog.csv", "revision_report.md", "export.json", "system.xlsx", "block_diagram.svg",
     "block_diagram.pdf", "harness_overview.svg", "harness_overview.pdf",
 )  # fmt: skip
 
@@ -400,6 +400,19 @@ def _system(r: VerifyReport, project: Project, files: dict[str, bytes]) -> None:
             r.error(
                 "out_drc", "The DRC findings table does not list every finding.", "drc_findings"
             )
+    cl = _table(files, "system/changelog.csv")
+    if cl and sorted(row[0] for row in cl[1:]) != sorted(project.changelog):
+        r.error(
+            "out_changelog",
+            "The change log table does not list exactly the change log entries.",
+            "changelog",
+        )
+    rr = files.get("system/revision_report.md")
+    if rr is not None:
+        words = set(rr.decode().replace("`", " ").replace("(", " ").split())
+        for hid in sorted({b.harness_id for b in project.baselines.values()}):
+            if hid not in words:
+                r.error("out_changelog", f"The revision report does not mention {hid}.", hid)
     md = files.get("system/drc_report.md")
     if md is not None and "Waived:" not in md.decode():
         r.error("out_drc", "The DRC report is incomplete.", "drc_report")

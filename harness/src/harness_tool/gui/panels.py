@@ -912,6 +912,7 @@ class HarnessPanel(QWidget):
     """Generated harnesses: status, independent check, harness list, wires and why they are so."""
 
     exportRequested = Signal()
+    changeRequested = Signal(str, str)  # action, harness ID
 
     def __init__(self, ctl: EditorController) -> None:
         super().__init__()
@@ -938,6 +939,23 @@ class HarnessPanel(QWidget):
         out_row.addWidget(self.outputs, 1)
         out_row.addWidget(self.export_btn)
         lay.addLayout(out_row)
+        cc_row = QHBoxLayout()
+        self.cc_buttons: dict[str, QPushButton] = {}
+        for action, text, tip in (
+            ("review", strings.REVIEW, strings.REVIEW_TIP),
+            ("release", strings.RELEASE, strings.RELEASE_TIP),
+            ("revise", strings.NEW_REV, strings.NEW_REV_TIP),
+            ("changes", strings.CHANGES, strings.CHANGES_TIP),
+            ("history", strings.HISTORY, strings.HISTORY_TIP),
+        ):
+            b = QPushButton(text)
+            b.setObjectName(f"plans-{action}")
+            b.setToolTip(tip)
+            b.clicked.connect(lambda _=False, a=action: self._request(a))
+            cc_row.addWidget(b)
+            self.cc_buttons[action] = b
+        cc_row.addStretch(1)
+        lay.addLayout(cc_row)
         self.empty = muted(strings.NO_PLANS_BODY)
         self.empty.setObjectName("plans-empty")
         lay.addWidget(self.empty)
@@ -963,6 +981,7 @@ class HarnessPanel(QWidget):
         body.addWidget(self.explain, 3)
         lay.addLayout(body, 1)
         self.harnesses.itemSelectionChanged.connect(self._show_wires)
+        self.harnesses.itemSelectionChanged.connect(self._update_cc_buttons)
         self.wires.itemSelectionChanged.connect(self._show_explain)
         ctl.changed.connect(lambda _d: self._invalidate())
         self.refresh()
@@ -976,6 +995,27 @@ class HarnessPanel(QWidget):
         super().showEvent(event)  # type: ignore[arg-type]
         if self._dirty:
             self.refresh()
+
+    def _request(self, action: str) -> None:
+        hid = self.selected_harness()
+        if hid:
+            self.changeRequested.emit(action, hid)
+
+    def _update_cc_buttons(self) -> None:
+        p = self.ctl.project
+        h = p.harnesses.get(self.selected_harness() or "")
+        ro = self.ctl.read_only
+        status = h.status if h else ""
+        has_base = bool(h) and any(b.harness_id == h.id for b in p.baselines.values())  # type: ignore[union-attr]
+        on = {
+            "review": status == "draft",
+            "release": status in ("draft", "in_review"),
+            "revise": status == "released",
+            "changes": has_base,
+            "history": h is not None,
+        }
+        for action, b in self.cc_buttons.items():
+            b.setEnabled(on[action] and (action in ("changes", "history") or not ro))
 
     def select_harness(self, harness_id: str) -> None:
         if self._dirty:
@@ -1011,13 +1051,15 @@ class HarnessPanel(QWidget):
         self.harnesses.setRowCount(len(p.harnesses))
         for r, hid in enumerate(sorted(p.harnesses)):
             h = p.harnesses[hid]
-            cells = [hid, h.name, str(len(h.wires)), str(len(h.interfaces)), h.status,
+            cells = [hid, h.name, str(len(h.wires)), str(len(h.interfaces)),
+                     f"{h.revision} {strings.RELEASED_LOCKED}" if h.status == "released" else f"{h.revision} {h.status.replace('_', ' ')}",
                      "generated" if h.generated else "by hand"]  # fmt: skip
             for c, text in enumerate(cells):
                 self.harnesses.setItem(r, c, QTableWidgetItem(text))
             if hid == keep:
                 self.harnesses.selectRow(r)
         self._show_wires()
+        self._update_cc_buttons()
 
     def _show_wires(self) -> None:
         p = self.ctl.project

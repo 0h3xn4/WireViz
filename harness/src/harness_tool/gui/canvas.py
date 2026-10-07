@@ -79,7 +79,7 @@ class UnitItem(QGraphicsItem):
         return facing_side(self.lane(), self.dscene.zone_count)
 
     def boundingRect(self) -> QRectF:
-        return QRectF(-12, -4, W + 24, self.height() + 44)
+        return QRectF(-14, -30, W + 28, self.height() + 70)
 
     def shape(self) -> QPainterPath:
         path = QPainterPath()
@@ -214,6 +214,14 @@ class UnitItem(QGraphicsItem):
                 Qt.AlignmentFlag.AlignTop | Qt.TextFlag.TextWordWrap,
                 f"✕ {reason}",
             )
+        mark = ctl.diff_marks.get(self.unit_id)
+        if mark:
+            painter.setPen(QPen(th.color("warning"), 5, Qt.PenStyle.DotLine))
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawRoundedRect(body.adjusted(-7, -7, 7, 7), 12, 12)
+            painter.setFont(bold)
+            painter.setPen(th.color("warning"))
+            painter.drawText(QRectF(0, -24, W, 16), Qt.AlignmentFlag.AlignRight, mark.upper())
         if self.hasFocus():
             painter.setPen(QPen(th.color("focus"), 3))
             painter.setBrush(Qt.BrushStyle.NoBrush)
@@ -426,6 +434,12 @@ class LinkItem(QGraphicsPathItem):
         )
         far = option.levelOfDetailFromTransform(painter.worldTransform()) < 0.5 and not selected
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, not far)
+        marked = i.id in ctl.diff_marks
+        if marked:  # a wide, dotted halo in the warning colour (not colour alone: also dotted)
+            halo = QPen(th.color("warning"), float(info["weight"]) + 8, Qt.PenStyle.DotLine)
+            painter.setPen(halo)
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawPath(self.path())
         pen = QPen(color, float(info["weight"]) + (2 if selected else 0))
         if i.redundancy == "redundant":
             pen.setStyle(Qt.PenStyle.DashLine)
@@ -526,6 +540,7 @@ class DiagramScene(QGraphicsScene):
         self._last_sel: object = None
         ctl.changed.connect(self.apply)
         ctl.selectionChanged.connect(self._on_selection)
+        ctl.marksChanged.connect(self.refresh_all)
         ctl.connectChanged.connect(self._repaint_units)
         ctl.modeChanged.connect(self.refresh_all)
         theme.changed.connect(lambda: self.update())

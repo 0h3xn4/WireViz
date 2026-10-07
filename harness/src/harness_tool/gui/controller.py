@@ -5,7 +5,9 @@ project inconsistent), undoable, autosaved to the recovery journal, and reported
 small `Delta` so they redraw only what changed.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 
 from pydantic import ValidationError
@@ -29,6 +31,7 @@ from harness_tool.core.recovery import (
     write_journal,
 )
 from harness_tool.core.samples import mini3, new_project
+from harness_tool.core.vcs.release import ReleasePlan
 
 from . import strings
 
@@ -84,6 +87,7 @@ class EditorController(QObject):
     stateChanged = Signal()  # title, dirty, read-only, banners
     drcChanged = Signal()  # new design rule results arrived
     drcStateChanged = Signal()  # checking started or finished
+    marksChanged = Signal()  # diff marks on the diagram changed
 
     def __init__(
         self, journal_delay_ms: int = JOURNAL_DELAY_MS, drc_delay_ms: int = DRC_DELAY_MS
@@ -105,6 +109,9 @@ class EditorController(QObject):
         self._findings_cache: tuple[object, list[checks.Finding]] | None = None
         self._owners: dict[str, str] = {}
         self._installs = 0
+        self.diff_marks: dict[str, str] = {}  # object ID -> added | changed | removed
+        self.user_name = ""
+        self.today: Callable[[], str] = lambda: date.today().isoformat()
         self._drc_raw: list[checks.Finding] = []
         self._drc_token: tuple[int, int] | None = None  # (installs, revision) the result is for
         self._drc_worker: DrcWorker | None = None
@@ -544,6 +551,19 @@ class EditorController(QObject):
             return "unsaved"
         return outputs_status(self.project, folder).state
 
+    # ---- change control ----------------------------------------------------------------------
+
+    def set_marks(self, marks: dict[str, str]) -> None:
+        self.diff_marks = dict(marks)
+        self.marksChanged.emit()
+
+    def apply_change(self, plan: ReleasePlan, message: str) -> bool:
+        """Run a review, release or new-revision plan as one undoable step."""
+        if not plan.ok:
+            self.message.emit(plan.blockers[0].message, False)
+            return False
+        return self.run(plan.label, plan.ops, message=message)
+
     def apply_generation(self, plan: GenerationPlan) -> bool:
         if plan.empty:
             self.message.emit(strings.GEN_UP_TO_DATE, False)
@@ -577,6 +597,7 @@ class EditorController(QObject):
         self.selection = None
         self.end_connect()
         self.journal_error_shown = False
+        self.diff_marks = {}
         self.wait_drc()
         self._drc_raw, self._drc_token = [], None
         self._drc_version += 1

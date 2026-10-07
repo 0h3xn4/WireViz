@@ -42,16 +42,26 @@ from harness_tool.core.outputs.build import (
     write_outputs,
 )
 from harness_tool.core.outputs.verify import verify_outputs
+from harness_tool.core.vcs.release import (
+    plan_new_revision,
+    plan_release,
+    plan_submit_review,
+    release_blockers,
+)
+from harness_tool.core.vcs.report import baselines_of, changelog_rows, working_diff
 from harness_tool.core.verify import VerifyReport
 from harness_tool.gui import strings
 from harness_tool.gui.canvas import DiagramView
 from harness_tool.gui.controller import Delta, EditorController, NeedSaveAs
 from harness_tool.gui.dialogs import (
     Banner,
+    ChangeDialog,
     CommandPalette,
     ConfirmDialog,
+    DiffDialog,
     GeneratePreviewDialog,
     GlossaryDialog,
+    HistoryDialog,
     ImportDialog,
     IssuesDialog,
     NewInterfaceDialog,
@@ -353,6 +363,7 @@ class MainWindow(QMainWindow):
         self.table = InterfaceTable(self.ctl)
         self.harness_panel = HarnessPanel(self.ctl)
         self.harness_panel.exportRequested.connect(self.export_flow)
+        self.harness_panel.changeRequested.connect(self.change_flow)
         self.tabs = QTabWidget()
         self.tabs.setObjectName("bottom-tabs")
         self.tabs.addTab(self.problems, strings.PROBLEMS)
@@ -757,6 +768,105 @@ class MainWindow(QMainWindow):
         loop.exec()
         worker.wait()
         progress.reset()
+
+    def _user_name(self) -> str:
+        saved = str(self.settings.value("ui/user", "") or "")
+        if saved:
+            return saved
+        try:
+            import getpass
+
+            return getpass.getuser()
+        except (OSError, KeyError, ImportError):
+            return ""
+
+    def change_flow(self, action: str, hid: str) -> None:
+        """Review, release, new revision, changes and change log for one harness."""
+        project, today = self.ctl.project, self.ctl.today()
+        folder = self.ctl.outputs_folder()
+        if action == "history":
+            rows = changelog_rows(project, hid)
+            self.run_dialog(HistoryDialog(self, strings.HISTORY_TITLE.format(hid), rows))
+            return
+        if action == "changes":
+            self._changes_flow(hid)
+            return
+        if action == "review":
+            dlg = ChangeDialog(
+                self,
+                strings.REVIEW_TITLE.format(hid),
+                by=self._user_name(),
+                blockers=[],
+                ask_comment=False,
+                ok_text=strings.REVIEW,
+            )
+        elif action == "release":
+            blockers = release_blockers(
+                project, hid, by="x", comment="x" * 10, when=today, outputs_folder=folder
+            )
+            dlg = ChangeDialog(
+                self,
+                strings.RELEASE_TITLE.format(hid),
+                by=self._user_name(),
+                blockers=[b.message for b in blockers],
+                ask_checker=True,
+                ok_text=strings.RELEASE,
+            )
+        else:
+            dlg = ChangeDialog(
+                self,
+                strings.NEW_REV_TITLE.format(hid),
+                by=self._user_name(),
+                blockers=[],
+                ok_text=strings.NEW_REV,
+            )
+        if self.run_dialog(dlg) != QDialog.DialogCode.Accepted:
+            return
+        by, checker, comment = dlg.values()
+        self.settings.setValue("ui/user", by)
+        if action == "review":
+            plan = plan_submit_review(project, hid, by=by, when=today)
+            msg = f"{hid} submitted for review."
+        elif action == "release":
+            plan = plan_release(
+                project,
+                hid,
+                by=by,
+                checker=checker or None,
+                comment=comment,
+                when=today,
+                outputs_folder=folder,
+            )
+            msg = strings.RELEASE_DONE.format(hid)
+        else:
+            plan = plan_new_revision(project, hid, by=by, comment=comment, when=today)
+            msg = f"New revision of {hid} started; it can be edited again."
+        if self.ctl.apply_change(plan, msg):
+            self.harness_panel.refresh()
+
+    def _changes_flow(self, hid: str) -> None:
+        project = self.ctl.project
+        h = project.harnesses.get(hid)
+        bases = baselines_of(project, hid)
+        if h is None or not bases:
+            self.toasts.show_message(strings.NO_BASELINE.format(hid), None)
+            return
+        revs = [b.revision for b in bases]
+        dlg = DiffDialog(
+            self,
+            strings.CHANGES_TITLE.format(hid),
+            working_diff(project, h, bases[-1]),
+            revs,
+            revs[-1],
+        )
+
+        def recompute() -> None:
+            base = next(b for b in bases if b.revision == dlg.baseline.currentText())
+            dlg.set_diff(working_diff(project, h, base))
+
+        dlg.baseline.currentTextChanged.connect(lambda _t: recompute())
+        dlg.markRequested.connect(self.ctl.set_marks)
+        self.run_dialog(dlg)
 
     def export_flow(self) -> None:
         folder = self.ctl.outputs_folder()

@@ -14,14 +14,16 @@ from .physical import (
     Wire,
 )
 from .project import DEFAULT_ZONES, SCHEMA_VERSION, Project, ProjectMeta, QuarantinedItem
-from .review import Placement, Waiver
+from .review import Baseline, ChangeEntry, Placement, Snapshot, Waiver
 
 __all__ = [
     "CONFIG_NAMES",
     "DEFAULT_ZONES",
     "PART_CATEGORIES",
     "SCHEMA_VERSION",
+    "Baseline",
     "BranchPoint",
+    "ChangeEntry",
     "ConfigFile",
     "Connector",
     "Endpoint",
@@ -38,6 +40,7 @@ __all__ = [
     "ProjectMeta",
     "QuarantinedItem",
     "Segment",
+    "Snapshot",
     "ShieldGroup",
     "SignalDef",
     "Splice",

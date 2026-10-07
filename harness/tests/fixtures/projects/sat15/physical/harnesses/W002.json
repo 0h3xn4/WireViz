@@ -1,5 +1,8 @@
 {
+  "approver": null,
+  "author": null,
   "branch_points": [],
+  "checker": null,
   "connectors": [
     {
       "carries": [],
@@ -182,6 +185,7 @@
   ],
   "name": "BAT1-J02 to OBC1-J03",
   "notes": "",
+  "released_on": null,
   "revision": "A",
   "segments": [
     {

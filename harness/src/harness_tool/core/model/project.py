@@ -9,7 +9,7 @@ from .generation import GenerationRecord
 from .library import LibraryInfo, Part
 from .logical import InterfaceInstance, InterfaceType, Unit
 from .physical import Connector, Harness
-from .review import Placement, Waiver
+from .review import Baseline, ChangeEntry, Placement, Waiver
 
 SCHEMA_VERSION = 1
 DEFAULT_ZONES = ("panel-A", "panel-B")
@@ -45,6 +45,8 @@ class Project:
     zones: list[str] = field(default_factory=lambda: list(DEFAULT_ZONES))
     placements: dict[str, Placement] = field(default_factory=dict)
     waivers: dict[str, Waiver] = field(default_factory=dict)
+    baselines: dict[str, Baseline] = field(default_factory=dict)
+    changelog: dict[str, ChangeEntry] = field(default_factory=dict)
     config: dict[str, ConfigFile] = field(default_factory=default_configs)
     generation: GenerationRecord | None = None
     quarantine: list[QuarantinedItem] = field(default_factory=list)

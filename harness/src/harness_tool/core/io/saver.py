@@ -105,7 +105,7 @@ def save_project(
 
 def _managed_on_disk(base: Path) -> list[str]:
     found = []
-    for top_file in ("project.json", "waivers.json"):
+    for top_file in ("project.json", "waivers.json", "changelog.json"):
         if (base / top_file).is_file():
             found.append(top_file)
     for top in MANAGED_DIRS:

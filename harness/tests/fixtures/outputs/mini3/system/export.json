@@ -367,7 +367,10 @@
  },
  "harnesses": [
   {
+   "approver": null,
+   "author": null,
    "branch_points": [],
+   "checker": null,
    "connectors": [
     {
      "carries": [],
@@ -452,6 +455,7 @@
    "interfaces": [],
    "name": "PCDU to RW1 power",
    "notes": "",
+   "released_on": null,
    "revision": "A",
    "segments": [],
    "shields": [],
@@ -489,7 +493,10 @@
    ]
   },
   {
+   "approver": null,
+   "author": null,
    "branch_points": [],
+   "checker": null,
    "connectors": [
     {
      "carries": [],
@@ -608,6 +615,7 @@
    ],
    "name": "OBC-J01 to RW1-J02",
    "notes": "",
+   "released_on": null,
    "revision": "A",
    "segments": [
     {
@@ -1174,7 +1182,7 @@
    "voltage_v": null
   }
  ],
- "model_hash": "b66767a865f9566889015351f8ef7cf6f38377553cc4e699373681b2b0a2dc42",
+ "model_hash": "677d8603a9886e2581e17031facccb8e8405e011b3b20f9bb709a48efd7c7203",
  "parts": [
   {
    "approval": "pending",

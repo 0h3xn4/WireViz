@@ -92,4 +92,8 @@ class Harness(Entity):
     generated: bool = False  # created by generation (regeneration may replace it)
     group_key: str = ""  # segmentation key it was generated for
     interfaces: list[Id] = []  # interfaces this harness carries
+    author: Name | None = None  # who put it into review (change control)
+    checker: Name | None = None  # who checked it at release
+    approver: Name | None = None  # who released it
+    released_on: Name | None = None  # date of the release (YYYY-MM-DD)
     notes: Text = ""

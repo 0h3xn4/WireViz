@@ -60,3 +60,9 @@ All optional with defaults; projects from M2 load unchanged.
 - `Part.mates_with`: library connector parts that mate with it.
 - `generation.json`: the last generation record: `input_hash`, `generator_version`, `next_harness_number`, `placeholders_used`, and `provenance` (object key to list of "rule: reason" lines; the data behind Explain).
 - `config/generation.json`: generation settings (see PLACEHOLDERS.md).
+
+## Additions in M6 (schema version stays 1)
+- `Harness.author`, `checker`, `approver`, `released_on` (all optional): who put the harness into review, who checked and released it, and the release date (YYYY-MM-DD). `status` is `draft`, `in_review` or `released`; `revision` is letters.
+- `baselines/<harness ID>/<revision>.json`: `id` (`<harness>.<revision>`), `harness_id`, `revision`, `released_on`, `by`, `comment`, `content_hash`, `snapshot` (`units`, `interfaces`, `connectors` = box connectors, `harnesses` = the released harness). Written once at release; never edited by the tool.
+- `changelog.json`: `{"changelog": [{id (C0001...), harness_id, revision, kind (review | release | new_revision), by, when, comment}]}`.
+- `outputs/manifest.json` gained `content_hash` (see D-104).

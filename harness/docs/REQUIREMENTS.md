@@ -50,3 +50,8 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-OUT-04 | Stale and modified outputs are detected in the CLI and the editor. | PLAN M5 | `tests/test_outputs.py`, `tests/test_gui_outputs.py` |
 | REQ-VER-02 | Verifier v2 checks every artefact against the design; each check has a mutation test. | PLAN M5 | `tests/test_outputs.py` |
 | REQ-OUT-05 | Outputs never invent numbers: undecided gauges, unknown lengths, masses and test limits are written as such. | SPEC placeholders rule | `tests/test_outputs.py` |
+| REQ-CC-01 | Releasing needs a name and comment and is blocked by verifier or rule errors, stale plans or outputs, undecided gauges and unknown lengths; it writes a baseline and a change log entry. | SPEC Part 5 (change control) | `tests/test_change_control.py` |
+| REQ-CC-02 | Released harnesses, the interfaces they carry and the pins they use cannot be edited or deleted; a new revision unlocks and keeps the old baseline. | SPEC Part 3 (released items locked) | `tests/test_change_control.py` |
+| REQ-CC-03 | The diff of two baselines, or of the working design against a baseline, lists added, removed and changed objects exactly (property test). | PLAN M6 acceptance | `tests/test_change_control.py` |
+| REQ-CC-04 | A released harness that no longer matches its baseline is reported (rule and `harness check`). | PLAN M6 | `tests/test_change_control.py` |
+| REQ-CC-05 | Title blocks, change log table and revision report come from the data; the editor offers review, release, new revision, changes (marked on the diagram) and change log. | SPEC Part 3 (outputs, UX) | `tests/test_change_control.py`, `tests/test_gui_changes.py` |

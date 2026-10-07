@@ -118,7 +118,7 @@ def _title_block(
     sheet.add(Rect(x0, y0, TB_W, TB_H, width=0.5))
     values = {
         "project": project.meta.name, "harness_id": h.id, "title": h.name, "revision": h.revision,
-        "status": h.status, "sheet": f"{n} / {total}", "date": "-", "author": "-", "checker": "-", "approver": "-",
+        "status": h.status, "sheet": f"{n} / {total}", "date": h.released_on or "-", "author": h.author or "-", "checker": h.checker or "-", "approver": h.approver or "-",
     }  # fmt: skip
     cols, rows_n = 2, (len(fields) + 1) // 2
     cw, rh = TB_W / cols, (TB_H - 6.0) / max(1, rows_n)

@@ -1,5 +1,8 @@
 {
+  "approver": null,
+  "author": null,
   "branch_points": [],
+  "checker": null,
   "connectors": [
     {
       "carries": [],
@@ -84,6 +87,7 @@
   "interfaces": [],
   "name": "PCDU to RW1 power",
   "notes": "",
+  "released_on": null,
   "revision": "A",
   "segments": [],
   "shields": [],

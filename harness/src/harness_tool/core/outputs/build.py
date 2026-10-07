@@ -12,6 +12,8 @@ from harness_tool.core import checks, drc
 from harness_tool.core.drc.report import render_markdown
 from harness_tool.core.errors import HarnessError
 from harness_tool.core.model import Harness, Project
+from harness_tool.core.vcs.hashing import content_hash
+from harness_tool.core.vcs.report import changelog_rows, revision_report
 
 from . import drawing, exports, system, tables
 from .canvas import SHEETS, Sheet, to_pdf, to_svg
@@ -38,6 +40,7 @@ class OutputSet:
             "format_version": FORMAT_VERSION,
             "generator_version": self.stamp.version,
             "model_hash": self.stamp.model_hash,
+            "content_hash": content_hash(project),
             "placeholder_config": sorted(n for n, c in project.config.items() if c.placeholder),
             "files": [
                 {"path": p, "sha256": hashlib.sha256(b).hexdigest(), "bytes": len(b)}
@@ -146,10 +149,12 @@ def build_outputs(
     findings = findings_table(project)
     out["system/drc_findings.csv"] = csv_bytes(findings, stamp)
     out["system/drc_report.md"] = (f"<!-- {stamp.line} -->\n" + render_markdown(project)).encode()
+    out["system/changelog.csv"] = csv_bytes(changelog_rows(project), stamp)
+    out["system/revision_report.md"] = revision_report(project, stamp.line).encode()
     out["system/export.json"] = exports.json_export(project, stamp)
     out["system/system.xlsx"] = exports.xlsx_bytes(
         {"BOM": bom_all, "Mass and length": mass_all, "Mating matrix": mating, "Traceability": trace,
-         "Box pinouts": boxes, "DRC findings": findings}, stamp
+         "Box pinouts": boxes, "DRC findings": findings, "Change log": changelog_rows(project)}, stamp
     )  # fmt: skip
     _sheet_files(system.block_diagram(project, stamp), "system/block_diagram", stamp, out)
     _sheet_files(system.harness_overview(project, stamp), "system/harness_overview", stamp, out)
@@ -189,6 +194,7 @@ def _atomic(path: Path, data: bytes) -> None:
 @dataclass(frozen=True)
 class _Manifest:
     model_hash: str
+    content_hash: str
     files: dict[str, str]  # path -> sha256
 
 
@@ -198,11 +204,19 @@ def _read_manifest(root: Path) -> _Manifest | None:
         return None
     try:
         doc = json.loads(path.read_text())
-        return _Manifest(
-            str(doc["model_hash"]), {str(f["path"]): str(f["sha256"]) for f in doc["files"]}
-        )
+        files = {str(f["path"]): str(f["sha256"]) for f in doc["files"]}
+        return _Manifest(str(doc["model_hash"]), str(doc.get("content_hash", "")), files)
     except (ValueError, KeyError, TypeError):
         return None
+
+
+def outputs_content_state(project: Project, folder: Path | str) -> str:
+    """ "none", "current" or "stale", comparing the design content (release bookkeeping ignored).
+    The release gate uses this: outputs exported and reviewed before a release stay valid."""
+    old = _read_manifest(Path(folder))
+    if old is None:
+        return "none"
+    return "current" if old.content_hash == content_hash(project) else "stale"
 
 
 @dataclass(frozen=True)

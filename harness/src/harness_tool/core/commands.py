@@ -7,6 +7,8 @@ from .errors import TransactionError
 from .integrity import check_integrity
 from .issues import errors
 from .model import (
+    Baseline,
+    ChangeEntry,
     ConfigFile,
     Connector,
     GenerationRecord,
@@ -31,6 +33,8 @@ Collection = Literal[
     "parts",
     "placements",
     "waivers",
+    "baselines",
+    "changelog",
 ]
 _TYPES: dict[str, type[Entity]] = {
     "units": Unit,
@@ -41,6 +45,8 @@ _TYPES: dict[str, type[Entity]] = {
     "parts": Part,
     "placements": Placement,
     "waivers": Waiver,
+    "baselines": Baseline,
+    "changelog": ChangeEntry,
 }
 
 
@@ -151,6 +157,9 @@ class History:
     def execute(self, label: str, ops: list[Op]) -> None:
         if self.project.read_only:
             raise TransactionError("This project is read-only (saved by a newer tool version).")
+        from .vcs.locks import check_locks  # local import: locks builds on this module
+
+        check_locks(self.project, ops)
         before = self._baseline
         if before is None:
             before = {i.key() for i in errors(check_integrity(self.project))}

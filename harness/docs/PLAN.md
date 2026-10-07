@@ -50,7 +50,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - Golden-file tests per output type on three reference projects; print-theme checks (greyscale legibility).
 **Acceptance:** goldens stable on Windows and Linux; verifier clean; PDFs use only bundled fonts.
 
-## M6 Change control
+## M6 Change control (done; see demos/M6.md for what is open)
 - Revisions, status, release with mandatory comment (blocked by verifier errors, stale outputs, DRC errors), baselines, locks on released items, diff engine and visual diff, change log, `harness check` for post-merge consistency, on-disk change detection and safe reload.
 **Acceptance:** diff of two baselines lists added/removed/changed objects exactly; released items cannot be edited without a new revision.
 

@@ -17,11 +17,11 @@ from .fs import slug
 
 MANAGED_RE = re.compile(
     r"^(project\.json|waivers\.json|logical/layout\.json|generated/generation\.json|config/[^/]+\.json|library/[^/]+\.json|logical/interface_types\.json"
-    r"|logical/(units|interfaces)/[^/]+\.json|physical/(connectors|harnesses)/[^/]+\.json)$"
+    r"|logical/(units|interfaces)/[^/]+\.json|physical/(connectors|harnesses)/[^/]+\.json|changelog\.json|baselines/[^/]+/[^/]+\.json)$"
 )
 # Serialized harness files by object identity (harnesses are immutable); keeps hashing cheap.
 _HARNESS_CACHE: dict[int, tuple[Any, bytes]] = {}
-MANAGED_DIRS = ("config", "library", "logical", "physical", "generated")
+MANAGED_DIRS = ("config", "library", "logical", "physical", "generated", "baselines")
 
 
 def is_managed(rel: str) -> bool:
@@ -63,6 +63,14 @@ def serialize(project: Project, *, tool_version: str | None = None) -> dict[str,
     if project.generation is not None:
         files["generated/generation.json"] = canonical.dumps(
             project.generation.model_dump(mode="json")
+        )
+    if project.changelog:
+        files["changelog.json"] = canonical.dumps(
+            {"changelog": _dump(list(project.changelog.values()))}
+        )
+    for b in project.baselines.values():
+        files[f"baselines/{b.harness_id}/{re.sub(r'[^A-Za-z0-9_.-]', '_', b.revision)}.json"] = (
+            canonical.dumps(b.model_dump(mode="json"))
         )
     if project.waivers:
         files["waivers.json"] = canonical.dumps({"waivers": _dump(list(project.waivers.values()))})

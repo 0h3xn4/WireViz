@@ -1,5 +1,8 @@
 {
+  "approver": null,
+  "author": null,
   "branch_points": [],
+  "checker": null,
   "connectors": [
     {
       "carries": [],
@@ -182,6 +185,7 @@
   ],
   "name": "OBC1-J13 to PCDU1-R-J12 (redundant)",
   "notes": "",
+  "released_on": null,
   "revision": "A",
   "segments": [
     {

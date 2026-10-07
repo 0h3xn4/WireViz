@@ -1,4 +1,4 @@
-# harness-tool 0.0.1 model b66767a865f9
+# harness-tool 0.0.1 model 677d8603a988
 Part,Category,Manufacturer,Part number,Description,Approval,Quantity,Unit,Wires without length,Used in
 EX-DSUB-9-F,connector,,,"D-sub 9-pin, female (example)",pending (example data),1,ea,,W002
 EX-DSUB-9-M,connector,,,"D-sub 9-pin, male (example)",pending (example data),1,ea,,W002

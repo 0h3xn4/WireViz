@@ -9,6 +9,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from harness_tool import __version__
+from harness_tool.cli import changes
 from harness_tool.core.errors import HarnessError
 from harness_tool.core.io.loader import LoadResult, load_project, non_canonical_files
 from harness_tool.core.io.saver import migrate_project
@@ -45,6 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
                 action="store_true",
                 help="also check <project>/outputs against the design",
             )
+    changes.register(sub)
     return parser
 
 
@@ -83,6 +85,10 @@ def _validate(path: Path, *, merge_check: bool) -> int:
                 )
                 for rel in non_canonical_files(path, result.project)
             )
+    if merge_check and not result.project.recovered:
+        from harness_tool.core.vcs.consistency import release_integrity
+
+        extra.extend(release_integrity(result.project))
     return _print_report(result, extra)
 
 
@@ -187,6 +193,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if args.command == "generate":
             return _generate(args.project)
+        if args.command in changes.COMMANDS:
+            return changes.run(args)
         if args.command == "export":
             return _export(args.project)
         if args.command == "drc":

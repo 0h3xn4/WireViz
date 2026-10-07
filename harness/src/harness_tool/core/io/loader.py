@@ -13,6 +13,8 @@ from harness_tool.core.issues import Issue, errors
 from harness_tool.core.model import (
     CONFIG_NAMES,
     SCHEMA_VERSION,
+    Baseline,
+    ChangeEntry,
     ConfigFile,
     Connector,
     GenerationRecord,
@@ -61,8 +63,9 @@ def read_tree(root: Path) -> tuple[dict[str, Any], dict[str, bytes], list[Issue]
     issues: list[Issue] = []
     base = long_path(root)
     candidates = [Path("project.json")]
-    if (base / "waivers.json").is_file():
-        candidates.append(Path("waivers.json"))
+    for top_file in ("waivers.json", "changelog.json"):
+        if (base / top_file).is_file():
+            candidates.append(Path(top_file))
     for top in MANAGED_DIRS:
         folder = base / top
         if folder.is_dir():
@@ -188,6 +191,14 @@ def _build(files: dict[str, Any], project: Project, issues: list[Issue]) -> None
                 ValidationError
             ):  # derived data: drop it (plans show as outdated) instead of blocking
                 issues.append(Issue("warning", "generation_record_invalid", "The generation record could not be read; harness plans are treated as outdated until you generate again.", rel))  # fmt: skip
+        elif rel == "changelog.json":
+            b.items(rel, data, "changelog", "change log entry", ChangeEntry, project.changelog)
+        elif rel.startswith("baselines/"):
+            base = b.one(rel, "baseline", Baseline, data)
+            if base is not None and base.id in project.baselines:
+                b.quarantine(rel, "baseline", f"duplicate ID '{base.id}'", data)
+            elif base is not None:
+                project.baselines[base.id] = base
         elif rel == "waivers.json":
             b.items(rel, data, "waivers", "waiver", Waiver, project.waivers)
         elif rel == "logical/layout.json":
