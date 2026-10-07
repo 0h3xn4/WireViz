@@ -1,6 +1,7 @@
 """File-system safety: atomic writes, safe names, long Windows paths, single-instance lock."""
 
 import errno
+import fcntl
 import hashlib
 import json
 import os
@@ -70,6 +71,14 @@ def atomic_write_bytes(path: Path, data: bytes, *, backup: bool = True) -> None:
         raise SaveError(_explain(exc, path)) from exc
 
 
+def escapes_root(root: Path, path: Path) -> bool:
+    """True if `path` (after following links) is not inside `root`, e.g. a linked project folder."""
+    try:
+        return not path.resolve().is_relative_to(root.resolve())
+    except (OSError, RuntimeError):
+        return True
+
+
 def _fsync_dir(directory: Path) -> None:
     if sys.platform == "win32":
         return
@@ -105,23 +114,45 @@ class ProjectLock:
         self._held = False
 
     def acquire(self) -> None:
+        """Take the lock. The whole decision runs under a guard (flock on a sidecar file), so no
+        other process can delete our fresh lock between our check and our create."""
         info = {"pid": os.getpid(), "host": platform.node(), "since": int(time.time())}
-        for _ in range(2):
+        guard = self.path.with_name(self.path.name + ".takeover")
+        try:
+            fd = os.open(guard, os.O_RDWR | os.O_CREAT, 0o600)
+        except OSError as exc:
+            raise SaveError(_explain(exc, guard)) from exc
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX)
             try:
-                with open(self.path, "x", encoding="utf-8") as fh:
-                    json.dump(info, fh)
+                if self.path.exists() or self.path.is_symlink():
+                    if self._is_live_foreign_lock():
+                        raise ProjectLockedError(
+                            "This project is already open in another instance of the tool. "
+                            "Close it there first, or open this copy read-only."
+                        )
+                    self.path.unlink(missing_ok=True)  # stale lock from a crashed session
+                self._create_atomically(info)
                 self._held = True
-                return
             except FileExistsError:
-                if self._is_live_foreign_lock():
-                    raise ProjectLockedError(
-                        "This project is already open in another instance of the tool. "
-                        "Close it there first, or open this copy read-only."
-                    ) from None
-                self.path.unlink(missing_ok=True)  # stale lock from a crashed session
+                raise ProjectLockedError("Could not take the project lock; try again.") from None
             except OSError as exc:
                 raise SaveError(_explain(exc, self.path)) from exc
-        raise ProjectLockedError("Could not take the project lock; try again.")
+        finally:
+            os.close(fd)  # closing releases the flock
+
+    def _create_atomically(self, info: dict[str, object]) -> None:
+        """Create the lock file with its content already in it. Creating it empty and filling it in
+        afterwards lets another process read it half written, call it stale and delete it."""
+        tmp = self.path.with_name(f"{self.path.name}.{os.getpid()}.tmp")
+        try:
+            with open(tmp, "w", encoding="utf-8") as fh:
+                json.dump(info, fh)
+                fh.flush()
+                os.fsync(fh.fileno())
+            os.link(tmp, self.path)  # fails with FileExistsError if somebody holds the lock
+        finally:
+            tmp.unlink(missing_ok=True)
 
     def _is_live_foreign_lock(self) -> bool:
         try:

@@ -11,11 +11,14 @@ from harness_tool.core.issues import errors
 from harness_tool.core.model import SCHEMA_VERSION, Project, evolve
 
 from . import canonical
-from .fs import atomic_write_bytes, long_path
+from .fs import atomic_write_bytes, escapes_root, long_path
 from .layout import MANAGED_DIRS, is_managed, serialize
 from .loader import LoadResult, disk_fingerprint, load_project
 
-GITIGNORE = b"*.bak\n.harness.lock\n.*.tmp\n"
+GITIGNORE = (
+    b"*.bak\n.harness.lock\n.harness.lock.takeover\n.*.tmp\n"
+    b".harness-recovery/\n.migration-backup-v*/\n"
+)
 
 
 @dataclass
@@ -52,6 +55,13 @@ def save_project(
             "Parts of this project could not be loaded, so saving over the original folder is "
             "blocked to protect the original files. Save it to a new folder instead."
         )
+    for top in MANAGED_DIRS:
+        folder = base / top
+        if folder.exists() and (folder.is_symlink() or escapes_root(base, folder)):
+            raise SaveError(
+                f"The folder '{top}' is a link that leads outside the project, "
+                "so nothing was saved. Replace it with a real folder."
+            )
     problems = errors(check_integrity(project))
     if problems and not allow_inconsistent:
         raise SaveError(

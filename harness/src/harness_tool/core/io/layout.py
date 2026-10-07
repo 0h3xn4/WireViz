@@ -69,9 +69,9 @@ def serialize(project: Project, *, tool_version: str | None = None) -> dict[str,
             {"changelog": _dump(list(project.changelog.values()))}
         )
     for b in project.baselines.values():
-        files[f"baselines/{b.harness_id}/{re.sub(r'[^A-Za-z0-9_.-]', '_', b.revision)}.json"] = (
-            canonical.dumps(b.model_dump(mode="json"))
-        )
+        # named by the baseline ID (unique, ASCII): revision names can differ only in characters
+        # that a file name cannot hold, and two baselines must never share a file
+        files[f"baselines/{b.harness_id}/{b.id}.json"] = canonical.dumps(b.model_dump(mode="json"))
     if project.waivers:
         files["waivers.json"] = canonical.dumps({"waivers": _dump(list(project.waivers.values()))})
     files.update(_grouped(project.units, "logical/units", "units", lambda u: u.subsystem))

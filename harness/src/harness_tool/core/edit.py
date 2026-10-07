@@ -84,8 +84,14 @@ def _taken(ids: set[str]) -> set[str]:
     return {i.casefold() for i in ids}
 
 
+def _connector_owners(project: Project) -> set[str]:
+    """Casefolded `<unit>` parts of connector IDs `<unit>-Jnn`: a renamed unit keeps its old connector IDs,
+    so the old unit ID is not free for a new unit (its connectors would be overwritten)."""
+    return {c.id.rsplit("-", 1)[0].casefold() for c in project.connectors.values() if "-" in c.id}
+
+
 def next_unit_id(project: Project, prefix: str) -> tuple[str, int]:
-    taken = _taken(set(project.units))
+    taken = _taken(set(project.units)) | _connector_owners(project)
     n = 1
     while f"{prefix}{n}".casefold() in taken:
         n += 1
@@ -389,11 +395,12 @@ def ops_delete_unit(project: Project, unit_id: str) -> list[Op]:
     impact = delete_impact(project, unit_id)
     if impact.blocked_by_harnesses:
         raise EditError(
-            f"{unit_id} cannot be deleted: harness {', '.join(impact.blocked_by_harnesses)} has wires for its "
-            "interfaces or connectors. Remove those wires first."
+            f"{unit_id} cannot be deleted: {_blocked_text(project, impact.blocked_by_harnesses)}"
         )
     ops: list[Op] = [Delete("interfaces", i) for i in impact.interfaces]
     ops += [Delete("connectors", c) for c in impact.connectors]
+    gone = {unit_id, *impact.interfaces, *impact.connectors}
+    ops += _waiver_deletes(project, gone)
     if unit_id in project.placements:
         ops.append(Delete("placements", unit_id))
     ops.append(Delete("units", unit_id))
@@ -410,10 +417,43 @@ def ops_delete_interface(project: Project, interface_id: str) -> list[Op]:
         and any(w.interface_id == interface_id for w in h.wires)
     )
     if users:
-        raise EditError(
-            f"{interface_id} cannot be deleted: harness {', '.join(users)} has wires for it. Remove those wires first."
+        raise EditError(f"{interface_id} cannot be deleted: {_blocked_text(project, users)}")
+    return [Delete("interfaces", interface_id), *_waiver_deletes(project, {interface_id})]
+
+
+def _blocked_text(project: Project, harness_ids: tuple[str, ...] | list[str]) -> str:
+    """What to do about harnesses that stop a deletion (released ones and hand-made ones)."""
+    released = [h for h in harness_ids if project.harnesses[h].status == "released"]
+    by_hand = [h for h in harness_ids if h not in released]
+    parts = []
+    if released:
+        parts.append(
+            f"{', '.join(released)} is released. Start a new revision of it first "
+            "(Harness plans, New revision) so it can be changed."
         )
-    return [Delete("interfaces", interface_id)]
+    if by_hand:
+        parts.append(
+            f"{', '.join(by_hand)} was made by hand and has wires for it. "
+            "Delete that harness first (Harness plans, Delete harness)."
+        )
+    return " ".join(parts)
+
+
+def _waiver_deletes(project: Project, object_ids: set[str]) -> list[Op]:
+    """Waivers about objects that no longer exist would only confuse the next reader."""
+    return [Delete("waivers", w.id) for w in project.waivers.values() if w.object_id in object_ids]
+
+
+def ops_delete_harness(project: Project, harness_id: str) -> list[Op]:
+    """Delete a draft harness (a generated one comes back at the next generate)."""
+    h = project.harnesses.get(harness_id)
+    if h is None:
+        raise EditError(f"Harness '{harness_id}' does not exist.")
+    if h.status == "released":
+        raise EditError(
+            f"{harness_id} is released and cannot be deleted. Start a new revision to change it."
+        )
+    return [Delete("harnesses", harness_id)]
 
 
 def ops_move_unit(project: Project, unit_id: str, x: float, y: float) -> list[Op]:
@@ -441,6 +481,13 @@ def ops_rename_unit(project: Project, old: str, new: str) -> list[Op]:
         return []
     if new.casefold() in _taken(set(project.units) - {old}):
         raise EditError(f"ID {new} is already used.")
+    foreign = {
+        c.id.rsplit("-", 1)[0].casefold()
+        for c in project.connectors.values()
+        if "-" in c.id and c.unit_id != old
+    }
+    if new.casefold() in foreign:
+        raise EditError(f"ID {new} is already used as the start of other connector IDs.")
     unit = evolve(project.units[old], id=new)  # validates the new ID format
     ops: list[Op] = [Put("units", unit), Delete("units", old)]
     if old in project.placements:
@@ -593,14 +640,21 @@ def _twin_unit_ops(project: Project, unit: Unit) -> list[Op]:
     ops: list[Op] = [Put("units", twin), Put("placements", Placement(id=tid, x=x, y=y))]
     for c in unit_connectors(project, unit.id):
         suffix = c.id.rsplit("-", 1)[-1]
-        ops.append(Put("connectors", evolve(c, id=f"{tid}-{suffix}", unit_id=tid)))
+        new_id = f"{tid}-{suffix}"
+        if new_id.casefold() in {x.casefold() for x in project.connectors}:
+            raise EditError(f"Cannot make the redundant copy: connector {new_id} already exists.")
+        ops.append(Put("connectors", evolve(c, id=new_id, unit_id=tid)))
     return ops
 
 
 def ops_complete_chain(project: Project, interface_id: str) -> tuple[list[Op], str]:
     """Fix for a cross-strap: move the nominal end of the interface onto a redundant twin."""
     i = project.interfaces[interface_id]
-    nominal = [e for e in i.endpoints if project.units[e.unit_id].side == "nominal"]
+    nominal = [
+        e
+        for e in i.endpoints
+        if e.unit_id in project.units and project.units[e.unit_id].side == "nominal"
+    ]
     if not nominal:
         raise EditError("This interface has no nominal end to replace.")
     end = nominal[0]

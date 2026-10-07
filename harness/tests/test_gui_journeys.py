@@ -395,7 +395,7 @@ def test_j6_deleting_a_unit_with_harness_wires_is_refused_with_reason(win) -> No
     click_unit(win, "RW1")
     DialogScript(win, accept=True)
     win.delete_btn.click()
-    assert "RW1" in win.ctl.project.units and "harness W001" in last_toast(win)
+    assert "RW1" in win.ctl.project.units and "W001 was made by hand" in last_toast(win)
 
 
 def test_delete_key_and_interface_selection(win) -> None:  # type: ignore[no-untyped-def]

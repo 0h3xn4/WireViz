@@ -406,7 +406,7 @@ def test_baselines_and_changelog_survive_save_and_load(tmp_path: Path) -> None:
     hid = releasable(p)
     do_release(p, hid, exported(p, tmp_path))
     save_project(p, tmp_path / "p")
-    assert (tmp_path / "p" / "baselines" / hid / "A.json").is_file() and (
+    assert (tmp_path / "p" / "baselines" / hid / f"{hid}.A.json").is_file() and (
         tmp_path / "p" / "changelog.json"
     ).is_file()
     q = load_project(tmp_path / "p").project

@@ -1,5 +1,6 @@
 """Transactions with undo/redo. All model changes are lists of operations applied atomically."""
 
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Literal
 
@@ -70,6 +71,13 @@ class SetConfig:
 
 
 @dataclass(frozen=True)
+class DeleteConfig:
+    """Remove a configuration file; the inverse of `SetConfig` for a config that did not exist."""
+
+    name: str
+
+
+@dataclass(frozen=True)
 class SetMeta:
     meta: ProjectMeta
 
@@ -84,7 +92,7 @@ class SetGeneration:
     record: GenerationRecord | None
 
 
-Op = Put | Delete | SetConfig | SetMeta | SetZones | SetGeneration
+Op = Put | Delete | SetConfig | DeleteConfig | SetMeta | SetZones | SetGeneration
 
 
 def _apply(project: Project, op: Op) -> Op:
@@ -104,7 +112,10 @@ def _apply(project: Project, op: Op) -> Op:
     if isinstance(op, SetConfig):
         previous = project.config.get(op.config.name)
         project.config[op.config.name] = op.config
-        return SetConfig(previous) if previous is not None else SetConfig(op.config)
+        return SetConfig(previous) if previous is not None else DeleteConfig(op.config.name)
+    if isinstance(op, DeleteConfig):
+        removed = project.config.pop(op.name)
+        return SetConfig(removed)
     if op.collection not in _TYPES:
         raise TypeError(f"unknown collection '{op.collection}'")
     store: dict[str, Entity] = getattr(project, op.collection)
@@ -152,7 +163,6 @@ class History:
     _redo: list[_Step] = field(default_factory=list)
     revision: int = 0  # increases with every applied change, undo or redo
     last_ops: list[Op] = field(default_factory=list)  # what the latest call applied
-    _baseline: set[tuple[str, str, str | None, str | None]] | None = None
 
     def execute(self, label: str, ops: list[Op]) -> None:
         if self.project.read_only:
@@ -160,21 +170,20 @@ class History:
         from .vcs.locks import check_locks  # local import: locks builds on this module
 
         check_locks(self.project, ops)
-        before = self._baseline
-        if before is None:
-            before = {i.key() for i in errors(check_integrity(self.project))}
+        # Always measured now: generation and autoplace change the project without going through
+        # here, so a remembered result could be out of date and cancel or let through an edit.
+        before = Counter(i.key() for i in errors(check_integrity(self.project)))
         backward = apply_ops(self.project, ops)
         after_issues = errors(check_integrity(self.project))
-        after = {i.key() for i in after_issues}
-        new = after - before
+        after = Counter(i.key() for i in after_issues)
+        # a second error with the same code and object counts as new
+        new = {k for k, n in after.items() if n > before.get(k, 0)}
         if new:
             apply_ops(self.project, backward)
-            self._baseline = before
             raise TransactionError(
                 f"'{label}' was cancelled because it would leave the project inconsistent.",
                 [i.message for i in after_issues if i.key() in new],
             )
-        self._baseline = after
         self._undo.append(_Step(label, list(ops), backward))
         self._redo.clear()
         self.revision += 1
@@ -197,7 +206,6 @@ class History:
         apply_ops(self.project, step.backward)
         self._redo.append(step)
         self.revision += 1
-        self._baseline = None
         self.last_ops = list(step.backward)
         return step.label
 
@@ -206,6 +214,5 @@ class History:
         apply_ops(self.project, step.forward)
         self._undo.append(step)
         self.revision += 1
-        self._baseline = None
         self.last_ops = list(step.forward)
         return step.label

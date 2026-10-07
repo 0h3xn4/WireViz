@@ -34,7 +34,7 @@ from harness_tool.core.model import (
 from harness_tool.core.model.base import Entity
 
 from . import canonical
-from .fs import long_path
+from .fs import escapes_root, long_path
 from .layout import MANAGED_DIRS, is_managed, serialize
 from .migrate import migrate_raw, schema_version_of
 
@@ -79,7 +79,7 @@ def read_tree(root: Path) -> tuple[dict[str, Any], dict[str, bytes], list[Issue]
             issues.append(Issue("info", "unrecognized_file", "File is not part of the project format and was ignored.", rel))  # fmt: skip
             continue
         path = base / rel_path
-        if path.is_symlink():
+        if path.is_symlink() or escapes_root(base, path):
             issues.append(Issue("warning", "symlink_ignored", "A link to another file was ignored: project files must be real files inside the project folder.", rel))  # fmt: skip
             continue
         try:
@@ -285,7 +285,13 @@ def disk_fingerprint(root: Path | str) -> str:
     for path in sorted(
         p for p in base.rglob("*.json") if is_managed(p.relative_to(base).as_posix())
     ):
-        digest.update(path.relative_to(base).as_posix().encode() + b"\0" + path.read_bytes())
+        if path.is_symlink() or escapes_root(base, path):
+            continue  # not read by the loader either
+        try:
+            data = path.read_bytes()
+        except OSError:
+            continue
+        digest.update(path.relative_to(base).as_posix().encode() + b"\0" + data)
     return digest.hexdigest()
 
 

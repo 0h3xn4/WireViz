@@ -26,9 +26,21 @@ def _no_constants(name: str) -> Any:
     raise ValueError(f"'{name}' is not valid JSON")
 
 
+def _finite_float(text: str) -> float:
+    value = float(text)
+    if value in (float("inf"), float("-inf")) or value != value:
+        raise ValueError("a number is too large to store")  # e.g. 1e999 would read back as infinity
+    return value
+
+
 def loads_strict(data: bytes) -> Any:
     """Parse UTF-8 JSON, rejecting duplicate keys (silent data loss) and NaN/Infinity."""
     text = data.decode("utf-8")  # UnicodeDecodeError is a ValueError
     if text.startswith("﻿"):
         text = text[1:]
-    return json.loads(text, object_pairs_hook=_no_duplicates, parse_constant=_no_constants)
+    return json.loads(
+        text,
+        object_pairs_hook=_no_duplicates,
+        parse_constant=_no_constants,
+        parse_float=_finite_float,
+    )

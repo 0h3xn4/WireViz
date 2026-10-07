@@ -8,6 +8,12 @@ from harness_tool.core.model import Connector, Harness, InterfaceInstance, Proje
 from .snapshot import carried_interfaces
 
 _META = {"status", "revision", "checker", "approver", "released_on"}
+COSMETIC_INTERFACE_FIELDS = {"name", "notes", "requirement_id"}  # may change after release
+
+
+def interface_design(i: InterfaceInstance) -> dict[str, object]:
+    """The fields of an interface that decide its wires (everything except labels and notes)."""
+    return i.model_dump(exclude=COSMETIC_INTERFACE_FIELDS)
 
 
 def _is_new_revision(old: Harness, new: Harness) -> bool:
@@ -27,6 +33,23 @@ def _pins_equal(a: Connector, b: Connector, locked: set[str]) -> bool:
 
 def check_locks(project: Project, ops: list[Op]) -> None:
     """Raise `TransactionError` if `ops` would change something released."""
+    record_problems: list[str] = []
+    for op in ops:
+        if isinstance(op, Delete) and op.collection in ("baselines", "changelog"):
+            record_problems.append(
+                f"The {'baseline' if op.collection == 'baselines' else 'change log entry'} {op.key} is part of the release record and cannot be deleted."
+            )
+        elif isinstance(op, Put) and op.collection in ("baselines", "changelog"):
+            old = getattr(project, op.collection).get(str(getattr(op.obj, "id", "")))
+            if old is not None and old != op.obj:
+                record_problems.append(
+                    f"The release record {getattr(op.obj, 'id', '')} cannot be changed."
+                )
+    if record_problems:
+        raise TransactionError(
+            "This change was blocked because it touches the release record.",
+            sorted(set(record_problems)),
+        )
     released = {h.id: h for h in project.harnesses.values() if h.status == "released"}
     if not released:
         return
@@ -53,7 +76,7 @@ def check_locks(project: Project, ops: list[Op]) -> None:
             changed = (
                 not isinstance(new, InterfaceInstance)
                 or old_i is None
-                or (new.type_id, new.endpoints) != (old_i.type_id, old_i.endpoints)
+                or interface_design(new) != interface_design(old_i)
             )
             if changed:
                 problems.append(

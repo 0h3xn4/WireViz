@@ -189,9 +189,9 @@ def test_delete_unit_cascades_and_undoes() -> None:
 def test_delete_blocked_when_harness_wires_trace_to_the_unit() -> None:
     p = mini3()  # W001 wires belong to IF-PWR-RW1, which RW1 and PCDU use
     for uid in ("RW1", "PCDU"):
-        with pytest.raises(edit.EditError, match="harness W001"):
+        with pytest.raises(edit.EditError, match="W001 was made by hand"):
             edit.ops_delete_unit(p, uid)
-    with pytest.raises(edit.EditError, match="harness W001"):
+    with pytest.raises(edit.EditError, match="W001 was made by hand"):
         edit.ops_delete_interface(p, "IF-PWR-RW1")
 
 
@@ -202,7 +202,7 @@ def test_delete_blocked_by_harness_wires_and_unknown() -> None:
         id="W001-009", from_connector="OBC-J01", from_pin="5", to_connector="W001-P1", to_pin="1"
     )
     p.harnesses["W001"] = evolve(h, wires=[*h.wires, w])
-    with pytest.raises(edit.EditError, match="harness W001"):
+    with pytest.raises(edit.EditError, match="W001 was made by hand"):
         edit.ops_delete_unit(p, "OBC")
     with pytest.raises(edit.EditError, match="does not exist"):
         edit.ops_delete_unit(p, "GHOST")

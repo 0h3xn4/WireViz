@@ -43,7 +43,8 @@ def finding_id(rule: str, object_id: str) -> str:
 def _nominal_end(project: Project, interface_id: str) -> str | None:
     i = project.interfaces[interface_id]
     for e in i.endpoints:
-        if project.units[e.unit_id].side == "nominal":
+        unit = project.units.get(e.unit_id)  # missing in a project loaded with errors
+        if unit is not None and unit.side == "nominal":
             return e.unit_id
     return None
 

@@ -138,6 +138,9 @@ def _check_harness(
                 out.append(_err("unknown_part", f"Wire '{w.id}' uses '{w.part_id}', which is not a wire part in the library.", w.id))  # fmt: skip
         if w.interface_id is not None and w.interface_id not in project.interfaces:
             out.append(_orphan(h, "unknown_interface", f"Wire '{w.id}' traces to interface '{w.interface_id}', which does not exist.", w.id))  # fmt: skip
+    for iid in h.interfaces:
+        if iid not in project.interfaces:
+            out.append(_orphan(h, "unknown_interface", f"Harness '{h.id}' lists interface '{iid}', which does not exist.", h.id))  # fmt: skip
     groups = [(g.id, g.wire_ids) for g in h.shields]
     groups += [(g.id, g.wire_ids) for g in h.splices]
     for gid, members in groups:
