@@ -14,6 +14,13 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+if [ ! -x "$here/harness-tool" ] || [ ! -d "$here/_internal" ]; then
+  echo "This folder ($here) has no built program, so there is nothing to install." >&2
+  echo "Run install.sh from the unpacked harness-tool-<version>-linux-<arch>.tar.gz," >&2
+  echo "or install the .deb. To build the package from source: python -m tools.build_installer" >&2
+  echo "(it writes dist/harness-tool/ with this script inside)." >&2
+  exit 1
+fi
 if [ -z "$prefix" ]; then
   if [ "$mode" = system ]; then prefix=/opt/harness-tool; else prefix="${HOME}/.local/opt/harness-tool"; fi
 fi

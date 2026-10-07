@@ -140,3 +140,15 @@ def test_container_recipes_are_valid_shell_and_name_the_right_base() -> None:
             ).returncode
             == 0
         )
+
+
+def test_install_refuses_a_folder_without_the_built_program(tmp_path: Path) -> None:
+    """Running install.sh from the source folder once left dangling links and reported success."""
+    src = tmp_path / "source"
+    src.mkdir()
+    for item in PK.iterdir():
+        if item.is_file():
+            shutil.copy2(item, src / item.name)
+    r = run_script(src / "install.sh", tmp_path)
+    assert r.returncode == 1 and "no built program" in r.stderr
+    assert not (tmp_path / "root").exists() and not (tmp_path / "home").exists()
