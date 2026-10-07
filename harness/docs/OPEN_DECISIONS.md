@@ -28,4 +28,4 @@ My recommendation: B if a template exists (exact look, least rework), otherwise 
 ## Prepared for what you will supply
 - **D-11 values**: `harness config DIR` lists every missing value and what depends on it, validates values when they arrive (ranges, table order), loads the ampacity table from a CSV; invalid values are rule errors. See `docs/IMPORTS.md`.
 - **D-12 approved parts list**: `harness import-parts` with column matching and a statement from you of what each approval value means. A program-specific format can be added as a mapping once you can show a sample file.
-- **D-13 lengths**: `harness import-lengths` (CSV, millimetres by default). KiCad is used only for the electronics inside each unit and is not integrated (D-123).
+- **D-13 lengths**: `harness import-lengths` (CSV, millimetres by default). KiCad is the source of unit connector pinouts; the lengths come as a table. The KiCad reader is planned and needs a sample export (D-123).

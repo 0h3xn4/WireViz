@@ -24,4 +24,4 @@ Until the values exist, wire gauges stay "pending", the affected checks say "not
 ## Segment lengths from a CAD or spreadsheet (D-13)
 `harness import-lengths DIR FILE [--unit mm|cm|m] [--dry-run]` with columns harness ID, segment ID, length (default unit millimetres, decimal commas accepted). Run `harness generate DIR` afterwards so the wire lengths follow.
 
-KiCad: it is used only for the electronics inside each unit, so the tool has no KiCad integration (D-123). Segment lengths come from wherever the mechanical or routing lengths are measured, as a plain table. If you later want unit connector pinouts taken from a KiCad schematic or netlist instead of being entered here, that needs a reader for the specific export and a sample file.
+KiCad: it is used for the electronics inside each unit, so it is where each unit connector's pinout comes from. It has no harness segment lengths; those come from a plain table as above. A reader that takes the connector pinouts from a KiCad export is planned (D-123) and is built against a sample export from one of your units.
