@@ -1,6 +1,6 @@
 # Configuration reference
 
-Rules live in `config/*.json` inside the project, not in code. Every file has `"placeholder": true` until an engineer has reviewed it; set it to `false` afterwards. Values shown as `null` are placeholders: results say so and the affected checks say *not checked*. Which standard to take values from is for you to decide; the tool ships none.
+Rules live in `config/*.json` inside the project, not in code. Every file has `"placeholder": true` until an engineer has reviewed it; set it to `false` afterwards. Values shown as `null` are placeholders: results say so and the affected checks say *not checked*. Which standard to take values from is for you to decide; the tool ships none. `harness config DIR` lists what is missing and checks what is set (ranges, table order); see IMPORTS.md.
 
 ## `segmentation.json`
 | Key | Meaning |

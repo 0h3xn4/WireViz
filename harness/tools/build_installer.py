@@ -53,7 +53,8 @@ def main() -> int:
     for item in (
         ROOT / "packaging" / "ubuntu"
     ).iterdir():  # install scripts, desktop file, icon, readme
-        shutil.copy2(item, ROOT / "dist" / "harness-tool" / item.name)
+        if item.is_file():
+            shutil.copy2(item, ROOT / "dist" / "harness-tool" / item.name)
     system = platform.system().lower()
     base = ROOT / "dist" / f"harness-tool-{__version__}-{system}-{platform.machine().lower()}"
     fmt = "gztar"

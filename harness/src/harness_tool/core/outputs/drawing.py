@@ -39,7 +39,7 @@ def sketch_layout(h: Harness) -> dict[str, tuple[int, int]] | None:
     """Columns by distance from the first connector, rows in order; None if there is no tree or
     it is too large to sketch. A schematic of the routing, not drawn to scale."""
     nodes = sorted({c.id for c in h.connectors} | {b.id for b in h.branch_points})
-    if not h.segments or len(nodes) > SKETCH_MAX_NODES:
+    if not h.segments or not h.connectors or len(nodes) > SKETCH_MAX_NODES:
         return None
     adj: dict[str, list[str]] = {n: [] for n in nodes}
     for g in h.segments:

@@ -1,6 +1,7 @@
 """Run the release checklist (docs/RELEASE.md) and write dist/release-docs/release-report.md.
 Ubuntu only. Usage: python -m tools.release_check [--quick]   (--quick skips the long steps)"""
 
+import os
 import re
 import subprocess
 import sys
@@ -53,6 +54,24 @@ def lint() -> Result:
 def tests() -> Result:
     code, out = run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--cov"])
     return code == 0, tail(out, 3)
+
+
+def fuzz() -> Result:
+    env = {**os.environ, "HARNESS_FUZZ_EXAMPLES": "300"}
+    code, out = run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/test_fuzz.py",
+            "tests/test_security.py",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+        ],
+        env=env,
+    )
+    return code == 0, tail(out, 1)
 
 
 def soak() -> Result:
@@ -153,6 +172,7 @@ STEPS: list[tuple[str, Callable[[], Result], bool]] = [
     ("Verifier clean on the reference projects", reference_projects, True),
     ("Performance targets on the stress project", targets, False),
     ("Soak test (3,000 random steps)", soak, False),
+    ("Fuzzing and security tests (300 examples per target)", fuzz, False),
     ("Test suite and coverage gate", tests, False),
     ("SBOM and licence report", sbom, False),
     ("Reproducible wheel", reproducible, False),

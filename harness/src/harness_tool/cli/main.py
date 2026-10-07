@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from harness_tool import __version__
-from harness_tool.cli import changes
+from harness_tool.cli import changes, data
 from harness_tool.core.errors import HarnessError
 from harness_tool.core.io.loader import LoadResult, load_project, non_canonical_files
 from harness_tool.core.io.saver import migrate_project
@@ -47,6 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
                 help="also check <project>/outputs against the design",
             )
     changes.register(sub)
+    data.register(sub)
     return parser
 
 
@@ -193,6 +194,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         if args.command == "generate":
             return _generate(args.project)
+        if args.command in data.COMMANDS:
+            return data.run(args)
         if args.command in changes.COMMANDS:
             return changes.run(args)
         if args.command == "export":

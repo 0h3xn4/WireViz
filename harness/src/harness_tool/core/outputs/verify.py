@@ -3,13 +3,16 @@ and compares them with the model. It does not import the table or drawing builde
 the bytes and derives what they must contain straight from the project, so a bug in a builder
 cannot hide itself."""
 
+import csv
 import hashlib
 import html
 import io
 import json
 import re
 import zipfile
+import zlib
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from pathlib import Path
 
 from harness_tool.core import checks, drc
@@ -61,15 +64,44 @@ def _unescape(s: str) -> str:
     return s.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
 
 
+DAMAGE = (
+    ValueError,
+    KeyError,
+    IndexError,
+    TypeError,
+    AttributeError,
+    RecursionError,
+    EOFError,
+    OSError,
+    zipfile.BadZipFile,
+    zlib.error,
+    csv.Error,
+)
+
+
+def _guard(r: VerifyReport, what: str, fn: Callable[[], None]) -> None:
+    """Damaged or unexpected file content is a finding, never a crash."""
+    try:
+        fn()
+    except DAMAGE as exc:
+        r.error(
+            "out_unreadable",
+            f"{what} could not be read ({type(exc).__name__}): it is damaged or not what the tool wrote.",
+            what,
+        )
+
+
 def verify_outputs(project: Project, files: dict[str, bytes]) -> VerifyReport:
     r = VerifyReport()
     current = model_hash(project)
     short = current[:12]
-    _manifest(r, files, current)
-    _stamps(r, files, short)
+    _guard(r, MANIFEST, lambda: _manifest(r, files, current))
+    for rel in sorted(files):
+        if rel != MANIFEST:
+            _guard(r, rel, lambda rel=rel: _stamp(r, rel, files[rel], short))  # type: ignore[misc]
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
-        _harness(r, project, h, files)
-    _system(r, project, files)
+        _guard(r, f"harnesses/{h.id}", lambda h=h: _harness(r, project, h, files))  # type: ignore[misc]
+    _guard(r, "system", lambda: _system(r, project, files))
     return r
 
 
@@ -96,38 +128,30 @@ def _manifest(r: VerifyReport, files: dict[str, bytes], current: str) -> None:
         r.warning("out_unlisted", f"{rel} is not listed in the manifest.", rel)
 
 
-def _stamps(r: VerifyReport, files: dict[str, bytes], short: str) -> None:
-    for rel, data in sorted(files.items()):
-        if rel == MANIFEST:
-            continue
-        if rel.endswith((".csv", ".yaml")):
-            first = data.split(b"\n", 1)[0].decode()
-            ok = first.startswith("# harness-tool ") and first.endswith(f"model {short}")
-        elif rel.endswith(".md"):
-            ok = (
-                data.startswith(b"<!-- harness-tool ")
-                and f"model {short}".encode() in data.split(b"\n", 1)[0]
-            )
-        elif rel.endswith(".svg"):
-            ok = (
-                re.search(rb"<desc>harness-tool [^<]* model " + short.encode() + rb"</desc>", data)
-                is not None
-            )
-        elif rel.endswith(".pdf"):
-            ok = (
-                f"model {short}".encode() in data.split(b"\nendobj", 8)[-1]
-                or f"model {short}".encode() in data
-            )
-        elif rel.endswith(".json"):
-            ok = f'"model_hash": "{short}'.encode() in data
-        elif rel.endswith(".xlsx"):
-            ok = _xlsx_hash(data) == short
-        else:
-            continue
-        if not ok:
-            r.error(
-                "out_stamp", f"{rel} does not carry the current generator and model stamp.", rel
-            )
+def _stamp(r: VerifyReport, rel: str, data: bytes, short: str) -> None:
+    if rel.endswith((".csv", ".yaml")):
+        first = data.split(b"\n", 1)[0].decode()
+        ok = first.startswith("# harness-tool ") and first.endswith(f"model {short}")
+    elif rel.endswith(".md"):
+        ok = (
+            data.startswith(b"<!-- harness-tool ")
+            and f"model {short}".encode() in data.split(b"\n", 1)[0]
+        )
+    elif rel.endswith(".svg"):
+        ok = (
+            re.search(rb"<desc>harness-tool [^<]* model " + short.encode() + rb"</desc>", data)
+            is not None
+        )
+    elif rel.endswith(".pdf"):
+        ok = f"model {short}".encode() in data
+    elif rel.endswith(".json"):
+        ok = f'"model_hash": "{short}'.encode() in data
+    elif rel.endswith(".xlsx"):
+        ok = _xlsx_hash(data) == short
+    else:
+        return
+    if not ok:
+        r.error("out_stamp", f"{rel} does not carry the current generator and model stamp.", rel)
 
 
 def _xlsx_sheets(data: bytes) -> dict[str, list[list[str]]]:

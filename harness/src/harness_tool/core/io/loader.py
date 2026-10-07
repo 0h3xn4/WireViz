@@ -56,6 +56,9 @@ def _describe(exc: ValidationError) -> str:
     return "; ".join(parts[:3]) + more
 
 
+MAX_FILE_BYTES = 64 * 1024 * 1024  # a project file this big is damaged or hostile
+
+
 def read_tree(root: Path) -> tuple[dict[str, Any], dict[str, bytes], list[Issue]]:
     """Read project.json and every managed JSON file. Unreadable files are reported, not fatal."""
     parsed: dict[str, Any] = {}
@@ -75,8 +78,15 @@ def read_tree(root: Path) -> tuple[dict[str, Any], dict[str, bytes], list[Issue]
         if not is_managed(rel):
             issues.append(Issue("info", "unrecognized_file", "File is not part of the project format and was ignored.", rel))  # fmt: skip
             continue
+        path = base / rel_path
+        if path.is_symlink():
+            issues.append(Issue("warning", "symlink_ignored", "A link to another file was ignored: project files must be real files inside the project folder.", rel))  # fmt: skip
+            continue
         try:
-            data = (base / rel_path).read_bytes()
+            if path.stat().st_size > MAX_FILE_BYTES:
+                issues.append(Issue("error", "file_too_large", f"The file is larger than {MAX_FILE_BYTES // 2**20} MB and was not read.", rel))  # fmt: skip
+                continue
+            data = path.read_bytes()
         except OSError as exc:
             issues.append(Issue("error", "file_unreadable", f"The file could not be read ({exc.strerror}).", rel))  # fmt: skip
             continue

@@ -269,6 +269,12 @@ def pos_released_modified() -> Project:
     return p
 
 
+def pos_config_invalid() -> Project:
+    p = base()
+    set_cfg(p, "derating", bundle_derating=7)
+    return p
+
+
 def pos_lookalike() -> Project:
     return base()
 
@@ -319,6 +325,7 @@ POSITIVE: dict[str, Callable[[], Project]] = {
     "pyro-mixed": pos_pyro_mixed,
     "category-mixed": pos_category_mixed,
     "emc-mixed": pos_emc_mixed,
+    "config-invalid": pos_config_invalid,
     "released-modified": pos_released_modified,
     "connector-lookalike": pos_lookalike,
     "part-unapproved": pos_unapproved,
@@ -481,3 +488,23 @@ def test_sat15_drc_report_matches_golden(capsys) -> None:  # type: ignore[no-unt
     cli_main(["drc", str(folder)])
     golden = (Path(__file__).parent / "fixtures" / "drc" / "sat15.md").read_text()
     assert capsys.readouterr().out == golden
+
+
+def test_regression_lookalike_rule_copes_with_mixed_keying() -> None:
+    """Found by fuzzing: connectors of one unit and part, some keyed and some not, made the rule raise."""
+    p = base()
+    unit = next(
+        u
+        for u in p.units
+        if len([c for c in p.connectors.values() if c.unit_id == u and c.part_id == "EX-DSUB-9-F"])
+        >= 3
+    )
+    conns = [c for c in p.connectors.values() if c.unit_id == unit and c.part_id == "EX-DSUB-9-F"]
+    apply_ops(
+        p,
+        [
+            Put("connectors", evolve(conns[0], keying="A")),
+            Put("connectors", evolve(conns[1], keying=None)),
+        ],
+    )
+    list(next(r for r in RULES if r.id == "connector-lookalike").check(p))

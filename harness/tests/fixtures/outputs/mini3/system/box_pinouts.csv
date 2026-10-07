@@ -1,4 +1,4 @@
-# harness-tool 0.1.0rc2 model dfedd6888510
+# harness-tool 0.1.0rc3 model 1167aa74c32d
 Connector,Role,Mates with,Part,Pin,Signal,Interface,Wires,Spare
 OBC-J01,box,,EX-DSUB-9-F,1,TX+,IF-TM-RW1,W002-001,no
 OBC-J01,box,,EX-DSUB-9-F,2,TX-,IF-TM-RW1,W002-003,no

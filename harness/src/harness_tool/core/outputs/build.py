@@ -206,7 +206,7 @@ def _read_manifest(root: Path) -> _Manifest | None:
         doc = json.loads(path.read_text())
         files = {str(f["path"]): str(f["sha256"]) for f in doc["files"]}
         return _Manifest(str(doc["model_hash"]), str(doc.get("content_hash", "")), files)
-    except (ValueError, KeyError, TypeError):
+    except (ValueError, KeyError, TypeError, AttributeError, RecursionError):
         return None
 
 

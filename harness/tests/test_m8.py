@@ -58,6 +58,14 @@ def test_sketch_is_drawn_with_every_segment_and_length() -> None:
     )
 
 
+def test_regression_harness_with_segments_but_no_connectors_has_no_sketch() -> None:
+    """Found by fuzzing a damaged project."""
+    p = sat15_full()
+    h = evolve(p.harnesses["W010"], connectors=[], wires=[], shields=[])
+    assert sketch_layout(h) is None
+    assert harness_sheets(p, h, Stamp("t", "t"), "A3")
+
+
 def test_sketch_is_skipped_for_big_or_missing_trees() -> None:
     p = sat15_full()
     h = p.harnesses["W010"]

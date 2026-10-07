@@ -46,9 +46,13 @@ class LengthPlan:
 
 
 def plan_length_import(
-    project: Project, table: Table, columns: tuple[int, int, int] = (0, 1, 2)
+    project: Project,
+    table: Table,
+    columns: tuple[int, int, int] = (0, 1, 2),
+    scale: float = 1.0,
 ) -> LengthPlan:
-    """Rows: harness ID, segment ID, length in metres. Applies as one undo step after confirmation."""
+    """Rows: harness ID, segment ID, length. `scale` converts the file's unit to metres (0.001 for
+    millimetres, D-13). Applies as one undo step after confirmation."""
     plan = LengthPlan()
     pending: dict[str, Harness] = {}
     for n, row in enumerate(table[1:], start=2):
@@ -64,7 +68,7 @@ def plan_length_import(
             error = f"Harness '{hid}' has no segment '{sid}'"
         else:
             try:
-                length = float(text)
+                length = float(text.replace(",", ".")) * scale
                 if not length >= 0 or length == float("inf"):
                     raise ValueError
             except ValueError:

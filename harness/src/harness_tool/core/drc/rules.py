@@ -8,6 +8,7 @@ clean report can never be mistaken for a passed check.
 from collections import Counter, defaultdict
 from collections.abc import Iterator
 
+from harness_tool.core.configcheck import validate as validate_config
 from harness_tool.core.generate.sizing import ampacity_table
 from harness_tool.core.integrity import check_integrity
 from harness_tool.core.model import Connector, Harness, InterfaceInstance, Project, Wire
@@ -143,7 +144,9 @@ def _lookalike(project: Project) -> Iterator[Hit]:
     for c in project.connectors.values():
         if c.unit_id and c.id in in_use:  # unused connectors cannot be mis-mated
             groups[(c.unit_id, c.part_id, c.keying, c.gender, len(c.pins))].append(c)
-    for (unit, part, _k, _g, _n), conns in sorted(groups.items(), key=lambda kv: kv[0][:3]):
+    for (unit, part, _k, _g, _n), conns in sorted(
+        groups.items(), key=lambda kv: (kv[0][0], kv[0][1], kv[0][2] or "", kv[0][3], kv[0][4])
+    ):
         if len(conns) > 1:
             ids = sorted(c.id for c in conns)
             names = ", ".join(ids[:3]) + (f" and {len(ids) - 3} more" if len(ids) > 3 else "")
@@ -416,6 +419,11 @@ def _emc_mixed(project: Project) -> Iterator[Hit]:
                 yield Hit(f"{h.id}.{a}+{b}", f"{h.id} mixes EMC classes {a} and {b}")
 
 
+def _config_invalid(project: Project) -> Iterator[Hit]:
+    for issue in validate_config(project):
+        yield Hit(issue.object_id or issue.code, issue.message)
+
+
 def _released_modified(project: Project) -> Iterator[Hit]:
     for issue in release_integrity(project):
         yield Hit(issue.object_id or issue.code, issue.message)
@@ -526,6 +534,9 @@ RULES: tuple[Rule, ...] = (
     Rule("part-unapproved", "warning", "Approved parts",
          "Only approved parts may be built into flight hardware.",
          "Approve the part in the parts list, or choose an approved one.", _unapproved_parts),
+    Rule("config-invalid", "error", "Engineering values",
+         "A value outside its possible range (a factor above 1, a table that falls as the wire grows) would silently produce wrong gauges and checks.",
+         "Correct the value in config/*.json; `harness config DIR` lists what is missing or invalid.", _config_invalid),
     Rule("released-modified", "error", "Released items",
          "A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored.",
          "Restore the harness from its baseline, or start a new revision for the change.", _released_modified),

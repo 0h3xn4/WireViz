@@ -27,6 +27,7 @@ Rules that need numbers from your standards (see PLACEHOLDERS.md) check nothing 
 | `emc-mixed` | warning (waivable) | EMC classes | EMC classes that must stay apart couple when bundled. | Split them into separate harnesses. |
 | `connector-lookalike` | warning (waivable) | Look-alike connectors | Identical connectors on one unit can be swapped by mistake. | Use different keying or a different insert on one of them. |
 | `part-unapproved` | warning (waivable) | Approved parts | Only approved parts may be built into flight hardware. | Approve the part in the parts list, or choose an approved one. |
+| `config-invalid` | error (not waivable) | Engineering values | A value outside its possible range (a factor above 1, a table that falls as the wire grows) would silently produce wrong gauges and checks. | Correct the value in config/*.json; `harness config DIR` lists what is missing or invalid. |
 | `released-modified` | error (not waivable) | Released items | A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored. | Restore the harness from its baseline, or start a new revision for the change. |
 | `unchecked-config` | info (not waivable) | Checks not run | A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. | Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md). |
 

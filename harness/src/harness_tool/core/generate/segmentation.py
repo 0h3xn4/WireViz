@@ -85,6 +85,9 @@ def segment(project: Project) -> Segmentation:
         if i.id in manual:
             result.skipped.append(Skipped(i.id, "it is already routed by a manual harness", "info"))
             continue
+        if i.type_id not in project.interface_types:
+            result.skipped.append(Skipped(i.id, "its interface type does not exist", "error"))
+            continue
         if len(i.endpoints) != 2:
             result.skipped.append(
                 Skipped(i.id, "multi-drop interfaces (more than two units) are not generated yet")

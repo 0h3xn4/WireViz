@@ -86,10 +86,15 @@ All commands take the project folder. Exit code 0 means success, 1 means the pro
 | `harness diff DIR HARNESS [--from REV] [--to REV]` | what changed since a baseline |
 | `harness compare OLD NEW` | compare two project folders (for example two Git checkouts) |
 | `harness log DIR [HARNESS]` | print the change log |
+| `harness config DIR [--ampacity-csv FILE]` | list missing or invalid engineering values; load a current-by-gauge table |
+| `harness import-parts DIR FILE --approved VALUE ...` | import an approved-parts list; you say what the approval values mean |
+| `harness import-lengths DIR FILE [--unit mm]` | import routing segment lengths from a table |
 
 ## 10. What an engineer must fill in
 
-Some values must come from your program's standards. Until they are filled in, results say so and the affected checks say *not checked*. The list is in `docs/PLACEHOLDERS.md`: derating factors and ampacity table (`config/derating.json`), resistivity, service loop, pin gap, mass margin, shield grounding concept and test limits (`config/generation.json`), separation rules (`config/segregation.json`), EMC rules (`config/emc.json`), title block fields (`config/titleblock.json`), part masses and ratings in the library. Open the JSON file, fill in the values, and set `"placeholder": false` once reviewed.
+Some values must come from your program's standards. Until they are filled in, results say so and the affected checks say *not checked*. The list is in `docs/PLACEHOLDERS.md`: derating factors and ampacity table (`config/derating.json`), resistivity, service loop, pin gap, mass margin, shield grounding concept and test limits (`config/generation.json`), separation rules (`config/segregation.json`), EMC rules (`config/emc.json`), title block fields (`config/titleblock.json`), part masses and ratings in the library. 
+
+Run `harness config DIR` to see what is missing and what depends on it, load a current-by-gauge table from a CSV with `--ampacity-csv`, edit the rest in the JSON file, and set `"placeholder": false` once reviewed. Details: `docs/IMPORTS.md`.
 
 ## 11. When something goes wrong
 

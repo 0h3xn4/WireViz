@@ -17,6 +17,9 @@ from .model import Project
 
 MAX_ROWS = 20000
 MAX_BYTES = 8 * 1024 * 1024
+MAX_UNPACKED = 64 * 1024 * 1024  # an .xlsx is a zip; limit what it may unpack to
+MAX_SCANNED_ROWS = 5 * MAX_ROWS
+MAX_COLUMNS = 200
 FIELDS: tuple[tuple[str, str], ...] = (
     ("id", "Interface ID"),
     ("type", "Interface type"),
@@ -43,9 +46,15 @@ Table = list[list[str]]
 def parse_csv(text: str) -> Table:
     if len(text) > MAX_BYTES:
         raise ImportError_("The file is too large to import (limit 8 MB).")
-    rows = [
-        [c.strip() for c in r] for r in csv.reader(io.StringIO(text)) if any(c.strip() for c in r)
-    ]
+    text = text.replace("\r\n", "\n").replace("\r", "\n")  # old Mac files use a bare CR
+    try:
+        rows = [
+            [c.strip() for c in r]
+            for r in csv.reader(io.StringIO(text))
+            if any(c.strip() for c in r)
+        ]
+    except csv.Error as exc:  # for example a stray NUL or a quote that never closes
+        raise ImportError_(f"The file is not valid CSV ({exc}).") from exc
     if len(rows) > MAX_ROWS + 1:
         raise ImportError_(f"The file has more than {MAX_ROWS} rows.")
     return rows
@@ -81,6 +90,13 @@ def _read_xlsx(path: Path) -> Table:
     from openpyxl import load_workbook
 
     try:
+        with zipfile.ZipFile(path) as z:  # refuse zip bombs before parsing anything
+            total = sum(i.file_size for i in z.infolist())
+            if total > MAX_UNPACKED or len(z.infolist()) > 2000:
+                raise ImportError_("The workbook is too large when unpacked to import safely.")
+    except (OSError, zipfile.BadZipFile, ValueError) as exc:
+        raise ImportError_("The file is not a valid .xlsx workbook.") from exc
+    try:
         wb = load_workbook(path, read_only=True, data_only=True)
     except (OSError, zipfile.BadZipFile, KeyError, ValueError) as exc:
         raise ImportError_("The file is not a valid .xlsx workbook.") from exc
@@ -89,8 +105,10 @@ def _read_xlsx(path: Path) -> Table:
         if ws is None:
             raise ImportError_("The workbook has no sheet.")
         rows: Table = []
-        for row in ws.iter_rows(values_only=True):
-            cells = ["" if c is None else str(c).strip() for c in row]
+        for seen, row in enumerate(ws.iter_rows(values_only=True), start=1):
+            if seen > MAX_SCANNED_ROWS:
+                raise ImportError_("The sheet has too many (mostly empty) rows to import.")
+            cells = ["" if c is None else str(c).strip() for c in row[:MAX_COLUMNS]]
             if any(cells):
                 rows.append(cells)
             if len(rows) > MAX_ROWS + 1:

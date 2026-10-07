@@ -22,7 +22,8 @@ def fake_package(tmp: Path) -> Path:
         exe.write_text('#!/bin/sh\necho stub "$@"\n')
         exe.chmod(0o755)
     for item in PK.iterdir():
-        shutil.copy2(item, pkg / item.name)
+        if item.is_file():
+            shutil.copy2(item, pkg / item.name)
     return pkg
 
 
@@ -119,3 +120,23 @@ def test_deb_has_the_right_files_and_metadata(
     assert "root/root" in listing  # owned by root, not by the build user
     again = build(app, tmp_path / "out2")
     assert again.read_bytes() == deb.read_bytes()  # reproducible
+
+
+def test_container_recipes_are_valid_shell_and_name_the_right_base() -> None:
+    cont = PK / "container"
+    for script in ("build-in-container.sh", "clean-machine-test.sh"):
+        assert (
+            subprocess.run(
+                ["sh", "-n", str(cont / script)], capture_output=True, check=False
+            ).returncode
+            == 0
+        ), script
+    assert "FROM ubuntu:22.04" in (cont / "Dockerfile.build-22.04").read_text()
+    assert "--network none" in (cont / "clean-machine-test.sh").read_text()
+    for script in ("install.sh", "uninstall.sh"):
+        assert (
+            subprocess.run(
+                ["sh", "-n", str(PK / script)], capture_output=True, check=False
+            ).returncode
+            == 0
+        )
