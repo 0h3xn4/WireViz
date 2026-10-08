@@ -141,6 +141,12 @@ def sbom() -> Result:
     return code == 0 and (docs / "sbom.cdx.json").is_file(), tail(out)
 
 
+def vulnerabilities() -> Result:
+    """Known vulnerabilities in the shipped dependencies (needs network on the build host)."""
+    code, out = run([sys.executable, "-m", "tools.check_vulnerabilities"])
+    return code == 0, tail(out)
+
+
 def reproducible() -> Result:
     code, out = run([sys.executable, "-m", "tools.check_reproducible"])
     return code == 0, "wheel builds identically twice" if code == 0 else tail(out)
@@ -195,6 +201,7 @@ STEPS: list[tuple[str, Callable[[], Result], bool]] = [
     ("Test suite and coverage gate", tests, False),
     ("Test suite without instrumentation", tests_plain, False),
     ("SBOM and licence report", sbom, False),
+    ("Known vulnerabilities in the dependencies", vulnerabilities, False),
     ("Reproducible wheel", reproducible, False),
     ("Package (tar.gz, deb) and self-test", package, False),
     ("Installed package runs (deb extracted)", deb_install, False),
