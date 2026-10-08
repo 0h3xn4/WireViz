@@ -843,3 +843,21 @@ def test_the_filter_survives_adding_an_interface(win) -> None:  # type: ignore[n
     assert scene.category_filter == "power"
     for iid, link in scene.link_items.items():
         assert link.opacity() == (1.0 if scene._link_category(iid) == "power" else scene.FADED_LINK)
+
+
+def test_the_part_picker_says_what_each_part_is(win) -> None:  # type: ignore[no-untyped-def]
+    """REQ-GUI-05: choosing a library part shows its description, pins, approval and ratings."""
+    from PySide6.QtWidgets import QComboBox, QLabel
+
+    win.ctl.set_mode("expert")
+    win.ctl.select("unit", sorted(win.ctl.project.units)[0])
+    combos = win.props.findChildren(QComboBox)
+    part_combos = [c for c in combos if c.objectName().startswith("part-")]
+    assert part_combos
+    combo = part_combos[0]
+    text = combo.itemData(combo.currentIndex(), Qt.ItemDataRole.ToolTipRole)
+    assert "pins" in text and ("approved" in text)
+    infos = [
+        lab for lab in win.props.findChildren(QLabel) if lab.objectName().startswith("part-info-")
+    ]
+    assert infos and infos[0].text() == text

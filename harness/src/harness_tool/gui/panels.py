@@ -39,7 +39,7 @@ from PySide6.QtWidgets import (
 
 from harness_tool.core import checks, drc, edit
 from harness_tool.core.generate.explain import explain_harness, explain_wire
-from harness_tool.core.model import InterfaceInstance
+from harness_tool.core.model import InterfaceInstance, Part
 from harness_tool.core.verify import verify_project
 from harness_tool.gui import strings
 from harness_tool.gui.controller import LIST_DELAY_MS, Delta, EditorController
@@ -73,6 +73,23 @@ def heading(text: str) -> QLabel:
     lab = QLabel(text.upper())
     lab.setProperty("heading", True)
     return lab
+
+
+def part_summary(part: Part) -> str:
+    """What a library part is, in one line: description, maker, pins, approval and ratings."""
+    bits = [part.description or part.id]
+    if part.manufacturer:
+        bits.append(part.manufacturer)
+    if part.pin_count:
+        bits.append(f"{part.pin_count} pins")
+    if part.specification:
+        bits.append(part.specification)
+    bits.append(strings.APPROVAL.get(part.approval, part.approval))
+    if part.unverified:
+        bits.append(strings.PART_UNVERIFIED)
+    if part.ratings:
+        bits.append(", ".join(f"{k} {v:g}" for k, v in sorted(part.ratings.items())))
+    return " · ".join(bits)
 
 
 def muted(text: str) -> QLabel:
@@ -401,6 +418,8 @@ class PropertiesPanel(QScrollArea):
             combo = QComboBox()
             combo.setObjectName(f"part-{c.id}")
             combo.addItems(parts)
+            for k, pid in enumerate(parts):  # the part list shows what each part is, on hover
+                combo.setItemData(k, part_summary(p.parts[pid]), Qt.ItemDataRole.ToolTipRole)
             combo.setCurrentText(c.part_id)
             combo.setAccessibleName(f"{strings.LIBRARY_PART} {c.name}")
             combo.activated.connect(
@@ -408,6 +427,14 @@ class PropertiesPanel(QScrollArea):
             )
             self._editable(combo)
             lay.addWidget(combo)
+            info = muted(part_summary(p.parts[c.part_id]) if c.part_id in p.parts else "")
+            info.setObjectName(f"part-info-{c.id}")
+            lay.addWidget(info)
+            combo.currentTextChanged.connect(
+                lambda text, lab=info: lab.setText(
+                    part_summary(p.parts[text]) if text in p.parts else ""
+                )
+            )
             carries = (
                 ", ".join(p.interface_types[t].name for t in c.carries if t in p.interface_types)
                 or strings.ANY_TYPE
