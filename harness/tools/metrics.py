@@ -3,7 +3,7 @@
 Size (source lines without blanks and comments), number of functions, McCabe-style complexity
 (1 + decision points per function), number of tests, and optionally coverage from a `coverage json`
 file. Standard library only. Prints JSON; `--write` stores it in compliance/metrics.json.
-Fault density and failure intensity come from the problem reports (docs/PROBLEM_REPORTING.md).
+Fault density and failure intensity come from the problem reports (compliance/docs/PROBLEM_REPORTING.md).
 """
 
 from __future__ import annotations
