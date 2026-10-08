@@ -562,7 +562,7 @@ class DiagramScene(QGraphicsScene):
         self._order: dict[str, int] = {}
         self.zone_count = len(edit.effective_zones(ctl.project))
         self._last_sel: object = None
-        self.category_filter: str | None = None  # view state, not part of the project
+        self.filter: tuple[str, str] | None = None  # view state, not part of the project
         ctl.changed.connect(self.apply)
         ctl.selectionChanged.connect(self._on_selection)
         ctl.marksChanged.connect(self.refresh_all)
@@ -574,15 +574,23 @@ class DiagramScene(QGraphicsScene):
     def adjacent(self, unit_id: str) -> list[str]:
         return self._adj.get(unit_id, [])
 
-    # ---- filter by signal class: the others fade, nothing is hidden or changed ----------------------
+    # ---- filter by signal class, connector or bundle: the others fade, nothing is hidden --------------
     FADED_LINK = 0.15
     FADED_UNIT = 0.4
 
-    def set_category_filter(self, category: str | None) -> None:
-        """Show one signal class (a style category such as "power") and fade the rest; None shows
-        everything. Only opacity changes, so selection, editing and the model are untouched."""
-        self.category_filter = category
+    def set_filter(self, kind: str | None, value: str | None = None) -> None:
+        """Show only what matches and fade the rest: `kind` is "class" (a style category such as
+        "power"), "connector" (a box connector ID) or "bundle" (a harness ID); None shows everything.
+        Only opacity changes, so selection, editing and the model are untouched."""
+        self.filter = (kind, value) if kind and value else None
         self._apply_filter()
+
+    def set_category_filter(self, category: str | None) -> None:
+        self.set_filter("class" if category else None, category)
+
+    @property
+    def category_filter(self) -> str | None:
+        return self.filter[1] if self.filter and self.filter[0] == "class" else None
 
     def _link_category(self, iid: str) -> str | None:
         p = self.ctl.project
@@ -590,14 +598,33 @@ class DiagramScene(QGraphicsScene):
         t = p.interface_types.get(i.type_id) if i else None
         return style_category(t.category) if t else None
 
+    def matching_interfaces(self) -> set[str] | None:
+        """IDs of the interfaces the current filter keeps; None when there is no filter."""
+        if self.filter is None:
+            return None
+        kind, value = self.filter
+        p = self.ctl.project
+        if kind == "class":
+            return {iid for iid in p.interfaces if self._link_category(iid) == value}
+        if kind == "connector":
+            return {
+                i.id
+                for i in p.interfaces.values()
+                if any(e.connector_id == value for e in i.endpoints)
+            }
+        h = p.harnesses.get(value or "")
+        if h is None:
+            return set()
+        return set(h.interfaces) | {w.interface_id for w in h.wires if w.interface_id}
+
     def _apply_filter(self) -> None:
-        cat = self.category_filter
+        keep = self.matching_interfaces()
         for iid, link in self.link_items.items():
-            want = 1.0 if cat is None or self._link_category(iid) == cat else self.FADED_LINK
+            want = 1.0 if keep is None or iid in keep else self.FADED_LINK
             if link.opacity() != want:
                 link.setOpacity(want)
         for uid, item in self.unit_items.items():
-            on = cat is None or any(self._link_category(i) == cat for i in self._adj.get(uid, []))
+            on = keep is None or any(i in keep for i in self._adj.get(uid, []))
             want = 1.0 if on else self.FADED_UNIT
             if item.opacity() != want:
                 item.setOpacity(want)
@@ -659,7 +686,7 @@ class DiagramScene(QGraphicsScene):
         for iid in sorted(project.interfaces):
             self._add_link(iid)
         self._update_extent()
-        if self.category_filter is not None:
+        if self.filter is not None:
             self._apply_filter()
 
     def _add_unit(self, uid: str) -> None:
@@ -741,7 +768,7 @@ class DiagramScene(QGraphicsScene):
         for uid in delta.units:  # heights may have changed: relink neighbours
             self.relink(uid)
         self._update_extent()
-        if self.category_filter is not None:
+        if self.filter is not None:
             self._apply_filter()
 
     def relink(self, unit_id: str) -> None:
