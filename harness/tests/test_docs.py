@@ -160,7 +160,7 @@ def test_getting_started_commands_work_in_order(tmp_path: Path) -> None:
         doc,
         tmp_path,
         {
-            "harness release wheel-link": [1, 0],  # blocked before the values, done after them
+            "harness release wheel-link": [1, 1, 0],  # blocked, blocked on placeholders, accepted
             "harness config wheel-link": [1],  # exit 1 while values are missing
             "harness drc wheel-link": [0, 1, 0],  # the library import makes the plans stale (1)
         },

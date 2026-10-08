@@ -327,6 +327,7 @@ release a harness: baseline, change log entry and lock (blocked while checks fai
 | `--comment COMMENT` | what changed or why (at least 10 characters) |
 | `--date DATE` | YYYY-MM-DD (default: today) |
 | `--checker CHECKER` | who checked it (title block) |
+| `--accept-placeholders REASON` | release although configuration files are still placeholders: the reason (at least 10 characters) is kept in the change log and the baseline |
 
 Examples:
 

@@ -90,11 +90,11 @@ The files that hold these values are in the project's `config/` folder and are d
 
 A harness has a **status**: `draft`, then optionally `in_review`, then `released`.
 
-- **Release** needs a person's name and a comment (at least 10 characters). It is blocked while something is missing (a wire without a gauge or length, unresolved errors) and the reasons are listed in plain words.
+- **Release** needs a person's name and a comment (at least 10 characters). It is blocked while something is missing (a wire without a gauge or length, unresolved errors) and the reasons are listed in plain words. It is also blocked while a configuration file is still marked `"placeholder": true`, unless you give a written reason (`--accept-placeholders`), which is kept in the change log and the baseline.
 - A released harness is **locked**: it, the interfaces it carries and the pins it uses cannot be edited. A **baseline** (frozen snapshot) and a **change log** entry are stored.
 - To change it you start a new **revision** (A, B, C ...). The old revision stays.
 
-The release check looks at the harness itself. It does not know whether you reviewed the engineering values; that stays your decision and your responsibility.
+The release check looks at the harness itself and at the placeholder mark of the configuration files. It cannot tell whether the values are right; that stays your decision and your responsibility.
 
 ## Outputs
 

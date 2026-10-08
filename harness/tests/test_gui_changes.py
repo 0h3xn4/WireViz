@@ -41,6 +41,7 @@ def fill(by: str = "Ada", comment: str = "First release for the CDR", checker: s
         d.by.setText(by)
         d.checker.setText(checker)
         d.comment.setPlainText(comment)
+        d.placeholder_reason.setText("Test project: values are placeholders")
 
     return fn
 
@@ -67,6 +68,23 @@ def test_release_dialog_lists_blockers_and_disables_ok(win) -> None:  # type: ig
     dlg.by.setText("Ada")
     dlg.comment.setPlainText("A long enough comment")
     assert not dlg.ok.isEnabled()  # a blocker is still there
+
+
+def test_release_dialog_asks_for_a_reason_while_values_are_placeholders(win) -> None:  # type: ignore[no-untyped-def]
+    hid = releasable(win)
+    win.harness_panel.export_btn.click()
+    script = DialogScript(win, accept=False)
+    win.change_flow("release", hid)
+    dlg = script.seen[0]
+    assert isinstance(dlg, ChangeDialog) and dlg.blockers == []  # outputs are exported
+    dlg.by.setText("Ada")
+    dlg.comment.setPlainText("A long enough comment")
+    assert not dlg.ok.isEnabled()  # the reason is missing
+    assert dlg.accepted_placeholders() is None
+    dlg.placeholder_reason.setText("short")
+    assert not dlg.ok.isEnabled()
+    dlg.placeholder_reason.setText("Practice project, demo values")
+    assert dlg.ok.isEnabled() and dlg.accepted_placeholders() == "Practice project, demo values"
 
 
 def test_full_cycle_release_lock_new_revision_changes_and_log(win, qtbot) -> None:  # type: ignore[no-untyped-def]

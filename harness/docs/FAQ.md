@@ -8,7 +8,7 @@ Short answers. If yours is not here, check the **Problems** tab (it says what is
 
 **Why does it say "pending" and "not checked" everywhere?** Because the tool contains no engineering numbers. Derating factors, wire ratings, EMC rules and part approvals come from your programme; until they are entered, results say so instead of guessing. `harness config DIR` lists what is missing. See "Placeholders" in [`CONCEPTS.md`](CONCEPTS.md).
 
-**Can I just use the demo values?** For learning, yes (`harness templates DIR` copies them, see [`GETTING_STARTED.md`](GETTING_STARTED.md) part 7). They are not engineering data. Never release a real design with them.
+**Can I just use the demo values?** For learning, yes (`harness templates DIR` copies them, see [`GETTING_STARTED.md`](GETTING_STARTED.md) part 7). They are not engineering data. Never release a real design with them. A release is refused while the configuration files are marked as placeholders unless you give a written reason, which is kept in the change log.
 
 **Can I edit a generated harness by hand?** Not in the sense of editing a drawing. You change the design (units, interfaces, connectors, values) and generate again. To keep a wire or pin choice, **lock** it; generation then keeps it. A harness that is released is locked; start a new revision to change it.
 
@@ -44,7 +44,7 @@ Short answers. If yours is not here, check the **Problems** tab (it says what is
 | `harness new` says the folder is not empty | Choose a folder that does not exist yet (or is empty). It never overwrites. |
 | `harness generate` says *not saved* | The project has errors. Run `harness validate DIR` and fix what it prints. |
 | A wire gauge says *pending* | A value is missing. `harness config DIR` says which; a gauge also needs the interface's **Max current** and the segment lengths. |
-| `harness release` says *blocked* | Each reason is printed in words. Typically a gauge or length is missing, or an error is open. |
+| `harness release` says *blocked* | Each reason is printed in words. Typically a gauge or length is missing, an error is open, or the configuration files are still placeholders (review them and set `"placeholder": false`, or give a reason with `--accept-placeholders`). |
 | *Outputs: out of date* | The design changed since the last export. Export again. |
 | *Blocked because it touches released items* | The harness is released. Start a new revision. |
 | `import-netlist` says a file is not a netlist | It must be KiCad's `.net` (S-expression) or XML export, not a `.kicad_sch`. |

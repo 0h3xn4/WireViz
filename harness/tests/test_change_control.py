@@ -1,4 +1,4 @@
-"""M6: review, release, baselines, locks on released items, new revisions, the diff engine,
+"""REQ-CC-06 (placeholder gate, D-135) and M6: review, release, baselines, locks on released items, new revisions, the diff engine,
 the change log and its outputs."""
 
 import json
@@ -53,6 +53,9 @@ def full() -> Project:
     return edit.clone_with(_BASE, [])
 
 
+REASON = "Test project: values are placeholders"
+
+
 def releasable(p: Project) -> str:
     return next(
         h.id
@@ -76,8 +79,9 @@ def do_release(
     comment: str = "First release for the CDR",
 ) -> History:
     plan = plan_release(
-        p, hid, by="Ada", checker="Bob", comment=comment, when=when, outputs_folder=folder
-    )
+        p, hid, by="Ada", checker="Bob", comment=comment, when=when, outputs_folder=folder,
+        accept_placeholders=REASON,
+    )  # fmt: skip
     assert plan.ok, [b.message for b in plan.blockers]
     hist = hist or History(p)
     hist.execute(plan.label, plan.ops)
@@ -85,9 +89,64 @@ def do_release(
 
 
 def codes(p: Project, hid: str, folder: Path | None, **kw: str) -> set[str]:
-    args = {"by": "Ada", "comment": "a long enough comment", "when": WHEN}
+    args = {
+        "by": "Ada", "comment": "a long enough comment", "when": WHEN,
+        "accept_placeholders": REASON,
+    }  # fmt: skip
     args.update(kw)
     return {b.code for b in release_blockers(p, hid, outputs_folder=folder, **args)}
+
+
+# ---- the placeholder gate (D-135) -------------------------------------------------------------------
+
+
+def test_placeholder_configuration_blocks_a_release_without_a_reason(tmp_path: Path) -> None:
+    p = full()
+    hid = releasable(p)
+    folder = exported(p, tmp_path)
+    assert p.placeholder_configs()
+    assert "placeholder_config" in codes(p, hid, folder, accept_placeholders=None)  # type: ignore[arg-type]
+    short = codes(p, hid, folder, accept_placeholders="short")
+    assert "placeholder_reason_short" in short and "placeholder_config" not in short
+    ok = codes(p, hid, folder)
+    assert not ok & {"placeholder_config", "placeholder_reason_short"}
+
+
+def test_a_reviewed_configuration_releases_without_a_reason(tmp_path: Path) -> None:
+    p = full()
+    hid = releasable(p)
+    folder = exported(p, tmp_path)
+    for name, cfg in list(p.config.items()):
+        p.config[name] = evolve(cfg, placeholder=False)
+    assert not p.placeholder_configs()
+    assert "placeholder_config" not in codes(p, hid, folder, accept_placeholders=None)  # type: ignore[arg-type]
+    plan = plan_release(
+        p, hid, by="Ada", checker=None, comment="Reviewed values", when=WHEN, outputs_folder=folder
+    )
+    assert not any(b.code.startswith("placeholder") for b in plan.blockers)
+    if plan.ok:  # no note is added when nothing rests on placeholders
+        History(p).execute(plan.label, plan.ops)
+        assert next(iter(p.changelog.values())).comment == "Reviewed values"
+
+
+def test_the_reason_and_the_files_are_kept_in_the_change_log_and_the_baseline(
+    tmp_path: Path,
+) -> None:
+    p = full()
+    hid = releasable(p)
+    names = p.placeholder_configs()
+    do_release(p, hid, exported(p, tmp_path))
+    entry = next(iter(p.changelog.values()))
+    for text in (entry.comment, p.baselines[f"{hid}.A"].comment):
+        assert REASON in text and "Ada" in text
+        assert all(n in text for n in names)
+
+
+def test_a_comment_too_long_for_the_baseline_is_a_blocker_not_a_crash(tmp_path: Path) -> None:
+    p = full()
+    hid = releasable(p)
+    folder = exported(p, tmp_path)
+    assert "comment_long" in codes(p, hid, folder, comment="x" * 1990)
 
 
 # ---- revisions -------------------------------------------------------------------------------------
@@ -229,7 +288,8 @@ def test_release_writes_baseline_changelog_and_locks(tmp_path: Path) -> None:
         WHEN,
     )
     b = p.baselines[f"{hid}.A"]
-    assert b.comment == "First release for the CDR" and b.snapshot.harnesses[0].status == "released"
+    assert b.comment.startswith("First release for the CDR") and REASON in b.comment
+    assert b.snapshot.harnesses[0].status == "released"
     assert {i.id for i in b.snapshot.interfaces} == {
         w.interface_id for w in h.wires if w.interface_id
     }
@@ -571,8 +631,8 @@ def test_title_block_and_revision_outputs_after_a_release(tmp_path: Path) -> Non
     for needle in ("released", "Ada", "Bob", WHEN):
         assert needle in svg
     log = parse_csv(built.files["system/changelog.csv"])
-    assert (
-        log[1][:4] == ["C0001", hid, "A", "released"] and log[1][6] == "First release for the CDR"
+    assert log[1][:4] == ["C0001", hid, "A", "released"] and log[1][6].startswith(
+        "First release for the CDR"
     )
     report = built.files["system/revision_report.md"].decode()
     assert hid in report and "First release for the CDR" in report
@@ -629,6 +689,9 @@ def test_cli_full_change_control_cycle(tmp_path: Path, capsys: pytest.CaptureFix
     )  # no outputs yet
     assert cli_main(["export", str(proj)]) == 0
     assert cli_main(["release", *args, "--by", "Ada", "--comment", "short"]) == 1
+    assert (  # placeholders without a reason are refused
+        cli_main(["release", *args, "--by", "Ada", "--comment", "First release for CDR"]) == 1
+    )
     assert (
         cli_main(
             [
@@ -640,6 +703,8 @@ def test_cli_full_change_control_cycle(tmp_path: Path, capsys: pytest.CaptureFix
                 "Bob",
                 "--comment",
                 "First release for CDR",
+                "--accept-placeholders",
+                REASON,
                 "--date",
                 WHEN,
             ]

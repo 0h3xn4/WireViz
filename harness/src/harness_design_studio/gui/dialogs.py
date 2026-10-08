@@ -563,11 +563,13 @@ class ChangeDialog(QDialog):
         ask_checker: bool = False,
         ask_comment: bool = True,
         ok_text: str = strings.OK,
+        placeholders: list[str] | None = None,
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setObjectName("change-dialog")
         self._comment_needed = ask_comment
+        self._placeholders = placeholders or []
         lay = QVBoxLayout(self)
         lay.addWidget(QLabel(f"<h3>{title}</h3>"))
         self.blockers = blockers
@@ -600,10 +602,21 @@ class ChangeDialog(QDialog):
         if ask_comment:
             lay.addWidget(QLabel(strings.COMMENT))
             lay.addWidget(self.comment)
+        self.placeholder_reason = QLineEdit()
+        self.placeholder_reason.setObjectName("change-placeholder-reason")
+        self.placeholder_reason.setAccessibleName(strings.PLACEHOLDER_REASON)
+        if self._placeholders:
+            warn = QLabel(strings.PLACEHOLDER_WARNING.format(", ".join(self._placeholders)))
+            warn.setWordWrap(True)
+            warn.setObjectName("change-placeholder-warning")
+            lay.addWidget(warn)
+            lay.addWidget(QLabel(strings.PLACEHOLDER_REASON))
+            lay.addWidget(self.placeholder_reason)
         self.ok, self.cancel, row = _buttons(self, ok_text, danger=False, primary=True)
         lay.addLayout(row)
         self.by.textChanged.connect(self._validate)
         self.comment.textChanged.connect(self._validate)
+        self.placeholder_reason.textChanged.connect(self._validate)
         self.setMinimumWidth(480)
         self._validate()
 
@@ -611,7 +624,13 @@ class ChangeDialog(QDialog):
         good = not self.blockers and bool(self.by.text().strip())
         if self._comment_needed:
             good = good and len(self.comment.toPlainText().strip()) >= 10
+        if self._placeholders:
+            good = good and len(self.placeholder_reason.text().strip()) >= 10
         self.ok.setEnabled(good)
+
+    def accepted_placeholders(self) -> str | None:
+        """The written reason for releasing on placeholder values (None when there are none)."""
+        return self.placeholder_reason.text().strip() or None if self._placeholders else None
 
     def values(self) -> tuple[str, str, str]:
         return (

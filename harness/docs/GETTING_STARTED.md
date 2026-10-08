@@ -176,11 +176,12 @@ harness release wheel-link W002 --by "A. Engineer" --comment "First release of t
 ```
 
 ```
+blocked: [placeholder_config] These configuration files are still placeholders: derating, emc, generation, segmentation, segregation, titleblock. Have an engineer review the values and set "placeholder" to false in each file (`harness config DIR` lists them). Or release on placeholders with a written reason; the reason is kept in the change log.
 blocked: [gauge_pending] 2 wire(s) have no gauge decided (first: W002-001). Fill in the derating values (the file config/derating.json; `harness config DIR` lists what is missing) or set the gauge by hand.
 blocked: [length_unknown] 2 wire(s) have no length (first: W002-001). Enter the routing segment lengths (`harness import-lengths DIR FILE` loads them from a table).
 ```
 
-The tool refuses and says why, in words. Nothing was changed. The next part removes both reasons.
+The tool refuses and says why, in words. Nothing was changed. The first reason (placeholders) waits until Part 9; the next part removes the other two.
 
 ## Part 7: fill in values, and see wires get sized
 
@@ -277,10 +278,20 @@ Details and column names: [`IMPORTS.md`](IMPORTS.md), [`KICAD.md`](KICAD.md).
 
 ## Part 9 (optional, practice only): release a harness
 
-With the demo values and the lengths of Part 7 the release command of Part 6 is no longer blocked:
+With the demo values and the lengths of Part 7 the gauge and length reasons of Part 6 are gone, but one is left: the configuration files are still marked `"placeholder": true`. A release is refused until a person has reviewed the values and cleared that mark, or accepts the placeholders with a written reason:
 
 ```
 harness release wheel-link W002 --by "A. Engineer" --comment "First release of the wheel power harness"
+```
+
+```
+blocked: [placeholder_config] These configuration files are still placeholders: derating, emc, generation, segmentation, segregation, titleblock. Have an engineer review the values and set "placeholder" to false in each file (`harness config DIR` lists them). Or release on placeholders with a written reason; the reason is kept in the change log.
+```
+
+For a real design the engineer reviews the values and sets `"placeholder": false` in each file. For this practice project, accept the placeholders and say why; the reason is kept in the change log and in the baseline:
+
+```
+harness release wheel-link W002 --by "A. Engineer" --comment "First release of the wheel power harness" --accept-placeholders "Practice project: demo values only"
 ```
 
 ```
@@ -288,9 +299,9 @@ Release W002 revision A: done.
 Outputs re-exported with the released status (38 files).
 ```
 
-`W002` is now **released (locked)**: it, the interfaces it carries and the pins it uses cannot be edited, a baseline and a change log entry are stored, and the drawing says *released*. To change it you start a revision with `harness revise wheel-link W002 --by NAME --comment "..."`; `harness log wheel-link` prints the history. In the app the same steps are **Release…**, **New revision…** and **Change log…** in **Harness plans**.
+`W002` is now **released (locked)**: it, the interfaces it carries and the pins it uses cannot be edited, a baseline and a change log entry are stored, and the drawing says *released*. To change it you start a revision with `harness revise wheel-link W002 --by NAME --comment "..."`; `harness log wheel-link` prints the history, including the reason for releasing on placeholders. In the app the same steps are **Release…**, **New revision…** and **Change log…** in **Harness plans**; the release window asks for the reason when placeholders remain.
 
-Do this only in the practice project. The release check looks at the harness (gauges, lengths, open errors); it does not know that these engineering values are only demo values. Releasing with them teaches the flow and nothing more.
+Do this only in the practice project. Releasing on placeholders teaches the flow and nothing more: the change log records that the release rested on placeholder values.
 
 ## Part 10: build your own from blank
 
