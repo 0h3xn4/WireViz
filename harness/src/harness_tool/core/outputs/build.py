@@ -73,7 +73,18 @@ def findings_table(project: Project) -> Table:
         [*checks.find(project), *drc.run(project)],
         key=lambda f: ({"error": 0, "warning": 1, "info": 2}[f.severity], f.id),
     )
-    rows = [["Finding", "Rule", "Severity", "Object", "Statement", "Waived", "Justification"]]
+    rows = [
+        [
+            "Finding",
+            "Rule",
+            "Severity",
+            "Object",
+            "Statement",
+            "Waived",
+            "Justification",
+            "Requirement",
+        ]
+    ]
     for f in found:
         rows.append(
             [
@@ -84,6 +95,7 @@ def findings_table(project: Project) -> Table:
                 f.title,
                 "yes" if f.waiver else "",
                 f.waiver.justification if f.waiver else "",
+                " ".join(f.sources),
             ]
         )
     return rows

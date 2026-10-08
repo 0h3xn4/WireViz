@@ -25,6 +25,12 @@ class Finding:
     fix_label: str | None = None
     can_waive: bool = False
     waiver: Waiver | None = None  # set when the finding has been waived
+    sources: tuple[str, ...] = ()  # IDs of the standard requirements the rule serves
+
+    @property
+    def why_cited(self) -> str:
+        """The explanation followed by the requirement IDs (reports and exports)."""
+        return f"{self.why} Requirement: {', '.join(self.sources)}." if self.sources else self.why
 
 
 @dataclass(frozen=True)

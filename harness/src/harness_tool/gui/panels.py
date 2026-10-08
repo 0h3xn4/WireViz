@@ -708,6 +708,13 @@ class ProblemsPanel(QScrollArea):
         title.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
         lay.addWidget(title)
         lay.addWidget(muted(f.why))
+        if f.sources:  # the requirement the rule serves, as text so it can be read and searched
+            ref = QLabel(strings.REQUIREMENT_LABEL.format(", ".join(f.sources)))
+            ref.setObjectName("finding-requirement")
+            ref.setAccessibleName(ref.text())
+            ref.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            ref.setWordWrap(True)
+            lay.addWidget(ref)
         row = QHBoxLayout()
         show = QPushButton(strings.SHOW)
         show.clicked.connect(lambda: self.showRequested.emit(f.object_id))

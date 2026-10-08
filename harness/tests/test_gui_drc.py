@@ -113,3 +113,20 @@ def test_editor_waits_for_a_pause_before_checking(qtbot, tmp_path) -> None:  # t
     qtbot.addWidget(w)
     w.ctl._install(sat15(), None, None)
     assert w.ctl._drc_worker is None and not w.ctl.drc_current
+
+
+def test_a_finding_card_shows_the_requirement_it_serves(win, qtbot) -> None:  # type: ignore[no-untyped-def]
+    """REQ-STD-01: the card names the requirement ID as text, apart from the explanation."""
+    from PySide6.QtWidgets import QLabel
+
+    wait_for_drc(qtbot, win)
+    win.tabs.setCurrentWidget(win.problems)
+    cited = [f for f in win.ctl.findings() if f.sources and f.waiver is None]
+    assert cited, "sat15 has a connector look-alike warning"
+    labels = [
+        lab.text()
+        for lab in win.problems.findChildren(QLabel)
+        if lab.objectName() == "finding-requirement"
+    ]
+    assert any(cited[0].sources[0] in text for text in labels)
+    assert "Requirement:" not in cited[0].why  # the explanation itself stays clean

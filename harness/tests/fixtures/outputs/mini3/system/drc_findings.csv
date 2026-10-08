@@ -1,13 +1,13 @@
 # harness-tool 0.1.0rc4 model 6c384d383e73
-Finding,Rule,Severity,Object,Statement,Waived,Justification
-part-unapproved.EX-MICROD-15-F,part-unapproved,warning,EX-MICROD-15-F,Part EX-MICROD-15-F is not approved yet but is used (3 place(s)),,
-part-unapproved.EX-MICROD-15-M,part-unapproved,warning,EX-MICROD-15-M,Part EX-MICROD-15-M is not approved yet but is used (1 place(s)),,
-part-unapproved.EX-MICROD-25-F,part-unapproved,warning,EX-MICROD-25-F,Part EX-MICROD-25-F is not approved yet but is used (1 place(s)),,
-part-unapproved.EX-MICROD-25-M,part-unapproved,warning,EX-MICROD-25-M,Part EX-MICROD-25-M is not approved yet but is used (1 place(s)),,
-part-unapproved.EX-MICROD-9-F,part-unapproved,warning,EX-MICROD-9-F,Part EX-MICROD-9-F is not approved yet but is used (4 place(s)),,
-part-unapproved.EX-MICROD-9-M,part-unapproved,warning,EX-MICROD-9-M,Part EX-MICROD-9-M is not approved yet but is used (2 place(s)),,
-part-unapproved.EX-WIRE-TWISTED-SHIELDED,part-unapproved,warning,EX-WIRE-TWISTED-SHIELDED,Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (4 place(s)),,
-unchecked-config.emc,unchecked-config,info,emc,EMC class separation was not checked: the EMC rules are still a placeholder,,
-unchecked-config.grounding,unchecked-config,info,grounding,Shield grounding was not checked against a concept: it is still a placeholder,,
-unchecked-config.separation,unchecked-config,info,separation,"Power, signal and sensitive-analog separation was not checked: the category pairs are still a placeholder",,
-unchecked-config.spare-pins,unchecked-config,info,spare-pins,Spare pins were not checked: the required fraction is still a placeholder,,
+Finding,Rule,Severity,Object,Statement,Waived,Justification,Requirement
+part-unapproved.EX-MICROD-15-F,part-unapproved,warning,EX-MICROD-15-F,Part EX-MICROD-15-F is not approved yet but is used (3 place(s)),,,ESCC3901-4.4
+part-unapproved.EX-MICROD-15-M,part-unapproved,warning,EX-MICROD-15-M,Part EX-MICROD-15-M is not approved yet but is used (1 place(s)),,,ESCC3901-4.4
+part-unapproved.EX-MICROD-25-F,part-unapproved,warning,EX-MICROD-25-F,Part EX-MICROD-25-F is not approved yet but is used (1 place(s)),,,ESCC3901-4.4
+part-unapproved.EX-MICROD-25-M,part-unapproved,warning,EX-MICROD-25-M,Part EX-MICROD-25-M is not approved yet but is used (1 place(s)),,,ESCC3901-4.4
+part-unapproved.EX-MICROD-9-F,part-unapproved,warning,EX-MICROD-9-F,Part EX-MICROD-9-F is not approved yet but is used (4 place(s)),,,ESCC3901-4.4
+part-unapproved.EX-MICROD-9-M,part-unapproved,warning,EX-MICROD-9-M,Part EX-MICROD-9-M is not approved yet but is used (2 place(s)),,,ESCC3901-4.4
+part-unapproved.EX-WIRE-TWISTED-SHIELDED,part-unapproved,warning,EX-WIRE-TWISTED-SHIELDED,Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (4 place(s)),,,ESCC3901-4.4
+unchecked-config.emc,unchecked-config,info,emc,EMC class separation was not checked: the EMC rules are still a placeholder,,,
+unchecked-config.grounding,unchecked-config,info,grounding,Shield grounding was not checked against a concept: it is still a placeholder,,,
+unchecked-config.separation,unchecked-config,info,separation,"Power, signal and sensitive-analog separation was not checked: the category pairs are still a placeholder",,,
+unchecked-config.spare-pins,unchecked-config,info,spare-pins,Spare pins were not checked: the required fraction is still a placeholder,,,

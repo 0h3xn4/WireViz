@@ -26,7 +26,7 @@
  "system/bom.csv": "c06ef29ca1d96a24fa58878d707fa57ca81937145f3e118c52810f9a0062023c",
  "system/box_pinouts.csv": "e2cf796f096477f9093f33a94f8d5843cde63a502a3ef8aa76986f93439e3be8",
  "system/changelog.csv": "9edd0e99390a2594a31a120e1f32ee800d2b5849697ad64c837dc56c04d68ddb",
- "system/drc_findings.csv": "84f2a17cde8a4fa2567fe5ee8978edcd50ceb528f2c56ddbfa9a650cd4b1acfb",
+ "system/drc_findings.csv": "0cf517dd0577ed090b6a5dcf62b599355ca2a9e36e048490b3283c213a2a3006",
  "system/drc_report.md": "2c264b4c1a65c3b1207315265d685ef68cb75dee1da7cad330e3b66e3aee4bb2",
  "system/export.json": "b353c9019ebe875ca7d2ebe4284ac09d8304e3cb5f94406dfd47d36f3d389182",
  "system/harness_overview.pdf": "5450e7e57aa84f500db2eea9f2329209010cca4a0c5acc9315a6e8111be6c2f7",
@@ -35,6 +35,6 @@
  "system/mating_matrix.csv": "d83c9a33e0fcf45033aba7c0c7a4492e5f361e8c2159aae3f6422f97425cafc5",
  "system/provenance.json": "e8c9c187a31fd4ef0674486fe67a9fb900c5ae9b33d9cb6bebb30596c8b53da7",
  "system/revision_report.md": "47029d2500ad506d5ec51e4119c51edce36c821ba0e928779d9b98906b3dcb63",
- "system/system.xlsx": "a6f3f687a8eb0eb4626a6d92c449eb93694cfbc9e6290f44a9e13eee426bebb8",
+ "system/system.xlsx": "cae43107f1bf912e5b07adce3c1637472d99dc23a828d311f3009b1495cbaa82",
  "system/traceability.csv": "35a5487e6318565075ab70a86876840e857c5cdda4f206e1b6c842340bdece0d"
 }

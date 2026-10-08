@@ -57,7 +57,7 @@ def render_markdown(project: Project, findings: list[Finding] | None = None) -> 
         ]
         for f in group:
             lines.append(f"- **{f.title}** (`{f.id}`)  ")
-            lines.append(f"  {f.why}")
+            lines.append(f"  {f.why_cited}")
     if waived:
         lines += ["", f"## Waived findings ({len(waived)})", ""]
         for f in waived:
