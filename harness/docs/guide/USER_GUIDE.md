@@ -192,7 +192,7 @@ Example files for every one of these are in the templates folder (`harness templ
 | Delete | delete the selected item (after showing what it affects) |
 | F1 | this guide |
 
-The **Show** list in the toolbar picks one signal class (power, data, analog, RF ...) and fades the others, so a large diagram can be read one class at a time; it changes nothing in the project. The **Interface table** and **Outline** tabs list every interface and unit; they are the screen-reader friendly views of the diagram. **Arrange diagram** (View menu) tidies the units: they stay in their lanes and are ordered to shorten links; Undo restores the old positions.
+The **Show** lists in the toolbar fade everything except one signal class (power, data, analog, RF ...), one connector or one bundle (harness), so a large diagram can be read one piece at a time; choose *All interfaces* to see everything again. It changes nothing in the project. The **Interface table** and **Outline** tabs list every interface and unit; they are the screen-reader friendly views of the diagram. **Arrange diagram** (View menu) tidies the units: they stay in their lanes and are ordered to shorten links; Undo restores the old positions.
 
 ## 15. Glossary
 

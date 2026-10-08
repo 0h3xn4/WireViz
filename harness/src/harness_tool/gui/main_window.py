@@ -646,14 +646,25 @@ class MainWindow(QMainWindow):
         self.search_btn.clicked.connect(self.open_commands)
         tb.addWidget(self.search_btn)
         self.filter_combo = QComboBox()
-        self.filter_combo.setObjectName("filter-category")
+        self.filter_combo.setObjectName("filter-kind")
         self.filter_combo.setAccessibleName(strings.FILTER_LABEL)
         self.filter_combo.setToolTip(strings.FILTER_TIP)
-        self.filter_combo.addItem(strings.FILTER_ALL, None)
-        for key, info in CATEGORIES.items():
-            self.filter_combo.addItem(f"{info['icon']}  {info['label']}", key)
-        self.filter_combo.currentIndexChanged.connect(self._filter_changed)
+        for label, kind in (
+            (strings.FILTER_ALL, None),
+            (strings.FILTER_CLASS, "class"),
+            (strings.FILTER_CONNECTOR, "connector"),
+            (strings.FILTER_BUNDLE, "bundle"),
+        ):
+            self.filter_combo.addItem(label, kind)
+        self.filter_combo.currentIndexChanged.connect(self._filter_kind_changed)
         tb.addWidget(self.filter_combo)
+        self.filter_value = QComboBox()
+        self.filter_value.setObjectName("filter-value")
+        self.filter_value.setAccessibleName(strings.FILTER_VALUE)
+        self.filter_value.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.filter_value.currentIndexChanged.connect(self._filter_changed)
+        self.filter_value_action = tb.addWidget(self.filter_value)
+        self.filter_value_action.setVisible(False)  # a toolbar widget is shown through its action
         spacer = QWidget()
         spacer.setSizePolicy(
             spacer.sizePolicy().horizontalPolicy().Expanding,
@@ -666,8 +677,45 @@ class MainWindow(QMainWindow):
         self.generate_btn.clicked.connect(self.generate_flow)
         tb.addWidget(self.generate_btn)
 
+    def _filter_options(self, kind: str) -> list[tuple[str, str]]:
+        """(label, value) pairs for the second filter picker."""
+        p = self.ctl.project
+        if kind == "class":
+            return [(f"{i['icon']}  {i['label']}", key) for key, i in CATEGORIES.items()]
+        if kind == "connector":
+            used = sorted(
+                {
+                    e.connector_id
+                    for i in p.interfaces.values()
+                    for e in i.endpoints
+                    if e.connector_id
+                }
+            )
+            return [(f"{c}  ({p.connectors[c].name})" if c in p.connectors else c, c) for c in used]
+        return [
+            (f"{h.id}  {h.name}", h.id) for h in sorted(p.harnesses.values(), key=lambda x: x.id)
+        ]
+
+    def _refresh_filter_values(self) -> None:
+        kind = self.filter_combo.currentData()
+        keep = self.filter_value.currentData()
+        self.filter_value.blockSignals(True)
+        self.filter_value.clear()
+        if kind:
+            for label, value in self._filter_options(kind):
+                self.filter_value.addItem(label, value)
+            at = self.filter_value.findData(keep)
+            self.filter_value.setCurrentIndex(max(at, 0))
+        self.filter_value.blockSignals(False)
+        self.filter_value_action.setVisible(bool(kind) and self.filter_value.count() > 0)
+
+    def _filter_kind_changed(self, _index: int) -> None:
+        self._refresh_filter_values()
+        self._filter_changed(0)
+
     def _filter_changed(self, _index: int) -> None:
-        self.view.dscene.set_category_filter(self.filter_combo.currentData())
+        kind = self.filter_combo.currentData()
+        self.view.dscene.set_filter(kind, self.filter_value.currentData() if kind else None)
 
     def _rebuild_connect_menu(self) -> None:
         self.menu_connect.clear()
@@ -759,7 +807,10 @@ class MainWindow(QMainWindow):
             )
         )
 
-    def _on_changed(self, _delta: Delta) -> None:
+    def _on_changed(self, delta: Delta) -> None:
+        if delta.full and self.filter_combo.currentData():
+            self._refresh_filter_values()  # a new project: its connectors and harnesses
+            self._filter_changed(0)
         self._rebuild_connect_menu() if set(self.ctl.project.interface_types) != {
             a.objectName().removeprefix("menu-connect-") for a in self.menu_connect.actions()
         } else None
