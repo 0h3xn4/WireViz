@@ -237,11 +237,21 @@ MUTATING = {
 def _project_lock(args: argparse.Namespace) -> Iterator[None]:
     """Commands that write take the same lock as the editor, so two writers never overlap."""
     path = getattr(args, "project", None)
-    writes = args.command in MUTATING or (
-        args.command == "config"
-        and (
-            getattr(args, "ampacity_csv", None) is not None
-            or getattr(args, "apply_profile", None) is not None
+    writes = (
+        args.command in MUTATING
+        or (
+            args.command == "config"
+            and (
+                getattr(args, "ampacity_csv", None) is not None
+                or getattr(args, "apply_profile", None) is not None
+            )
+        )
+        or (
+            args.command == "library"
+            and any(
+                getattr(args, k, None) is not None
+                for k in ("library_name", "library_version", "library_source", "library_date")
+            )
         )
     )
     if (

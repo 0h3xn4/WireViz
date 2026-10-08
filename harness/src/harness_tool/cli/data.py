@@ -11,9 +11,14 @@ from harness_tool.core.generate.lengths import plan_length_import
 from harness_tool.core.imports import ImportError_, read_table
 from harness_tool.core.io.loader import load_project
 from harness_tool.core.io.saver import save_project
-from harness_tool.core.library_import import guess_mapping, plan_parts_import
+from harness_tool.core.library_import import (
+    describe_library,
+    guess_mapping,
+    library_ops,
+    plan_parts_import,
+)
 
-COMMANDS = ("config", "import-parts", "import-lengths", "import-netlist")
+COMMANDS = ("config", "library", "import-parts", "import-lengths", "import-netlist")
 UNITS = {"mm": 0.001, "m": 1.0, "cm": 0.01}
 
 
@@ -37,6 +42,13 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
         help="fill the unset values from a standard profile (ecss-q-st-30-11c, ecss-e-st-20-07c); "
         "values you already set are kept; the files stay placeholders until you review them",
     )
+    lib = sub.add_parser(
+        "library",
+        help="show or set where the parts library comes from (name, version, source, date)",
+        description="Without options: print the library's name, version, source and date. With options: record them. The date is the date of the data (YYYY-MM-DD) and is entered by you; the tool never reads the clock into a project.",
+    )
+    lib.add_argument("project", type=Path)
+    _library_options(lib)
     pp = sub.add_parser(
         "import-parts",
         help="import an approved-parts list (CSV or XLSX)",
@@ -62,6 +74,7 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
         help="category for rows that have none (connector, contact, backshell, wire, sleeving, label)",
     )
     pp.add_argument("--dry-run", action="store_true", help="show the preview only")
+    _library_options(pp)
     nn = sub.add_parser(
         "import-netlist",
         help="read unit connector pinouts from a KiCad netlist",
@@ -121,11 +134,35 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
     ll.add_argument("--dry-run", action="store_true")
 
 
+def _library_options(p: argparse.ArgumentParser) -> None:
+    p.add_argument(
+        "--library-name", dest="library_name", default=None, help="name of the parts library"
+    )
+    p.add_argument(
+        "--library-version", dest="library_version", default=None, help="version of the parts data"
+    )
+    p.add_argument(
+        "--library-source",
+        dest="library_source",
+        default=None,
+        help="where the data comes from (default for import-parts: the file name and its SHA-256)",
+    )  # noqa: E501
+    p.add_argument(
+        "--library-date",
+        dest="library_date",
+        default=None,
+        metavar="YYYY-MM-DD",
+        help="date of the data",
+    )
+
+
 def run(args: argparse.Namespace) -> int:
     try:
         project = load_project(args.project).project
         if args.command == "config":
             return _config(project, args)
+        if args.command == "library":
+            return _library(project, args)
         if project.read_only:
             print(
                 "error: this project is read-only (saved by a newer tool version).", file=sys.stderr
@@ -219,9 +256,43 @@ def _parts(project, table: list[list[str]], args: argparse.Namespace) -> int:  #
     if args.dry_run or bad:
         print("Nothing was changed." if bad else "Dry run: nothing was changed.")
         return 1 if bad else 0
-    History(project).execute("Import parts", plan.ops)
+    source = args.library_source or _file_source(args.file)
+    ops = [
+        *plan.ops,
+        *library_ops(
+            project,
+            name=args.library_name,
+            version=args.library_version,
+            source=source,
+            date=args.library_date,
+        ),
+    ]
+    History(project).execute("Import parts", ops)
     save_project(project, args.project)
-    print(f"Imported {plan.ok_count} part(s).")
+    print(f"Imported {plan.ok_count} part(s). {describe_library(project)}.")
+    return 0
+
+
+def _file_source(path: Path) -> str:
+    """The imported file's name and a short checksum, so the origin can be told later."""
+    import hashlib
+
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
+    return f"{path.name} (sha256 {digest})"
+
+
+def _library(project, args: argparse.Namespace) -> int:  # type: ignore[no-untyped-def]
+    ops = library_ops(
+        project,
+        name=args.library_name,
+        version=args.library_version,
+        source=args.library_source,
+        date=args.library_date,
+    )
+    if ops:
+        History(project).execute("Record the parts library source", ops)
+        save_project(project, args.project)
+    print(describe_library(project) + ".")
     return 0
 
 

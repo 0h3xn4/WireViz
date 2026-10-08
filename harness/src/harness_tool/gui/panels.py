@@ -39,6 +39,7 @@ from PySide6.QtWidgets import (
 
 from harness_tool.core import checks, drc, edit
 from harness_tool.core.generate.explain import explain_harness, explain_wire
+from harness_tool.core.library_import import describe_library
 from harness_tool.core.model import InterfaceInstance, Part
 from harness_tool.core.verify import verify_project
 from harness_tool.gui import strings
@@ -442,6 +443,7 @@ class PropertiesPanel(QScrollArea):
             lay.addWidget(muted(strings.CARRIES.format(carries)))
             self.lay.addWidget(card)
         self.lay.addWidget(muted(strings.PARTS_UNVERIFIED))
+        self.lay.addWidget(muted(describe_library(p)))
 
     # interface ----------------------------------------------------------------------------------
     def _interface_form(self, iid: str) -> None:

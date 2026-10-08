@@ -37,6 +37,8 @@ def provenance_bytes(project: Project, stamp: Stamp) -> bytes:
         "library": {
             "name": project.library_info.name,
             "version": project.library_info.version,
+            "source": project.library_info.source,
+            "date": project.library_info.date,
             "parts": len(project.parts),
             "parts_by_approval": dict(sorted(approvals.items())),
             "unverified_parts": sum(p.unverified for p in project.parts.values()),

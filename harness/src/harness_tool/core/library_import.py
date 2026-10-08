@@ -8,7 +8,7 @@ row; the tool never guesses whether a part is approved. Preview first, apply as 
 
 from dataclasses import dataclass, field
 
-from harness_tool.core.commands import Op, Put
+from harness_tool.core.commands import Op, Put, SetLibraryInfo
 from harness_tool.core.ids import ID_RE
 from harness_tool.core.imports import ImportError_
 from harness_tool.core.model import Part, Project, evolve
@@ -212,3 +212,34 @@ def plan_parts_import(
     good = {r.part_id for r in plan.rows if r.ok}
     plan.ops = [Put("parts", part) for part in seen.values() if part.id in good]
     return plan
+
+
+def library_ops(
+    project: Project,
+    *,
+    name: str | None = None,
+    version: str | None = None,
+    source: str | None = None,
+    date: str | None = None,
+) -> list[Op]:
+    """Operations that record where the library comes from; fields left as None stay as they are.
+    A bad date (not YYYY-MM-DD) raises ImportError_ before anything changes."""
+    changes = {k: v for k, v in (("name", name), ("version", version), ("source", source), ("date", date)) if v is not None}  # fmt: skip
+    if not changes:
+        return []
+    try:
+        info = evolve(project.library_info, **changes)
+    except ValueError as exc:
+        raise ImportError_(
+            "The library date must be written YYYY-MM-DD (for example 2026-10-08)."
+        ) from exc
+    return [] if info == project.library_info else [SetLibraryInfo(info)]
+
+
+def describe_library(project: Project) -> str:
+    """One line for people: name, version, source and date of the library."""
+    i = project.library_info
+    parts = [f"{i.name} (version {i.version})"]
+    parts.append(f"source: {i.source}" if i.source else "source: not recorded")
+    parts.append(f"data of {i.date}" if i.date else "date: not recorded")
+    return ", ".join(parts)
