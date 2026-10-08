@@ -65,3 +65,4 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-MET-01 | Size, complexity and test metrics are collected by a tool. | ECSS-Q-ST-80C 7.1.5 | `tests/test_metrics.py`, `tools/metrics.py` |
 | REQ-SCF-01 | Every delivery has a configuration file and SHA-256 values. | ECSS-Q-ST-80C 6.2.4.11 | `tests/test_scf.py`, `tools/gen_scf.py` |
 | REQ-STD-01 | Every design rule names the standard requirements it serves; a rule can only cite a requirement that exists in `compliance/requirements`. | audit gap B-12 | `tests/test_drc.py` |
+| REQ-STD-02 | Standard value profiles are opt-in (`harness config --apply-profile`), cite the requirement each value comes from, fill only unset values, keep the placeholder flag, and invalid values are reported. | D-131; ECSS-Q-ST-30-11C 6.11.2, 6.32.4, 6.32.5 | `tests/test_profiles.py` |

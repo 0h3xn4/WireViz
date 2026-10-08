@@ -238,7 +238,11 @@ def _project_lock(args: argparse.Namespace) -> Iterator[None]:
     """Commands that write take the same lock as the editor, so two writers never overlap."""
     path = getattr(args, "project", None)
     writes = args.command in MUTATING or (
-        args.command == "config" and getattr(args, "ampacity_csv", None) is not None
+        args.command == "config"
+        and (
+            getattr(args, "ampacity_csv", None) is not None
+            or getattr(args, "apply_profile", None) is not None
+        )
     )
     if (
         not writes

@@ -9,6 +9,7 @@ to type JSON by hand. It never supplies a number itself.
 
 from dataclasses import dataclass
 
+from harness_tool.core import standard_profiles
 from harness_tool.core.issues import Issue
 from harness_tool.core.model import Project
 from harness_tool.core.model.config import ConfigFile
@@ -118,6 +119,7 @@ def validate(project: Project) -> list[Issue]:
                 bad(n, 'must be a list of pairs of names, for example [["A", "B"]]')
         elif n.key == "ampacity_a_by_awg":
             out.extend(_validate_ampacity(n, v))
+    out.extend(standard_profiles.validate(project))
     return out
 
 

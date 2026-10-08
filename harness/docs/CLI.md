@@ -174,12 +174,14 @@ Hand-over checklist for the engineering values (derating, grounding, test limits
 | --- | --- |
 | `project` |  |
 | `--ampacity-csv AMPACITY_CSV` | CSV with a gauge column and an amperes column; sets derating.ampacity_a_by_awg |
+| `--apply-profile NAME` | fill the unset values from a standard profile (ecss-q-st-30-11c, ecss-e-st-20-07c); values you already set are kept; the files stay placeholders until you review them |
 
 Examples:
 
 ```
 harness config my-design
 harness config my-design --ampacity-csv ampacity.csv
+harness config my-design --apply-profile ecss-q-st-30-11c
 ```
 
 ### harness import-parts

@@ -34,6 +34,7 @@ EXAMPLES: dict[str, list[str]] = {
     "config": [
         "harness config my-design",
         "harness config my-design --ampacity-csv ampacity.csv",
+        "harness config my-design --apply-profile ecss-q-st-30-11c",
     ],
     "import-parts": [
         "harness import-parts my-design parts.csv --approved Approved --pending Review "
