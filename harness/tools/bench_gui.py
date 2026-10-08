@@ -15,7 +15,17 @@ from harness_tool.gui.theme import ThemeManager
 from tools.bench_stress import build
 
 
+def idle(wait_ms: int = 450) -> None:
+    """Let timers from the previous edit (lists, overview map, status hash) finish first."""
+    from PySide6.QtCore import QEventLoop, QTimer
+
+    loop = QEventLoop()
+    QTimer.singleShot(wait_ms, loop.quit)
+    loop.exec()
+
+
 def ms(fn):  # type: ignore[no-untyped-def]
+    idle()
     t = time.perf_counter()
     fn()
     QApplication.processEvents()
@@ -37,6 +47,12 @@ def main() -> None:
     win.resize(1440, 900)
     win.show()
     ctl: EditorController = win.ctl
+    import os
+
+    if os.environ.get("SWITCH"):
+        sys.setswitchinterval(float(os.environ["SWITCH"]))
+    if os.environ.get("NODRC"):
+        ctl._start_drc = lambda: None  # type: ignore[method-assign]
     view: DiagramView = win.view
     project = build()
     print("install + autoplace", ms(lambda: ctl._install(project, None, None)), "ms")

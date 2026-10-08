@@ -69,7 +69,7 @@ def test_problems_panel_is_capped(stress) -> None:  # type: ignore[no-untyped-de
     assert 0 < len(cards) <= 25
 
 
-def test_the_problems_panel_builds_only_the_cards_it_shows(stress) -> None:  # type: ignore[no-untyped-def]
+def test_the_problems_panel_builds_only_the_cards_it_shows(stress, qtbot) -> None:  # type: ignore[no-untyped-def]
     """Regression: the panel built a card for every finding (2000 here) on each change although it
     shows 25, making add, undo and redo 3 to 6 times slower. Counted, so slow machines do not matter."""
     from harness_tool.gui import panels
@@ -85,7 +85,7 @@ def test_the_problems_panel_builds_only_the_cards_it_shows(stress) -> None:  # t
 
     stress.problems._card = counting
     stress.ctl.add_unit("computer")
-    QApplication.processEvents()
+    qtbot.waitUntil(lambda: not stress.problems._dirty, timeout=5000)
     assert 0 < len(built) <= panels.MAX_CARDS + 1, len(built)
 
 
@@ -138,3 +138,14 @@ def test_links_follow_a_moved_unit_exactly_as_a_full_rebuild_draws_them(stress) 
     scene.rebuild()
     rebuilt = {iid: link.path() for iid, link in scene.link_items.items()}
     assert incremental == rebuilt
+
+
+def test_lists_of_many_findings_refresh_after_the_edit_not_inside_it(stress, qtbot) -> None:  # type: ignore[no-untyped-def]
+    """With thousands of findings the problems list and tab counts follow on a short timer, so the
+    canvas is redrawn first."""
+    stress.tabs.setCurrentIndex(0)
+    QApplication.processEvents()
+    assert stress.ctl.findings_are_many()
+    stress.ctl.update_unit("U001", name="x")
+    assert stress.problems._dirty  # not rebuilt inside the edit
+    qtbot.waitUntil(lambda: not stress.problems._dirty, timeout=5000)

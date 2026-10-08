@@ -78,6 +78,10 @@ class NeedSaveAs(HarnessError):
     """The project has no folder yet (sample or unsaved)."""
 
 
+MANY_FINDINGS = 1000  # above this, panels listing findings refresh on a short timer
+LIST_DELAY_MS = 60
+
+
 class EditorController(QObject):
     changed = Signal(object)  # Delta
     selectionChanged = Signal()
@@ -107,6 +111,8 @@ class EditorController(QObject):
         self._saved_revision = 0
         self.journal_error_shown = False
         self._findings_cache: tuple[object, list[checks.Finding]] | None = None
+        self._open_cache: list[checks.Finding] | None = None
+        self._counts_cache: tuple[object, tuple[int, int]] | None = None
         self._owners: dict[str, str] = {}
         self._installs = 0
         self.diff_marks: dict[str, str] = {}  # object ID -> added | changed | removed
@@ -127,14 +133,24 @@ class EditorController(QObject):
 
     # ---- state ------------------------------------------------------------------------------
 
+    def findings_key(self) -> tuple[int, int, int, int]:
+        """Changes whenever the findings may have changed (an edit, an install, a rule result)."""
+        return (self._installs, self.history.revision, id(self.project), self._drc_version)
+
+    def findings_are_many(self) -> bool:
+        """True when the last result was large; lists that depend on it then update after the
+        canvas has been redrawn instead of inside the edit (cheap: nothing is recomputed)."""
+        return self._findings_cache is not None and len(self._findings_cache[1]) > MANY_FINDINGS
+
     def findings(self) -> list[checks.Finding]:
         """Logical findings plus the latest design rule findings, computed once per change."""
-        key = (self._installs, self.history.revision, id(self.project), self._drc_version)
+        key = self.findings_key()
         if self._findings_cache is None or self._findings_cache[0] != key:
             merged = [*checks.find(self.project), *drc.apply_waivers(self.project, self._drc_raw)]
             order = {"error": 0, "warning": 1, "info": 2}
             merged.sort(key=lambda f: (order[f.severity], f.id))
             self._findings_cache = (key, merged)
+            self._open_cache = None
         return self._findings_cache[1]
 
     # ---- design rule check (background) --------------------------------------------------------
@@ -185,7 +201,22 @@ class EditorController(QObject):
             self._drc_worker = None
 
     def open_findings(self) -> list[checks.Finding]:
-        return [f for f in self.findings() if f.waiver is None]
+        """Findings without a waiver, built once per change (a project can have tens of
+        thousands, and several panels ask on every edit)."""
+        found = self.findings()
+        if self._open_cache is None:
+            self._open_cache = [f for f in found if f.waiver is None]
+        return self._open_cache
+
+    def severity_counts(self) -> tuple[int, int]:
+        """(errors, warnings) among the open findings."""
+        key = self.findings_key()
+        if self._counts_cache is None or self._counts_cache[0] != key:
+            open_ = self.open_findings()
+            errors = sum(f.severity == "error" for f in open_)
+            warnings = sum(f.severity == "warning" for f in open_)
+            self._counts_cache = (key, (errors, warnings))
+        return self._counts_cache[1]
 
     def todos(self) -> list[checks.Todo]:
         return checks.todos_from(self.findings())

@@ -9,6 +9,7 @@ from PySide6.QtCore import (
     QPersistentModelIndex,
     QSortFilterProxyModel,
     Qt,
+    QTimer,
     Signal,
 )
 from PySide6.QtGui import QColor, QFont, QIcon, QPainter, QPen, QPixmap
@@ -41,7 +42,7 @@ from harness_tool.core.generate.explain import explain_harness, explain_wire
 from harness_tool.core.model import InterfaceInstance
 from harness_tool.core.verify import verify_project
 from harness_tool.gui import strings
-from harness_tool.gui.controller import Delta, EditorController
+from harness_tool.gui.controller import LIST_DELAY_MS, Delta, EditorController
 from harness_tool.gui.preview import DrawingPreview
 from harness_tool.gui.theme import ThemeManager
 from harness_tool.gui.tokens import CATEGORIES, style_category
@@ -535,6 +536,15 @@ def _first_line(exc: Exception) -> str:
 
 
 MAX_CARDS = 25
+GROUP_LIST = 8  # findings named on a grouped card
+
+
+def _list_timer(parent: QWidget, slot: Callable[[], None]) -> QTimer:
+    timer = QTimer(parent)
+    timer.setSingleShot(True)
+    timer.setInterval(LIST_DELAY_MS)
+    timer.timeout.connect(slot)
+    return timer
 
 
 class ProblemsPanel(QScrollArea):
@@ -549,6 +559,7 @@ class ProblemsPanel(QScrollArea):
         self.lay = scroll_body(self)
         self._dirty = True
         self._signature: object = None
+        self._later = _list_timer(self, self._refresh_if_dirty)
         ctl.changed.connect(lambda _d: self._invalidate())
         ctl.stateChanged.connect(self._invalidate)
         ctl.drcChanged.connect(self._invalidate)
@@ -557,7 +568,15 @@ class ProblemsPanel(QScrollArea):
 
     def _invalidate(self) -> None:
         self._dirty = True
-        if self.isVisible():
+        if not self.isVisible():
+            return
+        if self.ctl.findings_are_many():
+            self._later.start()  # after the canvas is redrawn, once per burst of changes
+        else:
+            self.refresh()
+
+    def _refresh_if_dirty(self) -> None:
+        if self._dirty and self.isVisible():
             self.refresh()
 
     def showEvent(self, event: object) -> None:
@@ -566,34 +585,33 @@ class ProblemsPanel(QScrollArea):
             self.refresh()
 
     def counts(self) -> tuple[int, int]:
-        f = self.ctl.open_findings()
-        return sum(x.severity == "error" for x in f), sum(x.severity == "warning" for x in f)
+        return self.ctl.severity_counts()
 
     def refresh(self) -> None:
         self._dirty = False
-        findings = self.ctl.findings()
         checking = not self.ctl.drc_current
-        signature = (
-            tuple((f.id, f.waiver is not None, f.title) for f in findings),
-            self.ctl.read_only,
-            checking,
-        )
+        # (the key changes with every edit and rule result; comparing every finding instead cost
+        # hundreds of milliseconds per edit when a project has tens of thousands of them)
+        signature = (self.ctl.findings_key(), self.ctl.read_only, checking)
         if signature == self._signature:
             return  # same findings as last time: keep the widgets
         self._signature = signature
+        findings = self.ctl.findings()
         clear_layout(self.lay)
-        open_ = [f for f in findings if f.waiver is None]
+        open_ = self.ctl.open_findings()
         state = muted(strings.DRC_CHECKING if checking else strings.DRC_DONE.format(len(drc.RULES)))
         state.setObjectName("drc-state")
         self.lay.addWidget(state)
         if not open_ and not checking:
             self.lay.addWidget(muted(strings.NO_PROBLEMS))
-        cards = self._cards(open_)
-        for build in cards[:MAX_CARDS]:
+        cards, total = self._cards(open_)
+        for build in cards:
             self.lay.addWidget(build())
-        if len(cards) > MAX_CARDS:
-            self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(len(cards) - MAX_CARDS)))
-        waived = [f for f in findings if f.waiver is not None]
+        if total > MAX_CARDS:
+            self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(total - MAX_CARDS)))
+        waived = (
+            [f for f in findings if f.waiver is not None] if len(findings) != len(open_) else []
+        )
         if waived:
             self.lay.addWidget(heading(strings.WAIVED))
             for f in waived:
@@ -601,29 +619,45 @@ class ProblemsPanel(QScrollArea):
                     self.lay.addWidget(muted(f"✓ {f.id}: “{f.waiver.justification}”"))
         self.lay.addStretch(1)
 
-    def _cards(self, open_: list[checks.Finding]) -> list[Callable[[], QFrame]]:
-        """One card per finding, except that three or more unwaivable findings of one rule about
-        the same object (a wire missing for each signal of an interface) share a single card."""
-        groups: dict[tuple[str, str, str, str | None], list[checks.Finding]] = {}
+    def _cards(self, open_: list[checks.Finding]) -> tuple[list[Callable[[], QFrame]], int]:
+        """Builders for the first MAX_CARDS cards and the total number of cards. One card per
+        finding, except that three or more unwaivable findings of one rule about the same object
+        (a wire missing for each signal of an interface) share a single card. Counted in one
+        cheap pass and built on demand: a project can have tens of thousands of findings."""
+        Key = tuple[str, str, str, str | None]
+        key: Key | None
+
+        def key_of(f: checks.Finding) -> Key:
+            return (f.rule, f.severity, f.object_id.partition(".")[0], f.fix_label)
+
+        counts: dict[Key, int] = {}
+        firsts: dict[Key, list[checks.Finding]] = {}
+        waivable = 0
         for f in open_:
             if f.can_waive:
+                waivable += 1
                 continue
-            key = (f.rule, f.severity, f.object_id.split(".")[0], f.fix_label)
-            groups.setdefault(key, []).append(f)
-        grouped = {key: fs for key, fs in groups.items() if len(fs) >= 3}
-        done: set[tuple[str, str, str, str | None]] = set()
+            key = key_of(f)
+            n = counts.get(key, 0)
+            counts[key] = n + 1
+            if n < GROUP_LIST:
+                firsts.setdefault(key, []).append(f)
+        total = waivable + sum(1 if n >= 3 else n for n in counts.values())
+        done: set[Key] = set()
         cards: list[Callable[[], QFrame]] = []
         for f in open_:
-            key = (f.rule, f.severity, f.object_id.split(".")[0], f.fix_label)
-            if not f.can_waive and key in grouped:
+            if len(cards) >= MAX_CARDS:
+                break
+            key = None if f.can_waive else key_of(f)
+            if key is not None and counts[key] >= 3:
                 if key not in done:
                     done.add(key)
-                    cards.append(partial(self._group_card, grouped[key]))
+                    cards.append(partial(self._group_card, firsts[key], counts[key]))
                 continue
             cards.append(partial(self._card, f))
-        return cards
+        return cards, total
 
-    def _group_card(self, fs: list[checks.Finding]) -> QFrame:
+    def _group_card(self, fs: list[checks.Finding], count: int) -> QFrame:
         first = fs[0]
         card = self._card(first)
         card.setObjectName(f"finding-group-{first.id}")
@@ -635,12 +669,12 @@ class ProblemsPanel(QScrollArea):
                 "info": strings.SEV_INFO,
             }[first.severity]
             head = first.object_id.split(".")[0]
-            title.setText(f"<b>{sev} {strings.GROUPED_PROBLEMS.format(head, len(fs))}</b>")
+            title.setText(f"<b>{sev} {strings.GROUPED_PROBLEMS.format(head, count)}</b>")
         lay = card.layout()
         if isinstance(lay, QVBoxLayout):
             listing = muted(
-                "\n".join(f"• {f.title}" for f in fs[:8])
-                + (f"\n… and {len(fs) - 8} more" if len(fs) > 8 else "")
+                "\n".join(f"• {f.title}" for f in fs[:GROUP_LIST])
+                + (f"\n… and {count - GROUP_LIST} more" if count > GROUP_LIST else "")
             )
             lay.insertWidget(1, listing)
         return card
@@ -693,13 +727,22 @@ class TodoPanel(QScrollArea):
         self.setAccessibleName(strings.TODO)
         self.lay = scroll_body(self)
         self._dirty = True
+        self._later = _list_timer(self, self._refresh_if_dirty)
         ctl.changed.connect(lambda _d: self._invalidate())
         ctl.drcChanged.connect(self._invalidate)
         self.refresh()
 
     def _invalidate(self) -> None:
         self._dirty = True
-        if self.isVisible():
+        if not self.isVisible():
+            return
+        if self.ctl.findings_are_many():
+            self._later.start()  # after the canvas is redrawn, once per burst of changes
+        else:
+            self.refresh()
+
+    def _refresh_if_dirty(self) -> None:
+        if self._dirty and self.isVisible():
             self.refresh()
 
     def showEvent(self, event: object) -> None:

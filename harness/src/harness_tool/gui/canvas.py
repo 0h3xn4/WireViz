@@ -1,5 +1,7 @@
 """Block-diagram canvas: zone lanes, unit boxes, interface links, minimap."""
 
+import math
+
 from PySide6.QtCore import QPointF, QRectF, Qt, QTimer
 from PySide6.QtGui import (
     QBrush,
@@ -659,7 +661,8 @@ class DiagramScene(QGraphicsScene):
         bottom = max(
             (it.pos().y() + it.height() + 60 for it in self.unit_items.values()), default=0
         )
-        height = max(700.0, bottom + 40)
+        # in steps, so adding or undoing one unit rarely resizes the scene (which repaints it all)
+        height = max(700.0, math.ceil((bottom + 40) / LANE_STEP) * LANE_STEP)
         if height != self.lane_height:
             self.lane_height = height
             for z in self.zone_items:
@@ -734,6 +737,7 @@ class DiagramScene(QGraphicsScene):
         self._last_sel = self.ctl.selection
 
 
+LANE_STEP = 256.0  # lane height grows in steps of this many pixels
 MAP_DELAY_MS = 150  # how long the overview map may lag behind an edit
 
 
