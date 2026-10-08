@@ -10,8 +10,8 @@ Every item is **proposed by the developer assistant and waits for the owner's ap
 | T-04 | Flight software clauses not applicable | ECSS-E-ST-40C 5.10.2; ECSS-Q-ST-80C 6.3.5.20, 6.3.5.27 | the tool is ground engineering software | proposed |
 | T-05 | No lower-level suppliers; open-source libraries handled as reused software | ECSS-Q-ST-80C 5.4 | `docs/SRF.md` | proposed |
 | T-06 | No development for reuse, no hardware or service procurement, no device programming | ECSS-Q-ST-80C 7.3, 7.4, 7.5 | not applicable to this product | proposed |
-| T-07 | Code coverage target | ECSS-E-ST-40C 0860135 ("TBA" for category C) | 90 % statement and branch coverage on `core`, measured; GUI outside the measure, exercised by journeys | owner agreed in conversation; written record open (A-14) |
-| T-08 | AI assistance treated as an automatic code generation tool | ECSS-Q-ST-80C 6.2.8 | controls: tests first, review of each diff by the owner, strict static analysis, independent output verifiers | owner agreed in conversation; written record open (A-15) |
+| T-07 | Code coverage target | ECSS-E-ST-40C 0860135 ("TBA" for category C) | 90 % statement and branch coverage on `core`, measured; GUI outside the measure, exercised by journeys | approved by the owner, 2026-10-08 (answer given in the working session; recorded here) |
+| T-08 | AI assistance treated as an automatic code generation tool | ECSS-Q-ST-80C 6.2.8 | controls: tests first, review of each diff by the owner, strict static analysis, independent output verifiers | approved by the owner, 2026-10-08 (answer given in the working session; recorded here) |
 | T-09 | Standards referred to but not supplied are not assessed | ECSS-Q-ST-30, -40, -10, -10-09, -20; ECSS-M-ST-40; ECSS-Q-ST-60-15; ECSS-S-ST-00-01 | clauses that only say "shall apply" a missing standard are marked *human* with the reason | proposed |
 | T-10 | Scope of kind-B assessment | ECSS-E-ST-20-07C clause 5 (EMC test methods); ESCC 3901 clauses 5 to 12 (manufacturing and qualification tests) | judged not to be harness design requirements; `requirements/overrides.csv` gives the reason per row | proposed |
 | T-11 | Clause-level assessment of kind A | all rows of ECSS-E-ST-40C and ECSS-Q-ST-80C | a requirement inherits the assessment of its clause unless it has its own row in `assessment/process_overrides.csv` | proposed |
@@ -21,6 +21,7 @@ Every item is **proposed by the developer assistant and waits for the owner's ap
 | T-15 | Wire surface temperature is not computed | ECSS-Q-ST-30-11C 6.32.4 a.2, b, c | only the ambient temperature is compared with the part limit; a thermal analysis outside the tool is needed; the report says so | proposed |
 | T-16 | "Family-group codes" not mapped | ECSS-Q-ST-30-11C 6.11, 6.12, 6.32 | profile values are applied to all connectors and wires of the project (A-16) | proposed |
 | T-17 | A bundle is every wire of one harness | ECSS-Q-ST-30-11C 6.32.5.1 | conservative; bundles that run together across harnesses are not combined | proposed |
+| T-18 | Default branch is not technically protected | ECSS-Q-ST-80C 5.6.1.3 (see `docs/STANDARDS.md`) | CI is not made a required check; a failing run blocks merging by the owner's practice only. The owner chose not to protect the branch (2026-10-08); the reason was not stated and is still to be written here. | decided by the owner (2026-10-08); reason open |
 
 ## Waivers
 None requested, none granted. A finding of the design rule check can be waived inside a project with a written reason (existing mechanism); that is a design waiver and not a waiver of the standards for the tool.
