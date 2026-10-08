@@ -1,10 +1,10 @@
 """The integrity check reuses results for unchanged objects; it must never hide a new problem."""
 
-from harness_tool.core.commands import Delete, Put, apply_ops
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.integrity import check_integrity
-from harness_tool.core.model import evolve
-from harness_tool.core.samples import sat15
+from harness_design_studio.core.commands import Delete, Put, apply_ops
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.integrity import check_integrity
+from harness_design_studio.core.model import evolve
+from harness_design_studio.core.samples import sat15
 
 
 def codes(p) -> set[str]:  # type: ignore[no-untyped-def]

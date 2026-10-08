@@ -1,7 +1,7 @@
 #!/bin/sh
 # Install the package on a CLEAN Ubuntu without network and run its self-test.
 # Usage (on a machine with Docker, after building the .deb):
-#   packaging/ubuntu/container/clean-machine-test.sh 24.04 dist/harness-tool_<version>_amd64.deb
+#   packaging/ubuntu/container/clean-machine-test.sh 24.04 dist/harness-design-studio_<version>_amd64.deb
 # The image is prepared with the runtime libraries while online; the test itself runs with --network none.
 set -eu
 release="$1"; deb="$2"
@@ -15,4 +15,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 DOCKER
 docker run --rm --network none -e QT_QPA_PLATFORM=offscreen -v "$(pwd)/$deb":/pkg.deb:ro "$image" sh -c '
-  dpkg -i /pkg.deb && harness --version && harness-tool --selftest && echo CLEAN-MACHINE-TEST-OK'
+  dpkg -i /pkg.deb && harness --version && harness-design-studio --selftest && echo CLEAN-MACHINE-TEST-OK'

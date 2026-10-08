@@ -26,7 +26,7 @@
 
 ## Examples and templates
 
-`harness new --list` shows the example projects, `harness templates FOLDER` copies the import templates, demo values, CI scripts and the review checklist. What each file is: [`../src/harness_tool/resources/examples/templates/README.md`](../src/harness_tool/resources/examples/templates/README.md). Screenshots of the app are in [`ux/qt/`](ux/qt/).
+`harness new --list` shows the example projects, `harness templates FOLDER` copies the import templates, demo values, CI scripts and the review checklist. What each file is: [`../src/harness_design_studio/resources/examples/templates/README.md`](../src/harness_design_studio/resources/examples/templates/README.md). Screenshots of the app are in [`ux/qt/`](ux/qt/).
 
 ## Decisions, requirements, status
 

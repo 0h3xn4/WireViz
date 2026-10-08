@@ -5,7 +5,7 @@ import math
 
 import pytest
 
-from harness_tool.gui.tokens import CATEGORIES, DARK, LIGHT, SPACING, _lin, contrast
+from harness_design_studio.gui.tokens import CATEGORIES, DARK, LIGHT, SPACING, _lin, contrast
 
 THEMES = {"light": LIGHT, "dark": DARK}
 SURFACES = ("bg", "surface", "surface-2")

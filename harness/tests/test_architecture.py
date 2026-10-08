@@ -3,10 +3,10 @@
 import ast
 from pathlib import Path
 
-CORE = Path(__file__).resolve().parents[1] / "src" / "harness_tool" / "core"
+CORE = Path(__file__).resolve().parents[1] / "src" / "harness_design_studio" / "core"
 FORBIDDEN_PREFIXES = (
-    "harness_tool.gui",
-    "harness_tool.cli",
+    "harness_design_studio.gui",
+    "harness_design_studio.cli",
     "PySide6",
     "PyQt5",
     "PyQt6",

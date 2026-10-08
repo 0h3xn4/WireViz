@@ -1,6 +1,6 @@
 """Download every pinned wheel into a local folder for offline installs (run on a connected host).
 
-Install later without network:  pip install --no-index --find-links wheelhouse harness-tool[gui]
+Install later without network:  pip install --no-index --find-links wheelhouse harness-design-studio[gui]
 """
 
 import subprocess

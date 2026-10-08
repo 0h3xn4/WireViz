@@ -6,23 +6,23 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from harness_tool.cli.main import main as cli_main
-from harness_tool.core.commands import Delete, History, Put, apply_ops
-from harness_tool.core.generate.engine import (
+from harness_design_studio.cli.main import main as cli_main
+from harness_design_studio.core.commands import Delete, History, Put, apply_ops
+from harness_design_studio.core.generate.engine import (
     GenerationCancelled,
     generate_project,
     generation_status,
     input_hash,
     plan_generation,
 )
-from harness_tool.core.generate.lengths import path_length
-from harness_tool.core.generate.wiring import links_of
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Harness, evolve
-from harness_tool.core.samples import mini3, sat15, stress_project
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core.generate.lengths import path_length
+from harness_design_studio.core.generate.wiring import links_of
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Harness, evolve
+from harness_design_studio.core.samples import mini3, sat15, stress_project
+from harness_design_studio.core.verify import verify_project
 from tests.helpers import time_limit
 
 

@@ -1,7 +1,7 @@
 import pytest
 
-from harness_tool import __version__
-from harness_tool.cli.main import main
+from harness_design_studio import __version__
+from harness_design_studio.cli.main import main
 
 
 def test_version(capsys: pytest.CaptureFixture[str]) -> None:

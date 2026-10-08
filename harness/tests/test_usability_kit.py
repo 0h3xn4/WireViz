@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core.io.loader import load_project
+from harness_design_studio.core.io.loader import load_project
 from tools.usability_setup import build
 from tools.usability_summary import read, report, sus_score
 
@@ -73,7 +73,7 @@ def test_setup_builds_loadable_material_with_one_corrupt_project(tmp_path: Path)
 
 
 def test_icd_csv_has_exactly_two_bad_rows_for_t4(tmp_path: Path) -> None:
-    from harness_tool.core.imports import parse_csv, plan_interface_import
+    from harness_design_studio.core.imports import parse_csv, plan_interface_import
 
     build(tmp_path)
     table = parse_csv((tmp_path / "icd.csv").read_text())

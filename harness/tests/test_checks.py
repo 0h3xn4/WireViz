@@ -2,10 +2,10 @@
 
 import pytest
 
-from harness_tool.core import checks, edit
-from harness_tool.core.commands import History
-from harness_tool.core.model import Project
-from harness_tool.core.samples import mini3, new_project
+from harness_design_studio.core import checks, edit
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.model import Project
+from harness_design_studio.core.samples import mini3, new_project
 
 
 def run(p: Project, ops: list) -> None:  # type: ignore[type-arg]
@@ -49,8 +49,8 @@ def test_no_connector_finding_and_fix() -> None:
     ops, iid = edit.ops_add_interface(p, "rs422", "OBC1", "RW1")
     run(p, ops)
     i = p.interfaces[iid]
-    from harness_tool.core.commands import Put
-    from harness_tool.core.model import evolve
+    from harness_design_studio.core.commands import Put
+    from harness_design_studio.core.model import evolve
 
     run(
         p,
@@ -74,8 +74,8 @@ def test_no_connector_fix_without_free_connector() -> None:
     p = two_unit_project()
     ops, iid = edit.ops_add_interface(p, "rs422", "OBC1", "RW1")
     run(p, ops)
-    from harness_tool.core.commands import Put
-    from harness_tool.core.model import evolve
+    from harness_design_studio.core.commands import Put
+    from harness_design_studio.core.model import evolve
 
     i = p.interfaces[iid]
     run(

@@ -7,10 +7,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from harness_tool.core import drc
-from harness_tool.core.commands import Put, apply_ops
-from harness_tool.core.drc import standard_rules as sr
-from harness_tool.core.model import Project, evolve
+from harness_design_studio.core import drc
+from harness_design_studio.core.commands import Put, apply_ops
+from harness_design_studio.core.drc import standard_rules as sr
+from harness_design_studio.core.model import Project, evolve
 from tests import test_drc as t
 
 
@@ -130,7 +130,7 @@ def test_every_finding_names_its_requirement() -> None:
 
 
 def test_sizing_uses_the_bundle_table_instead_of_the_single_factor() -> None:
-    from harness_tool.core.generate.sizing import size_wire
+    from harness_design_studio.core.generate.sizing import size_wire
 
     der = {
         "ampacity_a_by_awg": {"24": 2.0, "20": 5.0, "18": 7.0},
@@ -165,9 +165,9 @@ def test_sizing_uses_the_bundle_table_instead_of_the_single_factor() -> None:
 
 
 def test_generation_leaves_an_unassigned_contact_between_power_and_return() -> None:
-    from harness_tool.core.generate.engine import generate_project, plan_generation
-    from harness_tool.core.samples import sat15
-    from harness_tool.core.verify import verify_project
+    from harness_design_studio.core.generate.engine import generate_project, plan_generation
+    from harness_design_studio.core.samples import sat15
+    from harness_design_studio.core.verify import verify_project
 
     p = sat15()
     t.set_cfg(p, "generation", power_return_gap_pins=1)
@@ -181,8 +181,8 @@ def test_generation_leaves_an_unassigned_contact_between_power_and_return() -> N
 
 
 def test_without_the_setting_power_and_return_stay_adjacent_as_before() -> None:
-    from harness_tool.core.generate.engine import generate_project
-    from harness_tool.core.samples import sat15
+    from harness_design_studio.core.generate.engine import generate_project
+    from harness_design_studio.core.samples import sat15
 
     p = sat15()
     generate_project(p)
@@ -191,7 +191,7 @@ def test_without_the_setting_power_and_return_stay_adjacent_as_before() -> None:
 
 
 def test_shield_bonded_at_both_ends_passes() -> None:
-    from harness_tool.core.model import ShieldGroup  # noqa: F401
+    from harness_design_studio.core.model import ShieldGroup  # noqa: F401
 
     p = t.pos_shield_bonding()
     for h in list(p.harnesses.values()):
@@ -217,7 +217,7 @@ def test_emc_class_split_passes_when_classes_differ() -> None:
 
 
 def test_emc_class_is_in_the_wire_list_and_the_labels_only_when_classes_exist() -> None:
-    from harness_tool.core.outputs.build import build_outputs
+    from harness_design_studio.core.outputs.build import build_outputs
 
     p = t.base()
     plain = build_outputs(p).files
@@ -233,8 +233,8 @@ def test_emc_class_is_in_the_wire_list_and_the_labels_only_when_classes_exist() 
 
 
 def test_the_output_verifier_catches_a_wrong_emc_class() -> None:
-    from harness_tool.core.outputs.build import build_outputs
-    from harness_tool.core.outputs.verify import verify_outputs
+    from harness_design_studio.core.outputs.build import build_outputs
+    from harness_design_studio.core.outputs.verify import verify_outputs
 
     p = t.base()
     for tid in list(p.interface_types):

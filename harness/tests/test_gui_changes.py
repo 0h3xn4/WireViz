@@ -5,11 +5,11 @@ import pytest
 pytest.importorskip("PySide6")
 pytestmark = pytest.mark.gui
 
-from harness_tool.core.commands import Put  # noqa: E402
-from harness_tool.core.io.saver import save_project  # noqa: E402
-from harness_tool.core.model import evolve  # noqa: E402
-from harness_tool.core.samples import sat15_full  # noqa: E402
-from harness_tool.gui.dialogs import ChangeDialog, DiffDialog, HistoryDialog  # noqa: E402
+from harness_design_studio.core.commands import Put  # noqa: E402
+from harness_design_studio.core.io.saver import save_project  # noqa: E402
+from harness_design_studio.core.model import evolve  # noqa: E402
+from harness_design_studio.core.samples import sat15_full  # noqa: E402
+from harness_design_studio.gui.dialogs import ChangeDialog, DiffDialog, HistoryDialog  # noqa: E402
 from tests.gui_helpers import DialogScript, make_window  # noqa: E402
 
 

@@ -1,4 +1,4 @@
-# harness-tool 0.1.0rc4 model 85aa3c207e98
+# harness-design-studio 0.1.0rc4 model 85aa3c207e98
 Test,Type,From,To,Expected,Limit,Test voltage,Wire
 T001,continuity,W001-P1.1,W001-P2.1,continuous,TBD (placeholder),,W001-001
 T002,continuity,W001-P1.2,W001-P2.2,continuous,TBD (placeholder),,W001-002

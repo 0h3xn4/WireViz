@@ -7,8 +7,8 @@ import pytest
 pytest.importorskip("PySide6")
 pytestmark = pytest.mark.gui
 
-from harness_tool.core.generate.engine import generate_project  # noqa: E402
-from harness_tool.core.samples import sat15  # noqa: E402
+from harness_design_studio.core.generate.engine import generate_project  # noqa: E402
+from harness_design_studio.core.samples import sat15  # noqa: E402
 from tests.gui_helpers import make_window  # noqa: E402
 
 
@@ -76,7 +76,7 @@ def test_the_filter_follows_a_new_project_and_an_added_interface(win, tmp_path) 
     scene.rebuild()
     assert scene.filter == ("bundle", sorted(win.ctl.project.harnesses)[0])
     assert faded(win)
-    from harness_tool.core.samples import mini3
+    from harness_design_studio.core.samples import mini3
 
     win.ctl._install(mini3(), None, None)  # another project: its own bundles are offered
     assert win.filter_value.findData(sorted(win.ctl.project.harnesses)[0]) >= 0

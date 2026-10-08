@@ -6,9 +6,9 @@ from PySide6.QtCore import QPoint, QPointF, QSettings, Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication, QDialog
 
-from harness_tool.gui.canvas import UnitItem
-from harness_tool.gui.main_window import MainWindow
-from harness_tool.gui.theme import ThemeManager
+from harness_design_studio.gui.canvas import UnitItem
+from harness_design_studio.gui.main_window import MainWindow
+from harness_design_studio.gui.theme import ThemeManager
 
 
 def _discard(title: str, text: str, buttons: list[str]) -> int:

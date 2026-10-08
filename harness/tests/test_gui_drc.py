@@ -7,11 +7,11 @@ from PySide6.QtWidgets import QPushButton
 pytest.importorskip("PySide6")
 pytestmark = pytest.mark.gui
 
-from harness_tool.core import drc  # noqa: E402
-from harness_tool.core.commands import Put  # noqa: E402
-from harness_tool.core.generate.engine import generate_project  # noqa: E402
-from harness_tool.core.model import evolve  # noqa: E402
-from harness_tool.core.samples import sat15  # noqa: E402
+from harness_design_studio.core import drc  # noqa: E402
+from harness_design_studio.core.commands import Put  # noqa: E402
+from harness_design_studio.core.generate.engine import generate_project  # noqa: E402
+from harness_design_studio.core.model import evolve  # noqa: E402
+from harness_design_studio.core.samples import sat15  # noqa: E402
 from tests.gui_helpers import DialogScript, make_window  # noqa: E402
 
 
@@ -106,7 +106,7 @@ def test_buttons_still_enabled_and_dialogs_unchanged(win) -> None:  # type: igno
 
 def test_editor_waits_for_a_pause_before_checking(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
     """Edits must never wait for the check: it starts only after the user pauses."""
-    from harness_tool.gui.controller import DRC_DELAY_MS
+    from harness_design_studio.gui.controller import DRC_DELAY_MS
 
     assert DRC_DELAY_MS >= 1000
     w = make_window(tmp_path)

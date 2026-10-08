@@ -8,14 +8,14 @@ import time
 
 import pytest
 
-from harness_tool.core import drc
-from harness_tool.core.drc import worker
-from harness_tool.core.edit import clone_with
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.model import Project
-from harness_tool.core.samples import sat15
-from harness_tool.gui import drc_process
-from harness_tool.gui.drc_process import DrcProcess, run_check
+from harness_design_studio.core import drc
+from harness_design_studio.core.drc import worker
+from harness_design_studio.core.edit import clone_with
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.model import Project
+from harness_design_studio.core.samples import sat15
+from harness_design_studio.gui import drc_process
+from harness_design_studio.gui.drc_process import DrcProcess, run_check
 from tests.helpers import time_limit
 
 
@@ -62,7 +62,7 @@ def test_the_check_can_be_kept_in_this_process(project, monkeypatch) -> None:  #
 
 
 def test_a_packaged_program_is_started_with_the_worker_flag(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    assert drc_process.worker_command()[1:] == ["-m", "harness_tool.core.drc.worker"]
+    assert drc_process.worker_command()[1:] == ["-m", "harness_design_studio.core.drc.worker"]
     monkeypatch.setattr(sys, "frozen", True, raising=False)
     assert drc_process.worker_command() == [sys.executable, "--drc-worker"]
 

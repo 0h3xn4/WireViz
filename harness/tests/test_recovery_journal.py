@@ -3,12 +3,12 @@
 import json
 from pathlib import Path
 
-from harness_tool.core import edit
-from harness_tool.core.commands import History
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.recovery import (
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.recovery import (
     clear_journal,
     has_journal,
     journal_differs_from_disk,
@@ -16,7 +16,7 @@ from harness_tool.core.recovery import (
     read_journal,
     write_journal,
 )
-from harness_tool.core.samples import mini3
+from harness_design_studio.core.samples import mini3
 from tests.helpers import FIXTURES, copy_project, edit_json
 
 
@@ -62,7 +62,7 @@ def test_journal_never_leaves_the_project_folder(tmp_path: Path) -> None:
 
 
 def test_layout_zones_and_waivers_persist(tmp_path: Path) -> None:
-    from harness_tool.core import checks
+    from harness_design_studio.core import checks
 
     root = tmp_path / "p"
     p = mini3()
@@ -114,8 +114,8 @@ def test_bad_layout_and_waiver_files_are_quarantined(tmp_path: Path) -> None:
 
 
 def test_orphan_placement_is_a_warning_not_an_error() -> None:
-    from harness_tool.core.integrity import check_integrity
-    from harness_tool.core.model import Placement
+    from harness_design_studio.core.integrity import check_integrity
+    from harness_design_studio.core.model import Placement
 
     p = mini3()
     p.placements["GHOST"] = Placement(id="GHOST", x=1, y=2)

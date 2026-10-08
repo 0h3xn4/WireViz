@@ -7,7 +7,7 @@ import sys
 import textwrap
 from pathlib import Path
 
-SRC = Path(__file__).resolve().parents[1] / "src" / "harness_tool"
+SRC = Path(__file__).resolve().parents[1] / "src" / "harness_design_studio"
 
 BANNED_MODULES = {
     "socket", "ssl", "http", "urllib", "urllib3", "requests", "httpx", "aiohttp",
@@ -57,10 +57,10 @@ def test_runtime_sockets_blocked_cli_and_gui() -> None:
         socket.create_connection = _blocked
         socket.getaddrinfo = _blocked
 
-        from harness_tool.cli.main import main
+        from harness_design_studio.cli.main import main
         assert main(["--version"]) == 0
 
-        from harness_tool.gui.app import create_window
+        from harness_design_studio.gui.app import create_window
         win = create_window()
         win.show()
         assert win.windowTitle()

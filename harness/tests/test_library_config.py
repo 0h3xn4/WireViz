@@ -1,8 +1,8 @@
 """REQ-LIB-01 / REQ-CFG-01: starter library and configuration never invent engineering numbers."""
 
-from harness_tool.core.model import PART_CATEGORIES
-from harness_tool.core.model.config import CONFIG_NAMES, default_configs
-from harness_tool.core.starter import starter_interface_types, starter_parts
+from harness_design_studio.core.model import PART_CATEGORIES
+from harness_design_studio.core.model.config import CONFIG_NAMES, default_configs
+from harness_design_studio.core.starter import starter_interface_types, starter_parts
 
 
 def test_starter_parts_are_unverified_examples_without_numbers() -> None:

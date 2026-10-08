@@ -162,7 +162,7 @@ Open question for you: do you have a company title block (D-15)?
 
 ## 7. Design system
 
-Single source of truth: `src/harness_tool/gui/tokens.py` (no Qt import). The prototype and the real GUI both read it, and `tests/test_tokens.py` enforces the accessibility numbers below.
+Single source of truth: `src/harness_design_studio/gui/tokens.py` (no Qt import). The prototype and the real GUI both read it, and `tests/test_tokens.py` enforces the accessibility numbers below.
 
 ### 7.1 Colour tokens (WCAG 2.2 AA, verified by tests)
 | Token | Light | Contrast on bg / surface-2 | Dark | Contrast on bg / surface-2 | Use |

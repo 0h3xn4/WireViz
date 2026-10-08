@@ -7,7 +7,7 @@
   "wires": 6
  },
  "export_notes": "The WireViz-style YAML files are an export format; WireViz is not used to make any output.",
- "format": "harness-tool-provenance",
+ "format": "harness-design-studio-provenance",
  "format_version": 1,
  "library": {
   "date": null,
@@ -52,6 +52,6 @@
    "values_sha256_16": "7188cb5b8734e625"
   }
  },
- "tool": "harness-tool",
+ "tool": "harness-design-studio",
  "tool_version": "0.1.0rc4"
 }

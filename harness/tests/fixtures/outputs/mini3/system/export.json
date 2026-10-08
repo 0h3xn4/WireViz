@@ -387,10 +387,10 @@
    "unit_id": "RW1"
   }
  ],
- "format": "harness-tool-export",
+ "format": "harness-design-studio-export",
  "format_version": 1,
  "generator": {
-  "name": "harness-tool",
+  "name": "harness-design-studio",
   "version": "0.1.0rc4"
  },
  "harnesses": [

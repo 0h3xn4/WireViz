@@ -6,16 +6,16 @@ from copy import copy
 
 import pytest
 
-from harness_tool.cli.main import main as cli_main
-from harness_tool.core import checks, drc, edit
-from harness_tool.core.commands import History, Put, apply_ops
-from harness_tool.core.drc.report import render_markdown, stale_waivers
-from harness_tool.core.drc.rules import RULES
-from harness_tool.core.generate.engine import generate_project, plan_generation
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Connector, Harness, Pin, Project, Wire, evolve
-from harness_tool.core.model.config import ConfigFile
-from harness_tool.core.samples import sat15, stress_project
+from harness_design_studio.cli.main import main as cli_main
+from harness_design_studio.core import checks, drc, edit
+from harness_design_studio.core.commands import History, Put, apply_ops
+from harness_design_studio.core.drc.report import render_markdown, stale_waivers
+from harness_design_studio.core.drc.rules import RULES
+from harness_design_studio.core.generate.engine import generate_project, plan_generation
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Connector, Harness, Pin, Project, Wire, evolve
+from harness_design_studio.core.model.config import ConfigFile
+from harness_design_studio.core.samples import sat15, stress_project
 from tests.helpers import time_limit
 
 _BASE: Project | None = None
@@ -552,7 +552,7 @@ def test_errors_cannot_be_waived() -> None:
 
 
 def test_waiver_survives_save_and_load(tmp_path) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.core.io.loader import load_project
+    from harness_design_studio.core.io.loader import load_project
 
     p = base()
     f = next(x for x in drc.run(p) if x.rule == "connector-lookalike")
@@ -586,7 +586,7 @@ def test_checks_find_does_not_include_design_rules() -> None:
 def test_apply_waivers_ignores_findings_that_cannot_be_waived() -> None:
     p = pos_mate_mismatch()
     f = next(x for x in drc.run(p) if x.rule == "mate-mismatch")
-    p.waivers[f.id] = __import__("harness_tool.core.model", fromlist=["Waiver"]).Waiver(
+    p.waivers[f.id] = __import__("harness_design_studio.core.model", fromlist=["Waiver"]).Waiver(
         id=f.id, rule=f.rule, object_id=f.object_id, justification="not allowed to count"
     )
     assert next(x for x in drc.run(p) if x.id == f.id).waiver is None

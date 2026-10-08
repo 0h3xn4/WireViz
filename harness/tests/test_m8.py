@@ -2,16 +2,20 @@
 
 import pytest
 
-from harness_tool.core import edit
-from harness_tool.core.commands import History, Op, Put, apply_ops
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.model import BranchPoint, Harness, Project, Segment, evolve
-from harness_tool.core.outputs.build import build_outputs
-from harness_tool.core.outputs.drawing import SKETCH_MAX_NODES, harness_sheets, sketch_layout
-from harness_tool.core.outputs.stamp import Stamp
-from harness_tool.core.outputs.verify import verify_outputs
-from harness_tool.core.samples import sat15, sat15_full, stress_project
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import History, Op, Put, apply_ops
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.model import BranchPoint, Harness, Project, Segment, evolve
+from harness_design_studio.core.outputs.build import build_outputs
+from harness_design_studio.core.outputs.drawing import (
+    SKETCH_MAX_NODES,
+    harness_sheets,
+    sketch_layout,
+)
+from harness_design_studio.core.outputs.stamp import Stamp
+from harness_design_studio.core.outputs.verify import verify_outputs
+from harness_design_studio.core.samples import sat15, sat15_full, stress_project
 from tests.helpers import time_limit
 
 

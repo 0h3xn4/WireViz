@@ -319,4 +319,4 @@ You have now done everything the tool does, once. Add a **Create redundant copy*
 | the screen, shortcuts, glossary | the user guide ([`guide/USER_GUIDE.md`](guide/USER_GUIDE.md); **F1** in the app) |
 | to try a realistic system | `harness new sat --template small-satellite`, then generate it |
 | something went wrong | [`FAQ.md`](FAQ.md) |
-| what the examples and templates contain | [`../src/harness_tool/resources/examples/templates/README.md`](../src/harness_tool/resources/examples/templates/README.md) |
+| what the examples and templates contain | [`../src/harness_design_studio/resources/examples/templates/README.md`](../src/harness_design_studio/resources/examples/templates/README.md) |

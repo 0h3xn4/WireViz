@@ -5,9 +5,9 @@ import json
 import shutil
 from pathlib import Path
 
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.outputs.build import build_outputs
-from harness_tool.core.samples import mini3, sat15, sat15_full
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.outputs.build import build_outputs
+from harness_design_studio.core.samples import mini3, sat15, sat15_full
 from tests.helpers import output_digests
 
 ROOT = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "outputs"

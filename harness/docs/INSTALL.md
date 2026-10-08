@@ -12,19 +12,19 @@ Pick **one** of the three ways. If you are unsure, use A.
 
 ## Get the package
 
-You need one file, either `harness-tool_<version>_amd64.deb` (way A) or `harness-tool-<version>-linux-<arch>.tar.gz` (way B). Your tool administrator provides it, or you take it from the build artifacts of the project's CI run (the artifact is called `harness-tool-ubuntu-24.04`). You can also build it yourself (way C, last section).
+You need one file, either `harness-design-studio_<version>_amd64.deb` (way A) or `harness-design-studio-<version>-linux-<arch>.tar.gz` (way B). Your tool administrator provides it, or you take it from the build artifacts of the project's CI run (the artifact is called `harness-design-studio-ubuntu-24.04`). You can also build it yourself (way C, last section).
 
 Copy the file to the machine. It never needs to reach the network.
 
 ## A. The `.deb` package (recommended)
 
 ```
-sudo apt install ./harness-tool_<version>_amd64.deb
+sudo apt install ./harness-design-studio_<version>_amd64.deb
 ```
 
-(Use `./` in front of the name; without it `apt` looks in its online lists.) This installs the program into `/opt/harness-tool` and puts two commands on your path:
+(Use `./` in front of the name; without it `apt` looks in its online lists.) This installs the program into `/opt/harness-design-studio` and puts two commands on your path:
 
-- `harness-tool`: the app (also in the application menu as **Harness Design Studio**).
+- `harness-design-studio`: the app (also in the application menu as **Harness Design Studio**).
 - `harness`: the command line tool.
 
 Check it:
@@ -37,28 +37,28 @@ harness --version
 harness 0.1.0rc4
 ```
 
-Remove it later with `sudo apt remove harness-tool`. Upgrade by installing the newer `.deb` the same way.
+Remove it later with `sudo apt remove harness-design-studio`. Upgrade by installing the newer `.deb` the same way.
 
 ## B. The `.tar.gz` without administrator rights
 
 ```
-tar xzf harness-tool-<version>-linux-<arch>.tar.gz
-cd harness-tool
+tar xzf harness-design-studio-<version>-linux-<arch>.tar.gz
+cd harness-design-studio
 ./install.sh
 ```
 
-This installs for **your user only**, into `~/.local/opt/harness-tool`, and adds links in `~/.local/bin` and an entry in your application menu.
+This installs for **your user only**, into `~/.local/opt/harness-design-studio`, and adds links in `~/.local/bin` and an entry in your application menu.
 
-If `install.sh` ends with a note that `~/.local/bin` is not on your PATH, the commands `harness-tool` and `harness` are not found yet. Fix it once:
+If `install.sh` ends with a note that `~/.local/bin` is not on your PATH, the commands `harness-design-studio` and `harness` are not found yet. Fix it once:
 
 ```
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 . ~/.bashrc
 ```
 
-(or log out and in). Until then you can start the app from the application menu or `~/.local/bin/harness-tool`.
+(or log out and in). Until then you can start the app from the application menu or `~/.local/bin/harness-design-studio`.
 
-Other options of `install.sh`: `sudo ./install.sh --system` installs for everyone into `/usr/local/lib/harness-tool`; `--prefix FOLDER` chooses the folder. Remove with `./uninstall.sh` (or `sudo ./uninstall.sh --system`); it removes only what the installer put there.
+Other options of `install.sh`: `sudo ./install.sh --system` installs for everyone into `/usr/local/lib/harness-design-studio`; `--prefix FOLDER` chooses the folder. Remove with `./uninstall.sh` (or `sudo ./uninstall.sh --system`); it removes only what the installer put there.
 
 Run `install.sh` from the **unpacked package**. Run from the source tree it refuses, because the built program is missing there.
 
@@ -66,7 +66,7 @@ Run `install.sh` from the **unpacked package**. Run from the source tree it refu
 
 ```
 harness --version          # prints the version
-harness-tool --selftest    # opens the editor offscreen, makes a project, generates, exports, and prints "selftest ok"
+harness-design-studio --selftest    # opens the editor offscreen, makes a project, generates, exports, and prints "selftest ok"
 ```
 
 Then start **Harness Design Studio** from the application menu. The first start opens a sample project and a short tour.
@@ -98,9 +98,9 @@ Run the app with `harness-gui`, the command line tool with `harness`. Run the te
 Build the packages yourself:
 
 ```
-python -m tools.build_installer      # dist/harness-tool/ and the .tar.gz
-python -m tools.build_deb            # dist/harness-tool_<version>_amd64.deb
-dist/harness-tool/harness-tool --selftest
+python -m tools.build_installer      # dist/harness-design-studio/ and the .tar.gz
+python -m tools.build_deb            # dist/harness-design-studio_<version>_amd64.deb
+dist/harness-design-studio/harness-design-studio --selftest
 ```
 
 The release procedure and the clean-machine check are in [`RELEASE.md`](RELEASE.md).

@@ -6,23 +6,23 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from harness_tool.cli.main import main as cli_main
-from harness_tool.core import edit
-from harness_tool.core.commands import Delete, History, apply_ops
-from harness_tool.core.generate.engine import generate_project, plan_generation
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.kicad import (
+from harness_design_studio.cli.main import main as cli_main
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import Delete, History, apply_ops
+from harness_design_studio.core.generate.engine import generate_project, plan_generation
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.kicad import (
     NetlistError,
     clean_net,
     parse_netlist,
     plan_netlist_import,
     read_netlist,
 )
-from harness_tool.core.model import Project, evolve
-from harness_tool.core.samples import mini3
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core.model import Project, evolve
+from harness_design_studio.core.samples import mini3
+from harness_design_studio.core.verify import verify_project
 
 FIXTURE = Path(__file__).parent / "fixtures" / "kicad" / "unit.net.xml"
 MAP = {"28V": "PWR", "GND": "RTN"}
@@ -200,7 +200,7 @@ def test_a_signal_the_fixed_pinout_does_not_have_is_an_error_not_a_guess() -> No
     apply_ops(
         p,
         [
-            __import__("harness_tool.core.commands", fromlist=["Put"]).Put(
+            __import__("harness_design_studio.core.commands", fromlist=["Put"]).Put(
                 "connectors",
                 evolve(
                     box,
@@ -331,7 +331,7 @@ def test_hostile_or_wrong_files_are_refused_politely(data: bytes) -> None:
 
 
 def test_oversized_netlist_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
-    from harness_tool.core import kicad
+    from harness_design_studio.core import kicad
 
     monkeypatch.setattr(kicad, "MAX_BYTES", 10)
     with pytest.raises(NetlistError, match="too large"):

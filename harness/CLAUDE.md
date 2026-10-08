@@ -14,7 +14,7 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmarks: `python -m tools.bench_stress`, `python -m tools.bench_generate`
 - Output goldens: `PYTHONPATH=. python -m tools.gen_output_goldens` (on purpose; review the diff)
-- Package (Ubuntu): `python -m tools.build_installer`, `python -m tools.build_deb`, then `dist/harness-tool/harness-tool --selftest`
+- Package (Ubuntu): `python -m tools.build_installer`, `python -m tools.build_deb`, then `dist/harness-design-studio/harness-design-studio --selftest`
 - Release checklist: `python -m tools.release_check [--quick]`; soak: `python -m tools.soak 5000 <seed>`
 - Docs that must stay in sync (tests fail otherwise): `python -m tools.build_guide` (in-app guide), `python -m tools.gen_rule_docs` (`docs/RULES.md`), `python -m tools.gen_cli_docs` (`docs/CLI.md`), `python -m tools.build_examples` (example projects). `tests/test_docs.py` also runs the commands of `docs/GETTING_STARTED.md` and `README.md`, and `tests/test_docs_links.py` checks every relative link and anchor; usability: `python -m tools.usability_setup DIR`, `python -m tools.usability_summary results.csv sus.csv`
 - SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`
@@ -33,7 +33,7 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 ## Core layout (M1)
 `core/model` (immutable strict models), `core/integrity.py`, `core/commands.py` (History: transactions, undo/redo), `core/io` (layout, loader, saver, migrate, fs), `core/starter.py`, `core/samples.py` (`mini3`). Format: `docs/FILE_FORMAT.md`; placeholders: `docs/PLACEHOLDERS.md`.
 - Edit model objects only with `evolve()` and `History.execute`; never mutate `Project` directly outside commands/loader.
-- Regenerate the golden fixture only on purpose: `python -c "from harness_tool.core.samples import mini3; from harness_tool.core.io.saver import save_project; save_project(mini3(), 'tests/fixtures/projects/mini3')"` and review the diff.
+- Regenerate the golden fixture only on purpose: `python -c "from harness_design_studio.core.samples import mini3; from harness_design_studio.core.io.saver import save_project; save_project(mini3(), 'tests/fixtures/projects/mini3')"` and review the diff.
 - Tests that run as root skip the read-only folder test; run the suite as a normal user in CI.
 
 ## GUI layout (M2)
@@ -47,14 +47,14 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 `core/generate/` (`segmentation`, `wiring`, `pins`, `sizing`, `lengths`, `mass`, `naming`, `explain`, `engine`), `core/verify.py` (independent verifier), `core/model/generation.py` (record with provenance). `plan_generation(project)` is pure and returns ops + `RegenReport` + record; the GUI previews it (`GeneratePreviewDialog`), runs it in `PlanWorker` and applies it through `History`.
 - Never put timestamps or history wording into provenance: a second plan must be empty and byte-identical.
 - Verifier must stay independent of the generator: do not import wiring/pin logic into `core/verify.py`.
-- Goldens: `tests/fixtures/projects/mini3` (hand-made, not generated) and `sat15` (generated). Regenerate sat15 on purpose: `python -c "from harness_tool.core.samples import sat15; from harness_tool.core.generate.engine import generate_project; from harness_tool.core.io.saver import save_project; p=sat15(); generate_project(p); save_project(p,'tests/fixtures/projects/sat15')"` (delete the folder first) and review the diff.
+- Goldens: `tests/fixtures/projects/mini3` (hand-made, not generated) and `sat15` (generated). Regenerate sat15 on purpose: `python -c "from harness_design_studio.core.samples import sat15; from harness_design_studio.core.generate.engine import generate_project; from harness_design_studio.core.io.saver import save_project; p=sat15(); generate_project(p); save_project(p,'tests/fixtures/projects/sat15')"` (delete the folder first) and review the diff.
 - Text-replace patches fail silently after `ruff format`; grep to confirm they applied.
 
 ## Design rule check layout (M4)
 `core/drc/` (`base` Rule/Hit, `rules` RULES registry, `report` Markdown report, `__init__` run/fix_ops/locate). Add a rule: write a check generator, register it in `RULES`, add a positive case to `POSITIVE` in `tests/test_drc.py` (a test fails if a rule has none) and make sure it stays quiet on the clean project. Rules needing numbers must stay silent while config is `null` and be listed in `_unchecked`.
 - `checks.find` stays the fast synchronous logical layer; the controller merges it with background DRC results (`DrcWorker` waits for the helper process, 1.2 s after the last edit; waivers applied at display time).
 - The check runs in a helper process (`gui/drc_process.py`, `core/drc/worker.py`, D-128; a thread held the GIL and stalled edits). Do not add synchronous DRC calls to edit paths. The packaged program must route `--drc-worker` first (`packaging/gui_entry.py`; `--selftest` checks it). Keep the pieces small: one pickle call holds the sender's GIL.
-- Regenerate the sat15 DRC report golden on purpose: `python -m harness_tool.cli.main drc tests/fixtures/projects/sat15 > tests/fixtures/drc/sat15.md`.
+- Regenerate the sat15 DRC report golden on purpose: `python -m harness_design_studio.cli.main drc tests/fixtures/projects/sat15 > tests/fixtures/drc/sat15.md`.
 
 ## Outputs layout (M5)
 `core/outputs/` (`canvas` SVG/PDF writers, `drawing`, `system` diagrams, `tables`, `exports` YAML/JSON/XLSX, `stamp`, `build` build/write/status, `verify` independent verifier). Format and limits: `docs/OUTPUTS.md`.
@@ -86,7 +86,7 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 - Rebuild after changing assessments: `python -m tools.build_compliance_matrix`, `python -m tools.trace`; both outputs are checked for freshness by tests.
 
 ## Polish layout (M7)
-User guide `docs/guide/USER_GUIDE.md` (HTML bundled in `src/harness_tool/resources/guide/`, F1), `docs/RULES.md` (generated), `docs/CONFIG.md`, `docs/usability/`, Ubuntu packaging in `packaging/ubuntu/` and `tools/build_deb.py`, `tools/release_check.py`, `tools/soak.py`.
+User guide `docs/guide/USER_GUIDE.md` (HTML bundled in `src/harness_design_studio/resources/guide/`, F1), `docs/RULES.md` (generated), `docs/CONFIG.md`, `docs/usability/`, Ubuntu packaging in `packaging/ubuntu/` and `tools/build_deb.py`, `tools/release_check.py`, `tools/soak.py`.
 - New UI controls need an accessible name (`tests/test_accessibility.py` fails otherwise) and strings go in `gui/strings.py`.
 - New CLI commands or buttons mentioned in the guide must exist, and new commands must be documented in the guide (`tests/test_docs.py`).
 - Keep the integrity cache correct: anything the checks depend on must be part of the token in `core/integrity.py`.

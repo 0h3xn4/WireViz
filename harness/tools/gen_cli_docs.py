@@ -5,7 +5,7 @@ committed file is stale. Usage: python -m tools.gen_cli_docs"""
 import argparse
 from pathlib import Path
 
-from harness_tool.cli.main import build_parser
+from harness_design_studio.cli.main import build_parser
 
 TARGET = Path(__file__).resolve().parents[1] / "docs" / "CLI.md"
 

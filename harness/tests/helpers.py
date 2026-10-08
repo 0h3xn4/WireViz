@@ -27,7 +27,7 @@ def output_digests(files: dict[str, bytes]) -> dict[str, str]:
     import hashlib
     import json
 
-    from harness_tool.core.outputs.verify import _xlsx_sheets
+    from harness_design_studio.core.outputs.verify import _xlsx_sheets
 
     out = {}
     for rel, data in sorted(files.items()):

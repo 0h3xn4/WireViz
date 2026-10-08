@@ -8,20 +8,20 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core import recovery
-from harness_tool.core.commands import Put, apply_ops
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.ids import ID_RE, check_id
-from harness_tool.core.io import loader
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import evolve
-from harness_tool.core.outputs.build import MANIFEST, build_outputs, write_outputs
-from harness_tool.core.outputs.stamp import parse_csv
-from harness_tool.core.outputs.verify import verify_outputs
-from harness_tool.core.samples import mini3, sat15_full
+from harness_design_studio.core import recovery
+from harness_design_studio.core.commands import Put, apply_ops
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.ids import ID_RE, check_id
+from harness_design_studio.core.io import loader
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import evolve
+from harness_design_studio.core.outputs.build import MANIFEST, build_outputs, write_outputs
+from harness_design_studio.core.outputs.stamp import parse_csv
+from harness_design_studio.core.outputs.verify import verify_outputs
+from harness_design_studio.core.samples import mini3, sat15_full
 
-SRC = Path(__file__).resolve().parents[1] / "src" / "harness_tool"
+SRC = Path(__file__).resolve().parents[1] / "src" / "harness_design_studio"
 
 HOSTILE = [
     "<script>alert(1)</script>", "a & b < c > d", 'quote " and \' mix', "`backticks` and [link](http://x)",
@@ -39,7 +39,7 @@ def test_ids_cannot_contain_path_characters() -> None:
 
 @pytest.mark.parametrize("name", HOSTILE)
 def test_hostile_text_in_names_is_harmless_in_every_output(name: str) -> None:
-    from harness_tool.core.model.base import Name  # noqa: F401
+    from harness_design_studio.core.model.base import Name  # noqa: F401
 
     p = sat15_full()
     unit = next(iter(p.units.values()))

@@ -12,8 +12,8 @@ from fractions import Fraction
 
 import pytest
 
-from harness_tool.core.generate.sizing import size_wire
-from harness_tool.core.units import awg_to_area_mm2, awg_to_diameter_mm
+from harness_design_studio.core.generate.sizing import size_wire
+from harness_design_studio.core.units import awg_to_area_mm2, awg_to_diameter_mm
 
 INCH_MM = 25.4  # exact by definition
 

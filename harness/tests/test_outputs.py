@@ -12,20 +12,20 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool import __version__
-from harness_tool.cli.main import main as cli_main
-from harness_tool.core.commands import Put, apply_ops
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Project, evolve
-from harness_tool.core.outputs import exports, system
-from harness_tool.core.outputs.build import (
+from harness_design_studio import __version__
+from harness_design_studio.cli.main import main as cli_main
+from harness_design_studio.core.commands import Put, apply_ops
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Project, evolve
+from harness_design_studio.core.outputs import exports, system
+from harness_design_studio.core.outputs.build import (
     MANIFEST,
     build_outputs,
     outputs_status,
     write_outputs,
 )
-from harness_tool.core.outputs.canvas import (
+from harness_design_studio.core.outputs.canvas import (
     SHEETS,
     Rect,
     Sheet,
@@ -35,9 +35,9 @@ from harness_tool.core.outputs.canvas import (
     to_pdf,
     to_svg,
 )
-from harness_tool.core.outputs.stamp import csv_bytes, parse_csv, stamp_of
-from harness_tool.core.outputs.verify import read_folder, verify_outputs
-from harness_tool.core.samples import mini3, sat15, sat15_full
+from harness_design_studio.core.outputs.stamp import csv_bytes, parse_csv, stamp_of
+from harness_design_studio.core.outputs.verify import read_folder, verify_outputs
+from harness_design_studio.core.samples import mini3, sat15, sat15_full
 
 _CACHE: dict[str, tuple[Project, dict[str, bytes]]] = {}
 
@@ -49,7 +49,7 @@ def project_and_files(name: str) -> tuple[Project, dict[str, bytes]]:
             generate_project(p)
         _CACHE[name] = (p, build_outputs(p).files)
     p, files = _CACHE[name]
-    from harness_tool.core import edit
+    from harness_design_studio.core import edit
 
     return edit.clone_with(p, []), dict(files)
 
@@ -211,7 +211,7 @@ def test_wireviz_yaml_and_json_export_have_the_documented_shape() -> None:
     y = files["harnesses/W001/wireviz.yaml"].decode()
     assert "connectors:" in y and "cables:" in y and "connections:" in y
     doc = json.loads(files["system/export.json"])
-    assert doc["format"] == "harness-tool-export" and doc["format_version"] == 1
+    assert doc["format"] == "harness-design-studio-export" and doc["format_version"] == 1
     assert doc["model_hash"] == stamp_of(p).model_hash  # type: ignore[arg-type]
     assert {
         "units",
@@ -249,7 +249,7 @@ def test_write_keeps_foreign_files_and_removes_retired_ones(tmp_path: Path) -> N
     write_outputs(p, folder)  # type: ignore[arg-type]
     (folder / "my-notes.txt").write_text("keep me")
     gone = sorted(p.harnesses)[-1]  # type: ignore[attr-defined]
-    from harness_tool.core.commands import Delete
+    from harness_design_studio.core.commands import Delete
 
     apply_ops(p, [Delete("harnesses", gone)])  # type: ignore[arg-type]
     write_outputs(p, folder)  # type: ignore[arg-type]
@@ -270,7 +270,7 @@ def test_unreadable_manifest_is_reported(tmp_path: Path) -> None:
 
 
 def test_cancel_stops_the_build() -> None:
-    from harness_tool.core.outputs.build import OutputsCancelled
+    from harness_design_studio.core.outputs.build import OutputsCancelled
 
     p, _ = project_and_files("sat15")
     with pytest.raises(OutputsCancelled):
@@ -377,7 +377,7 @@ def test_detects_wrong_stamps() -> None:
     )
     assert "out_stamp" in codes(p, f)
     p, f = project_and_files("sat15")
-    f["system/drc_report.md"] = b"<!-- harness-tool 0 model 000000000000 -->\nWaived:"
+    f["system/drc_report.md"] = b"<!-- harness-design-studio 0 model 000000000000 -->\nWaived:"
     assert "out_stamp" in codes(p, f)
 
 
@@ -437,7 +437,7 @@ def test_cli_export_then_verify_outputs(tmp_path: Path, capsys: pytest.CaptureFi
 def test_cli_export_needs_harnesses(tmp_path: Path) -> None:
     save_project(mini3(), tmp_path / "m")
     # mini3 has a manual harness, so export works; an empty project does not
-    from harness_tool.core.samples import new_project
+    from harness_design_studio.core.samples import new_project
 
     save_project(new_project("empty"), tmp_path / "e")
     assert cli_main(["export", str(tmp_path / "e")]) == 1
@@ -445,8 +445,8 @@ def test_cli_export_needs_harnesses(tmp_path: Path) -> None:
 
 
 def test_outputs_of_a_saved_project_do_not_change_its_model_hash(tmp_path: Path) -> None:
-    from harness_tool.core.io.layout import model_hash
-    from harness_tool.core.io.loader import load_project
+    from harness_design_studio.core.io.layout import model_hash
+    from harness_design_studio.core.io.loader import load_project
 
     p, _ = project_and_files("sat15")
     save_project(p, tmp_path / "p")  # type: ignore[arg-type]

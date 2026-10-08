@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import build_parser
-from harness_tool.core.model.config import default_configs
+from harness_design_studio.cli.main import build_parser
+from harness_design_studio.core.model.config import default_configs
 from tools.build_guide import SOURCE, TARGET, convert
 from tools.gen_rule_docs import TARGET as RULES_MD
 from tools.gen_rule_docs import render
@@ -34,7 +34,7 @@ def test_guide_documents_every_cli_command() -> None:
 
 
 def test_guide_names_buttons_that_exist() -> None:
-    from harness_tool.gui import strings
+    from harness_design_studio.gui import strings
 
     text = SOURCE.read_text()
     shown = " ".join(str(v) for v in vars(strings).values() if isinstance(v, str))

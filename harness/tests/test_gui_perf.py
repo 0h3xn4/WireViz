@@ -72,7 +72,7 @@ def test_problems_panel_is_capped(stress) -> None:  # type: ignore[no-untyped-de
 def test_the_problems_panel_builds_only_the_cards_it_shows(stress, qtbot) -> None:  # type: ignore[no-untyped-def]
     """Regression: the panel built a card for every finding (2000 here) on each change although it
     shows 25, making add, undo and redo 3 to 6 times slower. Counted, so slow machines do not matter."""
-    from harness_tool.gui import panels
+    from harness_design_studio.gui import panels
 
     stress.tabs.setCurrentIndex(0)
     QApplication.processEvents()

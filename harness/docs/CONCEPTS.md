@@ -84,7 +84,7 @@ The tool contains **no engineering numbers from any standard**: no derating fact
 - Checks that need a number say **not checked** instead of silently passing.
 - `harness config DIR` lists exactly what is missing and what depends on it.
 
-The files that hold these values are in the project's `config/` folder and are described in [`CONFIG.md`](CONFIG.md). The examples ship a set of **demo values for learning**; they are not engineering data (see [`../src/harness_tool/resources/examples/templates/README.md`](../src/harness_tool/resources/examples/templates/README.md)).
+The files that hold these values are in the project's `config/` folder and are described in [`CONFIG.md`](CONFIG.md). The examples ship a set of **demo values for learning**; they are not engineering data (see [`../src/harness_design_studio/resources/examples/templates/README.md`](../src/harness_design_studio/resources/examples/templates/README.md)).
 
 ## Review, release, revision
 

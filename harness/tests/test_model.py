@@ -3,8 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from harness_tool.core.model import Pin, Unit, Wire, evolve
-from harness_tool.core.model.config import default_configs
+from harness_design_studio.core.model import Pin, Unit, Wire, evolve
+from harness_design_studio.core.model.config import default_configs
 
 
 def test_strict_types_no_coercion() -> None:

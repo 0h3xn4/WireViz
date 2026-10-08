@@ -4,7 +4,7 @@ Usage: python -m tools.gen_rule_docs"""
 
 from pathlib import Path
 
-from harness_tool.core.drc import RULES
+from harness_design_studio.core.drc import RULES
 
 TARGET = Path(__file__).resolve().parents[1] / "docs" / "RULES.md"
 

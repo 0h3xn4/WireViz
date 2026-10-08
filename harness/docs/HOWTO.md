@@ -28,9 +28,9 @@ Short recipes. Each says what you do, what you should see, and what to do if you
 
 Full instructions with checks and troubleshooting: [`INSTALL.md`](INSTALL.md). In short:
 
-- `sudo apt install ./harness-tool_<version>_amd64.deb`, or unpack the `.tar.gz` and run `./harness-tool/install.sh`.
-- After `install.sh`, if it says `~/.local/bin` is not on your PATH, the commands `harness-tool` and `harness` are not found yet. Start the app from the application menu or `~/.local/bin/harness-tool`, and fix it for good with `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && . ~/.bashrc` (or log out and in).
-- Run `install.sh` from the **unpacked package** (`harness-tool-<version>-linux-<arch>.tar.gz`), not from `packaging/ubuntu` in the source tree; there it stops with a message because the built program is missing. To build the package yourself: `pip install -e ".[gui,dev]" && python -m tools.build_installer`, then use `dist/harness-tool/install.sh`. The CI run also uploads the `.deb` and `.tar.gz` as a downloadable artifact.
+- `sudo apt install ./harness-design-studio_<version>_amd64.deb`, or unpack the `.tar.gz` and run `./harness-design-studio/install.sh`.
+- After `install.sh`, if it says `~/.local/bin` is not on your PATH, the commands `harness-design-studio` and `harness` are not found yet. Start the app from the application menu or `~/.local/bin/harness-design-studio`, and fix it for good with `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && . ~/.bashrc` (or log out and in).
+- Run `install.sh` from the **unpacked package** (`harness-design-studio-<version>-linux-<arch>.tar.gz`), not from `packaging/ubuntu` in the source tree; there it stops with a message because the built program is missing. To build the package yourself: `pip install -e ".[gui,dev]" && python -m tools.build_installer`, then use `dist/harness-design-studio/install.sh`. The CI run also uploads the `.deb` and `.tar.gz` as a downloadable artifact.
 - Check: `harness --version` prints the version.
 - No network is used, so this works on an air-gapped machine once you have the package.
 

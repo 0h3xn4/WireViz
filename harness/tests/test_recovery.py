@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core.errors import LoadError, SaveError
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.issues import Issue
+from harness_design_studio.core.errors import LoadError, SaveError
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.issues import Issue
 from tests.helpers import MINI3, copy_project, edit_json
 
 

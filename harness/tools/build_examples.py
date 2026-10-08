@@ -10,14 +10,14 @@ import shutil
 import sys
 from pathlib import Path
 
-from harness_tool.core import edit
-from harness_tool.core.commands import History
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Project, evolve
-from harness_tool.core.samples import new_project, sat15
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Project, evolve
+from harness_design_studio.core.samples import new_project, sat15
 
 ROOT = Path(__file__).resolve().parents[1]
-TARGET = ROOT / "src" / "harness_tool" / "resources" / "examples" / "projects"
+TARGET = ROOT / "src" / "harness_design_studio" / "resources" / "examples" / "projects"
 
 # name -> (title, one line shown by `harness new --list`)
 PROJECTS = {

@@ -1,4 +1,4 @@
-"""Build a .deb from dist/harness-tool (run tools.build_installer first).
+"""Build a .deb from dist/harness-design-studio (run tools.build_installer first).
 Reproducible: fixed file times (SOURCE_DATE_EPOCH or the last commit), root ownership, xz.
 Usage: python -m tools.build_deb"""
 
@@ -9,7 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from harness_tool import __version__
+from harness_design_studio import __version__
 
 ROOT = Path(__file__).resolve().parents[1]
 DEPENDS = (
@@ -18,24 +18,24 @@ DEPENDS = (
     "libxcb-render-util0, libxcb-shape0, libxcb-xinerama0"
 )
 COPYRIGHT = """Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: harness-tool
+Upstream-Name: harness-design-studio
 
 Files: *
 Copyright: the project owner (to be filled in before distribution)
 License: LicenseRef-Proprietary
  The licence of Harness Design Studio itself is decided by the project owner (see pyproject.toml).
 
-Files: opt/harness-tool/_internal/* opt/harness-tool/cli/_internal/*
+Files: opt/harness-design-studio/_internal/* opt/harness-design-studio/cli/_internal/*
 Copyright: the authors of the bundled libraries
-License: see /usr/share/doc/harness-tool/LICENSES/
+License: see /usr/share/doc/harness-design-studio/LICENSES/
  Qt for Python (PySide6, shiboken6) is used under LGPL-3; the full text of every licence
- is in /usr/share/doc/harness-tool/LICENSES/ (the file README.txt lists them).
+ is in /usr/share/doc/harness-design-studio/LICENSES/ (the file README.txt lists them).
 """
 
 
 def control(size_kb: int) -> str:
     return (
-        "Package: harness-tool\n"
+        "Package: harness-design-studio\n"
         f"Version: {__version__.replace('rc', '~rc')}\n"
         "Section: science\nPriority: optional\nArchitecture: amd64\n"
         f"Depends: {DEPENDS}\n"
@@ -61,8 +61,8 @@ def epoch() -> int:
 
 
 def build(app: Path, out_dir: Path) -> Path:
-    stage = Path(tempfile.mkdtemp(prefix="deb-")) / f"harness-tool_{__version__}_amd64"
-    opt = stage / "opt" / "harness-tool"
+    stage = Path(tempfile.mkdtemp(prefix="deb-")) / f"harness-design-studio_{__version__}_amd64"
+    opt = stage / "opt" / "harness-design-studio"
     shutil.copytree(app, opt, symlinks=True)
     for script in (
         "install.sh",
@@ -70,21 +70,23 @@ def build(app: Path, out_dir: Path) -> Path:
     ):  # dpkg owns these files; the scripts are for tarballs
         (opt / script).unlink(missing_ok=True)
     (stage / "usr" / "bin").mkdir(parents=True)
-    (stage / "usr" / "bin" / "harness-tool").symlink_to("/opt/harness-tool/harness-tool")
-    (stage / "usr" / "bin" / "harness").symlink_to("/opt/harness-tool/cli/harness")
+    (stage / "usr" / "bin" / "harness-design-studio").symlink_to(
+        "/opt/harness-design-studio/harness-design-studio"
+    )
+    (stage / "usr" / "bin" / "harness").symlink_to("/opt/harness-design-studio/cli/harness")
     pk = ROOT / "packaging" / "ubuntu"
     apps = stage / "usr" / "share" / "applications"
     apps.mkdir(parents=True)
-    (apps / "harness-tool.desktop").write_text(
-        (pk / "harness-tool.desktop.in")
+    (apps / "harness-design-studio.desktop").write_text(
+        (pk / "harness-design-studio.desktop.in")
         .read_text()
-        .replace("@EXEC@", "/usr/bin/harness-tool")
-        .replace("@ICON@", "harness-tool")
+        .replace("@EXEC@", "/usr/bin/harness-design-studio")
+        .replace("@ICON@", "harness-design-studio")
     )
     icons = stage / "usr" / "share" / "icons" / "hicolor" / "scalable" / "apps"
     icons.mkdir(parents=True)
-    shutil.copy(pk / "harness-tool.svg", icons / "harness-tool.svg")
-    doc = stage / "usr" / "share" / "doc" / "harness-tool"
+    shutil.copy(pk / "harness-design-studio.svg", icons / "harness-design-studio.svg")
+    doc = stage / "usr" / "share" / "doc" / "harness-design-studio"
     doc.mkdir(parents=True)
     (doc / "copyright").write_text(COPYRIGHT)
     if (opt / "LICENSES").is_dir():
@@ -98,7 +100,7 @@ def build(app: Path, out_dir: Path) -> Path:
         if not path.is_symlink():
             path.chmod(0o755 if path.is_dir() or os.access(path, os.X_OK) else 0o644)
     out_dir.mkdir(parents=True, exist_ok=True)
-    target = out_dir / f"harness-tool_{__version__}_amd64.deb"
+    target = out_dir / f"harness-design-studio_{__version__}_amd64.deb"
     subprocess.run(
         ["dpkg-deb", "--root-owner-group", "-Zxz", "--build", str(stage), str(target)], check=True
     )
@@ -107,8 +109,8 @@ def build(app: Path, out_dir: Path) -> Path:
 
 
 def main() -> int:
-    app = ROOT / "dist" / "harness-tool"
-    if not (app / "harness-tool").is_file():
+    app = ROOT / "dist" / "harness-design-studio"
+    if not (app / "harness-design-studio").is_file():
         print("run `python -m tools.build_installer` first", file=sys.stderr)
         return 1
     print(build(app, ROOT / "dist"))

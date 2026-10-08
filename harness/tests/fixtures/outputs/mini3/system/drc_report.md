@@ -1,4 +1,4 @@
-<!-- harness-tool 0.1.0rc4 model 85aa3c207e98 -->
+<!-- harness-design-studio 0.1.0rc4 model 85aa3c207e98 -->
 # Design rule check: mini3 (example data)
 
 Model hash: `85aa3c207e98`. Rules run: 33.

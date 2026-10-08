@@ -3,7 +3,7 @@
 Each milestone: tests first, ends with working tested software, a demo note in `docs/demos/` (M0 to M7 have one), and a UX self-review where a GUI exists. A milestone is done only when all its acceptance criteria pass in CI.
 
 ## M0 Foundation
-- Repo skeleton (`src/harness_tool/{core,cli,gui}`), `pyproject.toml` with pinned deps, `CLAUDE.md`, ruff + mypy strict + pytest in CI (planned for Windows + Linux; now Ubuntu 24.04 only, D-127).
+- Repo skeleton (`src/harness_design_studio/{core,cli,gui}`), `pyproject.toml` with pinned deps, `CLAUDE.md`, ruff + mypy strict + pytest in CI (planned for Windows + Linux; now Ubuntu 24.04 only, D-127).
 - Vendored/mirrored wheel set script (`tools/vendor.py`) and a reproducible-build check.
 - Offline tests: module-scan for network imports; socket-blocked smoke run of CLI and empty GUI (offscreen).
 - Empty Qt app window + `harness --version`, packaged with PyInstaller; installer/portable zip built in CI.

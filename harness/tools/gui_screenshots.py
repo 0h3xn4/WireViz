@@ -8,8 +8,8 @@ from pathlib import Path
 from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QApplication, QPushButton
 
-from harness_tool.gui.main_window import MainWindow
-from harness_tool.gui.theme import ThemeManager
+from harness_design_studio.gui.main_window import MainWindow
+from harness_design_studio.gui.theme import ThemeManager
 
 OUT = Path(__file__).resolve().parents[1] / "docs" / "ux" / "qt"
 CSV = (
@@ -79,7 +79,7 @@ def main() -> int:
 
     win.run_dialog = lambda d: (delete_dialog(d), 0)[1]  # type: ignore[assignment,misc]
     win.delete_btn.click()
-    from harness_tool.core import checks
+    from harness_design_studio.core import checks
 
     f = checks.open_findings(win.ctl.project)
     cross = next(x for x in f if x.can_waive)

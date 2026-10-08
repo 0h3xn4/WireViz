@@ -1,4 +1,4 @@
-name: harness-tool CI
+name: harness-design-studio CI
 
 on:
   push:
@@ -48,11 +48,11 @@ jobs:
       - run: python -m tools.build_installer
       - run: python -m tools.build_deb
       - name: Frozen app self-test
-        run: dist/harness-tool/harness-tool --selftest
+        run: dist/harness-design-studio/harness-design-studio --selftest
       - run: python -m tools.gen_sbom
       - uses: actions/upload-artifact@v4
         with:
-          name: harness-tool-${{ matrix.os }}
+          name: harness-design-studio-${{ matrix.os }}
           if-no-files-found: error
           path: |
             harness/dist/*.deb
@@ -70,7 +70,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: harness-tool-ubuntu-24.04
+          name: harness-design-studio-ubuntu-24.04
           path: pkg
       - name: Qt system libraries
         run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 libxcb-cursor0
@@ -78,17 +78,17 @@ jobs:
         working-directory: pkg
         run: |
           ls -R .
-          tar xzf harness-tool-*-linux-*.tar.gz
-          QT_QPA_PLATFORM=offscreen ./harness-tool/harness-tool --selftest
-          HOME="$PWD/home" ./harness-tool/install.sh
+          tar xzf harness-design-studio-*-linux-*.tar.gz
+          QT_QPA_PLATFORM=offscreen ./harness-design-studio/harness-design-studio --selftest
+          HOME="$PWD/home" ./harness-design-studio/install.sh
           HOME="$PWD/home" "$PWD/home/.local/bin/harness" --version
-          HOME="$PWD/home" ./harness-tool/uninstall.sh
+          HOME="$PWD/home" ./harness-design-studio/uninstall.sh
       - name: Install and run the .deb built in the test job
         working-directory: pkg
         run: |
-          sudo apt-get install -y ./harness-tool_*_amd64.deb
+          sudo apt-get install -y ./harness-design-studio_*_amd64.deb
           harness --version
-          QT_QPA_PLATFORM=offscreen harness-tool --selftest
-          test -f /usr/share/doc/harness-tool/copyright
-          sudo apt-get remove -y harness-tool
-          ! test -e /opt/harness-tool
+          QT_QPA_PLATFORM=offscreen harness-design-studio --selftest
+          test -f /usr/share/doc/harness-design-studio/copyright
+          sudo apt-get remove -y harness-design-studio
+          ! test -e /opt/harness-design-studio

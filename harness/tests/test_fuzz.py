@@ -15,18 +15,23 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from harness_tool.core import checks, drc
-from harness_tool.core.generate.engine import generate_project, plan_generation
-from harness_tool.core.imports import ImportError_, parse_csv, plan_interface_import, read_table
-from harness_tool.core.integrity import check_integrity
-from harness_tool.core.io.canonical import loads_strict
-from harness_tool.core.io.layout import model_hash, serialize
-from harness_tool.core.io.loader import load_from_files, load_project, read_tree
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.outputs.build import build_outputs, outputs_status
-from harness_tool.core.outputs.verify import verify_outputs
-from harness_tool.core.samples import mini3
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core import checks, drc
+from harness_design_studio.core.generate.engine import generate_project, plan_generation
+from harness_design_studio.core.imports import (
+    ImportError_,
+    parse_csv,
+    plan_interface_import,
+    read_table,
+)
+from harness_design_studio.core.integrity import check_integrity
+from harness_design_studio.core.io.canonical import loads_strict
+from harness_design_studio.core.io.layout import model_hash, serialize
+from harness_design_studio.core.io.loader import load_from_files, load_project, read_tree
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.outputs.build import build_outputs, outputs_status
+from harness_design_studio.core.outputs.verify import verify_outputs
+from harness_design_studio.core.samples import mini3
+from harness_design_studio.core.verify import verify_project
 from tests.helpers import time_limit
 
 pytestmark = pytest.mark.filterwarnings(

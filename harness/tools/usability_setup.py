@@ -5,11 +5,11 @@ import shutil
 import sys
 from pathlib import Path
 
-from harness_tool.core import edit
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Project
-from harness_tool.core.samples import new_project, sat15_full
+from harness_design_studio.core import edit
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Project
+from harness_design_studio.core.samples import new_project, sat15_full
 
 
 def _free_pair(project: Project) -> tuple[str, str, str]:
@@ -41,7 +41,7 @@ def build(root: Path) -> None:
 
 
 def generate_and_return() -> Project:
-    from harness_tool.core.samples import sat15
+    from harness_design_studio.core.samples import sat15
 
     p = sat15()
     generate_project(p)

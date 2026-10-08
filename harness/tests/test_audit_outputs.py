@@ -5,18 +5,18 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core import drc, edit
-from harness_tool.core.checks import Finding, finding_id, waive_op
-from harness_tool.core.commands import History
-from harness_tool.core.generate.mass import harness_mass
-from harness_tool.core.model import Connector, Harness, Project, Segment, evolve
-from harness_tool.core.outputs.build import build_outputs, write_outputs
-from harness_tool.core.outputs.canvas import Line, Rect, Sheet
-from harness_tool.core.outputs.drawing import _draw_sketch
-from harness_tool.core.outputs.stamp import Stamp, csv_bytes, parse_csv
-from harness_tool.core.outputs.verify import verify_outputs
-from harness_tool.core.samples import mini3, sat15, sat15_full
-from harness_tool.core.vcs.release import release_blockers
+from harness_design_studio.core import drc, edit
+from harness_design_studio.core.checks import Finding, finding_id, waive_op
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.generate.mass import harness_mass
+from harness_design_studio.core.model import Connector, Harness, Project, Segment, evolve
+from harness_design_studio.core.outputs.build import build_outputs, write_outputs
+from harness_design_studio.core.outputs.canvas import Line, Rect, Sheet
+from harness_design_studio.core.outputs.drawing import _draw_sketch
+from harness_design_studio.core.outputs.stamp import Stamp, csv_bytes, parse_csv
+from harness_design_studio.core.outputs.verify import verify_outputs
+from harness_design_studio.core.samples import mini3, sat15, sat15_full
+from harness_design_studio.core.vcs.release import release_blockers
 from tests.test_change_control import WHEN, exported, full, releasable
 
 
@@ -251,7 +251,7 @@ def test_a_long_routing_sketch_stays_on_the_sheet() -> None:
 
 
 def test_the_block_diagram_legend_is_below_the_boxes() -> None:
-    from harness_tool.core.outputs.system import block_diagram
+    from harness_design_studio.core.outputs.system import block_diagram
 
     p = sat15()
     sheet = block_diagram(p, Stamp("0.1", "abcdef123456"))

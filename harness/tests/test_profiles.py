@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main
-from harness_tool.core import configcheck, standard_profiles
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.samples import mini3
+from harness_design_studio.cli.main import main
+from harness_design_studio.core import configcheck, standard_profiles
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.samples import mini3
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -95,7 +95,7 @@ def test_cli_applies_a_profile_and_a_second_run_changes_nothing(
 def _with(p, name: str, **values):  # type: ignore[no-untyped-def]
     old = p.config.get(name)
     base = dict(old.values) if old else {}
-    from harness_tool.core.model import ConfigFile
+    from harness_design_studio.core.model import ConfigFile
 
     p.config[name] = ConfigFile(name=name, placeholder=True, values={**base, **values})
     return p

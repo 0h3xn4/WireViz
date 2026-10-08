@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main
+from harness_design_studio.cli.main import main
 from tests.helpers import MINI3, copy_project, edit_json
 
 

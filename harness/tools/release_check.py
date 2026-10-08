@@ -30,7 +30,7 @@ def _selftest_line(out: str) -> str:
 
 
 def versions() -> Result:
-    from harness_tool import __version__
+    from harness_design_studio import __version__
 
     pyproject = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(), re.M)
     change = re.search(r"^## (\S+)", (ROOT / "CHANGELOG.md").read_text(), re.M)
@@ -80,13 +80,13 @@ def soak() -> Result:
 
 
 def targets() -> Result:
-    from harness_tool.core import drc
-    from harness_tool.core.commands import apply_ops
-    from harness_tool.core.generate.engine import plan_generation
-    from harness_tool.core.outputs.build import build_outputs
-    from harness_tool.core.outputs.verify import verify_outputs
-    from harness_tool.core.samples import stress_project
-    from harness_tool.core.verify import verify_project
+    from harness_design_studio.core import drc
+    from harness_design_studio.core.commands import apply_ops
+    from harness_design_studio.core.generate.engine import plan_generation
+    from harness_design_studio.core.outputs.build import build_outputs
+    from harness_design_studio.core.outputs.verify import verify_outputs
+    from harness_design_studio.core.samples import stress_project
+    from harness_design_studio.core.verify import verify_project
 
     p = stress_project()
     t = time.perf_counter()
@@ -113,11 +113,11 @@ def targets() -> Result:
 
 
 def reference_projects() -> Result:
-    from harness_tool.core.generate.engine import generate_project
-    from harness_tool.core.outputs.build import build_outputs
-    from harness_tool.core.outputs.verify import verify_outputs
-    from harness_tool.core.samples import mini3, sat15, sat15_full
-    from harness_tool.core.verify import verify_project
+    from harness_design_studio.core.generate.engine import generate_project
+    from harness_design_studio.core.outputs.build import build_outputs
+    from harness_design_studio.core.outputs.verify import verify_outputs
+    from harness_design_studio.core.samples import mini3, sat15, sat15_full
+    from harness_design_studio.core.verify import verify_project
 
     for name, make in (("mini3", mini3), ("sat15", sat15), ("sat15_full", sat15_full)):
         p = make()
@@ -153,21 +153,23 @@ def package() -> Result:
     code, out = run([sys.executable, "-m", "tools.build_deb"])
     if code:
         return False, tail(out)
-    code, out = run([str(ROOT / "dist" / "harness-tool" / "harness-tool"), "--selftest"])
+    code, out = run(
+        [str(ROOT / "dist" / "harness-design-studio" / "harness-design-studio"), "--selftest"]
+    )
     return code == 0 and "selftest ok" in out, f"tarball and deb built; {_selftest_line(out)}"
 
 
 def deb_install() -> Result:
-    from harness_tool import __version__
+    from harness_design_studio import __version__
 
-    deb = ROOT / "dist" / f"harness-tool_{__version__}_amd64.deb"
+    deb = ROOT / "dist" / f"harness-design-studio_{__version__}_amd64.deb"
     with tempfile.TemporaryDirectory() as tmp:
         code, out = run(["dpkg-deb", "-x", str(deb), tmp])
         if code:
             return False, tail(out)
-        code, out = run([f"{tmp}/opt/harness-tool/harness-tool", "--selftest"])
-        cli_code, cli_out = run([f"{tmp}/opt/harness-tool/cli/harness", "--version"])
-        new_code, new_out = run([f"{tmp}/opt/harness-tool/cli/harness", "new", "--list"])
+        code, out = run([f"{tmp}/opt/harness-design-studio/harness-design-studio", "--selftest"])
+        cli_code, cli_out = run([f"{tmp}/opt/harness-design-studio/cli/harness", "--version"])
+        new_code, new_out = run([f"{tmp}/opt/harness-design-studio/cli/harness", "new", "--list"])
     return (
         code == 0
         and cli_code == 0

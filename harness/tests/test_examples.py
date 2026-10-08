@@ -8,11 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main
-from harness_tool.core import templates
-from harness_tool.core.imports import guess_mapping, plan_interface_import, read_table
-from harness_tool.core.io.loader import load_project
-from harness_tool.resources import examples_path
+from harness_design_studio.cli.main import main
+from harness_design_studio.core import templates
+from harness_design_studio.core.imports import guess_mapping, plan_interface_import, read_table
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.resources import examples_path
 from tools import build_examples
 
 EXAMPLES = examples_path()
