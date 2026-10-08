@@ -20,7 +20,7 @@
   "unverified_parts": 28,
   "version": "0"
  },
- "model_hash": "85aa3c207e98eeb66cec27b698d3ed36226521cdc49bf697da0fb170b8aed120",
+ "model_hash": "687c801e4d554a03c9e17deb351b285cd6987ed75bc977037730a82d0db577f2",
  "project": "mini3 (example data)",
  "settings": {
   "derating": {
@@ -53,5 +53,5 @@
   }
  },
  "tool": "harness-tool",
- "tool_version": "0.1.0rc4"
+ "tool_version": "0.1.0rc5"
 }
