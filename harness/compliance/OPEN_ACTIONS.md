@@ -4,8 +4,8 @@ Things the tool and its documents cannot do for themselves. None of them was don
 
 | ID | Action | Who | Blocks (gap, clauses) | Status |
 | --- | --- | --- | --- | --- |
-| A-01 | Appoint an independent verifier and validator (a person who did not write the design, code or tests) and let them review the verification and validation evidence | owner | G-10; ECSS-E-ST-40C 5.6.2, 5.8.2; ECSS-Q-ST-80C 6.3.5.19 | open |
-| A-02 | Hold the reviews (SRR, PDR, CDR, QR, AR, test readiness, delivery, security) with record and RIDs; agree whether they are combined | owner | G-11; ECSS-E-ST-40C 5.2.5, 5.3.3 to 5.3.6, 5.4.2, 5.4.4, 5.6.3, 5.6.4, 5.7.3; ECSS-Q-ST-80C 6.1.5, 6.3.7 | open |
+| A-01 | Appoint an independent verifier and validator (a person who did not write the design, code or tests) and let them review the verification and validation evidence | owner | G-10; ECSS-E-ST-40C 5.6.2, 5.8.2; ECSS-Q-ST-80C 6.3.5.19 | prepared (2026-10-08): brief for the reviewer `templates/independent_review_brief.md`; a person must be named |
+| A-02 | Hold the reviews (SRR, PDR, CDR, QR, AR, test readiness, delivery, security) with record and RIDs; agree whether they are combined | owner | G-11; ECSS-E-ST-40C 5.2.5, 5.3.3 to 5.3.6, 5.4.2, 5.4.4, 5.6.3, 5.6.4, 5.7.3; ECSS-Q-ST-80C 6.1.5, 6.3.7 | prepared (2026-10-08): record and RID form `templates/review_record.md`; the owner decides whether reviews are combined, and sets dates |
 | A-03 | Organisation, resources, training records, risk register, process assessment, audits | owner | G-12; ECSS-Q-ST-80C 5.1, 5.2.3, 5.3, 5.7 | open |
 | A-04 | Start using problem reports as GitHub issues; form the nonconformance review board; name the customer interface | owner | G-04; ECSS-Q-ST-80C 5.2.5, 5.2.6 | partly done (2026-10-08): GitHub issues adopted as problem reports; the review board and the customer interface are still to be named |
 | A-05 | Review and approve the plans and standards (SPAP, SDP, STANDARDS, CMP, CRITICALITY including the component classification) | owner | G-03, G-06, G-14; ECSS-Q-ST-80C 6.3.4.4, 6.2.1.5 | done (2026-10-08): the five documents approved by the owner; no independent reviewer (A-01) |
