@@ -1,8 +1,10 @@
 """Review, release and new-revision workflow.
 
 A release needs a comment, a name, and a design that passes the gate: no verifier or rule
-errors for the harness, harness plans current, every wire sized and measured, and outputs that
-were exported from the current design. It writes a baseline (a frozen snapshot) and a change log
+errors for the harness, harness plans current, every wire sized and measured, outputs that
+were exported from the current design, and engineering values that a person has reviewed (no
+configuration file marked as a placeholder). A release on placeholders is possible only with a
+written reason, which is kept in the change log and the baseline (D-135). It writes a baseline (a frozen snapshot) and a change log
 entry, and locks the harness (see `locks`). The only way to change it afterwards is a new
 revision, which keeps the old baseline.
 """
@@ -26,6 +28,7 @@ from .hashing import content_hash
 from .snapshot import carried_interfaces, normalize, related_ids, snapshot_for
 
 MIN_COMMENT = 10
+MAX_COMMENT = 2000  # the baseline keeps the comment; its limit is in core/model/review.py
 DATE_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")  # ASCII digits only
 
 
@@ -116,13 +119,68 @@ def _common(project: Project, hid: str, by: str, comment: str | None, when: str)
     return out
 
 
+def placeholder_blockers(project: Project, accept_placeholders: str | None) -> list[Blocker]:
+    """Configuration files still marked as placeholders block a release unless the person
+    releasing gives a written reason (kept in the change log, see `placeholder_note`)."""
+    names = project.placeholder_configs()
+    if not names:
+        return []
+    listed = ", ".join(names)
+    if accept_placeholders is None:
+        return [
+            Blocker(
+                "placeholder_config",
+                f"These configuration files are still placeholders: {listed}. Have an engineer "
+                'review the values and set "placeholder" to false in each file '
+                "(`harness config DIR` lists them). Or release on placeholders with a written "
+                "reason; the reason is kept in the change log.",
+            )
+        ]
+    if len(accept_placeholders.strip()) < MIN_COMMENT:
+        return [
+            Blocker(
+                "placeholder_reason_short",
+                f"The reason for releasing on placeholders ({listed}) needs at least "
+                f"{MIN_COMMENT} characters.",
+            )
+        ]
+    return []
+
+
+def placeholder_note(project: Project, by: str, accept_placeholders: str | None) -> str:
+    """The sentence added to the comment of a release made on placeholders ('' otherwise)."""
+    names = project.placeholder_configs()
+    if not names or accept_placeholders is None:
+        return ""
+    return (
+        f" [Released on placeholder configuration ({', '.join(names)}); "
+        f"accepted by {by.strip()}: {accept_placeholders.strip()}]"
+    )
+
+
 def release_blockers(
-    project: Project, hid: str, *, by: str, comment: str, when: str, outputs_folder: Path | None
+    project: Project,
+    hid: str,
+    *,
+    by: str,
+    comment: str,
+    when: str,
+    outputs_folder: Path | None,
+    accept_placeholders: str | None = None,
 ) -> list[Blocker]:
     out = _common(project, hid, by, comment, when)
     h = project.harnesses.get(hid)
     if h is None:
         return out
+    out.extend(placeholder_blockers(project, accept_placeholders))
+    if len(comment.strip() + placeholder_note(project, by, accept_placeholders)) > MAX_COMMENT:
+        out.append(
+            Blocker(
+                "comment_long",
+                f"The comment (with the reason for releasing on placeholders) is longer than "
+                f"{MAX_COMMENT} characters; shorten it.",
+            )
+        )
     if h.status == "released":
         out.append(
             Blocker(
@@ -249,10 +307,12 @@ def plan_release(
     comment: str,
     when: str,
     outputs_folder: Path | None,
+    accept_placeholders: str | None = None,
 ) -> ReleasePlan:
     blockers = release_blockers(
-        project, hid, by=by, comment=comment, when=when, outputs_folder=outputs_folder
-    )
+        project, hid, by=by, comment=comment, when=when, outputs_folder=outputs_folder,
+        accept_placeholders=accept_placeholders,
+    )  # fmt: skip
     plan = ReleasePlan(blockers=blockers, label=f"Release {hid}")
     if blockers:
         return plan
@@ -268,10 +328,11 @@ def plan_release(
         )
     )
     snapshot = snapshot_for(project, released)
-    entry = _entry(project, released, "release", by.strip(), when, comment.strip())
+    full_comment = comment.strip() + placeholder_note(project, by, accept_placeholders)
+    entry = _entry(project, released, "release", by.strip(), when, full_comment)
     baseline = Baseline(
         id=f"{hid}.{h.revision}", harness_id=hid, revision=h.revision, released_on=when, by=by.strip(),
-        comment=comment.strip(), content_hash=content_hash(project), snapshot=snapshot,
+        comment=full_comment, content_hash=content_hash(project), snapshot=snapshot,
     )  # fmt: skip
     plan.ops = [Put("harnesses", released), Put("baselines", baseline), Put("changelog", entry)]
     plan.label = f"Release {hid} revision {h.revision}"
@@ -334,6 +395,8 @@ __all__ = [
     "ReleasePlan",
     "next_revision",
     "plan_new_revision",
+    "placeholder_blockers",
+    "placeholder_note",
     "plan_release",
     "plan_submit_review",
     "release_blockers",

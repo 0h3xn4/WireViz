@@ -108,11 +108,11 @@ Outputs are checked independently before they are written. If that check fails, 
 
 1. Make the design pass: no errors, plans current, every wire sized and measured.
 2. **Export outputs** and review them.
-3. In **Harness plans** select the harness: **Submit for review** (optional), then **Release…**. Type your name and a comment (at least 10 characters). Anything that blocks the release is listed in plain words.
+3. In **Harness plans** select the harness: **Submit for review** (optional), then **Release…**. Type your name and a comment (at least 10 characters). Anything that blocks the release is listed in plain words. While a configuration file is still marked as a placeholder, the window also asks for a written reason (at least 10 characters); it is kept in the change log and the baseline. Once an engineer has reviewed the values and cleared the mark, no reason is asked.
 4. The harness is now **released (locked)**: it, the interfaces it carries and the pins it uses cannot be edited. A baseline (frozen snapshot) and a change log entry are stored.
 5. To change it: **New revision…**. The old revision stays available. **Changes…** shows what differs from a baseline and can mark the changed units and interfaces on the diagram. **Change log…** shows who did what, when and why.
 
-Export the outputs again after a release so the drawings show *released*. The release check looks at the harness (gauges, lengths, open errors). It does not know whether anyone reviewed the engineering values; that stays a decision for a person.
+Export the outputs again after a release so the drawings show *released*. The release check looks at the harness (gauges, lengths, open errors) and at whether the configuration files are still marked as placeholders. It cannot judge whether the values are right; that stays a decision for a person.
 
 ## 10. Command line
 
@@ -132,7 +132,7 @@ All commands take the project folder. Exit code 0 means success, 1 means the pro
 | `harness drc DIR` | design rule report (Markdown); exit 1 on unwaived errors |
 | `harness export DIR` | write and verify all outputs |
 | `harness review DIR HARNESS --by NAME` | submit a draft for review |
-| `harness release DIR HARNESS --by NAME --comment TEXT [--checker NAME]` | release (blocked while checks fail) and re-export |
+| `harness release DIR HARNESS --by NAME --comment TEXT [--checker NAME] [--accept-placeholders REASON]` | release (blocked while checks fail, or while values are placeholders and no reason is given) and re-export |
 | `harness revise DIR HARNESS --by NAME --comment TEXT` | start a new revision |
 | `harness diff DIR HARNESS [--from REV] [--to REV]` | what changed since a baseline |
 | `harness compare OLD NEW` | compare two project folders (for example two Git checkouts) |

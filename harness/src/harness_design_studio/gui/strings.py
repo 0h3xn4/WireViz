@@ -202,6 +202,10 @@ GEN_UP_TO_DATE = "Harnesses are already up to date. Nothing to change."
 GEN_PLACEHOLDERS = "Some engineering values are not filled in yet, so wire gauges stay blank and related checks say 'not checked'. Help > User guide, section 11 (What an engineer must fill in), shows what to fill in."
 GEN_PREVIEW_HEAD = "Nothing changes until you press Apply, and Undo reverses it."
 RELEASE_CONFIRM = "Release"
+PLACEHOLDER_REASON = "Reason for releasing on placeholder values (kept in the change log)"
+PLACEHOLDER_WARNING = (
+    "These configuration files are still placeholders: {0}. A release needs a written reason."
+)
 REVIEW_CONFIRM = "Submit for review"
 NEW_REV_CONFIRM = "Start new revision"
 GEN_STATUS = {

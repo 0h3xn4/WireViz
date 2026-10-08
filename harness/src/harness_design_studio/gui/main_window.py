@@ -1005,9 +1005,11 @@ class MainWindow(QMainWindow):
                 ok_text=strings.REVIEW_CONFIRM,
             )
         elif action == "release":
+            # the dialog asks for the reason itself, so a stand-in keeps that blocker out of the list
             blockers = release_blockers(
-                project, hid, by="x", comment="x" * 10, when=today, outputs_folder=folder
-            )
+                project, hid, by="x", comment="x" * 10, when=today, outputs_folder=folder,
+                accept_placeholders="x" * 10,
+            )  # fmt: skip
             dlg = ChangeDialog(
                 self,
                 strings.RELEASE_TITLE.format(hid),
@@ -1015,6 +1017,7 @@ class MainWindow(QMainWindow):
                 blockers=[b.message for b in blockers],
                 ask_checker=True,
                 ok_text=strings.RELEASE_CONFIRM,
+                placeholders=project.placeholder_configs(),
             )
         else:
             dlg = ChangeDialog(
@@ -1040,6 +1043,7 @@ class MainWindow(QMainWindow):
                 comment=comment,
                 when=today,
                 outputs_folder=folder,
+                accept_placeholders=dlg.accepted_placeholders(),
             )
             msg = strings.RELEASE_DONE.format(hid)
         else:

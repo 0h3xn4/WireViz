@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
+## Unreleased
+
+- **Release gate for placeholders (D-135)**: a harness cannot be released while a configuration file is still marked `"placeholder": true`, unless the person releasing gives a written reason (`harness release ... --accept-placeholders REASON`, or the new field in the release window). The reason and the names of the placeholder files are kept in the change log and in the baseline. A project whose values an engineer has reviewed (every mark cleared) releases as before. Existing released harnesses are not affected.
+
 ## 0.1.0rc6 (release candidate; not yet signed off by the owner)
 
 This release candidate renames the product (Harness Design Studio), adds a vulnerability scan and a second, uninstrumented test run to the release check, and carries the compliance records of the ECSS/ESCC audit follow-up. Results are unchanged; only the stamps (version, model hash) differ.

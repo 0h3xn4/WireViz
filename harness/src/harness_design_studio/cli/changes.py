@@ -44,6 +44,13 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
     )
     who(r, True)
     r.add_argument("--checker", default=None, help="who checked it (title block)")
+    r.add_argument(
+        "--accept-placeholders",
+        metavar="REASON",
+        default=None,
+        help="release although configuration files are still placeholders: the reason "
+        "(at least 10 characters) is kept in the change log and the baseline",
+    )
     who(add("revise", "start a new revision of a released harness"), True)
     d = add("diff", "show what changed in a harness since a baseline (or between two baselines)")
     d.add_argument(
@@ -118,6 +125,7 @@ def run(args: argparse.Namespace) -> int:
             comment=args.comment,
             when=when,
             outputs_folder=folder,
+            accept_placeholders=args.accept_placeholders,
         )
     else:
         plan = plan_new_revision(project, args.harness, by=args.by, comment=args.comment, when=when)
