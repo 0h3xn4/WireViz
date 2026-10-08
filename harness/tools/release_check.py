@@ -56,6 +56,13 @@ def tests() -> Result:
     return code == 0, tail(out, 3)
 
 
+def tests_plain() -> Result:
+    """The same suite without coverage instrumentation (ECSS-Q-ST-80C 6.2.3.8): the result is
+    the one that counts for the released code, since instrumentation changes timing."""
+    code, out = run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"])
+    return code == 0, tail(out, 3)
+
+
 def fuzz() -> Result:
     env = {**os.environ, "HARNESS_FUZZ_EXAMPLES": "300"}
     code, out = run(
@@ -186,6 +193,7 @@ STEPS: list[tuple[str, Callable[[], Result], bool]] = [
     ("Soak test (3,000 random steps)", soak, False),
     ("Fuzzing and security tests (300 examples per target)", fuzz, False),
     ("Test suite and coverage gate", tests, False),
+    ("Test suite without instrumentation", tests_plain, False),
     ("SBOM and licence report", sbom, False),
     ("Reproducible wheel", reproducible, False),
     ("Package (tar.gz, deb) and self-test", package, False),
