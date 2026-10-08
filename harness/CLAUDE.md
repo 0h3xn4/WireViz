@@ -41,7 +41,7 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 - Never name a widget attribute `palette` (it hides `QWidget.palette()`); it is `palette_panel`.
 - Panels that are not visible refresh lazily (on show). Tests that read a tab's widgets must switch to that tab first.
 - Dialog hooks (`run_dialog`, `ask_folder`, `ask_text`, `ask_choice`, `ask_file`) exist so tests can drive the UI without blocking.
-- Keep edits under 100 ms at stress size: use the Delta, never rebuild the whole scene for a local change.
+- Keep edits under 100 ms at stress size: use the Delta, never rebuild the whole scene for a local change, and never call `update()`/`prepareGeometryChange()` on the lane (zone) items or the overview map for a local edit (they are as tall as the diagram; one such call repaints every item). `tests/test_gui_perf.py` guards this by counting dirty regions.
 
 ## Generation layout (M3)
 `core/generate/` (`segmentation`, `wiring`, `pins`, `sizing`, `lengths`, `mass`, `naming`, `explain`, `engine`), `core/verify.py` (independent verifier), `core/model/generation.py` (record with provenance). `plan_generation(project)` is pure and returns ops + `RegenReport` + record; the GUI previews it (`GeneratePreviewDialog`), runs it in `PlanWorker` and applies it through `History`.

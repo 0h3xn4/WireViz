@@ -4,6 +4,7 @@ Versions follow semantic versioning. Every project file records the tool version
 
 ## Unreleased
 
+- **Editor speed** (stress project: 200 units, 2000 links): renaming a unit takes about 35 ms (was 170 to 230), moving one 45 to 105 ms, a change while the interface table is shown 80 ms (was 370). One edit no longer repaints every unit and link: the lane backgrounds, which are as tall as the diagram, were invalidated on every edit; links whose curve did not change are left alone; the overview map follows on a 150 ms timer; the interface table keeps its rows when only values change. Regression tests count dirty regions and card builds instead of timing.
 - **Platform**: Ubuntu 24.04 and newer only (D-127); CI tests on 24.04 only, the release build image is now `Dockerfile.build-24.04`. Editor speed: the problems panel builds only the cards it shows (add/undo/redo 3 to 6 times faster with many findings).
 
 ## 0.1.0rc4 (release candidate; not yet signed off by the owner)

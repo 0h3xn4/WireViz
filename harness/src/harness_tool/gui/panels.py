@@ -738,10 +738,17 @@ class InterfaceModel(QAbstractTableModel):
         self.ids: list[str] = []
         self.reload()
 
-    def reload(self) -> None:
+    def reload(self) -> bool:
+        """Follow the project. Returns True when the rows changed (a reset); the same rows only get
+        new values, which keeps column widths and selection and is much cheaper with many rows."""
+        ids = sorted(self.ctl.project.interfaces)
+        if ids == self.ids and ids:
+            self.dataChanged.emit(self.index(0, 0), self.index(len(ids) - 1, len(COLUMNS) - 1))
+            return False
         self.beginResetModel()
-        self.ids = sorted(self.ctl.project.interfaces)
+        self.ids = ids
         self.endResetModel()
+        return True
 
     def rowCount(self, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> int:  # noqa: B008
         return 0 if parent.isValid() else len(self.ids)
@@ -927,9 +934,9 @@ class InterfaceTable(QWidget):
 
     def refresh(self) -> None:
         self._dirty = False
-        self.model.reload()  # a model reset restores default column widths
-        self._apply_widths()
-        self._sync_selection()
+        if self.model.reload():  # a model reset restores default column widths
+            self._apply_widths()
+            self._sync_selection()
 
     def showEvent(self, event: object) -> None:
         super().showEvent(event)  # type: ignore[arg-type]
