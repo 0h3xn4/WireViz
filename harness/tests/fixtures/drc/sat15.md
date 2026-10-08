@@ -1,6 +1,6 @@
 # Design rule check: sat15 (example data)
 
-Model hash: `63a758967598`. Rules run: 32.
+Model hash: `63a758967598`. Rules run: 33.
 Open: 0 error(s), 20 warning(s), 28 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.

@@ -232,6 +232,28 @@ def unchecked(project: Project) -> Iterator[Hit]:
             "bundle-separation",
             "Separation of bundles of different categories (5 cm or a metallic screen), the DC resistance of shield and housing bonds, and individual shields on external cables were not checked: the model holds no routing geometry or measurements (ECSS-E-ST-20-07C 4.2.13.1 c, 4.2.13.2 a, d, e)",
         )
+    if cfg(project, "emc").get("shield_bonding") is not None:
+        bad = sorted(
+            {
+                pid
+                for _h, kind, pid in _shielded_parts(project)[0]
+                if _rating(
+                    project, pid, "conductive_finish" if kind == "connector" else "shield_insulated"
+                )
+                is None
+            }
+        )
+        if bad:
+            yield Hit(
+                "shield-parts",
+                f"Shield finish and sheath were not checked for {', '.join(bad)}: the part has no conductive_finish or shield_insulated rating",
+            )
+    rf_types = [t for t in project.interface_types.values() if t.category == "rf"]
+    if rf_types and number(d.get("rf_power_factor")) is not None:
+        yield Hit(
+            "multipactor",
+            "RF power and the 6 dB margin before multipactor were not checked: they need an RF analysis outside the tool (ECSS-Q-ST-30-11C 6.12.3 b)",
+        )
     if _bundle_table_set(project) and project.harnesses:
         yield Hit(
             "partial-load",
@@ -287,6 +309,39 @@ def _shield_bonding(project: Project) -> Iterator[Hit]:
                 )
 
 
+def _shielded_parts(project: Project) -> tuple[list[tuple[str, str, str]], list[str]]:
+    """(harness, kind, part) triples the shield-parts rule looks at, and parts it cannot judge."""
+    seen: list[tuple[str, str, str]] = []
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        if not h.shields:
+            continue
+        seen += [(h.id, "connector", c.part_id) for c in h.connectors]
+        by_id = {w.id: w for w in h.wires}
+        for sh in h.shields:
+            if sh.kind == "overall_shield":
+                continue  # overshields need no insulating sheath (4.2.13.2 b)
+            for wid in sh.wire_ids:
+                if wid in by_id and by_id[wid].part_id:
+                    seen.append((h.id, "wire", by_id[wid].part_id or ""))
+    return sorted(set(seen)), []
+
+
+def _shield_parts(project: Project) -> Iterator[Hit]:
+    """Connectors for shielded wires have a conductive finish; shields have an insulating sheath."""
+    if cfg(project, "emc").get("shield_bonding") is None:
+        return
+    for hid, kind, pid in _shielded_parts(project)[0]:
+        key = "conductive_finish" if kind == "connector" else "shield_insulated"
+        value = _rating(project, pid, key)
+        if value is not None and value == 0:
+            what = (
+                "has no conductive finish"
+                if kind == "connector"
+                else "has no insulating sheath over the shield"
+            )
+            yield Hit(f"shield-parts.{hid}.{pid}", f"{pid} in {hid} {what}")
+
+
 def _emc_class_split(project: Project) -> Iterator[Hit]:
     """Wires of one EMC class between the same two units belong in one bundle (20-07C 4.2.13.1 b)."""
     if cfg(project, "emc").get("same_class_one_bundle") is not True:
@@ -337,6 +392,10 @@ STANDARD_RULES: tuple[Rule, ...] = (
          "A shield that is not bonded to the housing at both ends through the connector does not shield reliably.",
          "Terminate the shield with a 360 degree backshell at both ends.",
          _shield_bonding, sources=(E + "0080041", E + "0080042")),
+    Rule("shield-parts", "warning", "Shield parts",
+         "A connector without a conductive finish cannot bond a shield, and a shield without an insulating sheath can ground uncontrolled.",
+         "Choose a connector with a conductive finish and a wire with an insulated shield.",
+         _shield_parts, sources=(E + "0080039", E + "0080040")),
     Rule("emc-class-split", "warning", "One bundle per EMC class",
          "Wires of one EMC category spread over several bundles make the segregation of categories harder to keep.",
          "Carry the interfaces of one class between two units in one harness.",

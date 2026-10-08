@@ -41,7 +41,7 @@ harness new wheel-link --template first-steps</code></pre>
 <p>Switching modes never changes your data.</p>
 <h2 id="problems-fixes-and-waivers">6. Problems, fixes and waivers</h2>
 <ul><li><strong>Error</strong>: must be fixed. Errors cannot be waived.</li><li><strong>Warning</strong>: fix it, or <strong>Waive</strong> it with a reason of at least 10 characters. Waived warnings stay visible in the report with their reason.</li><li><strong>Note</strong>: information, for example <em>not checked because a value is still a placeholder</em>.</li></ul>
-<p>The quick checks run on every edit. The design rules (32 of them) run in the background a moment after you stop editing; the Problems tab says when they are checking.</p>
+<p>The quick checks run on every edit. The design rules (33 of them) run in the background a moment after you stop editing; the Problems tab says when they are checking.</p>
 <h2 id="generating-harnesses">7. Generating harnesses</h2>
 <ul><li>By default one harness is made for each pair of unit connectors. Nominal and redundant chains, and pyro lines, never share a harness.</li><li>Pins are chosen by rules (power first, pairs side by side, locked pins never moved). <strong>Why is it like this?</strong> shows the reason for each choice.</li><li>Generating again keeps IDs, locked wires and locked pins, never touches released harnesses, and shows a report of what was added, changed and removed.</li><li>A wire gauge stays <strong>pending</strong> until the derating values exist and the lengths are known (section 10). The tool never guesses an engineering value.</li></ul>
 <h2 id="outputs">8. Outputs</h2>

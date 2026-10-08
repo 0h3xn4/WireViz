@@ -400,6 +400,14 @@ def pos_shield_bonding() -> Project:
     return p
 
 
+def pos_shield_parts() -> Project:
+    p = base()
+    set_cfg(p, "emc", shield_bonding="both_ends_backshell")
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    set_part(p, h.connectors[0].part_id, conductive_finish=0.0)
+    return p
+
+
 def pos_emc_class_split() -> Project:
     p = base()
     set_cfg(p, "emc", same_class_one_bundle=True)
@@ -444,6 +452,7 @@ POSITIVE: dict[str, Callable[[], Project]] = {
     "power-return-adjacent": pos_power_return_adjacent,
     "bundle-current": pos_bundle_current,
     "shield-bonding": pos_shield_bonding,
+    "shield-parts": pos_shield_parts,
     "emc-class-split": pos_emc_class_split,
 }
 

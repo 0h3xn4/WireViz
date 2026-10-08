@@ -89,7 +89,7 @@ Switching modes never changes your data.
 - **Warning**: fix it, or **Waive** it with a reason of at least 10 characters. Waived warnings stay visible in the report with their reason.
 - **Note**: information, for example *not checked because a value is still a placeholder*.
 
-The quick checks run on every edit. The design rules (32 of them) run in the background a moment after you stop editing; the Problems tab says when they are checking.
+The quick checks run on every edit. The design rules (33 of them) run in the background a moment after you stop editing; the Problems tab says when they are checking.
 
 ## 7. Generating harnesses
 

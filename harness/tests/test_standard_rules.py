@@ -247,3 +247,20 @@ def test_the_output_verifier_catches_a_wrong_emc_class() -> None:
     files[key] = ("\n".join(lines) + "\n").encode()
     codes = [i.code for i in verify_outputs(p, files).issues]
     assert "out_wire_differs" in codes
+
+
+def test_shield_parts_pass_with_finish_and_unknown_is_reported() -> None:
+    p = t.pos_shield_parts()
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    t.set_part(p, h.connectors[0].part_id, conductive_finish=1.0)
+    assert hits("shield-parts", p) == []
+    t.set_part(p, h.connectors[0].part_id, conductive_finish=0.0)
+    assert hits("shield-parts", p)
+
+
+def test_missing_shield_ratings_are_reported_as_not_checked() -> None:
+    p = t.base()
+    t.set_cfg(p, "emc", shield_bonding="both_ends_backshell")
+    text = " ".join(f.title for f in drc.run(p) if f.rule == "unchecked-config")
+    assert "Shield finish and sheath were not checked" in text
+    assert "routing geometry" in text  # bundle separation is named as not checked
