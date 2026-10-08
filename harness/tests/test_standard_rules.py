@@ -264,3 +264,11 @@ def test_missing_shield_ratings_are_reported_as_not_checked() -> None:
     text = " ".join(f.title for f in drc.run(p) if f.rule == "unchecked-config")
     assert "Shield finish and sheath were not checked" in text
     assert "routing geometry" in text  # bundle separation is named as not checked
+
+
+def test_multipactor_is_named_as_not_checked_when_there_is_rf() -> None:
+    p = t.base()
+    t.set_cfg(p, "derating", rf_power_factor=0.75)
+    has_rf = any(x.category == "rf" for x in p.interface_types.values())
+    text = " ".join(f.title for f in drc.run(p) if f.rule == "unchecked-config")
+    assert ("multipactor" in text) == has_rf

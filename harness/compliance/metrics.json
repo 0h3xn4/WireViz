@@ -1,31 +1,35 @@
 {
   "cli": {
     "complexity_max": 16,
-    "complexity_mean": 6.16,
+    "complexity_mean": 6.39,
     "functions": 31,
     "most_complex": [
       "src/harness_tool/cli/data.py:_netlist 16",
       "src/harness_tool/cli/changes.py:run 14",
+      "src/harness_tool/cli/data.py:_config 13",
       "src/harness_tool/cli/data.py:_signal_map_file 12",
-      "src/harness_tool/cli/main.py:_dispatch 12",
-      "src/harness_tool/cli/main.py:main 12"
+      "src/harness_tool/cli/main.py:_dispatch 12"
     ],
-    "source_lines": 751,
+    "source_lines": 782,
     "tests": 0
   },
   "core": {
-    "complexity_max": 67,
-    "complexity_mean": 6.66,
-    "functions": 451,
+    "complexity_max": 68,
+    "complexity_mean": 6.79,
+    "functions": 480,
     "most_complex": [
-      "src/harness_tool/core/generate/engine.py:_build_harness 67",
+      "src/harness_tool/core/generate/engine.py:_build_harness 68",
       "src/harness_tool/core/kicad.py:plan_netlist_import 65",
       "src/harness_tool/core/outputs/verify.py:_system 60",
       "src/harness_tool/core/outputs/verify.py:_harness 53",
-      "src/harness_tool/core/library_import.py:plan_parts_import 48"
+      "src/harness_tool/core/outputs/verify.py:_harness_cells 50"
     ],
-    "source_lines": 9043,
+    "source_lines": 9642,
     "tests": 0
+  },
+  "coverage_percent": {
+    "branches": 93.05,
+    "statements": 96.52
   },
   "gui": {
     "complexity_max": 20,
@@ -44,7 +48,7 @@
   "tests": {
     "complexity_max": 27,
     "complexity_mean": 4.35,
-    "functions": 810,
+    "functions": 861,
     "most_complex": [
       "tests/test_edit.py:test_unit_templates_follow_the_baseline_standards 27",
       "tests/test_kicad.py:test_plan_creates_connectors_with_fixed_pins_and_reports_what_is_left_to_decide 23",
@@ -52,13 +56,13 @@
       "tests/test_checks.py:test_cross_strap_warning_fix_and_waiver 19",
       "tests/test_gui_journeys.py:test_j3_guided_connect_prevents_invalid_and_marks_auto 17"
     ],
-    "source_lines": 8138,
-    "tests": 633
+    "source_lines": 8636,
+    "tests": 670
   },
   "tools": {
     "complexity_max": 45,
-    "complexity_mean": 5.24,
-    "functions": 111,
+    "complexity_mean": 5.21,
+    "functions": 117,
     "most_complex": [
       "tools/soak.py:run_soak 45",
       "tools/soak.py:step 39",
@@ -66,7 +70,7 @@
       "tools/extract_requirements.py:parse_ecss 20",
       "tools/extract_requirements.py:write 19"
     ],
-    "source_lines": 2186,
+    "source_lines": 2295,
     "tests": 0
   }
 }

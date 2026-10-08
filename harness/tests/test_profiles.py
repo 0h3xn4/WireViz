@@ -90,3 +90,32 @@ def test_cli_applies_a_profile_and_a_second_run_changes_nothing(
     main(["config", str(proj), "--apply-profile", "ecss-q-st-30-11c"])
     assert "0 value(s) set" in capsys.readouterr().out
     assert main(["config", str(proj), "--apply-profile", "nope"]) == 2
+
+
+def _with(p, name: str, **values):  # type: ignore[no-untyped-def]
+    old = p.config.get(name)
+    base = dict(old.values) if old else {}
+    from harness_tool.core.model import ConfigFile
+
+    p.config[name] = ConfigFile(name=name, placeholder=True, values={**base, **values})
+    return p
+
+
+def test_every_kind_of_bad_value_is_reported() -> None:
+    p = mini3()
+    _with(p, "derating", wire_temperature_margin_c=-1, max_mating_cycles=0,
+          bundle_factor_by_count={"x": 1}, partial_load_factor={"below_25_percent": 1.2})  # fmt: skip
+    _with(p, "generation", power_return_gap_pins=-2)
+    _with(p, "emc", shield_bonding="somewhere")
+    msgs = " | ".join(i.message for i in configcheck.validate(p))
+    for key in ("wire_temperature_margin_c", "max_mating_cycles", "bundle_factor_by_count",
+                "partial_load_factor", "power_return_gap_pins", "shield_bonding"):  # fmt: skip
+        assert key in msgs, key
+
+
+def test_a_profile_creates_a_missing_config_file_as_a_placeholder() -> None:
+    p = mini3()
+    del p.config["emc"]
+    plan = standard_profiles.plan_profile(p, "ecss-e-st-20-07c")
+    emc = next(c for c in plan.configs if c.name == "emc")
+    assert emc.placeholder and emc.values["shield_bonding"] == "both_ends_backshell"
