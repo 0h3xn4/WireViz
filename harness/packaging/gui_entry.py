@@ -42,6 +42,7 @@ def selftest() -> int:
     ok = ok and _generate_and_export(ctl, tmp)
     ok = ok and _rule_check_process_works(ctl)
     ok = ok and _examples_are_bundled(tmp)
+    ok = ok and _fonts_are_bundled()
     ctl.release()
     print("selftest ok" if ok else "selftest FAILED")
     return 0 if ok else 1
@@ -54,6 +55,13 @@ def _examples_are_bundled(tmp: Path) -> bool:
     made = templates.create_project(tmp / "from-example", "first-steps")
     files = templates.copy_import_templates(tmp / "templates")
     return len(made.units) == 3 and any(f.name == "interfaces.csv" for f in files)
+
+
+def _fonts_are_bundled() -> bool:
+    """The IBM Plex fonts are inside the package and Qt can load them."""
+    from harness_tool.gui import fonts
+
+    return {fonts.UI_FAMILY, fonts.MONO_FAMILY} <= set(fonts.load_fonts())
 
 
 def _rule_check_process_works(ctl: object) -> bool:

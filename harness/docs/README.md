@@ -33,9 +33,11 @@
 | Document | What it says |
 | --- | --- |
 | [`SPEC.md`](SPEC.md), [`REQUIREMENTS.md`](REQUIREMENTS.md), [`UX.md`](UX.md) | What the tool must do and how it should feel |
+| [`UX_GUIDELINES_REVIEW.md`](UX_GUIDELINES_REVIEW.md) | The owner's UX/UI guidelines, point by point: done, new, not applicable, open |
 | [`DECISIONS.md`](DECISIONS.md), [`OPEN_DECISIONS.md`](OPEN_DECISIONS.md) | What was decided, and what still needs an owner |
 | [`PLAN.md`](PLAN.md), [`demos/`](demos/) | The plan and the note from each milestone |
 | [`AUDIT.md`](AUDIT.md), [`SECURITY.md`](SECURITY.md) | The October audit and the security review |
+| [`../compliance/SUMMARY.md`](../compliance/SUMMARY.md) | The ECSS/ESCC compliance audit: matrix, gaps, deviations, open actions |
 | [`RELEASE.md`](RELEASE.md) | The release checklist |
 | [`usability/`](usability/) | The usability test kit |
 
