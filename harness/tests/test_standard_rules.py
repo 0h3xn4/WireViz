@@ -162,3 +162,29 @@ def test_sizing_uses_the_bundle_table_instead_of_the_single_factor() -> None:
         bundle_wires=10,
     )
     assert single.awg == 20 and not any("Table 6-41" in n for n in single.notes)
+
+
+def test_generation_leaves_an_unassigned_contact_between_power_and_return() -> None:
+    from harness_tool.core.generate.engine import generate_project, plan_generation
+    from harness_tool.core.samples import sat15
+    from harness_tool.core.verify import verify_project
+
+    p = sat15()
+    t.set_cfg(p, "generation", power_return_gap_pins=1)
+    generate_project(p)
+    assert [f for f in drc.run(p) if f.rule == "power-return-adjacent"] == []
+    assert verify_project(p).ok
+    box = p.connectors["OBC1-J01"]
+    used = [x.signal for x in box.pins]
+    assert used[:3] == ["PWR", None, "RTN"]  # pin 2 stays unassigned
+    assert plan_generation(p).empty  # a second run changes nothing (REQ-GEN-01)
+
+
+def test_without_the_setting_power_and_return_stay_adjacent_as_before() -> None:
+    from harness_tool.core.generate.engine import generate_project
+    from harness_tool.core.samples import sat15
+
+    p = sat15()
+    generate_project(p)
+    used = [x.signal for x in p.connectors["OBC1-J01"].pins]
+    assert used[:2] == ["PWR", "RTN"]

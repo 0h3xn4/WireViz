@@ -94,10 +94,12 @@ def allocate(
     previous: dict[tuple[str, str], str],
     gap_pins: int,
     held: dict[tuple[str, str], str] | None = None,
+    return_gap: int = 0,
 ) -> Allocation:
     """Allocate pins of `connector` for `requests`. Locked pins (and their signals) are untouched.
     `held` maps (interface, signal) to a locked pin that already carries that signal: it is used
-    as it is instead of placing the signal on another pin."""
+    as it is instead of placing the signal on another pin. `return_gap` unassigned pins are left
+    between the signals of a power interface (ECSS-Q-ST-30-11C 6.11.3 a)."""
     result = Allocation()
     if any(p.fixed and p.signal for p in connector.pins):  # even when a released harness holds some
         return _allocate_fixed(connector, requests, previous)
@@ -125,12 +127,35 @@ def allocate(
             k = len(signals)
             chosen: list[str] | None = None
             reason = ""  # only set when a rule had to be relaxed
+            spaced = is_power and return_gap > 0 and k > 1
+            stride = 1 + return_gap if spaced else 1
+            span = (k - 1) * stride + 1
             old = [previous.get((req.interface_id, s)) for s in signals]
             if all(o is not None and o in index and o not in taken for o in old):
                 idxs = [index[o] for o in old if o is not None]
-                if idxs == list(range(idxs[0], idxs[0] + k)) and idxs[0] >= min_start:
+                if (
+                    idxs == list(range(idxs[0], idxs[0] + k * stride, stride))
+                    and idxs[0] >= min_start
+                ):
                     chosen = [o for o in old if o is not None]  # kept: small changes, small diffs
+                    if spaced:
+                        taken.update(order[idxs[0] : idxs[-1] + 1])
             if chosen is None:
+                for start in range(min_start, len(order) - span + 1):
+                    block = order[start : start + span]
+                    if not any(b in taken for b in block):
+                        chosen = block[::stride]
+                        if spaced:
+                            taken.update(block)  # the pins between stay unassigned
+                        break
+            if chosen is None and spaced:
+                result.warnings.append(
+                    (
+                        req.interface_id,
+                        f"{', '.join(signals)} could not be separated by an unassigned contact on {connector.id}",
+                    )
+                )
+                spaced = False
                 for start in range(min_start, len(order) - k + 1):
                     block = order[start : start + k]
                     if not any(b in taken for b in block):

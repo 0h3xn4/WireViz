@@ -386,6 +386,7 @@ def _allocate_pins(
     gap = int(_num(ctx.gen.get("power_signal_gap_pins")) or 0)
     if ctx.gen.get("power_signal_gap_pins") is None:
         ctx.note("rules", "pin-allocation: power-to-signal pin gap is a placeholder (0 used)")
+    ret_gap = int(_num(ctx.gen.get("power_return_gap_pins")) or 0)
     for k, cid in enumerate(sorted(requests)):
         tick(0.05 + 0.15 * k / max(1, len(requests)), f"Allocating pins of {cid}")
         box = p.connectors[cid]
@@ -428,6 +429,7 @@ def _allocate_pins(
             {k2: v for k2, v in previous.items() if k2[0] not in frozen_ifaces},
             gap,
             held,
+            ret_gap,
         )
         ctx.alloc[cid] = res
         for iid, msg in res.errors:
