@@ -18,9 +18,9 @@ The owner's needs are in `../../docs/SPEC.md`. The system-level requirement base
 
 ### 4.4 Design and implementation engineering
 - Static analysis: `ruff check`, `ruff format --check`, `mypy --strict` clean on each commit of the branch.
-- Tests: baseline 839 passed, 1 skipped; after Phase 2b 902 passed, 1 skipped; with coverage 906 passed, 1 skipped, 1 timing test failed (4.7).
+- Tests: baseline 839 passed, 1 skipped; after Phase 2b 902 passed, 1 skipped; final 910 passed, 1 skipped with and without coverage (4.7).
 - Unit and integration test results: `../evidence/baseline_tests.txt`, `after_phase2b_tests.txt`, `after_phase2_coverage_run.txt`.
-- Code coverage (ECSS-E-ST-40C 0860135, value agreed with the owner: 90 % on `core`): statements 96.5 %, branches 93.0 % in the coverage run (`../metrics.json`). The GUI is outside the measure.
+- Code coverage (ECSS-E-ST-40C 0860135, value agreed with the owner: 90 % on `core`): see `../metrics.json` for the final figures (core: 96.63 % statements, 93.16 % branches) (`../metrics.json`). The GUI is outside the measure.
 - Generated outputs before and after: `../evidence/output_comparison.md` (592 of 595 identical; 3 DRC reports differ by design).
 
 ### 4.5 Delivery and acceptance
@@ -30,7 +30,7 @@ The owner's needs are in `../../docs/SPEC.md`. The system-level requirement base
 Validation has not been executed by an independent person (`SValP_SVS.md`, A-01, A-12, A-13).
 
 ### 4.7 Quality requirements verification
-- Problem found in this verification: `tests/test_gui_perf.py::test_loading_a_stress_project_is_reasonable` exceeded its 5 s limit once in the run with coverage instrumentation on this machine and passes alone (about 1.5 s) and in the run without instrumentation. The CI sets `HARNESS_TIME_FACTOR=3` for this reason. Not a regression of this audit (no code on that path changed); the final run is repeated with the factor set (see `../evidence/final_runs.md`).
+- Problem found in this verification: `tests/test_gui_perf.py::test_loading_a_stress_project_is_reasonable` exceeded its 5 s limit once in the run with coverage instrumentation on this machine and passes alone (about 1.5 s) and in the run without instrumentation. The CI sets `HARNESS_TIME_FACTOR=3` for this reason. Not a regression of this audit (no code on that path changed); the final run with the factor set and the final run without instrumentation both pass (910 passed, 1 skipped; `../evidence/final_runs.md`).
 - Problem found and corrected in the audit tools: the requirement extractor flagged two table requirements as deleted (30-11C 0140051, 0140058); corrected and recorded in `../gap_analysis.md`.
 
 ## 5. Margin and technical budget status

@@ -28,8 +28,8 @@
     "tests": 0
   },
   "coverage_percent": {
-    "branches": 93.05,
-    "statements": 96.52
+    "branches": 93.16,
+    "statements": 96.63
   },
   "gui": {
     "complexity_max": 20,
@@ -47,8 +47,8 @@
   },
   "tests": {
     "complexity_max": 27,
-    "complexity_mean": 4.35,
-    "functions": 861,
+    "complexity_mean": 4.34,
+    "functions": 865,
     "most_complex": [
       "tests/test_edit.py:test_unit_templates_follow_the_baseline_standards 27",
       "tests/test_kicad.py:test_plan_creates_connectors_with_fixed_pins_and_reports_what_is_left_to_decide 23",
@@ -56,8 +56,8 @@
       "tests/test_checks.py:test_cross_strap_warning_fix_and_waiver 19",
       "tests/test_gui_journeys.py:test_j3_guided_connect_prevents_invalid_and_marks_auto 17"
     ],
-    "source_lines": 8636,
-    "tests": 670
+    "source_lines": 8664,
+    "tests": 673
   },
   "tools": {
     "complexity_max": 45,
