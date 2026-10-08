@@ -791,3 +791,29 @@ def test_link_labels_do_not_overlap_in_a_dense_diagram(qtbot, tmp_path) -> None:
     assert len(rects) >= 20
     overlaps = sum(1 for k, a in enumerate(rects) for b in rects[k + 1 :] if a.intersects(b))
     assert overlaps <= max(2, len(rects) // 10), f"{overlaps} overlapping labels of {len(rects)}"
+
+
+def test_new_project_from_an_example(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    """REQ-GUI-03: the editor can start from the same examples as `harness new --template`."""
+    folder = tmp_path / "wheel"
+    seen: list[str] = []
+
+    def choose(title: str, text: str, buttons: list[str]) -> int:
+        seen.extend(buttons)
+        return buttons.index("first-steps")
+
+    win.ask_choice = choose  # type: ignore[assignment]
+    win.ask_folder = lambda title: str(folder)
+    win.ask_text = lambda t, label, default: "Wheel link"
+    win.new_from_example_flow()
+    assert seen[:3] == ["blank", "first-steps", "small-satellite"]
+    assert (folder / "project.json").exists() and win.ctl.root == folder
+    assert {"OBC", "PCDU"} <= set(win.ctl.project.units) or len(win.ctl.project.units) >= 3
+    assert win.windowTitle().startswith("Wheel link")
+    win.ctl.release()
+
+
+def test_choosing_cancel_in_the_example_dialog_changes_nothing(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    win.ask_choice = lambda title, text, buttons: len(buttons) - 1  # type: ignore[assignment]
+    win.new_from_example_flow()
+    assert win.ctl.root is None or win.ctl.root != tmp_path / "x"

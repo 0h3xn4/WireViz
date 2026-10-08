@@ -1,7 +1,9 @@
 """All user-visible UI strings live here so translation is possible later."""
 
 APP_TITLE = "Harness Designer"
-EMPTY_STATE = "No project open. Create a new project or open an existing one to begin."
+EMPTY_STATE = (
+    "No project open. Create a new project, start from an example or open an existing one to begin."
+)
 EMPTY_CANVAS = "Your diagram is empty.\nAdd your first unit from the palette on the left."
 CANVAS = "Block diagram canvas"
 CANVAS_HELP = "Tab moves between units, Enter selects, Shift+arrow keys move the selected unit. The Interface table tab lists every interface and is the screen-reader friendly alternative."
@@ -217,6 +219,9 @@ STATUS_COUNTS = "{} · {} · model {}"
 SELECTED = "Selected: {}"
 NOTHING_SEL = "Nothing selected"
 A_NEW = "New project…"
+A_NEW_EXAMPLE = "New project from an example…"
+EXAMPLE_TITLE = "Start from an example"
+EXAMPLE_TEXT = "Choose what to start from:"
 A_OPEN = "Open project…"
 A_SAVE = "Save"
 A_SAVE_AS = "Save as…"

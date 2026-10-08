@@ -64,7 +64,7 @@ Then **File > Open project…** and pick the folder. You cannot break anything: 
 ## 4. Your first project in ten steps
 
 1. Start the app. The sample project opens with a short tour; skip it or follow it.
-2. **File > New project…**, choose an empty folder, give it a name. (Or open the `first-steps` example from section 3.)
+2. **File > New project…**, choose an empty folder, give it a name. Or **File > New project from an example…** and pick `blank`, `first-steps` (three units, start here) or `small-satellite` (14 units); these are the same examples as `harness new` (section 3).
 3. In the palette on the left press **Add a unit** and pick *Computer*. Add a *Power unit* and an *Actuator (wheel)*.
 4. Pick an interface type (for example *RS-422*), then click the first unit and the second unit. Units that cannot take this interface are greyed out, with the reason written next to them.
 5. Look at **Problems** (bottom). Each card says what is wrong, why it matters and how to fix it. Many have a one-click **Fix**.

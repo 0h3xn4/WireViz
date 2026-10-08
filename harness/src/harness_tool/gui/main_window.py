@@ -479,6 +479,9 @@ class MainWindow(QMainWindow):
     def _build_actions(self) -> None:
         a = self._act
         self.act_new = a(strings.A_NEW, self.new_project_flow, "Ctrl+N", name="act-new")
+        self.act_new_example = a(
+            strings.A_NEW_EXAMPLE, self.new_from_example_flow, name="act-new-example"
+        )
         self.act_open = a(strings.A_OPEN, self.open_flow, "Ctrl+O", name="act-open")
         self.act_save = a(strings.A_SAVE, self._save_copy_noop, "Ctrl+S", name="act-save")
         self.act_save_as = a(strings.A_SAVE_AS, self._save_copy, "Ctrl+Shift+S", name="act-save-as")
@@ -563,7 +566,7 @@ class MainWindow(QMainWindow):
     def _build_menus_and_toolbar(self) -> None:
         mb = self.menuBar()
         f = mb.addMenu(strings.M_FILE)
-        for act in (self.act_new, self.act_open, self.act_sample):
+        for act in (self.act_new, self.act_new_example, self.act_open, self.act_sample):
             f.addAction(act)
         f.addSeparator()
         for act in (self.act_save, self.act_save_as, self.act_import):
@@ -1199,6 +1202,34 @@ class MainWindow(QMainWindow):
             return
         self._last_issues = []
         self.settings.setValue("project/last", folder)
+
+    def new_from_example_flow(self) -> None:
+        """Start from a bundled example (the same ones as `harness new --template`)."""
+        from harness_tool.core import templates
+
+        if not self._confirm_discard():
+            return
+        examples = templates.TEMPLATES
+        text = strings.EXAMPLE_TEXT + "\n\n" + "\n".join(f"{t.name}: {t.summary}" for t in examples)
+        choice = self.ask_choice(
+            strings.EXAMPLE_TITLE, text, [*(t.name for t in examples), strings.CANCEL]
+        )
+        if choice >= len(examples):
+            return
+        folder = self.ask_folder(strings.NEW_FOLDER)
+        if not folder:
+            return
+        name = self.ask_text(strings.NEW_NAME_TITLE, strings.NEW_NAME, Path(folder).name)
+        if not name:
+            return
+        try:
+            templates.create_project(Path(folder), examples[choice].name, name)
+        except (HarnessError, OSError) as exc:
+            self._error(self._explain(exc, folder))
+            return
+        if self.open_project(Path(folder)):
+            self._last_issues = []
+            self.settings.setValue("project/last", folder)
 
     def open_flow(self) -> None:
         if not self._confirm_discard():
