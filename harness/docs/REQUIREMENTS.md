@@ -60,3 +60,7 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-M7-03 | The user guide, rule reference and configuration reference are complete and in sync with the program. | SPEC Part 5 (docs) | `tests/test_docs.py` |
 | REQ-M7-04 | Ubuntu packages: `.tar.gz` with install and uninstall scripts, and a reproducible `.deb`. | D-110 | `tests/test_installers.py`, `tools/release_check.py` |
 | REQ-M7-05 | The usability kit computes SUS and success correctly and prepares the task material. | UX.md section 9 | `tests/test_usability_kit.py` |
+| REQ-NUM-01 | Sizing arithmetic (AWG diameter and area, ampacity derating, voltage drop) agrees with exact arithmetic and with the defining points of the AWG scale. | ECSS-Q-ST-80C 7.1.7 | `tests/test_numerics.py` |
+| REQ-TRACE-01 | Every tool requirement names the file that verifies it, and the traceability report is current. | ECSS-E-ST-40C 5.8.3 | `tests/test_trace.py`, `tools/trace.py` |
+| REQ-MET-01 | Size, complexity and test metrics are collected by a tool. | ECSS-Q-ST-80C 7.1.5 | `tests/test_metrics.py`, `tools/metrics.py` |
+| REQ-SCF-01 | Every delivery has a configuration file and SHA-256 values. | ECSS-Q-ST-80C 6.2.4.11 | `tests/test_scf.py`, `tools/gen_scf.py` |

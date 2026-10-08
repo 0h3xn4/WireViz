@@ -1,4 +1,4 @@
-"""Requirement traceability (ECSS-E-ST-40C 5.8.3; ECSS-Q-ST-80C 6.2.6.12)."""
+"""REQ-TRACE-01: Requirement traceability (ECSS-E-ST-40C 5.8.3; ECSS-Q-ST-80C 6.2.6.12)."""
 
 from __future__ import annotations
 

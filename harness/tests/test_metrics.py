@@ -1,4 +1,4 @@
-"""Metrics tool (ECSS-Q-ST-80C 7.1.5)."""
+"""REQ-MET-01: Metrics tool (ECSS-Q-ST-80C 7.1.5)."""
 
 from __future__ import annotations
 
