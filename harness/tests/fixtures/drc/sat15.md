@@ -8,45 +8,45 @@ Placeholder configuration in use: derating, emc, generation, segmentation, segre
 ## Warnings (20)
 
 - **HTR1-J01, HTR1-J02 on HTR1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.HTR1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **MTQ1-J01, MTQ1-J02 on MTQ1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.MTQ1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **OBC1-J02, OBC1-J03, OBC1-J04 and 8 more on OBC1 are identical (EX-MICROD-31-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.OBC1-J02`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **PCDU1-J01, PCDU1-J02, PCDU1-J03 and 8 more on PCDU1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PCDU1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **SA1-J01, SA1-J02 on SA1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SA1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **SS1-J01, SS1-J02 on SS1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SS1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **IF-012-R connects the nominal chain to the redundant chain** (`cross-strap.IF-012-R`)  
   One unit is nominal and the other redundant. A cross-strap like this means one failure could affect both chains, so reviewers will ask about it.
 - **Part EX-MICROD-15-F is not approved yet but is used (5 place(s))** (`part-unapproved.EX-MICROD-15-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-15-M is not approved yet but is used (5 place(s))** (`part-unapproved.EX-MICROD-15-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-21-F is not approved yet but is used (3 place(s))** (`part-unapproved.EX-MICROD-21-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-21-M is not approved yet but is used (2 place(s))** (`part-unapproved.EX-MICROD-21-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-31-F is not approved yet but is used (22 place(s))** (`part-unapproved.EX-MICROD-31-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-31-M is not approved yet but is used (11 place(s))** (`part-unapproved.EX-MICROD-31-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-9-F is not approved yet but is used (38 place(s))** (`part-unapproved.EX-MICROD-9-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-9-M is not approved yet but is used (28 place(s))** (`part-unapproved.EX-MICROD-9-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-RJ45-F is not approved yet but is used (5 place(s))** (`part-unapproved.EX-RJ45-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-RJ45-M is not approved yet but is used (2 place(s))** (`part-unapproved.EX-RJ45-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-SMA-F is not approved yet but is used (2 place(s))** (`part-unapproved.EX-SMA-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-WIRE-SINGLE is not approved yet but is used (30 place(s))** (`part-unapproved.EX-WIRE-SINGLE`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (24 place(s))** (`part-unapproved.EX-WIRE-TWISTED-SHIELDED`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 
 ## Not checked / note (28)
 

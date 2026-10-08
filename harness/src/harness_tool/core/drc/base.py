@@ -26,16 +26,21 @@ class Rule:
     how: str  # how to fix it by hand
     check: Callable[[Project], Iterator[Hit]]
     waivable: bool | None = None  # default: warnings can be waived, errors and info cannot
+    sources: tuple[str, ...] = ()  # IDs of the standard requirements this rule serves (compliance/)
 
     @property
     def can_waive(self) -> bool:
         return self.severity == "warning" if self.waivable is None else self.waivable
 
+    @property
+    def cite(self) -> str:
+        return f" Requirement: {', '.join(self.sources)}." if self.sources else ""
+
     def run(self, project: Project) -> list[Finding]:
         return [
             Finding(
                 finding_id(self.id, h.object_id), self.id, self.severity, h.object_id,
-                h.title, f"{self.why} To fix it: {self.how}", h.fix_label, self.can_waive,
+                h.title, f"{self.why} To fix it: {self.how}{self.cite}", h.fix_label, self.can_waive,
             )
             for h in self.check(project)
         ]  # fmt: skip

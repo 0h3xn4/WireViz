@@ -511,3 +511,19 @@ def test_regression_lookalike_rule_copes_with_mixed_keying() -> None:
         ],
     )
     list(next(r for r in RULES if r.id == "connector-lookalike").check(p))
+
+
+def test_cited_requirements_exist_in_the_extracted_lists() -> None:
+    """REQ-STD-01: a rule can only cite a requirement that is in compliance/requirements."""
+    import csv
+    from pathlib import Path
+
+    folder = Path(__file__).resolve().parent.parent / "compliance" / "requirements"
+    known: set[str] = set()
+    for f in folder.glob("*.csv"):
+        if f.name != "overrides.csv":
+            with f.open(newline="", encoding="utf-8") as fh:
+                known |= {row["ID"] for row in csv.DictReader(fh)}
+    for rule in RULES:
+        for source in rule.sources:
+            assert source in known, f"{rule.id} cites unknown {source}"

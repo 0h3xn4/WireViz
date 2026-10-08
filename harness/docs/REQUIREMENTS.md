@@ -64,3 +64,4 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-TRACE-01 | Every tool requirement names the file that verifies it, and the traceability report is current. | ECSS-E-ST-40C 5.8.3 | `tests/test_trace.py`, `tools/trace.py` |
 | REQ-MET-01 | Size, complexity and test metrics are collected by a tool. | ECSS-Q-ST-80C 7.1.5 | `tests/test_metrics.py`, `tools/metrics.py` |
 | REQ-SCF-01 | Every delivery has a configuration file and SHA-256 values. | ECSS-Q-ST-80C 6.2.4.11 | `tests/test_scf.py`, `tools/gen_scf.py` |
+| REQ-STD-01 | Every design rule names the standard requirements it serves; a rule can only cite a requirement that exists in `compliance/requirements`. | audit gap B-12 | `tests/test_drc.py` |

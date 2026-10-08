@@ -9,19 +9,19 @@ Placeholder configuration in use: derating, emc, generation, segmentation, segre
 ## Warnings (7)
 
 - **Part EX-MICROD-15-F is not approved yet but is used (3 place(s))** (`part-unapproved.EX-MICROD-15-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-15-M is not approved yet but is used (1 place(s))** (`part-unapproved.EX-MICROD-15-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-25-F is not approved yet but is used (1 place(s))** (`part-unapproved.EX-MICROD-25-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-25-M is not approved yet but is used (1 place(s))** (`part-unapproved.EX-MICROD-25-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-9-F is not approved yet but is used (4 place(s))** (`part-unapproved.EX-MICROD-9-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-MICROD-9-M is not approved yet but is used (2 place(s))** (`part-unapproved.EX-MICROD-9-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (4 place(s))** (`part-unapproved.EX-WIRE-TWISTED-SHIELDED`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 
 ## Not checked / note (4)
 
