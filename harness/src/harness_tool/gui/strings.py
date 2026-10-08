@@ -180,6 +180,11 @@ AUTO_LEGEND = "auto-filled, not reviewed"
 PROBLEMS_AND_STATUS = "Problems and status"
 TOOLBAR = "Main toolbar"
 SEARCH_BUTTON = "Search / commands  Ctrl+K"
+FILTER_LABEL = "Show"
+FILTER_ALL = "All interfaces"
+FILTER_TIP = (
+    "Show one signal class and fade the others (the diagram and the project are not changed)"
+)
 GENERATE = "Generate harnesses"
 GENERATE_TIP = "Build harness plans from the diagram (you see a preview first; Undo reverts it)"
 GEN_PREVIEW_TITLE = "Generate harnesses"

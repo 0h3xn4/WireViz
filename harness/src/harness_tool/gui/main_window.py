@@ -9,6 +9,7 @@ from PySide6.QtCore import QEvent, QEventLoop, QSettings, Qt, QThread, QTimer, Q
 from PySide6.QtGui import QAction, QActionGroup, QCloseEvent, QDesktopServices, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
+    QComboBox,
     QDialog,
     QDockWidget,
     QFileDialog,
@@ -644,6 +645,15 @@ class MainWindow(QMainWindow):
         self.search_btn.setObjectName("search-button")
         self.search_btn.clicked.connect(self.open_commands)
         tb.addWidget(self.search_btn)
+        self.filter_combo = QComboBox()
+        self.filter_combo.setObjectName("filter-category")
+        self.filter_combo.setAccessibleName(strings.FILTER_LABEL)
+        self.filter_combo.setToolTip(strings.FILTER_TIP)
+        self.filter_combo.addItem(strings.FILTER_ALL, None)
+        for key, info in CATEGORIES.items():
+            self.filter_combo.addItem(f"{info['icon']}  {info['label']}", key)
+        self.filter_combo.currentIndexChanged.connect(self._filter_changed)
+        tb.addWidget(self.filter_combo)
         spacer = QWidget()
         spacer.setSizePolicy(
             spacer.sizePolicy().horizontalPolicy().Expanding,
@@ -655,6 +665,9 @@ class MainWindow(QMainWindow):
         self.generate_btn.setToolTip(strings.GENERATE_TIP)
         self.generate_btn.clicked.connect(self.generate_flow)
         tb.addWidget(self.generate_btn)
+
+    def _filter_changed(self, _index: int) -> None:
+        self.view.dscene.set_category_filter(self.filter_combo.currentData())
 
     def _rebuild_connect_menu(self) -> None:
         self.menu_connect.clear()
