@@ -302,6 +302,8 @@ def _shield_bonding(project: Project) -> Iterator[Hit]:
         return
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
         for s in h.shields:
+            if s.kind == "twisted_pair":
+                continue  # a twisted pair has no shield to bond
             if (s.end_a, s.end_b) != ("backshell_360", "backshell_360"):
                 yield Hit(
                     f"{h.id}.{s.id}",
@@ -313,13 +315,13 @@ def _shielded_parts(project: Project) -> tuple[list[tuple[str, str, str]], list[
     """(harness, kind, part) triples the shield-parts rule looks at, and parts it cannot judge."""
     seen: list[tuple[str, str, str]] = []
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
-        if not h.shields:
-            continue
+        if not any(s.kind != "twisted_pair" for s in h.shields):
+            continue  # no real shield in this harness
         seen += [(h.id, "connector", c.part_id) for c in h.connectors]
         by_id = {w.id: w for w in h.wires}
         for sh in h.shields:
-            if sh.kind == "overall_shield":
-                continue  # overshields need no insulating sheath (4.2.13.2 b)
+            if sh.kind in ("overall_shield", "twisted_pair"):
+                continue  # overshields need no insulating sheath (4.2.13.2 b); a twisted pair has no shield
             for wid in sh.wire_ids:
                 if wid in by_id and by_id[wid].part_id:
                     seen.append((h.id, "wire", by_id[wid].part_id or ""))
