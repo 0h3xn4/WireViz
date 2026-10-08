@@ -1,5 +1,8 @@
 """Side and bottom panels: palette, properties, problems, to-do, interface table, harness plans."""
 
+from collections.abc import Callable
+from functools import partial
+
 from PySide6.QtCore import (
     QAbstractTableModel,
     QModelIndex,
@@ -586,8 +589,8 @@ class ProblemsPanel(QScrollArea):
         if not open_ and not checking:
             self.lay.addWidget(muted(strings.NO_PROBLEMS))
         cards = self._cards(open_)
-        for widget in cards[:MAX_CARDS]:
-            self.lay.addWidget(widget)
+        for build in cards[:MAX_CARDS]:
+            self.lay.addWidget(build())
         if len(cards) > MAX_CARDS:
             self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(len(cards) - MAX_CARDS)))
         waived = [f for f in findings if f.waiver is not None]
@@ -598,7 +601,7 @@ class ProblemsPanel(QScrollArea):
                     self.lay.addWidget(muted(f"✓ {f.id}: “{f.waiver.justification}”"))
         self.lay.addStretch(1)
 
-    def _cards(self, open_: list[checks.Finding]) -> list[QFrame]:
+    def _cards(self, open_: list[checks.Finding]) -> list[Callable[[], QFrame]]:
         """One card per finding, except that three or more unwaivable findings of one rule about
         the same object (a wire missing for each signal of an interface) share a single card."""
         groups: dict[tuple[str, str, str, str | None], list[checks.Finding]] = {}
@@ -609,15 +612,15 @@ class ProblemsPanel(QScrollArea):
             groups.setdefault(key, []).append(f)
         grouped = {key: fs for key, fs in groups.items() if len(fs) >= 3}
         done: set[tuple[str, str, str, str | None]] = set()
-        cards: list[QFrame] = []
+        cards: list[Callable[[], QFrame]] = []
         for f in open_:
             key = (f.rule, f.severity, f.object_id.split(".")[0], f.fix_label)
             if not f.can_waive and key in grouped:
                 if key not in done:
                     done.add(key)
-                    cards.append(self._group_card(grouped[key]))
+                    cards.append(partial(self._group_card, grouped[key]))
                 continue
-            cards.append(self._card(f))
+            cards.append(partial(self._card, f))
         return cards
 
     def _group_card(self, fs: list[checks.Finding]) -> QFrame:
