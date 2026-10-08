@@ -126,7 +126,7 @@ def test_missing_ratings_are_reported_as_not_checked() -> None:
 def test_every_finding_names_its_requirement() -> None:
     for pos in (t.pos_bundle_current, t.pos_wire_voltage):
         for f in (x for x in drc.run(pos()) if x.rule in ("bundle-current", "wire-voltage")):
-            assert "ECSS-Q-ST-30-11_" in f.why
+            assert f.sources and "ECSS-Q-ST-30-11_" in f.why_cited
 
 
 def test_sizing_uses_the_bundle_table_instead_of_the_single_factor() -> None:
