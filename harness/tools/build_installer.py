@@ -1,7 +1,7 @@
 """Build a self-contained, offline package with PyInstaller (one-folder) and archive it.
 
 Ubuntu only (D-110). Build on Ubuntu 24.04 (the supported platform).
-Output: dist/harness-tool-<version>-linux-<arch>.tar.gz
+Output: dist/harness-design-studio-<version>-linux-<arch>.tar.gz
 """
 
 import platform
@@ -10,7 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from harness_tool import __version__
+from harness_design_studio import __version__
 
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDES = ["PySide6.QtNetwork", "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets",
@@ -36,19 +36,21 @@ def _pyinstaller(
         "--hidden-import",
         "defusedxml",
     ]  # openpyxl imports it only if present: XML bomb protection
-    guide = ROOT / "src" / "harness_tool" / "resources" / "guide"
-    cmd += ["--add-data", f"{guide}:harness_tool/resources/guide"]
-    examples = ROOT / "src" / "harness_tool" / "resources" / "examples"  # `harness new`, templates
-    cmd += ["--add-data", f"{examples}:harness_tool/resources/examples"]
-    fonts = ROOT / "src" / "harness_tool" / "resources" / "fonts"  # IBM Plex, SIL OFL 1.1
-    cmd += ["--add-data", f"{fonts}:harness_tool/resources/fonts"]
+    guide = ROOT / "src" / "harness_design_studio" / "resources" / "guide"
+    cmd += ["--add-data", f"{guide}:harness_design_studio/resources/guide"]
+    examples = (
+        ROOT / "src" / "harness_design_studio" / "resources" / "examples"
+    )  # `harness new`, templates
+    cmd += ["--add-data", f"{examples}:harness_design_studio/resources/examples"]
+    fonts = ROOT / "src" / "harness_design_studio" / "resources" / "fonts"  # IBM Plex, SIL OFL 1.1
+    cmd += ["--add-data", f"{fonts}:harness_design_studio/resources/fonts"]
     cmd.append(str(entry))
     return subprocess.run(cmd, check=False).returncode
 
 
 def main() -> int:
     packaging = ROOT / "packaging"
-    if _pyinstaller("harness-tool", packaging / "gui_entry.py", windowed=True):
+    if _pyinstaller("harness-design-studio", packaging / "gui_entry.py", windowed=True):
         return 1
     # Console command (validate/check/migrate); no Qt, so it stays small. Shipped inside the folder.
     if _pyinstaller(
@@ -59,10 +61,12 @@ def main() -> int:
     ):
         return 1
     shutil.copytree(
-        ROOT / "dist" / "harness", ROOT / "dist" / "harness-tool" / "cli", dirs_exist_ok=True
+        ROOT / "dist" / "harness",
+        ROOT / "dist" / "harness-design-studio" / "cli",
+        dirs_exist_ok=True,
     )
     shutil.rmtree(ROOT / "dist" / "harness", ignore_errors=True)
-    app = ROOT / "dist" / "harness-tool"
+    app = ROOT / "dist" / "harness-design-studio"
     leaked = sorted(
         p.name for base in (app / "_internal", app / "cli" / "_internal") if base.is_dir()
         for p in base.iterdir() if p.name.split(".")[0] in FORBIDDEN
@@ -80,11 +84,15 @@ def main() -> int:
         ROOT / "packaging" / "ubuntu"
     ).iterdir():  # install scripts, desktop file, icon, readme
         if item.is_file():
-            shutil.copy2(item, ROOT / "dist" / "harness-tool" / item.name)
+            shutil.copy2(item, ROOT / "dist" / "harness-design-studio" / item.name)
     system = platform.system().lower()
-    base = ROOT / "dist" / f"harness-tool-{__version__}-{system}-{platform.machine().lower()}"
+    base = (
+        ROOT / "dist" / f"harness-design-studio-{__version__}-{system}-{platform.machine().lower()}"
+    )
     fmt = "gztar"
-    archive = shutil.make_archive(str(base), fmt, root_dir=ROOT / "dist", base_dir="harness-tool")
+    archive = shutil.make_archive(
+        str(base), fmt, root_dir=ROOT / "dist", base_dir="harness-design-studio"
+    )
     print(archive)
     return 0
 

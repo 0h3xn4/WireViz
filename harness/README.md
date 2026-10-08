@@ -1,4 +1,4 @@
-# Harness tool
+# Harness Design Studio
 
 An offline desktop tool for designing the electrical harnesses of a spacecraft.
 
@@ -24,7 +24,7 @@ Runs on **Ubuntu 24.04 or newer**. Release candidate `0.1.0rc5`, not yet signed 
 1. **Install** (details in [`docs/INSTALL.md`](docs/INSTALL.md)):
 
    ```
-   sudo apt install ./harness-tool_<version>_amd64.deb
+   sudo apt install ./harness-design-studio_<version>_amd64.deb
    harness --version
    ```
 
@@ -37,7 +37,7 @@ Runs on **Ubuntu 24.04 or newer**. Release candidate `0.1.0rc5`, not yet signed 
    harness export wheel-link
    ```
 
-3. **Look at the result**: drawings and lists are in `wheel-link/outputs/`. Open the project in the app (**Harness tool** in the application menu, then **File > Open project…**) to see the diagram, the *Problems* tab and the *Why is it like this?* explanation of every wire.
+3. **Look at the result**: drawings and lists are in `wheel-link/outputs/`. Open the project in the app (**Harness Design Studio** in the application menu, then **File > Open project…**) to see the diagram, the *Problems* tab and the *Why is it like this?* explanation of every wire.
 
 That is the whole idea. [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) walks through it step by step with the real output of every command.
 
@@ -66,7 +66,7 @@ That is the whole idea. [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) wal
 | `first-steps` | Three units, a power link and an RS-422 link. Nothing generated yet. Start here. |
 | `small-satellite` | 14 units with redundant chains. Generate it to see a realistic system. |
 
-`harness templates my-templates` copies templates for your own data: CSV files for interfaces, approved parts and segment lengths, a KiCad netlist, a CI script, a GitHub Actions workflow, a design review checklist and *demo* engineering values for learning (not engineering data). What each file is for: [`src/harness_tool/resources/examples/templates/README.md`](src/harness_tool/resources/examples/templates/README.md).
+`harness templates my-templates` copies templates for your own data: CSV files for interfaces, approved parts and segment lengths, a KiCad netlist, a CI script, a GitHub Actions workflow, a design review checklist and *demo* engineering values for learning (not engineering data). What each file is for: [`src/harness_design_studio/resources/examples/templates/README.md`](src/harness_design_studio/resources/examples/templates/README.md).
 
 ## What is in a project
 

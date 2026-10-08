@@ -8,10 +8,10 @@ from PySide6.QtWidgets import QLineEdit, QPushButton
 pytest.importorskip("PySide6")
 pytestmark = pytest.mark.gui
 
-from harness_tool.core import edit  # noqa: E402
-from harness_tool.core.io.layout import model_hash  # noqa: E402
-from harness_tool.core.io.loader import load_project  # noqa: E402
-from harness_tool.core.samples import new_project  # noqa: E402
+from harness_design_studio.core import edit  # noqa: E402
+from harness_design_studio.core.io.layout import model_hash  # noqa: E402
+from harness_design_studio.core.io.loader import load_project  # noqa: E402
+from harness_design_studio.core.samples import new_project  # noqa: E402
 from tests.gui_helpers import (  # noqa: E402
     DialogScript,
     click_link,
@@ -63,7 +63,7 @@ def test_j1_tour_starts_on_first_run_and_can_be_skipped_and_replayed(qtbot, tmp_
 def test_sample_project_opens_with_banner(win) -> None:  # type: ignore[no-untyped-def]
     assert len(win.ctl.project.units) == 3 and win.banner.isVisible()
     assert "sample project" in win.banner.label.text()
-    assert "Harness Designer" in win.windowTitle()
+    assert "Harness Design Studio" in win.windowTitle()
 
 
 # ---- J2 build the diagram ---------------------------------------------------------------------
@@ -467,10 +467,10 @@ def test_command_palette_runs_commands_and_finds_ids(win) -> None:  # type: igno
 
 
 def test_command_palette_keyboard_navigation(qtbot, win) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.gui.dialogs import CommandPalette
+    from harness_design_studio.gui.dialogs import CommandPalette
 
     ran: list[str] = []
-    from harness_tool.gui.dialogs import PaletteEntry
+    from harness_design_studio.gui.dialogs import PaletteEntry
 
     d = CommandPalette(
         win,
@@ -557,7 +557,7 @@ def test_autosave_journal_and_restore_after_crash(qtbot, tmp_path) -> None:  # t
     w1.ask_text = lambda t, label, default: "P"
     w1.new_project_flow()
     button(w1, "add-sensor").click()  # unsaved change
-    from harness_tool.core.recovery import journal_path
+    from harness_design_studio.core.recovery import journal_path
 
     qtbot.waitUntil(lambda: journal_path(folder).exists(), timeout=2000)
     assert "ST1" not in load_project(folder).project.units  # not saved to the project files
@@ -624,8 +624,8 @@ def test_project_open_twice_offers_read_only(qtbot, tmp_path) -> None:  # type: 
 def test_newer_version_project_opens_read_only(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
     import json
 
-    from harness_tool.core.io.saver import save_project
-    from harness_tool.core.samples import mini3
+    from harness_design_studio.core.io.saver import save_project
+    from harness_design_studio.core.samples import mini3
 
     folder = tmp_path / "newer"
     save_project(mini3(), folder)
@@ -638,8 +638,8 @@ def test_newer_version_project_opens_read_only(win, tmp_path) -> None:  # type: 
 
 
 def test_corrupt_project_opens_in_recovery_mode(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.core.io.saver import save_project
-    from harness_tool.core.samples import mini3
+    from harness_design_studio.core.io.saver import save_project
+    from harness_design_studio.core.samples import mini3
 
     folder = tmp_path / "broken"
     save_project(mini3(), folder)
@@ -655,15 +655,15 @@ def test_corrupt_project_opens_in_recovery_mode(win, tmp_path) -> None:  # type:
     assert not win.ctl.read_only
     win.ctl.release()
     win.ctl.add_unit("sensor")  # allowed in memory ...
-    from harness_tool.core.errors import SaveError
+    from harness_design_studio.core.errors import SaveError
 
     with pytest.raises(SaveError, match="new folder"):
         win.ctl.save()  # ... but the damaged original folder is protected
 
 
 def test_external_change_offers_reload(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.core.io.saver import save_project
-    from harness_tool.core.samples import mini3
+    from harness_design_studio.core.io.saver import save_project
+    from harness_design_studio.core.samples import mini3
 
     folder = tmp_path / "proj"
     save_project(mini3(), folder)
@@ -674,10 +674,10 @@ def test_external_change_offers_reload(win, tmp_path) -> None:  # type: ignore[n
         if hasattr(edit, "evolve")
         else p.units["OBC"]
     )
-    from harness_tool.core.model import evolve
+    from harness_design_studio.core.model import evolve
 
     p.units["OBC"] = evolve(p.units["OBC"], name="Changed by a Git pull")
-    from harness_tool.core.io.layout import serialize
+    from harness_design_studio.core.io.layout import serialize
 
     for rel, data in serialize(p).items():
         (folder / rel).write_bytes(data)
@@ -689,7 +689,7 @@ def test_external_change_offers_reload(win, tmp_path) -> None:  # type: ignore[n
     (folder / "logical/units/avionics.json").write_text('{"units": []}\n')
     win.ask_choice = lambda t, text, buttons: 1  # type: ignore[assignment,misc]
     win.check_disk()
-    from harness_tool.core.errors import SaveError
+    from harness_design_studio.core.errors import SaveError
 
     with pytest.raises(SaveError, match="changed on disk"):
         win.ctl.save()
@@ -782,7 +782,7 @@ def test_connect_hint_has_a_fixed_height_so_the_toolbar_does_not_jump(win) -> No
 
 
 def test_link_labels_do_not_overlap_in_a_dense_diagram(qtbot, tmp_path) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.core.samples import sat15
+    from harness_design_studio.core.samples import sat15
 
     w = make_window(tmp_path)
     qtbot.addWidget(w)

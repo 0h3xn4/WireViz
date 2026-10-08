@@ -15,7 +15,7 @@ ALLOWED_WORDS = ("mit", "bsd", "apache", "isc", "python software foundation", "p
                  "lgpl", "lesser general public", "unlicense", "zlib", "0bsd", "cc0",
                  "public domain", "hpnd")  # fmt: skip
 REJECTED_RE = re.compile(r"(?<![a-z])(a?gpl)|general public license", re.IGNORECASE)
-OWN = {"harness-tool"}
+OWN = {"harness-design-studio"}
 DEV_ONLY = OWN | {
     "pip-licenses", "pyinstaller", "cyclonedx-bom", "pytest", "pytest-cov", "pytest-qt",
     "hypothesis", "mypy", "ruff",

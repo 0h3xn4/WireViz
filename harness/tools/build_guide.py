@@ -1,4 +1,4 @@
-"""Build the offline user guide: docs/guide/USER_GUIDE.md -> src/harness_tool/resources/guide/index.html.
+"""Build the offline user guide: docs/guide/USER_GUIDE.md -> src/harness_design_studio/resources/guide/index.html.
 A small Markdown converter (headings, paragraphs, lists, tables, code, bold, italics, links), so
 no extra dependency is needed. A test fails if the committed HTML is stale.
 Usage: python -m tools.build_guide"""
@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs" / "guide" / "USER_GUIDE.md"
-TARGET = ROOT / "src" / "harness_tool" / "resources" / "guide" / "index.html"
+TARGET = ROOT / "src" / "harness_design_studio" / "resources" / "guide" / "index.html"
 
 CSS = """
 :root{--bg:#fff;--fg:#1b1b1f;--muted:#55555f;--line:#d0d0d8;--accent:#4a1fb8;--code:#f1f1f6}

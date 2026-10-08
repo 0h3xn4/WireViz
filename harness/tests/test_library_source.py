@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main
-from harness_tool.core.commands import History
-from harness_tool.core.imports import ImportError_
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.library_import import describe_library, library_ops
-from harness_tool.core.model import LibraryInfo
-from harness_tool.core.outputs.build import build_outputs
-from harness_tool.core.samples import mini3
+from harness_design_studio.cli.main import main
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.imports import ImportError_
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.library_import import describe_library, library_ops
+from harness_design_studio.core.model import LibraryInfo
+from harness_design_studio.core.outputs.build import build_outputs
+from harness_design_studio.core.samples import mini3
 
 
 def test_a_date_must_be_a_real_iso_date() -> None:

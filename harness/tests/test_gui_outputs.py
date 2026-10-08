@@ -7,11 +7,11 @@ from PySide6.QtWidgets import QPushButton
 pytest.importorskip("PySide6")
 pytestmark = pytest.mark.gui
 
-from harness_tool.core.commands import Put  # noqa: E402
-from harness_tool.core.generate.engine import generate_project  # noqa: E402
-from harness_tool.core.io.saver import save_project  # noqa: E402
-from harness_tool.core.model import evolve  # noqa: E402
-from harness_tool.core.samples import new_project, sat15  # noqa: E402
+from harness_design_studio.core.commands import Put  # noqa: E402
+from harness_design_studio.core.generate.engine import generate_project  # noqa: E402
+from harness_design_studio.core.io.saver import save_project  # noqa: E402
+from harness_design_studio.core.model import evolve  # noqa: E402
+from harness_design_studio.core.samples import new_project, sat15  # noqa: E402
 from tests.gui_helpers import DialogScript, make_window  # noqa: E402
 
 
@@ -64,11 +64,11 @@ def test_cancelled_export_writes_nothing(win, tmp_path) -> None:  # type: ignore
 
 
 def test_failed_independent_check_blocks_the_write(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.core.outputs.build import build_outputs
-    from harness_tool.core.outputs.verify import verify_outputs
+    from harness_design_studio.core.outputs.build import build_outputs
+    from harness_design_studio.core.outputs.verify import verify_outputs
 
     built = build_outputs(win.ctl.project)
-    from harness_tool.core.outputs.stamp import csv_bytes, parse_csv
+    from harness_design_studio.core.outputs.stamp import csv_bytes, parse_csv
 
     table = parse_csv(built.files["harnesses/W001/wirelist.csv"])
     del table[1]

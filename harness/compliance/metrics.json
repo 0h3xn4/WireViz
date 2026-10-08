@@ -4,11 +4,11 @@
     "complexity_mean": 6.39,
     "functions": 31,
     "most_complex": [
-      "src/harness_tool/cli/data.py:_netlist 16",
-      "src/harness_tool/cli/changes.py:run 14",
-      "src/harness_tool/cli/data.py:_config 13",
-      "src/harness_tool/cli/data.py:_signal_map_file 12",
-      "src/harness_tool/cli/main.py:_dispatch 12"
+      "src/harness_design_studio/cli/data.py:_netlist 16",
+      "src/harness_design_studio/cli/changes.py:run 14",
+      "src/harness_design_studio/cli/data.py:_config 13",
+      "src/harness_design_studio/cli/data.py:_signal_map_file 12",
+      "src/harness_design_studio/cli/main.py:_dispatch 12"
     ],
     "source_lines": 782,
     "tests": 0
@@ -18,11 +18,11 @@
     "complexity_mean": 6.79,
     "functions": 480,
     "most_complex": [
-      "src/harness_tool/core/generate/engine.py:_build_harness 68",
-      "src/harness_tool/core/kicad.py:plan_netlist_import 65",
-      "src/harness_tool/core/outputs/verify.py:_system 60",
-      "src/harness_tool/core/outputs/verify.py:_harness 53",
-      "src/harness_tool/core/outputs/verify.py:_harness_cells 50"
+      "src/harness_design_studio/core/generate/engine.py:_build_harness 68",
+      "src/harness_design_studio/core/kicad.py:plan_netlist_import 65",
+      "src/harness_design_studio/core/outputs/verify.py:_system 60",
+      "src/harness_design_studio/core/outputs/verify.py:_harness 53",
+      "src/harness_design_studio/core/outputs/verify.py:_harness_cells 50"
     ],
     "source_lines": 9642,
     "tests": 0
@@ -36,11 +36,11 @@
     "complexity_mean": 3.16,
     "functions": 407,
     "most_complex": [
-      "src/harness_tool/gui/main_window.py:_update_selection_actions 20",
-      "src/harness_tool/gui/canvas.py:paint 17",
-      "src/harness_tool/gui/panels.py:refresh 15",
-      "src/harness_tool/gui/canvas.py:update_path 14",
-      "src/harness_tool/gui/canvas.py:_paint_ports 13"
+      "src/harness_design_studio/gui/main_window.py:_update_selection_actions 20",
+      "src/harness_design_studio/gui/canvas.py:paint 17",
+      "src/harness_design_studio/gui/panels.py:refresh 15",
+      "src/harness_design_studio/gui/canvas.py:update_path 14",
+      "src/harness_design_studio/gui/canvas.py:_paint_ports 13"
     ],
     "source_lines": 5476,
     "tests": 0

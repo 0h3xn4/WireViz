@@ -8,34 +8,39 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from harness_tool.cli.main import main as cli_main
-from harness_tool.core import drc, edit
-from harness_tool.core.commands import Delete, History, Op, Put
-from harness_tool.core.errors import TransactionError
-from harness_tool.core.generate.engine import plan_generation
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Project, Wire, evolve
-from harness_tool.core.outputs.build import (
+from harness_design_studio.cli.main import main as cli_main
+from harness_design_studio.core import drc, edit
+from harness_design_studio.core.commands import Delete, History, Op, Put
+from harness_design_studio.core.errors import TransactionError
+from harness_design_studio.core.generate.engine import plan_generation
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Project, Wire, evolve
+from harness_design_studio.core.outputs.build import (
     build_outputs,
     outputs_content_state,
     outputs_status,
     write_outputs,
 )
-from harness_tool.core.outputs.stamp import csv_bytes, parse_csv, stamp_of
-from harness_tool.core.outputs.verify import read_folder, verify_outputs
-from harness_tool.core.samples import sat15, sat15_full
-from harness_tool.core.vcs import diff as vd
-from harness_tool.core.vcs.hashing import content_hash
-from harness_tool.core.vcs.release import (
+from harness_design_studio.core.outputs.stamp import csv_bytes, parse_csv, stamp_of
+from harness_design_studio.core.outputs.verify import read_folder, verify_outputs
+from harness_design_studio.core.samples import sat15, sat15_full
+from harness_design_studio.core.vcs import diff as vd
+from harness_design_studio.core.vcs.hashing import content_hash
+from harness_design_studio.core.vcs.release import (
     next_revision,
     plan_new_revision,
     plan_release,
     plan_submit_review,
     release_blockers,
 )
-from harness_tool.core.vcs.report import baselines_of, changelog_rows, revision_report, working_diff
+from harness_design_studio.core.vcs.report import (
+    baselines_of,
+    changelog_rows,
+    revision_report,
+    working_diff,
+)
 
 WHEN = "2026-03-01"
 _BASE: Project | None = None
@@ -96,7 +101,7 @@ def test_next_revision(before: str, after: str) -> None:
 
 
 def test_next_revision_needs_letters() -> None:
-    from harness_tool.core.vcs.release import ReleaseError
+    from harness_design_studio.core.vcs.release import ReleaseError
 
     with pytest.raises(ReleaseError):
         next_revision("1.0")
@@ -135,7 +140,7 @@ def test_stale_outputs_block_the_release(tmp_path: Path) -> None:
 
 def test_undecided_gauges_and_unknown_lengths_block_the_release(tmp_path: Path) -> None:
     p = sat15()
-    from harness_tool.core.generate.engine import generate_project
+    from harness_design_studio.core.generate.engine import generate_project
 
     generate_project(p)
     hid = sorted(p.harnesses)[0]
@@ -159,7 +164,7 @@ def test_rule_and_verifier_errors_block_the_release(tmp_path: Path) -> None:
     h = p.harnesses[hid]
     c = h.connectors[0]
     box = p.connectors[c.mates_with or ""]
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(
         p,
@@ -184,7 +189,7 @@ def test_waived_warnings_do_not_block_and_errors_elsewhere_do_not_block(tmp_path
     p = full()
     hid = releasable(p)
     other = next(h for h in p.harnesses.values() if h.id != hid)
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     w = other.wires[0]
     apply_ops(
@@ -199,7 +204,7 @@ def test_a_harness_without_wires_cannot_be_released(tmp_path: Path) -> None:
     p = full()
     hid = releasable(p)
     h = p.harnesses[hid]
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(p, [Put("harnesses", evolve(h, wires=[], shields=[]))])
     assert "no_wires" in codes(p, hid, exported(p, tmp_path))
@@ -285,7 +290,7 @@ def test_regeneration_leaves_released_harnesses_alone(tmp_path: Path) -> None:
     do_release(p, hid, exported(p, tmp_path))
     before = p.harnesses[hid]
     plan = plan_generation(p)
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(p, plan.ops)
     assert p.harnesses[hid] == before and hid in plan.report.frozen
@@ -357,7 +362,7 @@ def test_submit_for_review_and_regeneration_resets_it() -> None:
     History(p).execute(plan.label, plan.ops)
     assert (p.harnesses[hid].status, p.harnesses[hid].author) == ("in_review", "Ada")
     assert "not_draft" in {b.code for b in plan_submit_review(p, hid, by="Ada", when=WHEN).blockers}
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(p, plan_generation(p).ops)  # nothing changed: still in review
     assert p.harnesses[hid].status == "in_review"
@@ -376,7 +381,7 @@ def test_released_harness_edited_behind_the_tools_back_is_an_error(tmp_path: Pat
     do_release(p, hid, exported(p, tmp_path))
     assert not [f for f in drc.run(p) if f.rule == "released-modified"]
     h = p.harnesses[hid]
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(
         p, [Put("harnesses", evolve(h, name="Edited in a text editor"))]
@@ -438,7 +443,7 @@ def test_diff_lists_added_removed_and_changed_exactly() -> None:
     )
     edited = evolve(h, wires=[evolve(w0, colour="RED"), new_wire, *h.wires[2:]])  # w1 removed
     unit = next(iter(b.units.values()))
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(
         b,
@@ -467,7 +472,7 @@ def test_diff_sees_pin_and_shield_changes_as_their_own_objects() -> None:
     c = h.connectors[0]
     pins = [evolve(c.pins[0], signal="Z"), *c.pins[1:]]
     s = h.shields[0]
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(
         b,
@@ -527,7 +532,7 @@ def test_diff_markdown_and_table_are_readable_and_deterministic() -> None:
     a = full()
     b = edit.clone_with(a, [])
     unit = next(iter(b.units.values()))
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(b, [Put("units", evolve(unit, name="Renamed"))])
     d = vd.diff_projects(a, b)
@@ -544,7 +549,7 @@ def test_compare_command_on_two_project_folders(
     a = full()
     b = edit.clone_with(a, [])
     unit = next(iter(b.units.values()))
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     apply_ops(b, [Put("units", evolve(unit, name="Renamed"))])
     save_project(a, tmp_path / "a")

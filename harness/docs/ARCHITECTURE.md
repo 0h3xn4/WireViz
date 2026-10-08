@@ -19,7 +19,7 @@
 ## 2. Layering
 
 ```
-harness/src/harness_tool/
+harness/src/harness_design_studio/
   core/            no GUI, no network imports (enforced by test)
     model/         pydantic models: logical + physical layer, IDs, units
     io/            project folder load/save, atomic writes, schema migration, recovery mode

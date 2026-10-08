@@ -23,7 +23,7 @@ def _norm(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
-def runtime_distributions(root: str = "harness-tool") -> dict[str, metadata.Distribution]:
+def runtime_distributions(root: str = "harness-design-studio") -> dict[str, metadata.Distribution]:
     """The installed distributions the app needs at run time: its dependencies (and the `gui` extra),
     and theirs, never the `dev` extra."""
     found: dict[str, metadata.Distribution] = {}
@@ -72,7 +72,7 @@ def collect(dest: Path) -> list[str]:
             target = dest / key / Path(f.as_posix()).name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(Path(str(dist.locate_file(f))), target)
-    plex = Path(__file__).resolve().parents[1] / "src/harness_tool/resources/fonts"
+    plex = Path(__file__).resolve().parents[1] / "src/harness_design_studio/resources/fonts"
     ofl = plex / "OFL-1.1-IBM-Plex.txt"
     if ofl.is_file():  # the bundled fonts are not Python packages: record them here
         rows.append("IBM Plex Sans 1.1.0 and IBM Plex Mono 2.5.0 (fonts): OFL-1.1")
@@ -88,7 +88,7 @@ def collect(dest: Path) -> list[str]:
                 continue
             shutil.copyfile(src, dest / f"{name}.txt")
     (dest / "README.txt").write_text(
-        "Licences of the components shipped with Harness tool\n"
+        "Licences of the components shipped with Harness Design Studio\n"
         "====================================================\n\n"
         + "\n".join(rows)
         + "\n\nQt for Python (PySide6, shiboken6) is used under the GNU Lesser General Public "

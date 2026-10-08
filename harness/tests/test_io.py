@@ -3,11 +3,11 @@
 import json
 from pathlib import Path
 
-from harness_tool.core.io.layout import model_hash, serialize
-from harness_tool.core.io.loader import disk_fingerprint, load_project, non_canonical_files
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import Unit, evolve
-from harness_tool.core.samples import mini3
+from harness_design_studio.core.io.layout import model_hash, serialize
+from harness_design_studio.core.io.loader import disk_fingerprint, load_project, non_canonical_files
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import Unit, evolve
+from harness_design_studio.core.samples import mini3
 from tests.helpers import MINI3
 
 
@@ -115,7 +115,7 @@ def test_gitignore_written_once(tmp_path: Path) -> None:
 
 
 def test_fingerprint_and_change_detection(tmp_path: Path) -> None:
-    from harness_tool.core.errors import SaveError
+    from harness_design_studio.core.errors import SaveError
 
     p = mini3()
     save_project(p, tmp_path / "p")
@@ -142,7 +142,7 @@ def test_non_canonical_detection(tmp_path: Path) -> None:
 def test_integrity_errors_block_save(tmp_path: Path) -> None:
     import pytest
 
-    from harness_tool.core.errors import SaveError
+    from harness_design_studio.core.errors import SaveError
 
     p = mini3()
     p.interfaces["IF-TM-RW1"] = evolve(p.interfaces["IF-TM-RW1"], type_id="ghost")

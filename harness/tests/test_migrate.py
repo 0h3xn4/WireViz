@@ -2,11 +2,11 @@
 
 from pathlib import Path
 
-from harness_tool.cli.main import main
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.migrate import MIGRATIONS
-from harness_tool.core.io.saver import migrate_project, save_project
-from harness_tool.core.model import SCHEMA_VERSION
+from harness_design_studio.cli.main import main
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.migrate import MIGRATIONS
+from harness_design_studio.core.io.saver import migrate_project, save_project
+from harness_design_studio.core.model import SCHEMA_VERSION
 from tests.helpers import FIXTURES, copy_project
 
 V0 = FIXTURES / "v0_project"

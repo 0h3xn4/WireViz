@@ -14,11 +14,11 @@ PK = ROOT / "packaging" / "ubuntu"
 
 def fake_package(tmp: Path) -> Path:
     """A package folder as build_installer makes it, with stub programs instead of PyInstaller output."""
-    pkg = tmp / "harness-tool"
+    pkg = tmp / "harness-design-studio"
     (pkg / "cli").mkdir(parents=True)
     (pkg / "_internal").mkdir()
     (pkg / "_internal" / "lib.txt").write_text("x")
-    for exe in (pkg / "harness-tool", pkg / "cli" / "harness"):
+    for exe in (pkg / "harness-design-studio", pkg / "cli" / "harness"):
         exe.write_text('#!/bin/sh\necho stub "$@"\n')
         exe.chmod(0o755)
     for item in PK.iterdir():
@@ -41,16 +41,16 @@ def test_install_then_uninstall_leaves_nothing_behind(tmp_path: Path) -> None:
     assert r.returncode == 0, r.stderr
     root = tmp_path / "root"
     assert (
-        (prefix / "harness-tool").is_file()
+        (prefix / "harness-design-studio").is_file()
         and (prefix / "cli" / "harness").is_file()
         and (prefix / "_internal" / "lib.txt").is_file()
     )
-    link = root / "bin" / "harness-tool"
-    assert link.is_symlink() and os.readlink(link) == str(prefix / "harness-tool")
+    link = root / "bin" / "harness-design-studio"
+    assert link.is_symlink() and os.readlink(link) == str(prefix / "harness-design-studio")
     assert (root / "bin" / "harness").resolve() == (prefix / "cli" / "harness").resolve()
-    desktop = (root / "share" / "applications" / "harness-tool.desktop").read_text()
-    assert f'Exec="{prefix}/harness-tool"' in desktop and "@" not in desktop
-    assert (root / "share" / "icons" / "harness-tool.svg").is_file()
+    desktop = (root / "share" / "applications" / "harness-design-studio.desktop").read_text()
+    assert f'Exec="{prefix}/harness-design-studio"' in desktop and "@" not in desktop
+    assert (root / "share" / "icons" / "harness-design-studio.svg").is_file()
     out = subprocess.run(
         [str(link), "--version"], capture_output=True, text=True, check=True
     ).stdout
@@ -76,17 +76,17 @@ def test_scripts_reject_unknown_options(tmp_path: Path) -> None:
 
 
 def test_desktop_entry_and_icon_are_valid() -> None:
-    text = (PK / "harness-tool.desktop.in").read_text()
+    text = (PK / "harness-design-studio.desktop.in").read_text()
     for key in (
         "Type=Application",
-        "Name=Harness tool",
+        "Name=Harness Design Studio",
         "Exec=@EXEC@",
         "Icon=@ICON@",
         "Terminal=false",
         "Categories=",
     ):
         assert key in text
-    root = ET.fromstring((PK / "harness-tool.svg").read_text())  # noqa: S314
+    root = ET.fromstring((PK / "harness-design-studio.svg").read_text())  # noqa: S314
     assert root.tag.endswith("svg") and root.get("viewBox") == "0 0 64 64"
 
 
@@ -95,7 +95,7 @@ def test_deb_has_the_right_files_and_metadata(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("SOURCE_DATE_EPOCH", "1700000000")
-    from harness_tool import __version__
+    from harness_design_studio import __version__
     from tools.build_deb import build
 
     app = fake_package(tmp_path / "src")
@@ -103,18 +103,18 @@ def test_deb_has_the_right_files_and_metadata(
     info = subprocess.run(
         ["dpkg-deb", "-I", str(deb)], capture_output=True, text=True, check=True
     ).stdout
-    assert "Package: harness-tool" in info and "Architecture: amd64" in info
+    assert "Package: harness-design-studio" in info and "Architecture: amd64" in info
     assert f"Version: {__version__.replace('rc', '~rc')}" in info and "libxcb-cursor0" in info
     listing = subprocess.run(
         ["dpkg-deb", "-c", str(deb)], capture_output=True, text=True, check=True
     ).stdout
     for path in (
-        "./opt/harness-tool/harness-tool",
-        "./opt/harness-tool/cli/harness",
-        "./usr/bin/harness-tool",
+        "./opt/harness-design-studio/harness-design-studio",
+        "./opt/harness-design-studio/cli/harness",
+        "./usr/bin/harness-design-studio",
         "./usr/bin/harness",
-        "./usr/share/applications/harness-tool.desktop",
-        "./usr/share/icons/hicolor/scalable/apps/harness-tool.svg",
+        "./usr/share/applications/harness-design-studio.desktop",
+        "./usr/share/icons/hicolor/scalable/apps/harness-design-studio.svg",
     ):
         assert path in listing, path
     assert "root/root" in listing  # owned by root, not by the build user
@@ -163,7 +163,7 @@ def test_uninstall_removes_only_what_was_installed(tmp_path: Path) -> None:
     r = run_script(pkg / "uninstall.sh", tmp_path, "--prefix", str(prefix))
     assert r.returncode == 0
     assert (prefix / "mydata.txt").read_text() == "keep me"
-    assert not (prefix / "harness-tool").exists() and not (prefix / "_internal").exists()
+    assert not (prefix / "harness-design-studio").exists() and not (prefix / "_internal").exists()
 
 
 def test_uninstall_never_removes_a_program_that_is_not_ours(tmp_path: Path) -> None:
@@ -183,11 +183,13 @@ def test_a_prefix_with_spaces_and_symbols_gives_a_valid_launcher(tmp_path: Path)
     pkg = fake_package(tmp_path)
     prefix = tmp_path / "my apps & more" / "harness tool"
     assert run_script(pkg / "install.sh", tmp_path, "--prefix", str(prefix)).returncode == 0
-    desktop = (tmp_path / "root" / "share" / "applications" / "harness-tool.desktop").read_text()
+    desktop = (
+        tmp_path / "root" / "share" / "applications" / "harness-design-studio.desktop"
+    ).read_text()
     exec_line = next(ln for ln in desktop.splitlines() if ln.startswith("Exec="))
-    assert exec_line == f'Exec="{prefix}/harness-tool"' and "@" not in desktop
+    assert exec_line == f'Exec="{prefix}/harness-design-studio"' and "@" not in desktop
     out = subprocess.run(
-        [str(tmp_path / "root" / "bin" / "harness-tool"), "--version"],
+        [str(tmp_path / "root" / "bin" / "harness-design-studio"), "--version"],
         capture_output=True,
         text=True,
         check=True,
@@ -211,10 +213,12 @@ def test_a_relative_prefix_and_the_unpack_folder_are_handled(tmp_path: Path) -> 
         check=False,
     )
     assert r.returncode == 0
-    link = tmp_path / "root" / "bin" / "harness-tool"
+    link = tmp_path / "root" / "bin" / "harness-design-studio"
     assert os.path.isabs(os.readlink(link)) and link.resolve().is_file()
     r = run_script(pkg / "install.sh", tmp_path, "--prefix", str(pkg))
-    assert r.returncode == 2 and (pkg / "harness-tool").is_file()  # its own source survives
+    assert (
+        r.returncode == 2 and (pkg / "harness-design-studio").is_file()
+    )  # its own source survives
 
 
 def test_uninstall_when_nothing_is_installed_says_so(tmp_path: Path) -> None:
@@ -225,7 +229,10 @@ def test_uninstall_when_nothing_is_installed_says_so(tmp_path: Path) -> None:
 
 def test_the_local_system_install_does_not_share_the_debs_folder() -> None:
     text = (PK / "install.sh").read_text()
-    assert "/usr/local/lib/harness-tool" in text and "prefix=/opt/harness-tool;" not in text
+    assert (
+        "/usr/local/lib/harness-design-studio" in text
+        and "prefix=/opt/harness-design-studio;" not in text
+    )
 
 
 @pytest.mark.skipif(shutil.which("dpkg-deb") is None, reason="dpkg-deb not installed")
@@ -242,9 +249,9 @@ def test_the_deb_ships_licences_and_not_the_tarball_scripts(
     listing = subprocess.run(
         ["dpkg-deb", "-c", str(deb)], capture_output=True, text=True, check=True
     ).stdout
-    assert "./usr/share/doc/harness-tool/copyright" in listing
-    assert "./usr/share/doc/harness-tool/LICENSES/README.txt" in listing
-    assert "opt/harness-tool/install.sh" not in listing
+    assert "./usr/share/doc/harness-design-studio/copyright" in listing
+    assert "./usr/share/doc/harness-design-studio/LICENSES/README.txt" in listing
+    assert "opt/harness-design-studio/install.sh" not in listing
     assert "libc6 (>= 2.35)" in DEPENDS and "libxcb-xinerama0" in DEPENDS
 
 

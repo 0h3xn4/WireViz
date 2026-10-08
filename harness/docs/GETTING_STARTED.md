@@ -46,7 +46,7 @@ INFO    placeholder_config: Placeholder rule configuration still in use: deratin
 
 0 errors is what you want. The INFO line is normal: it says the engineering values are not filled in yet (Part 7).
 
-**In the app:** start **Harness tool**, choose **File > Open project…** and pick the `wheel-link` folder. The app also opens a built-in sample the first time and offers a short tour; **Skip tour** or follow it.
+**In the app:** start **Harness Design Studio**, choose **File > Open project…** and pick the `wheel-link` folder. The app also opens a built-in sample the first time and offers a short tour; **Skip tour** or follow it.
 
 ## Part 2: look around
 
@@ -319,4 +319,4 @@ You have now done everything the tool does, once. Add a **Create redundant copy*
 | the screen, shortcuts, glossary | the user guide ([`guide/USER_GUIDE.md`](guide/USER_GUIDE.md); **F1** in the app) |
 | to try a realistic system | `harness new sat --template small-satellite`, then generate it |
 | something went wrong | [`FAQ.md`](FAQ.md) |
-| what the examples and templates contain | [`../src/harness_tool/resources/examples/templates/README.md`](../src/harness_tool/resources/examples/templates/README.md) |
+| what the examples and templates contain | [`../src/harness_design_studio/resources/examples/templates/README.md`](../src/harness_design_studio/resources/examples/templates/README.md) |

@@ -11,18 +11,18 @@ import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from harness_tool.core import checks, edit
-from harness_tool.core.commands import History
-from harness_tool.core.errors import HarnessError
-from harness_tool.core.generate.engine import plan_generation
-from harness_tool.core.integrity import check_integrity
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.issues import errors
-from harness_tool.core.model import Project
-from harness_tool.core.samples import mini3
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core import checks, edit
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.errors import HarnessError
+from harness_design_studio.core.generate.engine import plan_generation
+from harness_design_studio.core.integrity import check_integrity
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.issues import errors
+from harness_design_studio.core.model import Project
+from harness_design_studio.core.samples import mini3
+from harness_design_studio.core.verify import verify_project
 
 
 @dataclass

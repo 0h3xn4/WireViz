@@ -5,8 +5,8 @@ import math
 import pytest
 from pydantic import ValidationError
 
-from harness_tool.core.model import Unit
-from harness_tool.core.units import awg_to_area_mm2, awg_to_diameter_mm, format_awg
+from harness_design_studio.core.model import Unit
+from harness_design_studio.core.units import awg_to_area_mm2, awg_to_diameter_mm, format_awg
 
 
 @pytest.mark.parametrize("good", ["OBC", "W001-001", "a.b", "X_1", "A" * 64])

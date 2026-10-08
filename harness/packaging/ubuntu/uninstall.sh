@@ -12,7 +12,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 if [ -z "$prefix" ]; then
-  if [ "$mode" = system ]; then prefix=/usr/local/lib/harness-tool; else prefix="${HOME}/.local/opt/harness-tool"; fi
+  if [ "$mode" = system ]; then prefix=/usr/local/lib/harness-design-studio; else prefix="${HOME}/.local/opt/harness-design-studio"; fi
 fi
 case "$prefix" in /*) ;; *) prefix="$(pwd)/$prefix" ;; esac
 prefix=$(printf '%s' "$prefix" | sed 's://*:/:g; s:/$::')
@@ -27,18 +27,18 @@ if [ -n "${HARNESS_INSTALL_ROOT:-}" ]; then
 fi
 removed=0
 # remove a link only if it points into this install; never delete a program that is not ours
-for pair in "harness-tool:$prefix/harness-tool" "harness:$prefix/cli/harness"; do
+for pair in "harness-design-studio:$prefix/harness-design-studio" "harness:$prefix/cli/harness"; do
   name=${pair%%:*}; target=${pair#*:}
   if [ -L "$bindir/$name" ] && [ "$(readlink "$bindir/$name")" = "$target" ]; then
     rm -f "$bindir/$name"; removed=1
   fi
 done
-for f in "$appdir/harness-tool.desktop" "$icondir/harness-tool.svg"; do
+for f in "$appdir/harness-design-studio.desktop" "$icondir/harness-design-studio.svg"; do
   [ -e "$f" ] && { rm -f "$f"; removed=1; }
 done
 # only what the installer put in the folder; anything else the user keeps there stays
 if [ -n "$prefix" ] && [ "$prefix" != "/" ]; then
-  for item in harness-tool _internal cli LICENSES; do
+  for item in harness-design-studio _internal cli LICENSES; do
     [ -e "$prefix/$item" ] && { rm -rf "${prefix:?}/$item"; removed=1; }
   done
   rmdir "$prefix" 2>/dev/null || true
@@ -46,5 +46,5 @@ fi
 if [ "$removed" = 1 ]; then
   echo "Removed. Your projects are not touched."
 else
-  echo "Nothing to remove: Harness tool is not installed there (looked in $prefix)."
+  echo "Nothing to remove: Harness Design Studio is not installed there (looked in $prefix)."
 fi

@@ -54,7 +54,7 @@ Name patterns for harnesses, connectors, wires, shields, branch points and segme
 
 ## Optional values from the supplied standards (D-131)
 
-None of these is set by default. `harness config DIR --apply-profile ecss-q-st-30-11c` (and `ecss-e-st-20-07c`) fills the ones that are still unset and keeps what you set; each value cites the requirement it comes from in the command output and in `src/harness_tool/core/standard_profiles.py`. The file stays `"placeholder": true` until you review it. A rule that needs one of these values or a part rating stays silent without it, and the rule `unchecked-config` says what was not checked.
+None of these is set by default. `harness config DIR --apply-profile ecss-q-st-30-11c` (and `ecss-e-st-20-07c`) fills the ones that are still unset and keeps what you set; each value cites the requirement it comes from in the command output and in `src/harness_design_studio/core/standard_profiles.py`. The file stays `"placeholder": true` until you review it. A rule that needs one of these values or a part rating stays silent without it, and the rule `unchecked-config` says what was not checked.
 
 ### `derating.json`, additional keys
 | Key | Meaning | Source (requirement ID) |

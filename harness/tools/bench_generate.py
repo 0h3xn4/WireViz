@@ -3,10 +3,10 @@ Usage: python -m tools.bench_generate"""
 
 import time
 
-from harness_tool.core.commands import apply_ops
-from harness_tool.core.generate.engine import plan_generation
-from harness_tool.core.samples import stress_project
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core.commands import apply_ops
+from harness_design_studio.core.generate.engine import plan_generation
+from harness_design_studio.core.samples import stress_project
+from harness_design_studio.core.verify import verify_project
 
 
 def main() -> None:

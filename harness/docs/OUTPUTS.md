@@ -22,7 +22,7 @@ outputs/
 ```
 
 ## Stamps
-Every file carries `harness-tool <version> model <first 12 hex of the model hash>`: CSV and YAML as a first comment line (`# ...`), SVG in `<desc>`, PDF in the Subject, Markdown as the first line, XLSX on the About sheet, JSON as `model_hash`. CSV readers must skip lines that start with `# `. Cells that start with `= + - @` and are not numbers are written with a leading `'` so spreadsheet programs do not run them as formulas.
+Every file carries `harness-design-studio <version> model <first 12 hex of the model hash>`: CSV and YAML as a first comment line (`# ...`), SVG in `<desc>`, PDF in the Subject, Markdown as the first line, XLSX on the About sheet, JSON as `model_hash`. CSV readers must skip lines that start with `# `. Cells that start with `= + - @` and are not numbers are written with a leading `'` so spreadsheet programs do not run them as formulas.
 
 ## Stale detection
 `manifest.json` stores the model hash. The editor compares it with the current model (quick check) and shows "up to date", "out of date" or "not exported". `harness verify DIR --outputs` also hashes every file (detects edited or missing files) and re-checks content against the design.
@@ -48,7 +48,7 @@ Each wire is written as its own one-conductor cable, with `connectors`, `cables`
 
 ## JSON export (`system/export.json`)
 ```
-{ "format": "harness-tool-export", "format_version": 1,
+{ "format": "harness-design-studio-export", "format_version": 1,
   "generator": {"name", "version"}, "model_hash": "<64 hex>",
   "project": {"name", "description"}, "placeholder_config": [names],
   "units": [...], "interface_types": [...], "interfaces": [...],

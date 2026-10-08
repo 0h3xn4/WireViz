@@ -8,10 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main
-from harness_tool.core import schemas
-from harness_tool.core.io.layout import serialize
-from harness_tool.core.samples import sat15
+from harness_design_studio.cli.main import main
+from harness_design_studio.core import schemas
+from harness_design_studio.core.io.layout import serialize
+from harness_design_studio.core.samples import sat15
 
 
 def test_every_kind_of_file_has_a_schema() -> None:

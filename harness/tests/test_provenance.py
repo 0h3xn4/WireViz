@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import json
 
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.outputs.build import build_outputs
-from harness_tool.core.outputs.verify import verify_outputs
-from harness_tool.core.samples import mini3, sat15
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.outputs.build import build_outputs
+from harness_design_studio.core.outputs.verify import verify_outputs
+from harness_design_studio.core.samples import mini3, sat15
 
 
 def test_provenance_names_tool_design_library_and_settings() -> None:
@@ -27,7 +27,7 @@ def test_provenance_is_deterministic_and_follows_the_settings() -> None:
     a = build_outputs(p).files["system/provenance.json"]
     assert build_outputs(p).files["system/provenance.json"] == a
     old = p.config["derating"]
-    from harness_tool.core.model import ConfigFile
+    from harness_design_studio.core.model import ConfigFile
 
     p.config["derating"] = ConfigFile(
         name="derating",

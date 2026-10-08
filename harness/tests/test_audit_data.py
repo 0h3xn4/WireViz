@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core import edit
-from harness_tool.core.commands import Delete, History, Put
-from harness_tool.core.edit import EditError
-from harness_tool.core.errors import TransactionError
-from harness_tool.core.model import Project, evolve
-from harness_tool.core.samples import mini3, sat15
-from harness_tool.core.vcs.consistency import release_integrity
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import Delete, History, Put
+from harness_design_studio.core.edit import EditError
+from harness_design_studio.core.errors import TransactionError
+from harness_design_studio.core.model import Project, evolve
+from harness_design_studio.core.samples import mini3, sat15
+from harness_design_studio.core.vcs.consistency import release_integrity
 from tests.test_change_control import do_release, exported, full, releasable
 
 
@@ -101,9 +101,9 @@ def _corrupt_one_placement(folder: Path) -> None:
 
 
 def test_journal_keeps_what_could_not_be_loaded(tmp_path: Path) -> None:
-    from harness_tool.core.io.loader import load_project
-    from harness_tool.core.io.saver import save_project
-    from harness_tool.core.recovery import read_journal, write_journal
+    from harness_design_studio.core.io.loader import load_project
+    from harness_design_studio.core.io.saver import save_project
+    from harness_design_studio.core.recovery import read_journal, write_journal
 
     save_project(mini3(), tmp_path / "p")
     _corrupt_one_placement(tmp_path / "p")
@@ -112,14 +112,14 @@ def test_journal_keeps_what_could_not_be_loaded(tmp_path: Path) -> None:
     write_journal(loaded.project, tmp_path / "p")
     restored = read_journal(tmp_path / "p")
     assert restored is not None and restored.project.recovered
-    from harness_tool.core.errors import SaveError
+    from harness_design_studio.core.errors import SaveError
 
     with pytest.raises(SaveError):
         save_project(restored.project, tmp_path / "p")  # still protected
 
 
 def test_two_baselines_never_share_a_file(tmp_path: Path) -> None:
-    from harness_tool.core.io.layout import serialize
+    from harness_design_studio.core.io.layout import serialize
 
     p = full()
     hid = releasable(p)
@@ -136,8 +136,8 @@ def test_two_baselines_never_share_a_file(tmp_path: Path) -> None:
 def test_infinite_numbers_are_a_load_problem_not_a_crash_on_save(tmp_path: Path) -> None:
     import json
 
-    from harness_tool.core.io.loader import load_project
-    from harness_tool.core.io.saver import save_project
+    from harness_design_studio.core.io.loader import load_project
+    from harness_design_studio.core.io.saver import save_project
 
     save_project(mini3(), tmp_path / "p")
     cfg = next((tmp_path / "p" / "config").glob("*.json"))
@@ -152,8 +152,8 @@ def test_stale_lock_takeover_gives_the_lock_to_exactly_one_process(tmp_path: Pat
     import json
     import multiprocessing as mp
 
-    from harness_tool.core.errors import ProjectLockedError
-    from harness_tool.core.io.fs import LOCK_NAME, ProjectLock
+    from harness_design_studio.core.errors import ProjectLockedError
+    from harness_design_studio.core.io.fs import LOCK_NAME, ProjectLock
 
     ctx = mp.get_context("fork")
 
@@ -190,9 +190,9 @@ def test_a_project_folder_that_is_a_link_to_elsewhere_is_not_read_or_written(
 ) -> None:
     import shutil
 
-    from harness_tool.core.errors import SaveError
-    from harness_tool.core.io.loader import disk_fingerprint, load_project
-    from harness_tool.core.io.saver import save_project
+    from harness_design_studio.core.errors import SaveError
+    from harness_design_studio.core.io.loader import disk_fingerprint, load_project
+    from harness_design_studio.core.io.saver import save_project
 
     save_project(mini3(), tmp_path / "p")
     outside = tmp_path / "outside"
@@ -208,8 +208,8 @@ def test_a_project_folder_that_is_a_link_to_elsewhere_is_not_read_or_written(
 
 
 def test_dangling_link_does_not_break_the_fingerprint(tmp_path: Path) -> None:
-    from harness_tool.core.io.loader import disk_fingerprint
-    from harness_tool.core.io.saver import save_project
+    from harness_design_studio.core.io.loader import disk_fingerprint
+    from harness_design_studio.core.io.saver import save_project
 
     save_project(mini3(), tmp_path / "p")
     (tmp_path / "p" / "logical" / "units" / "zzz.json").symlink_to(tmp_path / "missing.json")
@@ -217,7 +217,7 @@ def test_dangling_link_does_not_break_the_fingerprint(tmp_path: Path) -> None:
 
 
 def test_new_project_folders_ignore_the_autosave_journal() -> None:
-    from harness_tool.core.io.saver import GITIGNORE
+    from harness_design_studio.core.io.saver import GITIGNORE
 
     assert b".harness-recovery/" in GITIGNORE and b".harness.lock" in GITIGNORE
 
@@ -226,8 +226,8 @@ def test_new_project_folders_ignore_the_autosave_journal() -> None:
 
 
 def test_undoing_the_first_config_removes_it() -> None:
-    from harness_tool.core.commands import SetConfig
-    from harness_tool.core.io.layout import model_hash
+    from harness_design_studio.core.commands import SetConfig
+    from harness_design_studio.core.io.layout import model_hash
 
     p = mini3()
     cfg = next(iter(p.config.values()))
@@ -246,7 +246,7 @@ def test_a_second_error_on_the_same_object_is_not_waved_through() -> None:
     ghost = evolve(i.endpoints[0], unit_id="GHOST1")
     p.interfaces[iid] = evolve(i, endpoints=[*i.endpoints, ghost])  # loaded with an error already
     ghost2 = evolve(i.endpoints[0], unit_id="GHOST2")
-    from harness_tool.core.commands import Put
+    from harness_design_studio.core.commands import Put
 
     with pytest.raises(TransactionError):
         History(p).execute(
@@ -261,8 +261,8 @@ def test_a_second_error_on_the_same_object_is_not_waved_through() -> None:
 
 
 def test_deleting_an_interface_removes_its_waivers_and_unknown_carried_ids_are_found() -> None:
-    from harness_tool.core import integrity
-    from harness_tool.core.model import Waiver
+    from harness_design_studio.core import integrity
+    from harness_design_studio.core.model import Waiver
 
     p = sat15()
     iid = sorted(p.interfaces)[0]
@@ -271,7 +271,7 @@ def test_deleting_an_interface_removes_its_waivers_and_unknown_carried_ids_are_f
     History(p).execute("del", edit.ops_delete_interface(p, iid))
     assert w.id not in p.waivers
     # a harness that lists an interface which does not exist is reported
-    from harness_tool.core.generate.engine import generate_project
+    from harness_design_studio.core.generate.engine import generate_project
 
     p2 = sat15()
     generate_project(p2)
@@ -304,7 +304,7 @@ def test_ops_delete_harness_refuses_released(tmp_path: Path) -> None:
 
 
 def test_checks_survive_an_interface_that_names_a_missing_unit() -> None:
-    from harness_tool.core import checks
+    from harness_design_studio.core import checks
 
     p = sat15()
     iid = sorted(p.interfaces)[0]

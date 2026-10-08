@@ -6,7 +6,7 @@ Usage: python -m tools.build_prototype  ->  prototype/index.html
 import json
 from pathlib import Path
 
-from harness_tool.gui.tokens import CATEGORIES, DARK, FONT_MONO, FONT_UI, LIGHT
+from harness_design_studio.gui.tokens import CATEGORIES, DARK, FONT_MONO, FONT_UI, LIGHT
 
 ROOT = Path(__file__).resolve().parents[1] / "prototype"
 

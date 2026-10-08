@@ -4,8 +4,8 @@ from collections.abc import Callable
 
 import pytest
 
-from harness_tool.core.integrity import check_integrity
-from harness_tool.core.model import (
+from harness_design_studio.core.integrity import check_integrity
+from harness_design_studio.core.model import (
     BranchPoint,
     Connector,
     Endpoint,
@@ -19,7 +19,7 @@ from harness_tool.core.model import (
     Unit,
     evolve,
 )
-from harness_tool.core.samples import mini3
+from harness_design_studio.core.samples import mini3
 
 
 def codes(p: Project) -> set[str]:

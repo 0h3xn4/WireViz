@@ -2,14 +2,14 @@
 
 import pytest
 
-from harness_tool.core import edit
-from harness_tool.core.commands import Delete, History, Put
-from harness_tool.core.errors import TransactionError
-from harness_tool.core.integrity import check_integrity
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.issues import errors
-from harness_tool.core.model import Connector, Harness, Project, Wire, evolve
-from harness_tool.core.samples import mini3, new_project
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import Delete, History, Put
+from harness_design_studio.core.errors import TransactionError
+from harness_design_studio.core.integrity import check_integrity
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.issues import errors
+from harness_design_studio.core.model import Connector, Harness, Project, Wire, evolve
+from harness_design_studio.core.samples import mini3, new_project
 
 
 def run(p: Project, label: str, ops: list) -> None:  # type: ignore[type-arg]
@@ -314,7 +314,7 @@ def test_harness_object_import_is_used() -> None:
 
 def test_unit_templates_follow_the_baseline_standards() -> None:
     """D-130: RS-422, RS-485 and CAN; Micro-D 9 to 31 pin; Ethernet on RJ45; SMA for RF."""
-    from harness_tool.core.starter import starter_interface_types, starter_parts
+    from harness_design_studio.core.starter import starter_interface_types, starter_parts
 
     parts = {x.id: x for x in starter_parts()}
     types = {x.id for x in starter_interface_types()}

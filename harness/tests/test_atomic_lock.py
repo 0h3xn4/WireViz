@@ -8,13 +8,13 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core.errors import ProjectLockedError, SaveError
-from harness_tool.core.io import fs
-from harness_tool.core.io.fs import ProjectLock, atomic_write_bytes, long_path, slug
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import evolve
-from harness_tool.core.samples import mini3
+from harness_design_studio.core.errors import ProjectLockedError, SaveError
+from harness_design_studio.core.io import fs
+from harness_design_studio.core.io.fs import ProjectLock, atomic_write_bytes, long_path, slug
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import evolve
+from harness_design_studio.core.samples import mini3
 
 
 def test_crash_before_rename_keeps_old_file(

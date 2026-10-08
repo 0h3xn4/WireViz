@@ -1,18 +1,18 @@
 """M3 building blocks: sizing, mass, lengths, pin allocation, segmentation modes, naming."""
 
-from harness_tool.core.commands import Put, apply_ops
-from harness_tool.core.generate.engine import generate_project, plan_generation
-from harness_tool.core.generate.lengths import (
+from harness_design_studio.core.commands import Put, apply_ops
+from harness_design_studio.core.generate.engine import generate_project, plan_generation
+from harness_design_studio.core.generate.lengths import (
     path_length,
     plan_length_import,
     segment_lengths_known,
 )
-from harness_tool.core.generate.mass import harness_mass
-from harness_tool.core.generate.naming import namer_for
-from harness_tool.core.generate.pins import Request, allocate
-from harness_tool.core.generate.segmentation import segment
-from harness_tool.core.generate.sizing import ampacity_table, size_wire
-from harness_tool.core.model import (
+from harness_design_studio.core.generate.mass import harness_mass
+from harness_design_studio.core.generate.naming import namer_for
+from harness_design_studio.core.generate.pins import Request, allocate
+from harness_design_studio.core.generate.segmentation import segment
+from harness_design_studio.core.generate.sizing import ampacity_table, size_wire
+from harness_design_studio.core.model import (
     BranchPoint,
     Connector,
     Pin,
@@ -20,9 +20,9 @@ from harness_tool.core.model import (
     Segment,
     evolve,
 )
-from harness_tool.core.model.config import ConfigFile
-from harness_tool.core.samples import mini3, sat15
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core.model.config import ConfigFile
+from harness_design_studio.core.samples import mini3, sat15
+from harness_design_studio.core.verify import verify_project
 
 # Test-only numbers: they exercise the arithmetic and are NOT engineering data.
 TABLE: dict[str, object] = {"ampacity_a_by_awg": {"24": 2.0, "22": 3.0, "20": 5.0, "18": 7.0}}

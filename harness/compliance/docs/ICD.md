@@ -3,7 +3,7 @@
 DRD: ECSS-E-ST-40C Annex E. Status: draft, not reviewed.
 
 ## 1 to 4. Introduction, references, terms, overview
-The Harness tool has no software interface to other running programs. Its interfaces are files, the command line and one helper process.
+The Harness Design Studio has no software interface to other running programs. Its interfaces are files, the command line and one helper process.
 
 ## 5. Requirements and design
 ### 5.1 General

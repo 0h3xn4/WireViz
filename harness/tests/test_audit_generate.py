@@ -4,14 +4,19 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core import edit
-from harness_tool.core.commands import History, SetConfig
-from harness_tool.core.generate.engine import generate_project, plan_generation
-from harness_tool.core.generate.explain import explain_wire
-from harness_tool.core.kicad import NetlistError, clean_net, parse_netlist, plan_netlist_import
-from harness_tool.core.model import ConfigFile, Pin, Project, evolve
-from harness_tool.core.samples import mini3, sat15, sat15_full
-from harness_tool.core.verify import verify_project
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import History, SetConfig
+from harness_design_studio.core.generate.engine import generate_project, plan_generation
+from harness_design_studio.core.generate.explain import explain_wire
+from harness_design_studio.core.kicad import (
+    NetlistError,
+    clean_net,
+    parse_netlist,
+    plan_netlist_import,
+)
+from harness_design_studio.core.model import ConfigFile, Pin, Project, evolve
+from harness_design_studio.core.samples import mini3, sat15, sat15_full
+from harness_design_studio.core.verify import verify_project
 from tests.test_change_control import do_release, exported, releasable
 
 
@@ -114,7 +119,7 @@ def test_wire_and_connector_templates_cannot_make_duplicate_ids() -> None:
 
 
 def test_generating_again_is_a_no_op_even_when_a_group_makes_no_wires() -> None:
-    from harness_tool.core.commands import apply_ops
+    from harness_design_studio.core.commands import apply_ops
 
     p = sat15()
     generate_project(p)
@@ -142,7 +147,7 @@ def test_released_wires_keep_their_explanation_after_regenerating(tmp_path: Path
 
 
 def test_zone_names_with_the_key_separator_stay_apart() -> None:
-    from harness_tool.core.generate.segmentation import segment
+    from harness_design_studio.core.generate.segmentation import segment
 
     p = sat15()
     History(p).execute(
@@ -187,7 +192,7 @@ def test_the_default_gauge_is_used_when_there_is_no_current_to_size_for() -> Non
 
 
 def test_mixed_classes_on_one_connector_pair_are_reported() -> None:
-    from harness_tool.core.generate.segmentation import segment
+    from harness_design_studio.core.generate.segmentation import segment
 
     p = mini3()
     History(p).execute(

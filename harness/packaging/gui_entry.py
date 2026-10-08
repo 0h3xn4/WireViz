@@ -11,18 +11,18 @@ from pathlib import Path
 
 if __name__ == "__main__" and "--drc-worker" in sys.argv[1:]:
     # The editor starts this same program as its helper process for the design rule check.
-    from harness_tool.core.drc.worker import main as _drc_worker
+    from harness_design_studio.core.drc.worker import main as _drc_worker
 
     raise SystemExit(_drc_worker())
 
-from harness_tool.gui.app import create_window, main  # noqa: E402
+from harness_design_studio.gui.app import create_window, main  # noqa: E402
 
 
 def selftest() -> int:
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PySide6.QtCore import QSettings
 
-    from harness_tool.core.io.loader import load_project
+    from harness_design_studio.core.io.loader import load_project
 
     tmp = Path(tempfile.mkdtemp())
     win = create_window(QSettings(str(tmp / "ui.ini"), QSettings.Format.IniFormat), first_run=False)
@@ -50,7 +50,7 @@ def selftest() -> int:
 
 def _examples_are_bundled(tmp: Path) -> bool:
     """`harness new` works from the packaged program: the example projects are inside it."""
-    from harness_tool.core import templates
+    from harness_design_studio.core import templates
 
     made = templates.create_project(tmp / "from-example", "first-steps")
     files = templates.copy_import_templates(tmp / "templates")
@@ -59,15 +59,15 @@ def _examples_are_bundled(tmp: Path) -> bool:
 
 def _fonts_are_bundled() -> bool:
     """The IBM Plex fonts are inside the package and Qt can load them."""
-    from harness_tool.gui import fonts
+    from harness_design_studio.gui import fonts
 
     return {fonts.UI_FAMILY, fonts.MONO_FAMILY} <= set(fonts.load_fonts())
 
 
 def _rule_check_process_works(ctl: object) -> bool:
     """The helper process starts from the packaged program and agrees with a check done here."""
-    from harness_tool.core import drc
-    from harness_tool.gui.drc_process import _shared, run_check
+    from harness_design_studio.core import drc
+    from harness_design_studio.gui.drc_process import _shared, run_check
 
     project = ctl.project  # type: ignore[attr-defined]
     found = run_check(project)
@@ -78,10 +78,10 @@ def _rule_check_process_works(ctl: object) -> bool:
 
 def _generate_and_export(ctl: object, tmp: Path) -> bool:
     """Generate harnesses, build every output type, verify them independently and write them."""
-    from harness_tool.core.commands import apply_ops
-    from harness_tool.core.generate.engine import plan_generation
-    from harness_tool.core.outputs.build import build_outputs, write_outputs
-    from harness_tool.core.outputs.verify import read_folder, verify_outputs
+    from harness_design_studio.core.commands import apply_ops
+    from harness_design_studio.core.generate.engine import plan_generation
+    from harness_design_studio.core.outputs.build import build_outputs, write_outputs
+    from harness_design_studio.core.outputs.verify import read_folder, verify_outputs
 
     project = ctl.project  # type: ignore[attr-defined]
     apply_ops(project, plan_generation(project).ops)

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-AREAS = {"core": "src/harness_tool/core", "gui": "src/harness_tool/gui", "cli": "src/harness_tool/cli",
+AREAS = {"core": "src/harness_design_studio/core", "gui": "src/harness_design_studio/gui", "cli": "src/harness_design_studio/cli",
          "tests": "tests", "tools": "tools"}  # fmt: skip
 BRANCHES = (ast.If, ast.For, ast.While, ast.ExceptHandler, ast.With, ast.IfExp, ast.comprehension,
             ast.Assert, ast.match_case)  # fmt: skip

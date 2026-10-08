@@ -5,12 +5,12 @@ import tempfile
 import time
 from pathlib import Path
 
-from harness_tool.core.commands import History, Put
-from harness_tool.core.integrity import check_integrity
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.model import (
+from harness_design_studio.core.commands import History, Put
+from harness_design_studio.core.integrity import check_integrity
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.model import (
     Connector,
     Endpoint,
     Harness,
@@ -21,7 +21,7 @@ from harness_tool.core.model import (
     Wire,
     evolve,
 )
-from harness_tool.core.starter import starter_interface_types, starter_parts
+from harness_design_studio.core.starter import starter_interface_types, starter_parts
 
 
 def build(

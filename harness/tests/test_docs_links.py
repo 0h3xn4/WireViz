@@ -12,7 +12,7 @@ DOCS = [
     ROOT / "CHANGELOG.md",
     *sorted((ROOT / "docs").glob("*.md")),
     ROOT / "docs" / "guide" / "USER_GUIDE.md",
-    ROOT / "src" / "harness_tool" / "resources" / "examples" / "templates" / "README.md",
+    ROOT / "src" / "harness_design_studio" / "resources" / "examples" / "templates" / "README.md",
 ]
 LINK = re.compile(r"(?<!\!)\[[^\]]*\]\(([^)\s]+)\)|!\[[^\]]*\]\(([^)\s]+)\)")
 

@@ -6,7 +6,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from harness_tool.core.model.library import PART_CATEGORIES
+from harness_design_studio.core.model.library import PART_CATEGORIES
 
 ROOT = Path(__file__).resolve().parent.parent
 

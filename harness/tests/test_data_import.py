@@ -4,16 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main as cli_main
-from harness_tool.core import configcheck, drc
-from harness_tool.core.commands import History, Put
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.generate.lengths import plan_length_import
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.library_import import guess_mapping, plan_parts_import
-from harness_tool.core.model import Project, Segment, evolve
-from harness_tool.core.samples import sat15, sat15_full
+from harness_design_studio.cli.main import main as cli_main
+from harness_design_studio.core import configcheck, drc
+from harness_design_studio.core.commands import History, Put
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.generate.lengths import plan_length_import
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.library_import import guess_mapping, plan_parts_import
+from harness_design_studio.core.model import Project, Segment, evolve
+from harness_design_studio.core.samples import sat15, sat15_full
 
 
 def with_values(p, **per_file):  # type: ignore[no-untyped-def]

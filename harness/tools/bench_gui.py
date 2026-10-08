@@ -8,10 +8,10 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
 
-from harness_tool.gui.canvas import DiagramView
-from harness_tool.gui.controller import EditorController
-from harness_tool.gui.main_window import MainWindow
-from harness_tool.gui.theme import ThemeManager
+from harness_design_studio.gui.canvas import DiagramView
+from harness_design_studio.gui.controller import EditorController
+from harness_design_studio.gui.main_window import MainWindow
+from harness_design_studio.gui.theme import ThemeManager
 from tools.bench_stress import build
 
 

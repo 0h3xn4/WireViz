@@ -1,8 +1,8 @@
 """REQ-EDIT-02: units saved without positions get deterministic, non-overlapping ones."""
 
-from harness_tool.core import edit
-from harness_tool.core.commands import apply_ops
-from harness_tool.core.io.loader import load_project
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import apply_ops
+from harness_design_studio.core.io.loader import load_project
 from tests.helpers import FIXTURES
 
 

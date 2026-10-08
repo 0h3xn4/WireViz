@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.cli.main import main
-from harness_tool.core.generate.engine import generate_project
-from harness_tool.core.imports import ImportError_, guess_mapping, parse_csv, read_table
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.io.loader import load_project
-from harness_tool.core.io.saver import save_project
-from harness_tool.core.library_import import plan_parts_import
-from harness_tool.core.samples import mini3, sat15
+from harness_design_studio.cli.main import main
+from harness_design_studio.core.generate.engine import generate_project
+from harness_design_studio.core.imports import ImportError_, guess_mapping, parse_csv, read_table
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.io.loader import load_project
+from harness_design_studio.core.io.saver import save_project
+from harness_design_studio.core.library_import import plan_parts_import
+from harness_design_studio.core.samples import mini3, sat15
 
 
 def _project(tmp: Path, make=mini3) -> Path:  # type: ignore[no-untyped-def]
@@ -83,7 +83,7 @@ def test_a_symlinked_outputs_folder_is_never_written_through(
 def test_a_command_that_writes_refuses_while_another_instance_holds_the_project(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    from harness_tool.core.io.fs import ProjectLock
+    from harness_design_studio.core.io.fs import ProjectLock
 
     p = _project(tmp_path, sat15)
     lock = ProjectLock(p)
@@ -189,7 +189,7 @@ def test_two_columns_for_the_same_thing_are_refused() -> None:
 def test_lengths_rounding_headers_and_strange_numbers(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    from harness_tool.core.generate.lengths import plan_length_import
+    from harness_design_studio.core.generate.lengths import plan_length_import
 
     p = sat15()
     generate_project(p)

@@ -4,17 +4,17 @@ from pathlib import Path
 
 import pytest
 
-from harness_tool.core import edit
-from harness_tool.core.commands import History
-from harness_tool.core.imports import (
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import History
+from harness_design_studio.core.imports import (
     ImportError_,
     guess_mapping,
     parse_csv,
     plan_interface_import,
     read_table,
 )
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.samples import mini3
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.samples import mini3
 
 CSV = """Interface,Type,From unit,To unit,Redundancy
 IF-010,Primary power,PCDU,OBC,nominal

@@ -19,8 +19,8 @@ from PySide6.QtWidgets import (  # noqa: E402
     QWidget,
 )
 
-from harness_tool.core.generate.engine import generate_project  # noqa: E402
-from harness_tool.core.samples import sat15_full  # noqa: E402
+from harness_design_studio.core.generate.engine import generate_project  # noqa: E402
+from harness_design_studio.core.samples import sat15_full  # noqa: E402
 from tests.gui_helpers import DialogScript, make_window  # noqa: E402
 
 INTERACTIVE = (QAbstractButton, QLineEdit, QComboBox, QPlainTextEdit, QAbstractItemView)
@@ -135,7 +135,7 @@ def test_canvas_announces_its_content_and_names_the_accessible_alternative(win) 
 
 def test_state_is_never_shown_by_colour_alone(win) -> None:  # type: ignore[no-untyped-def]
     """Findings carry a severity word, redundant units a text tag, marks a text label."""
-    from harness_tool.gui import strings
+    from harness_design_studio.gui import strings
 
     assert {strings.SEV_ERROR, strings.SEV_WARNING, strings.SEV_INFO} and all(
         s.strip() for s in (strings.SEV_ERROR, strings.SEV_WARNING, strings.SEV_INFO)

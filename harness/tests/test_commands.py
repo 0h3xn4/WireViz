@@ -2,12 +2,12 @@
 
 import pytest
 
-from harness_tool.core import edit
-from harness_tool.core.commands import Delete, History, Put, SetConfig, SetMeta, apply_ops
-from harness_tool.core.errors import TransactionError
-from harness_tool.core.io.layout import model_hash
-from harness_tool.core.model import ProjectMeta, Unit, evolve
-from harness_tool.core.samples import mini3
+from harness_design_studio.core import edit
+from harness_design_studio.core.commands import Delete, History, Put, SetConfig, SetMeta, apply_ops
+from harness_design_studio.core.errors import TransactionError
+from harness_design_studio.core.io.layout import model_hash
+from harness_design_studio.core.model import ProjectMeta, Unit, evolve
+from harness_design_studio.core.samples import mini3
 
 
 def test_execute_undo_redo_restores_exact_state() -> None:

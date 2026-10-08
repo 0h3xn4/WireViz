@@ -6,12 +6,12 @@ from PySide6.QtWidgets import QLabel, QPushButton
 pytest.importorskip("PySide6")
 pytestmark = pytest.mark.gui
 
-from harness_tool.core import edit  # noqa: E402
-from harness_tool.core.generate.engine import generate_project  # noqa: E402
-from harness_tool.core.model import evolve  # noqa: E402
-from harness_tool.core.samples import mini3, sat15, stress_project  # noqa: E402
-from harness_tool.gui import strings  # noqa: E402
-from harness_tool.gui.main_window import ToastHost  # noqa: E402
+from harness_design_studio.core import edit  # noqa: E402
+from harness_design_studio.core.generate.engine import generate_project  # noqa: E402
+from harness_design_studio.core.model import evolve  # noqa: E402
+from harness_design_studio.core.samples import mini3, sat15, stress_project  # noqa: E402
+from harness_design_studio.gui import strings  # noqa: E402
+from harness_design_studio.gui.main_window import ToastHost  # noqa: E402
 from tests.gui_helpers import DialogScript, click_unit, make_window  # noqa: E402
 
 
@@ -118,8 +118,8 @@ def test_disabled_buttons_say_why(win) -> None:  # type: ignore[no-untyped-def]
 
 
 def test_generate_on_a_project_without_interfaces_says_what_to_do(win) -> None:  # type: ignore[no-untyped-def]
-    from harness_tool.core.generate.engine import plan_generation
-    from harness_tool.core.model import Project
+    from harness_design_studio.core.generate.engine import plan_generation
+    from harness_design_studio.core.model import Project
 
     win.ctl._install(Project(), None, None)
     win.ctl.apply_generation(plan_generation(win.ctl.project))
@@ -128,7 +128,7 @@ def test_generate_on_a_project_without_interfaces_says_what_to_do(win) -> None: 
 
 def test_the_preview_and_summary_are_plain_words() -> None:
     p = sat15()
-    from harness_tool.core.generate.engine import plan_generation
+    from harness_design_studio.core.generate.engine import plan_generation
 
     text = plan_generation(p).report.plain_summary()
     assert text.startswith("This will create") and "harness plans" in text

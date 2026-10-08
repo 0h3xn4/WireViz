@@ -3,7 +3,7 @@ requires = ["setuptools==84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "harness-tool"
+name = "harness-design-studio"
 version = "0.1.0rc5"
 description = "Offline spacecraft harness design tool"
 requires-python = ">=3.12"
@@ -19,16 +19,16 @@ dev = [
 ]
 
 [project.scripts]
-harness = "harness_tool.cli.main:main"
+harness = "harness_design_studio.cli.main:main"
 
 [project.gui-scripts]
-harness-gui = "harness_tool.gui.app:main"
+harness-gui = "harness_design_studio.gui.app:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-"harness_tool.resources" = ["guide/*.html", "examples/**/*", "fonts/*"]
+"harness_design_studio.resources" = ["guide/*.html", "examples/**/*", "fonts/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -38,7 +38,7 @@ filterwarnings = ["error"]
 markers = ["gui: needs Qt (run with QT_QPA_PLATFORM=offscreen)", "ux: drives the clickable prototype in a browser", "perf: timing checks at stress size"]
 
 [tool.coverage.run]
-source = ["harness_tool.core"]
+source = ["harness_design_studio.core"]
 branch = true
 
 [tool.coverage.report]
@@ -73,22 +73,22 @@ target-version = "py312"
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "S"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/harness_tool/core/drc/*.py" = ["E501"]  # plain-language messages
-"src/harness_tool/core/outputs/*.py" = ["E501"]  # table rows
-"src/harness_tool/core/vcs/*.py" = ["E501"]  # plain-language messages
-"src/harness_tool/core/library_import.py" = ["E501"]  # plain-language messages
-"src/harness_tool/core/configcheck.py" = ["E501"]  # plain-language messages
-"src/harness_tool/core/kicad.py" = ["E501"]  # plain-language messages
-"src/harness_tool/cli/*.py" = ["E501"]  # help texts
-"src/harness_tool/core/integrity.py" = ["E501"]  # long plain-language messages
-"src/harness_tool/core/io/loader.py" = ["E501"]
-"src/harness_tool/core/starter.py" = ["E501"]  # data tables
-"src/harness_tool/core/samples.py" = ["E501"]
-"src/harness_tool/core/edit.py" = ["E501"]
-"src/harness_tool/gui/*.py" = ["E501"]  # style sheet and UI text
-"src/harness_tool/core/generate/*.py" = ["E501"]  # long plain-language messages
-"src/harness_tool/core/verify.py" = ["E501"]
-"src/harness_tool/core/checks.py" = ["E501"]
-"src/harness_tool/core/imports.py" = ["E501"]
+"src/harness_design_studio/core/drc/*.py" = ["E501"]  # plain-language messages
+"src/harness_design_studio/core/outputs/*.py" = ["E501"]  # table rows
+"src/harness_design_studio/core/vcs/*.py" = ["E501"]  # plain-language messages
+"src/harness_design_studio/core/library_import.py" = ["E501"]  # plain-language messages
+"src/harness_design_studio/core/configcheck.py" = ["E501"]  # plain-language messages
+"src/harness_design_studio/core/kicad.py" = ["E501"]  # plain-language messages
+"src/harness_design_studio/cli/*.py" = ["E501"]  # help texts
+"src/harness_design_studio/core/integrity.py" = ["E501"]  # long plain-language messages
+"src/harness_design_studio/core/io/loader.py" = ["E501"]
+"src/harness_design_studio/core/starter.py" = ["E501"]  # data tables
+"src/harness_design_studio/core/samples.py" = ["E501"]
+"src/harness_design_studio/core/edit.py" = ["E501"]
+"src/harness_design_studio/gui/*.py" = ["E501"]  # style sheet and UI text
+"src/harness_design_studio/core/generate/*.py" = ["E501"]  # long plain-language messages
+"src/harness_design_studio/core/verify.py" = ["E501"]
+"src/harness_design_studio/core/checks.py" = ["E501"]
+"src/harness_design_studio/core/imports.py" = ["E501"]
 "tools/*" = ["S101", "S603", "S607", "E501"]
 "tests/*" = ["S101", "S311", "S603", "S607", "E501"]
