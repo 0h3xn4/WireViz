@@ -72,6 +72,14 @@ def collect(dest: Path) -> list[str]:
             target = dest / key / Path(f.as_posix()).name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(Path(str(dist.locate_file(f))), target)
+    plex = Path(__file__).resolve().parents[1] / "src/harness_tool/resources/fonts"
+    ofl = plex / "OFL-1.1-IBM-Plex.txt"
+    if ofl.is_file():  # the bundled fonts are not Python packages: record them here
+        rows.append("IBM Plex Sans 1.1.0 and IBM Plex Mono 2.5.0 (fonts): OFL-1.1")
+        (dest / "ibm-plex").mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ofl, dest / "ibm-plex" / ofl.name)
+    else:
+        problems.append("the licence text of the bundled IBM Plex fonts is missing")
     if lgpl:
         for name in ("LGPL-3", "GPL-3"):
             src = COMMON / name

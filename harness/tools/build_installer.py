@@ -40,6 +40,8 @@ def _pyinstaller(
     cmd += ["--add-data", f"{guide}:harness_tool/resources/guide"]
     examples = ROOT / "src" / "harness_tool" / "resources" / "examples"  # `harness new`, templates
     cmd += ["--add-data", f"{examples}:harness_tool/resources/examples"]
+    fonts = ROOT / "src" / "harness_tool" / "resources" / "fonts"  # IBM Plex, SIL OFL 1.1
+    cmd += ["--add-data", f"{fonts}:harness_tool/resources/fonts"]
     cmd.append(str(entry))
     return subprocess.run(cmd, check=False).returncode
 
