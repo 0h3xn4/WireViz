@@ -1,6 +1,6 @@
 # Criticality classification of the software and its components
 
-Addresses ECSS-Q-ST-80C 5.4.4, 6.2.2.1 to 6.2.2.10, 6.2.3.1 to 6.2.3.8 (gap G-03). Status: product category **C approved by the owner** (conversation of 2026-10-08, recorded in `PHASE0.md`). The component classification below is **proposed** and needs the owner's approval.
+Addresses ECSS-Q-ST-80C 5.4.4, 6.2.2.1 to 6.2.2.10, 6.2.3.1 to 6.2.3.8 (gap G-03). Status: the plan and the component classification are approved by the owner on 2026-10-08 (approval given in the working session; the owner is also customer and supplier, so no independent reviewer, see A-01); product category **C approved by the owner** (conversation of 2026-10-08, recorded in `PHASE0.md`). The component classification below is **proposed** and needs the owner's approval.
 
 ## 1. Product category
 

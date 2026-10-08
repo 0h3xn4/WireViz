@@ -1,6 +1,6 @@
 # Software development plan (SDP)
 
-DRD: ECSS-E-ST-40C Annex O. Status: draft, not reviewed.
+DRD: ECSS-E-ST-40C Annex O. Status: approved by the owner on 2026-10-08 (approval given in the working session; the owner is also customer and supplier, so no independent reviewer, see A-01).
 
 ## 1. Introduction, 2. Reference documents, 3. Terms
 Software: Harness tool. See `SPAP.md` and `../../docs/SPEC.md`.
