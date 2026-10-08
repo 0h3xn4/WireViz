@@ -4,6 +4,7 @@ Versions follow semantic versioning. Every project file records the tool version
 
 ## Unreleased
 
+- **New name: Harness Design Studio** (window title, About box, application menu entry, documents, installer text). The package (`harness-tool`), the commands (`harness`, `harness-tool`) and the folders keep their names, so nothing changes for scripts or installed copies.
 - **Fixes found by running a 14-unit, 24-interface project through the tool**: the shield rules (`shield-unterminated`, `shield-wrong-end`, `shield-bonding`, `shield-parts`) no longer treat a plain twisted pair as a shield (with a grounding concept of floating ends, every twisted pair was reported as an unconnected shield: 31 false warnings on the reference satellite); the explanation of `unchecked-config` now also covers notes that need an analysis outside the tool.
 - **Library source and date (D-133)**: the parts library records where its data come from. `harness library DIR` shows and sets name, version, source and date; `harness import-parts` records the file name and checksum; the editor and `system/provenance.json` show them. Every model hash changes once (the manifest has two more keys): goldens, examples and the tutorial were regenerated; older projects load unchanged.
 - **Diagram filters**: besides a signal class, the toolbar filter can now show one connector or one bundle (harness) and fade the rest; it follows a new project and added interfaces.

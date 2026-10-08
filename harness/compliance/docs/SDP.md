@@ -3,7 +3,7 @@
 DRD: ECSS-E-ST-40C Annex O. Status: draft, not reviewed.
 
 ## 1. Introduction, 2. Reference documents, 3. Terms
-Software: Harness tool. See `SPAP.md` and `../../docs/SPEC.md`.
+Software: Harness Design Studio. See `SPAP.md` and `../../docs/SPEC.md`.
 
 ## 4. Software project management approach
 - **4.1 Objectives and priorities:** correctness and traceability of generated harness data first; offline operation; then usability and speed (`../../docs/SPEC.md` parts 1 and 3).

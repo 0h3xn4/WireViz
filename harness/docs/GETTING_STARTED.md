@@ -46,7 +46,7 @@ INFO    placeholder_config: Placeholder rule configuration still in use: deratin
 
 0 errors is what you want. The INFO line is normal: it says the engineering values are not filled in yet (Part 7).
 
-**In the app:** start **Harness tool**, choose **File > Open project…** and pick the `wheel-link` folder. The app also opens a built-in sample the first time and offers a short tour; **Skip tour** or follow it.
+**In the app:** start **Harness Design Studio**, choose **File > Open project…** and pick the `wheel-link` folder. The app also opens a built-in sample the first time and offers a short tour; **Skip tour** or follow it.
 
 ## Part 2: look around
 

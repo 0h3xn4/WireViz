@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Harness tool: user guide</title><style>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Harness Design Studio: user guide</title><style>
 :root{--bg:#fff;--fg:#1b1b1f;--muted:#55555f;--line:#d0d0d8;--accent:#4a1fb8;--code:#f1f1f6}
 @media (prefers-color-scheme: dark){:root{--bg:#16161a;--fg:#ececf1;--muted:#a8a8b3;--line:#3a3a44;--accent:#b79bff;--code:#23232b}}
 body{background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif;margin:0}
@@ -12,7 +12,7 @@ pre{background:var(--code);padding:.8rem;overflow:auto;border-radius:6px}
 table{border-collapse:collapse;width:100%;margin:1rem 0} th,td{border:1px solid var(--line);padding:.35rem .5rem;text-align:left;vertical-align:top}
 a{color:var(--accent)} p,li{max-width:42rem}
 </style></head><body><nav><a href="#what-the-tool-does">What the tool does</a><a href="#install-and-start-ubuntu-24-04-or-newer">Install and start (Ubuntu 24.04 or newer)</a><a href="#start-from-an-example">Start from an example</a><a href="#your-first-project-in-ten-steps">Your first project in ten steps</a><a href="#guided-and-expert-mode">Guided and Expert mode</a><a href="#problems-fixes-and-waivers">Problems, fixes and waivers</a><a href="#generating-harnesses">Generating harnesses</a><a href="#outputs">Outputs</a><a href="#review-release-and-revisions">Review, release and revisions</a><a href="#command-line">Command line</a><a href="#what-an-engineer-must-fill-in">What an engineer must fill in</a><a href="#bring-in-your-own-data">Bring in your own data</a><a href="#when-something-goes-wrong">When something goes wrong</a><a href="#keyboard">Keyboard</a><a href="#glossary">Glossary</a></nav><main>
-<h1 id="harness-tool-user-guide">Harness tool: user guide</h1>
+<h1 id="harness-design-studio-user-guide">Harness Design Studio: user guide</h1>
 <p>This guide is for systems engineers who have never used the tool. It works offline. Press <strong>F1</strong> in the app to open it.</p>
 <p>New here? Read sections 1 to 4 (about fifteen minutes). Section 3 gives you a ready-made practice project to play with.</p>
 <h2 id="what-the-tool-does">1. What the tool does</h2>
@@ -24,7 +24,7 @@ a{color:var(--accent)} p,li{max-width:42rem}
 <table><thead><tr><th>For</th><th>Baseline</th></tr></thead><tbody><tr><td>Communication</td><td>RS-422, RS-485 and CAN</td></tr><tr><td>High data rates (for example a payload)</td><td>Ethernet, on an RJ45 connector, as the alternative</td></tr><tr><td>Power and data connectors</td><td>Micro-D 9, 15, 21, 25 and 31 pin (power: 9 pin; for data the size follows the number of interface types the connector carries)</td></tr><tr><td>RF</td><td>SMA</td></tr></tbody></table>
 <p>Other interface types and older connector parts stay in the library for projects that need them. All parts are examples with fictional part numbers, none approved; your approved parts list replaces them.</p>
 <h2 id="install-and-start-ubuntu-24-04-or-newer">2. Install and start (Ubuntu 24.04 or newer)</h2>
-<ol><li>Install the package: <code>sudo apt install ./harness-tool_&lt;version&gt;_amd64.deb</code>. Or unpack the <code>.tar.gz</code> anywhere and run <code>./harness-tool/install.sh</code> (no administrator rights needed; it installs for your user).</li><li>Check it: <code>harness --version</code> prints the version. If the command is not found after <code>install.sh</code>, add <code>~/.local/bin</code> to your PATH (the installer prints how).</li><li>Start <strong>Harness tool</strong> from the application menu, or run <code>harness-tool</code>.</li><li>The command line tool is <code>harness</code> (see section 9).</li></ol>
+<ol><li>Install the package: <code>sudo apt install ./harness-tool_&lt;version&gt;_amd64.deb</code>. Or unpack the <code>.tar.gz</code> anywhere and run <code>./harness-tool/install.sh</code> (no administrator rights needed; it installs for your user).</li><li>Check it: <code>harness --version</code> prints the version. If the command is not found after <code>install.sh</code>, add <code>~/.local/bin</code> to your PATH (the installer prints how).</li><li>Start <strong>Harness Design Studio</strong> from the application menu, or run <code>harness-tool</code>.</li><li>The command line tool is <code>harness</code> (see section 9).</li></ol>
 <p>No network access is needed or used. On a minimal Ubuntu the app may need a few system libraries; the installer lists them.</p>
 <h2 id="start-from-an-example">3. Start from an example</h2>
 <p>The tool ships three practice projects. List them and create one in a new folder:</p>

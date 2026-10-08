@@ -1,4 +1,4 @@
-# Harness tool: user guide
+# Harness Design Studio: user guide
 
 This guide is for systems engineers who have never used the tool. It works offline. Press **F1** in the app to open it.
 
@@ -37,7 +37,7 @@ Other interface types and older connector parts stay in the library for projects
 
 1. Install the package: `sudo apt install ./harness-tool_<version>_amd64.deb`. Or unpack the `.tar.gz` anywhere and run `./harness-tool/install.sh` (no administrator rights needed; it installs for your user).
 2. Check it: `harness --version` prints the version. If the command is not found after `install.sh`, add `~/.local/bin` to your PATH (the installer prints how).
-3. Start **Harness tool** from the application menu, or run `harness-tool`.
+3. Start **Harness Design Studio** from the application menu, or run `harness-tool`.
 4. The command line tool is `harness` (see section 9).
 
 No network access is needed or used. On a minimal Ubuntu the app may need a few system libraries; the installer lists them.

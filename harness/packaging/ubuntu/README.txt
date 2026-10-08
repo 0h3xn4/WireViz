@@ -1,4 +1,4 @@
-Harness tool: Ubuntu package
+Harness Design Studio: Ubuntu package
 ============================
 Per-user install (no administrator rights):   ./install.sh
 System-wide install:                          sudo ./install.sh --system   (into /usr/local/lib/harness-tool)

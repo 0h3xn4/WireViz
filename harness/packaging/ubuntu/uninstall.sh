@@ -46,5 +46,5 @@ fi
 if [ "$removed" = 1 ]; then
   echo "Removed. Your projects are not touched."
 else
-  echo "Nothing to remove: Harness tool is not installed there (looked in $prefix)."
+  echo "Nothing to remove: Harness Design Studio is not installed there (looked in $prefix)."
 fi

@@ -75,7 +75,7 @@ Navigation rules: everything reachable by command palette; panels collapsible; b
 ### 5.1 Main window (see `screens/02-guided-main.png`, `04-expert-connectors.png`)
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Harness Designer  mini3  [Prototype]   [Guided|Expert] ↶ ↷  [Search Ctrl+K] [Generate] ? ⋯More │
+│ Harness Design Studio  mini3  [Prototype]   [Guided|Expert] ↶ ↷  [Search Ctrl+K] [Generate] ? ⋯More │
 ├────────────┬──────────────────────────────────────────────────────────────┬───────────────────┤
 │ ADD A UNIT │ [Select|Connect]  hint text            [Redundant copy][Del] │ PROPERTIES        │
 │ + Computer │ ┌─ PANEL-A ─────────────┐ ┌─ PANEL-B ─────────────┐          │ ID    [RW1      ] │

@@ -88,7 +88,7 @@ def collect(dest: Path) -> list[str]:
                 continue
             shutil.copyfile(src, dest / f"{name}.txt")
     (dest / "README.txt").write_text(
-        "Licences of the components shipped with Harness tool\n"
+        "Licences of the components shipped with Harness Design Studio\n"
         "====================================================\n\n"
         + "\n".join(rows)
         + "\n\nQt for Python (PySide6, shiboken6) is used under the GNU Lesser General Public "

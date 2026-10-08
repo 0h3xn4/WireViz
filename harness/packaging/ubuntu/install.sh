@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install Harness tool for the current user (no administrator rights), or system-wide with --system.
+# Install Harness Design Studio for the current user (no administrator rights), or system-wide with --system.
 # Usage: ./install.sh [--prefix DIR] [--system]
 set -eu
 here=$(cd "$(dirname "$0")" && pwd)

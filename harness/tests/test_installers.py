@@ -79,7 +79,7 @@ def test_desktop_entry_and_icon_are_valid() -> None:
     text = (PK / "harness-tool.desktop.in").read_text()
     for key in (
         "Type=Application",
-        "Name=Harness tool",
+        "Name=Harness Design Studio",
         "Exec=@EXEC@",
         "Icon=@ICON@",
         "Terminal=false",

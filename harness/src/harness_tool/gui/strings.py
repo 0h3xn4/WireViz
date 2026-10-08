@@ -1,6 +1,6 @@
 """All user-visible UI strings live here so translation is possible later."""
 
-APP_TITLE = "Harness Designer"
+APP_TITLE = "Harness Design Studio"
 EMPTY_STATE = (
     "No project open. Create a new project, start from an example or open an existing one to begin."
 )
@@ -289,7 +289,7 @@ CHANGED_BODY = "The project files changed outside this window (for example after
 RELOAD = "Reload"
 KEEP_MINE = "Keep my version"
 KEEP_MINE_NOTE = "Keeping your version. Saving will be refused until you reload or save a copy, so nobody's changes are overwritten."
-ABOUT_TEXT = "Harness Designer {}\nOffline spacecraft harness design tool. No data ever leaves this computer."
+ABOUT_TEXT = "Harness Design Studio {}\nOffline spacecraft harness design tool. No data ever leaves this computer."
 MORE_PROBLEMS = "…and {} more. Resolve the ones above first."
 
 DRC_CHECKING = "Design rules: checking…"

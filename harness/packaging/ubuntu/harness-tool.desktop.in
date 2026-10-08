@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=Harness tool
+Name=Harness Design Studio
 GenericName=Spacecraft harness design
 Comment=Design electrical harnesses from a block diagram, offline
 Exec=@EXEC@

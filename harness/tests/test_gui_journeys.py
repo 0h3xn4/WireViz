@@ -63,7 +63,7 @@ def test_j1_tour_starts_on_first_run_and_can_be_skipped_and_replayed(qtbot, tmp_
 def test_sample_project_opens_with_banner(win) -> None:  # type: ignore[no-untyped-def]
     assert len(win.ctl.project.units) == 3 and win.banner.isVisible()
     assert "sample project" in win.banner.label.text()
-    assert "Harness Designer" in win.windowTitle()
+    assert "Harness Design Studio" in win.windowTitle()
 
 
 # ---- J2 build the diagram ---------------------------------------------------------------------

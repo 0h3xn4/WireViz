@@ -6,7 +6,7 @@ DRD: ECSS-E-ST-40C Annex P. Status: draft, not reviewed. Reviews need the owner 
 See `SDP.md`.
 
 ## 4. Review title and project
-One plan for all reviews of the Harness tool. Subject: the repository state at a tag `review-<name>` (`CMP.md`).
+One plan for all reviews of the Harness Design Studio. Subject: the repository state at a tag `review-<name>` (`CMP.md`).
 
 ## 5. Reference documents
 All documents in `README.md` of this folder.

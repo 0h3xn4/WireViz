@@ -78,7 +78,9 @@ def schemas() -> dict[str, dict[str, Any]]:
     for name, pattern, model in _kinds():
         schema = model.model_json_schema()
         schema.setdefault("title", name)
-        schema["description"] = f"Harness tool project file {pattern}. Generated from the model."
+        schema["description"] = (
+            f"Harness Design Studio project file {pattern}. Generated from the model."
+        )
         out[name] = schema
     return out
 

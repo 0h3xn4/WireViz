@@ -23,7 +23,7 @@ Upstream-Name: harness-tool
 Files: *
 Copyright: the project owner (to be filled in before distribution)
 License: LicenseRef-Proprietary
- The licence of Harness tool itself is decided by the project owner (see pyproject.toml).
+ The licence of Harness Design Studio itself is decided by the project owner (see pyproject.toml).
 
 Files: opt/harness-tool/_internal/* opt/harness-tool/cli/_internal/*
 Copyright: the authors of the bundled libraries
@@ -40,7 +40,7 @@ def control(size_kb: int) -> str:
         "Section: science\nPriority: optional\nArchitecture: amd64\n"
         f"Depends: {DEPENDS}\n"
         f"Installed-Size: {size_kb}\n"
-        "Maintainer: Harness tool maintainers <noreply@example.invalid>\n"
+        "Maintainer: Harness Design Studio maintainers <noreply@example.invalid>\n"
         "Description: Offline spacecraft electrical harness design tool\n"
         " Designs harnesses from a block diagram, checks them, writes drawings and\n"
         " lists, and keeps a change-controlled record. Never uses the network.\n"

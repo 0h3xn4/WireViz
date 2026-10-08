@@ -24,7 +24,7 @@ sudo apt install ./harness-tool_<version>_amd64.deb
 
 (Use `./` in front of the name; without it `apt` looks in its online lists.) This installs the program into `/opt/harness-tool` and puts two commands on your path:
 
-- `harness-tool`: the app (also in the application menu as **Harness tool**).
+- `harness-tool`: the app (also in the application menu as **Harness Design Studio**).
 - `harness`: the command line tool.
 
 Check it:
@@ -69,7 +69,7 @@ harness --version          # prints the version
 harness-tool --selftest    # opens the editor offscreen, makes a project, generates, exports, and prints "selftest ok"
 ```
 
-Then start **Harness tool** from the application menu. The first start opens a sample project and a short tour.
+Then start **Harness Design Studio** from the application menu. The first start opens a sample project and a short tour.
 
 ## If the app does not start
 
