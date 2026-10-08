@@ -72,7 +72,7 @@ Every choice has a reason. Select a harness, open **Harness plans > Why**, and r
 The tool checks your design all the time, in two layers:
 
 - **Quick checks** run instantly on every edit (an interface with no connector, an isolated unit, ...).
-- **Design rules** (22 of them, listed in [`RULES.md`](RULES.md)) run in the background a moment after you stop editing: connector look-alikes, unapproved parts, pin reuse, separation, current limits, and more.
+- **Design rules** (32 of them, listed in [`RULES.md`](RULES.md)) run in the background a moment after you stop editing: connector look-alikes, unapproved parts, pin reuse, separation, current limits, and more.
 
 Each finding is an **error** (must be fixed), a **warning** (fix it, or **waive** it with a written reason of at least 10 characters), or a **note** (information). Waived warnings stay in the report with their reason, so a reviewer sees them.
 

@@ -392,6 +392,26 @@ def pos_bundle_current() -> Project:
     return p
 
 
+def pos_shield_bonding() -> Project:
+    p = base()
+    set_cfg(p, "emc", shield_bonding="both_ends_backshell")
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    put_harness(p, h, shields=[evolve(s, end_a="pigtail", end_b="floating") for s in h.shields])
+    return p
+
+
+def pos_emc_class_split() -> Project:
+    p = base()
+    set_cfg(p, "emc", same_class_one_bundle=True)
+    for tid in {
+        i.type_id
+        for i in p.interfaces.values()
+        if {e.unit_id for e in i.endpoints} == {"OBC1", "PCDU1"}
+    }:
+        apply_ops(p, [Put("interface_types", evolve(p.interface_types[tid], emc_class="A"))])
+    return p
+
+
 POSITIVE: dict[str, Callable[[], Project]] = {
     "duplicate-id": pos_duplicate_id,
     "wire-dangling": pos_wire_dangling,
@@ -423,6 +443,8 @@ POSITIVE: dict[str, Callable[[], Project]] = {
     "wire-specification": pos_wire_specification,
     "power-return-adjacent": pos_power_return_adjacent,
     "bundle-current": pos_bundle_current,
+    "shield-bonding": pos_shield_bonding,
+    "emc-class-split": pos_emc_class_split,
 }
 
 

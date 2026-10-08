@@ -22,6 +22,7 @@ from harness_tool.core.model import Connector, Harness, Project
 from .base import Hit, Rule, cfg, number
 
 Q = "ECSS-Q-ST-30-11_"
+E = "ECSS-E-ST-20-07_"
 ESCC = "ESCC3901-4.4"
 
 
@@ -223,6 +224,14 @@ def unchecked(project: Project) -> Iterator[Hit]:
             "thermal-analysis",
             "Wire surface temperature under load was not checked: it needs a thermal analysis outside the tool (ECSS-Q-ST-30-11C 6.32.4 b, c)",
         )
+    emc = cfg(project, "emc")
+    if project.harnesses and (
+        emc.get("shield_bonding") is not None or emc.get("same_class_one_bundle") is not None
+    ):
+        yield Hit(
+            "bundle-separation",
+            "Separation of bundles of different categories (5 cm or a metallic screen), the DC resistance of shield and housing bonds, and individual shields on external cables were not checked: the model holds no routing geometry or measurements (ECSS-E-ST-20-07C 4.2.13.1 c, 4.2.13.2 a, d, e)",
+        )
     if _bundle_table_set(project) and project.harnesses:
         yield Hit(
             "partial-load",
@@ -265,6 +274,40 @@ def _bundle_current(project: Project) -> Iterator[Hit]:
                 )
 
 
+def _shield_bonding(project: Project) -> Iterator[Hit]:
+    """Shields bonded at both ends through the connector body or backshell (20-07C 4.2.13.2 d, e)."""
+    if cfg(project, "emc").get("shield_bonding") != "both_ends_backshell":
+        return
+    for h in sorted(project.harnesses.values(), key=lambda x: x.id):
+        for s in h.shields:
+            if (s.end_a, s.end_b) != ("backshell_360", "backshell_360"):
+                yield Hit(
+                    f"{h.id}.{s.id}",
+                    f"Shield {s.id} in {h.id} is {s.end_a}/{s.end_b}; it must be bonded at both ends through the connector body or backshell",
+                )
+
+
+def _emc_class_split(project: Project) -> Iterator[Hit]:
+    """Wires of one EMC class between the same two units belong in one bundle (20-07C 4.2.13.1 b)."""
+    if cfg(project, "emc").get("same_class_one_bundle") is not True:
+        return
+    carried: dict[tuple[str, str, str], set[str]] = {}
+    for h in project.harnesses.values():
+        for iid in h.interfaces:
+            i = project.interfaces.get(iid)
+            t = project.interface_types.get(i.type_id) if i else None
+            if i is None or t is None or not t.emc_class or len(i.endpoints) != 2:
+                continue
+            a, b = sorted(e.unit_id for e in i.endpoints)
+            carried.setdefault((t.emc_class, a, b), set()).add(h.id)
+    for (cls, a, b), ids in sorted(carried.items()):
+        if len(ids) > 1:
+            yield Hit(
+                f"emc-class.{cls}.{a}.{b}",
+                f"Interfaces of EMC class {cls} between {a} and {b} run in {len(ids)} bundles ({', '.join(sorted(ids))}); one class should be one bundle",
+            )
+
+
 STANDARD_RULES: tuple[Rule, ...] = (
     Rule("connector-voltage", "error", "Connector working voltage",
          "A connector worked close to its voltage rating can arc or break down.",
@@ -290,6 +333,14 @@ STANDARD_RULES: tuple[Rule, ...] = (
          "An approved wire that cites no specification cannot be traced to a qualification.",
          "Enter the detail specification the wire is procured to in the part.",
          _wire_specification, sources=(ESCC,)),
+    Rule("shield-bonding", "warning", "Shield bonding",
+         "A shield that is not bonded to the housing at both ends through the connector does not shield reliably.",
+         "Terminate the shield with a 360 degree backshell at both ends.",
+         _shield_bonding, sources=(E + "0080041", E + "0080042")),
+    Rule("emc-class-split", "warning", "One bundle per EMC class",
+         "Wires of one EMC category spread over several bundles make the segregation of categories harder to keep.",
+         "Carry the interfaces of one class between two units in one harness.",
+         _emc_class_split, sources=(E + "0080035",)),
     Rule("power-return-adjacent", "warning", "Power and return pins",
          "Power and return on neighbouring contacts raise the risk of a short circuit.",
          "Leave at least one contact unassigned between them (regenerate the harness).",

@@ -61,3 +61,7 @@ Dark colours and dash patterns carry every distinction (category, nominal/redund
 
 ## Change control in the outputs
 `system/changelog.csv` lists every change log entry. `system/revision_report.md` gives, per harness, the history and the differences between consecutive baselines and between the working design and the latest baseline. The manifest also stores `content_hash` (model hash without release bookkeeping) which the release gate compares; see DECISIONS D-104.
+
+## EMC class on wires and labels
+
+When at least one interface type has an EMC class, the wire list gets a last column `EMC class` and the wire labels end with `[EMC <class>]`, so personnel can see the category of every wire (ECSS-E-ST-20-07C 4.2.13.1 d). Projects without EMC classes get byte-identical files. The output verifier checks the column against the design.

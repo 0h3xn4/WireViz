@@ -89,7 +89,7 @@ Switching modes never changes your data.
 - **Warning**: fix it, or **Waive** it with a reason of at least 10 characters. Waived warnings stay visible in the report with their reason.
 - **Note**: information, for example *not checked because a value is still a placeholder*.
 
-The quick checks run on every edit. The design rules (22 of them) run in the background a moment after you stop editing; the Problems tab says when they are checking.
+The quick checks run on every edit. The design rules (32 of them) run in the background a moment after you stop editing; the Problems tab says when they are checking.
 
 ## 7. Generating harnesses
 
@@ -135,7 +135,7 @@ All commands take the project folder. Exit code 0 means success, 1 means the pro
 | `harness diff DIR HARNESS [--from REV] [--to REV]` | what changed since a baseline |
 | `harness compare OLD NEW` | compare two project folders (for example two Git checkouts) |
 | `harness log DIR [HARNESS]` | print the change log |
-| `harness config DIR [--ampacity-csv FILE]` | list missing or invalid engineering values; load a current-by-gauge table |
+| `harness config DIR [--ampacity-csv FILE] [--apply-profile NAME]` | list missing or invalid engineering values; load a current-by-gauge table; fill unset values from a standard profile |
 | `harness import-parts DIR FILE --approved VALUE ...` | import an approved-parts list; you say what the approval values mean |
 | `harness import-lengths DIR FILE [--unit mm]` | import routing segment lengths from a table |
 | `harness import-netlist DIR FILE --unit U [--prefix J] [--connector J1=ID] [--part J1=PART] [--signal-map NAME=SIGNAL\|FILE]` | read connector pinouts of a unit from a KiCad netlist (.net or .xml); the pins become fixed |
@@ -146,7 +146,7 @@ A script that builds everything: `harness check DIR`, `harness generate DIR`, `h
 
 Some values must come from your program's standards. Until they are filled in, results say so and the affected checks say *not checked*. The list is in `docs/PLACEHOLDERS.md`: derating factors and ampacity table (`config/derating.json`), resistivity, service loop, pin gap, mass margin, shield grounding concept and test limits (`config/generation.json`), separation rules (`config/segregation.json`), EMC rules (`config/emc.json`), title block fields (`config/titleblock.json`), part masses and ratings in the library.
 
-Run `harness config DIR` to see what is missing and what depends on it, load a current-by-gauge table from a CSV with `--ampacity-csv`, edit the rest in the JSON file, and set `"placeholder": false` once reviewed.
+Run `harness config DIR` to see what is missing and what depends on it, load a current-by-gauge table from a CSV with `--ampacity-csv`, edit the rest in the JSON file, and set `"placeholder": false` once reviewed. If you work to ECSS-Q-ST-30-11C or ECSS-E-ST-20-07C you can start from the values of those standards with `--apply-profile ecss-q-st-30-11c` or `ecss-e-st-20-07c`: only unset values are filled, each is printed with the requirement it comes from, and the files stay placeholders until you review them (`CONFIG.md` lists the keys and the part ratings the new rules need).
 
 To see the machinery work before you have real values, copy the demo values from the templates (`config-demo-values/`) over a practice project. They are not engineering data, and the files stay marked as placeholders so every result built on them says so. Never release a real design with them.
 

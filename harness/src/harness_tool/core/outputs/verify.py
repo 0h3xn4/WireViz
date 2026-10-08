@@ -375,6 +375,11 @@ def _harness_cells(r: VerifyReport, project: Project, h: Harness, files: dict[st
             if w is None or len(row) < 13:
                 continue
             wrong = []
+            if any(t.emc_class for t in project.interface_types.values()):
+                i = project.interfaces.get(w.interface_id or "")
+                t = project.interface_types.get(i.type_id) if i else None
+                if len(row) < 14 or row[13] != ((t.emc_class if t else None) or ""):
+                    wrong.append("EMC class")
             if row[1] != (w.signal or ""):
                 wrong.append("signal")
             if row[2] != (w.interface_id or ""):

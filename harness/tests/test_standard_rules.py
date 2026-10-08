@@ -1,4 +1,4 @@
-"""REQ-STD-03: rules from the supplied standards. Boundaries, quiet cases and "not checked" messages.
+"""REQ-STD-03, REQ-STD-04, REQ-STD-05: REQ-STD-03: rules from the supplied standards. Boundaries, quiet cases and "not checked" messages.
 
 Numbers are test inputs, not engineering data.
 """
@@ -188,3 +188,62 @@ def test_without_the_setting_power_and_return_stay_adjacent_as_before() -> None:
     generate_project(p)
     used = [x.signal for x in p.connectors["OBC1-J01"].pins]
     assert used[:2] == ["PWR", "RTN"]
+
+
+def test_shield_bonded_at_both_ends_passes() -> None:
+    from harness_tool.core.model import ShieldGroup  # noqa: F401
+
+    p = t.pos_shield_bonding()
+    for h in list(p.harnesses.values()):
+        t.put_harness(
+            p,
+            h,
+            shields=[evolve(s, end_a="backshell_360", end_b="backshell_360") for s in h.shields],
+        )
+    assert hits("shield-bonding", p) == []
+
+
+def test_emc_class_split_passes_when_classes_differ() -> None:
+    p = t.pos_emc_class_split()
+    a, b = sorted(
+        {
+            i.type_id
+            for i in p.interfaces.values()
+            if {e.unit_id for e in i.endpoints} == {"OBC1", "PCDU1"}
+        }
+    )[:2]
+    apply_ops(p, [Put("interface_types", evolve(p.interface_types[b], emc_class="B"))])
+    assert hits("emc-class-split", p) == []
+
+
+def test_emc_class_is_in_the_wire_list_and_the_labels_only_when_classes_exist() -> None:
+    from harness_tool.core.outputs.build import build_outputs
+
+    p = t.base()
+    plain = build_outputs(p).files
+    head = next(v for k, v in plain.items() if k.endswith("/wirelist.csv")).decode().splitlines()
+    assert "EMC class" not in head[1]  # byte-identical wire lists for projects without classes
+    for tid in list(p.interface_types):
+        apply_ops(p, [Put("interface_types", evolve(p.interface_types[tid], emc_class="A"))])
+    files = build_outputs(p).files
+    wl = next(v for k, v in files.items() if k.endswith("/wirelist.csv")).decode().splitlines()
+    assert wl[1].endswith("EMC class") and wl[2].endswith(",A")
+    labels = next(v for k, v in files.items() if k.endswith("/labels.csv")).decode()
+    assert "[EMC A]" in labels
+
+
+def test_the_output_verifier_catches_a_wrong_emc_class() -> None:
+    from harness_tool.core.outputs.build import build_outputs
+    from harness_tool.core.outputs.verify import verify_outputs
+
+    p = t.base()
+    for tid in list(p.interface_types):
+        apply_ops(p, [Put("interface_types", evolve(p.interface_types[tid], emc_class="A"))])
+    files = dict(build_outputs(p).files)
+    assert verify_outputs(p, files).ok
+    key = next(k for k in files if k.endswith("/wirelist.csv"))
+    lines = files[key].decode().splitlines()
+    lines[2] = lines[2][:-1] + "B"
+    files[key] = ("\n".join(lines) + "\n").encode()
+    codes = [i.code for i in verify_outputs(p, files).issues]
+    assert "out_wire_differs" in codes

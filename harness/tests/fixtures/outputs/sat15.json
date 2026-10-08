@@ -269,7 +269,7 @@
  "system/box_pinouts.csv": "0b0611d15a30ce1f745c45a9cf32762ae5996bdd2580c06c6739093f64e0e1b5",
  "system/changelog.csv": "baedfb5c3d4c91c15ceec505cd26c00d388a38bb6eec44c67244ee7c92b48065",
  "system/drc_findings.csv": "59c4b91edccb091a479c10323a2fe276e9ae4c18021e1f7568fbb41c0d37d98a",
- "system/drc_report.md": "2cd9f8815b8709c44e7cc4c2c69f40fa3577e5190cdefca7ee74d83a1d0d2b1d",
+ "system/drc_report.md": "bd6978189c7cc096d9c4b9af2cb6ef389835ce83e8f7088f8fc62609789467b0",
  "system/export.json": "6eb1ace858bf40b50ed1e26d4e8823406e3377779c17f7e97d0fb5c39b776011",
  "system/harness_overview.pdf": "9d1ad4772b0e7a160a126fd2ac8a9db7fa389bf649ca61395baa235996870f6c",
  "system/harness_overview.svg": "44cd8418b65bffeb875487779ec574a468b76070360db5f253e924096727f81c",
