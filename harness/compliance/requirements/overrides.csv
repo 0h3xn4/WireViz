@@ -1,0 +1,195 @@
+ID,type,harness_relevant,automation,note
+ECSS-Q-ST-30-11_0140002,,Y,human,derating shall consider manufacturer temperature limits: applies to wire/connector data
+ECSS-Q-ST-30-11_0140003,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140004,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140005,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140006,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140007,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140008,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140009,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140179,,Y,human,derating analysis at maximum hot acceptance temperature
+ECSS-Q-ST-30-11_0140010,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140011,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140012,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140013,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140014,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140015,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140016,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140017,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140050,,Y,partial,connector derating derating table (family 02-01..02-09): needs connector ratings in part library
+ECSS-Q-ST-30-11_0140051,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140052,,Y,partial,power/return separated by an unassigned contact: pin allocation can check
+ECSS-Q-ST-30-11_0140053,,Y,human,connector savers in test: procedural
+ECSS-Q-ST-30-11_0140054,,Y,partial,wrong-mating protection: connector look-alike rule exists
+ECSS-Q-ST-30-11_0140055,,Y,partial,connector and parts from same manufacturer: part library manufacturer field
+ECSS-Q-ST-30-11_0140056,,Y,partial,max 50 mating cycles: tool can hold a limit per connector but not count mating events
+ECSS-Q-ST-30-11_0140057,,Y,partial,RF connector derating: needs ratings in part library
+ECSS-Q-ST-30-11_0140058,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140059,,Y,human,connector savers in test: procedural
+ECSS-Q-ST-30-11_0140060,,Y,human,multipactor margin needs RF power analysis outside the tool
+ECSS-Q-ST-30-11_0140061,,Y,partial,max 50 mating cycles for RF connectors
+ECSS-Q-ST-30-11_0140143,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140144,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140145,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140146,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140147,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
+ECSS-Q-ST-30-11_0140213,,Y,partial,"wire voltage 50 %, surface temperature 50 degC below maximum: needs wire ratings"
+ECSS-Q-ST-30-11_0140214,,Y,partial,single-wire current formula: computable when wire data supplied
+ECSS-Q-ST-30-11_0140215,,Y,human,specific thermal analysis outside the tool
+ECSS-Q-ST-30-11_0140216,,Y,human,temperature compatibility of connected components
+ECSS-Q-ST-30-11_0140217,,Y,partial,bundle derating K: computable from wire count
+ECSS-Q-ST-30-11_0140218,,Y,partial,Table 6-41 factor K
+ECSS-Q-ST-30-11_0140219,,Y,partial,partially loaded bundles factor L: needs duty information
+ECSS-Q-ST-30-11_0140220,,Y,partial,Table 6-42 factor L
+ECSS-Q-ST-30-11_0140221,,Y,human,thermal simulation outside the tool
+ECSS-Q-ST-30-11_0140222,,Y,human,contents of the simulation
+ECSS-Q-ST-30-11_0140223,,Y,human,validation of simulation tool by thermal vacuum tests
+ECSS-E-ST-20-07_0080007,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080016,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080018,,Y,human,system grounding diagram incl. EGSE
+ECSS-E-ST-20-07_0080021,,Y,human,ground impedance on shared power and signal paths
+ECSS-E-ST-20-07_0080023,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080024,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080025,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080026,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080027,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080028,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080232,,Y,human,"DC resistance stud to connector housing: measured, not designed in the tool"
+ECSS-E-ST-20-07_0080031,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080032,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080033,,Y,partial,individual shielding of external cables: needs shield attribute on cable parts
+ECSS-E-ST-20-07_0080034,,Y,partial,harness categories and separate routing: segregation classes and separation rule
+ECSS-E-ST-20-07_0080035,,Y,partial,same-category wires in one bundle
+ECSS-E-ST-20-07_0080036,,Y,partial,separation 5 cm between bundles of different categories: needs routing data
+ECSS-E-ST-20-07_0080037,,Y,partial,marking of EMC category: label outputs
+ECSS-E-ST-20-07_0080038,,Y,partial,"shield not used as current carrying conductor, except coax"
+ECSS-E-ST-20-07_0080039,,Y,partial,insulated sheath on shields: part attribute
+ECSS-E-ST-20-07_0080040,,Y,human,conductive finish of connectors carrying shielded wires: part data
+ECSS-E-ST-20-07_0080041,,Y,partial,shield bonding rules: pin/backshell termination data
+ECSS-E-ST-20-07_0080042,,Y,partial,overshield bonding 360 degree both ends
+ECSS-E-ST-20-07_0080264,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080044,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080045,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080046,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080047,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080048,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080233,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080234,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080058,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080059,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080061,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080063,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080271,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080272,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080077,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080078,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080080,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080081,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080082,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080084,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080085,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080086,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080274,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080087,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080088,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080089,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080090,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080091,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080092,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080093,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080275,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080276,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080096,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080097,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080099,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080105,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080115,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080127,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080143,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080148,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080157,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080158,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080164,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080165,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080166,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080167,,Y,human,verification of wiring category and shields by design review and inspection
+ECSS-E-ST-20-07_0080168,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080171,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080172,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080173,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080174,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080175,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080186,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080190,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080191,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080194,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080202,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080203,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080206,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080270,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080263,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080292,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080255,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080211,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080215,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080296,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080221,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080222,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080228,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080229,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080261,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080230,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080231,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080300,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080301,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080305,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080306,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080307,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080308,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080309,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080310,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080311,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080312,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080313,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080314,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080316,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ECSS-E-ST-20-07_0080319,,N,n/a,"EMC test method, test setup, unit bonding or system-level EMC; not a harness design property checkable from the design"
+ESCC3901-3,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-4.4,,Y,partial,component procurement from qualified source: part approval flag in library
+ESCC3901-4.5,,Y,human,materials and finishes: manufacturer evidence
+ESCC3901-5.2.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-5.2.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-5.3.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-5.3.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-8.1.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-8.2.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-8.6,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.3,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.4.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.5,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.6,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.6.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.6.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.7,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.8,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.9,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.10,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.11,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.12.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.12.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.13,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.15,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.16,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.17,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.18,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.19,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.21,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.22,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.23,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.24,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.25,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.27.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-9.27.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ESCC3901-12,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
