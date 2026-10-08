@@ -83,7 +83,7 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 `compliance/` (requirement lists, assessment, matrix, gap analysis, evidence, process documents), `core/standard_profiles.py` (optional value profiles, D-131), `core/drc/standard_rules.py` (rules that apply the supplied standards), `tools/extract_requirements.py`, `tools/build_compliance_matrix.py`, `tools/trace.py`, `tools/metrics.py`, `tools/gen_scf.py`.
 - Never add a standard value as a default; profiles fill unset values only and cite a requirement ID that exists in `compliance/requirements` (a test checks it).
 - A new rule that serves a requirement names it in `sources=`; a rule that needs a number stays silent without it and adds a line to `standard_rules.unchecked`.
-- Rebuild after changing assessments: `python -m tools.build_compliance_matrix`, `python -m tools.trace`; both outputs are checked for freshness by tests.
+- Rebuild after changing assessments: `python -m tools.build_compliance_matrix`, `python -m tools.trace`, and after adding or moving modules `python -m tools.gen_sdd_components` (every module needs a docstring); the outputs are checked for freshness by tests.
 
 ## Polish layout (M7)
 User guide `docs/guide/USER_GUIDE.md` (HTML bundled in `src/harness_design_studio/resources/guide/`, F1), `docs/RULES.md` (generated), `docs/CONFIG.md`, `docs/usability/`, Ubuntu packaging in `packaging/ubuntu/` and `tools/build_deb.py`, `tools/release_check.py`, `tools/soak.py`.

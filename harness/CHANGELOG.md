@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
+## Unreleased
+
+- **Compliance records and release check**: the release check runs the test suite a second time without coverage instrumentation and keeps both results (ECSS-Q-ST-80C 6.2.3.8); it scans the shipped dependencies for known vulnerabilities (D-134: `python -m tools.check_vulnerabilities`, pip-audit as a development dependency, build host only; a scan that cannot run fails the check); the SDD has a generated component table and requirement-to-component trace (`compliance/sdd_components.csv`, `python -m tools.gen_sdd_components`, kept current by a test); `compliance/` gained the family-group worksheet, the organisation record, the risk register and templates for the independent review, the review record, the dependability analysis input and the acceptance of a real harness; `docs/usability/` gained a session schedule and a screen-reader checklist. The owner's decisions are recorded: A-04 (issues adopted), A-05 (plans approved), A-06 and A-08 signing (waived, T-18, T-19), A-14, A-15, A-17 (profile values accepted as a whole), A-18 (missing standards will not be supplied, T-09).
+
 ## 0.1.0rc5 (release candidate; not yet signed off by the owner)
 
 This release candidate carries the baseline standards (D-130), the beginner documentation, examples and templates, the faster editor with the rule check in a helper process (D-128), the ECSS/ESCC compliance audit (D-131, `harness/compliance/`) and the UX/UI guidelines work (D-132, D-133). Still open and needing people: the owner's sign-off, D-10, D-11, D-12, D-15, usability sessions, a screen-reader pass and the actions in `compliance/OPEN_ACTIONS.md`.

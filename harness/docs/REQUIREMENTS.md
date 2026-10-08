@@ -7,6 +7,7 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-OFFLINE-01 | The application makes no network calls and imports no networking modules. | SPEC Part 1, hard constraint 1 | `tests/test_offline.py`, frozen self-test under `unshare -n` |
 | REQ-ARCH-01 | The core has no GUI, CLI or network imports. | SPEC Part 4, Architecture | `tests/test_architecture.py` |
 | REQ-LIC-01 | Shipped dependencies are permissive or LGPL only; SBOM and licence report are produced per release. | SPEC Part 1, hard constraint 3 | `tests/test_licences.py`, `tools/gen_sbom.py` |
+| REQ-SEC-01 | The release check scans the shipped dependencies for known vulnerabilities; a scan that could not run is a failure, never a pass. | ECSS-E-ST-40C 5.9.4 | `tests/test_vulnerability_check.py`, `tools/check_vulnerabilities.py` |
 | REQ-PKG-01 | A self-contained package runs without admin rights and without internet. | SPEC Part 1, hard constraint 2 | `tools/build_installer.py`, `--selftest` in CI |
 | REQ-BUILD-01 | Builds are reproducible from pinned versions. | SPEC Part 1, hard constraint 3 | `tools/check_reproducible.py` |
 | REQ-I18N-01 | All UI strings live in one module. | SPEC Part 1, hard constraint 8 | `gui/strings.py` (review) |
@@ -62,6 +63,7 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-M7-05 | The usability kit computes SUS and success correctly and prepares the task material. | UX.md section 9 | `tests/test_usability_kit.py` |
 | REQ-NUM-01 | Sizing arithmetic (AWG diameter and area, ampacity derating, voltage drop) agrees with exact arithmetic and with the defining points of the AWG scale. | ECSS-Q-ST-80C 7.1.7 | `tests/test_numerics.py` |
 | REQ-TRACE-01 | Every tool requirement names the file that verifies it, and the traceability report is current. | ECSS-E-ST-40C 5.8.3 | `tests/test_trace.py`, `tools/trace.py` |
+| REQ-TRACE-02 | The SDD has a component table (layer, purpose, dependencies) and a requirement-to-component trace, generated from the code and current. | ECSS-E-ST-40C 5.5.2, Annex F 6 | `tests/test_sdd_components.py`, `tools/gen_sdd_components.py` |
 | REQ-MET-01 | Size, complexity and test metrics are collected by a tool. | ECSS-Q-ST-80C 7.1.5 | `tests/test_metrics.py`, `tools/metrics.py` |
 | REQ-SCF-01 | Every delivery has a configuration file and SHA-256 values. | ECSS-Q-ST-80C 6.2.4.11 | `tests/test_scf.py`, `tools/gen_scf.py` |
 | REQ-STD-01 | Every design rule names the standard requirements it serves; a rule can only cite a requirement that exists in `compliance/requirements`. | audit gap B-12 | `tests/test_drc.py` |
@@ -69,6 +71,7 @@ Tests reference these IDs in their docstrings. Extended each milestone.
 | REQ-STD-03 | Rules from the supplied standards (connector and wire voltage, temperature margin, mating cycles, one manufacturer per connector pair, wire specification, power and return pins, bundle current) are silent until their numbers exist, say what they could not check, and cite their requirement IDs. | ECSS-Q-ST-30-11C 6.11, 6.12, 6.32; ESCC 3901 4.4 | `tests/test_standard_rules.py`, `tests/test_drc.py` |
 | REQ-STD-04 | EMC wiring checks (shield bonding at both ends, one bundle per EMC class) are opt-in, and the EMC class appears on wire lists and labels only when classes are used; the output verifier checks it. | ECSS-E-ST-20-07C 4.2.13 | `tests/test_standard_rules.py`, `tests/test_outputs.py` |
 | REQ-STD-05 | Pin allocation can leave an unassigned contact between power and return; without the setting nothing changes. | ECSS-Q-ST-30-11C 6.11.3 a | `tests/test_standard_rules.py` |
+| REQ-STD-06 | The mapping of the standard's family-group codes to the tool's part classes is recorded as a worksheet that states only what the supplied text says and cites existing requirements. | ECSS-Q-ST-30-11C 6.11, 6.12, 6.32 | `tests/test_family_group_mapping.py` |
 | REQ-PROV-01 | Every set of outputs includes `system/provenance.json` (tool version, model hash, library, settings with placeholder flags, design counts); the output verifier checks it against the design. | UX/UI guidelines "Provenance on every output" | `tests/test_provenance.py` |
 | REQ-LOC-01 | Messages about damaged project files give the file, and the line and column of the damage or the line of the set-aside object, and never quote file content. | UX/UI guidelines "error messages point to the exact line" | `tests/test_error_locations.py` |
 | REQ-SCHEMA-01 | `harness schema FOLDER` writes JSON Schemas of the project files, made from the model, with an editor settings fragment; nothing is downloaded; the schemas cover every key the tool writes. | UX/UI guidelines "schema-driven editing" | `tests/test_schemas.py` |

@@ -19,3 +19,5 @@ You run the sessions; this kit prepares them and turns the results into a triage
 3. Triage: each priority bug gets a ticket with the task, what the participant did, and what they said. Fix, then retest the failing task with two new participants.
 
 The numbers from this tool are only as good as the sessions: with 3 to 5 people they point at problems, they do not prove a percentage.
+
+Also in this folder: `session_schedule.md` (schedule and consent sheet) and `screen_reader_pass.md` (the manual screen-reader part of the accessibility audit).

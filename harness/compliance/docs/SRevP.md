@@ -33,4 +33,4 @@ Owner (chair); a reviewer who is not the developer (A-01); the developer assista
 Remote, files from the repository.
 
 ## 13. RID form
-RID number; document and clause; finding; severity (blocking, major, minor); proposed action; answer; closure.
+The form is `../templates/review_record.md` (the reviewer's brief is `../templates/independent_review_brief.md`). Contents: RID number; document and clause; finding; severity (blocking, major, minor); proposed action; answer; closure.

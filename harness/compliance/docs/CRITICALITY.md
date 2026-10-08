@@ -1,6 +1,6 @@
 # Criticality classification of the software and its components
 
-Addresses ECSS-Q-ST-80C 5.4.4, 6.2.2.1 to 6.2.2.10, 6.2.3.1 to 6.2.3.8 (gap G-03). Status: product category **C approved by the owner** (conversation of 2026-10-08, recorded in `PHASE0.md`). The component classification below is **proposed** and needs the owner's approval.
+Addresses ECSS-Q-ST-80C 5.4.4, 6.2.2.1 to 6.2.2.10, 6.2.3.1 to 6.2.3.8 (gap G-03). Status: the plan and the component classification are approved by the owner on 2026-10-08 (approval given in the working session; the owner is also customer and supplier, so no independent reviewer, see A-01); product category **C approved by the owner** (conversation of 2026-10-08, recorded in `PHASE0.md`). The component classification below is **proposed** and needs the owner's approval.
 
 ## 1. Product category
 
@@ -30,4 +30,4 @@ Defined measures, all applied to C components: the independent verifier (no shar
 
 ## 4. Dependability analysis (6.2.2.2 to 6.2.2.9)
 
-Not done as a formal analysis. A software failure mode review of the C components is a task for the safety side of the owner's project; it needs the system-level analyses (ECSS-Q-ST-30/40) that were not supplied. Listed as open action A-07.
+Not done as a formal analysis. A software failure mode review of the C components is a task for the safety side of the owner's project; it needs the system-level analyses (ECSS-Q-ST-30/40) that were not supplied. Listed as open action A-07; the input sheet with the proposed failure modes is `../templates/dependability_input_sheet.md`.

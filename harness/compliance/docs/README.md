@@ -2,7 +2,7 @@
 
 Documents asked for by ECSS-E-ST-40C Rev.1 (Annex A, Table A-1) and ECSS-Q-ST-80C Rev.2, tailored to this project: **one owner who is customer and supplier, one tool, software criticality category C**. Each follows the headings of its DRD annex. Where a DRD would repeat a document that already exists, it points to it instead of copying it (recorded as tailoring in `../DEVIATIONS.md`).
 
-**Status of every document here: draft by the developer assistant, not reviewed by a person.** A document counts for nothing until its review is recorded (`../OPEN_ACTIONS.md`).
+**Status: drafts by the developer assistant.** Approved by the owner on 2026-10-08: `SPAP`, `SDP`, `STANDARDS`, `CMP`, `CRITICALITY` (action A-05). Every other document is not yet reviewed by a person. A document counts for nothing until its review is recorded (`../OPEN_ACTIONS.md`).
 
 | File | DRD | Standard |
 | --- | --- | --- |
