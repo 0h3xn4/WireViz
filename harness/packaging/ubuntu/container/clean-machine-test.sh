@@ -1,7 +1,6 @@
 #!/bin/sh
 # Install the package on a CLEAN Ubuntu without network and run its self-test.
 # Usage (on a machine with Docker, after building the .deb):
-#   packaging/ubuntu/container/clean-machine-test.sh 22.04 dist/harness-tool_<version>_amd64.deb
 #   packaging/ubuntu/container/clean-machine-test.sh 24.04 dist/harness-tool_<version>_amd64.deb
 # The image is prepared with the runtime libraries while online; the test itself runs with --network none.
 set -eu

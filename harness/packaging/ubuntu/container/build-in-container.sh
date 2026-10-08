@@ -1,9 +1,9 @@
 #!/bin/sh
-# Run inside the 22.04 build image with the source mounted at /src: installs the pinned
+# Run inside the 24.04 build image with the source mounted at /src: installs the pinned
 # dependencies, runs the whole release checklist and leaves the packages in dist/.
 set -eu
 cd /src
-python3.12 -m venv /tmp/venv
+python3 -m venv /tmp/venv
 . /tmp/venv/bin/activate
 pip install -e ".[gui,dev]"
 export QT_QPA_PLATFORM=offscreen

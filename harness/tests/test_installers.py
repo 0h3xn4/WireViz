@@ -131,7 +131,7 @@ def test_container_recipes_are_valid_shell_and_name_the_right_base() -> None:
             ).returncode
             == 0
         ), script
-    assert "FROM ubuntu:22.04" in (cont / "Dockerfile.build-22.04").read_text()
+    assert "FROM ubuntu:24.04" in (cont / "Dockerfile.build-24.04").read_text()
     assert "--network none" in (cont / "clean-machine-test.sh").read_text()
     for script in ("install.sh", "uninstall.sh"):
         assert (

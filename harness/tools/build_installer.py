@@ -1,6 +1,6 @@
 """Build a self-contained, offline package with PyInstaller (one-folder) and archive it.
 
-Ubuntu only (D-110). Build on Ubuntu 22.04 so the package also starts on 24.04 (glibc).
+Ubuntu only (D-110). Build on Ubuntu 24.04 (the supported platform).
 Output: dist/harness-tool-<version>-linux-<arch>.tar.gz
 """
 

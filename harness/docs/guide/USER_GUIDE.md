@@ -8,7 +8,7 @@ You draw units (computer, power unit, wheels ...) and the interfaces between the
 
 Your design is the source of truth. Everything else (harnesses, drawings, lists) is generated from it and can be generated again at any time.
 
-## 2. Install and start (Ubuntu 22.04 or 24.04)
+## 2. Install and start (Ubuntu 24.04 or newer)
 
 1. Install the package: `sudo apt install ./harness-tool_<version>_amd64.deb`. Or unpack the `.tar.gz` anywhere and run `./harness-tool/install.sh` (no administrator rights needed; it installs for your user).
 2. Start **Harness tool** from the application menu, or run `harness-tool`.

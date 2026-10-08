@@ -1,6 +1,6 @@
-# Release checklist (Ubuntu 22.04 and 24.04, D-110)
+# Release checklist (Ubuntu 24.04 and newer, D-127)
 
-Run `python -m tools.release_check` on the build host (Ubuntu 22.04 so the package also starts on 24.04; with Docker use `packaging/ubuntu/container/`). It performs the automated steps (1 to 11) and writes `dist/release-docs/release-report.md`. Steps 12 to 14 are for people.
+Run `python -m tools.release_check` on the build host (Ubuntu 24.04; with Docker use `packaging/ubuntu/container/`). It performs the automated steps (1 to 11) and writes `dist/release-docs/release-report.md`. Steps 12 to 14 are for people.
 
 1. Versions agree in `pyproject.toml`, `harness_tool/__init__.py` and the top of `CHANGELOG.md` (the changelog entry says what changed and what is still open).
 2. `ruff format --check`, `ruff check` and `mypy --strict` are clean.
