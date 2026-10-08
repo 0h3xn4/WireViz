@@ -53,7 +53,7 @@ from harness_tool.core.vcs.report import baselines_of, changelog_rows, working_d
 from harness_tool.core.verify import VerifyReport
 from harness_tool.gui import strings
 from harness_tool.gui.canvas import DiagramView
-from harness_tool.gui.controller import Delta, EditorController, NeedSaveAs
+from harness_tool.gui.controller import LIST_DELAY_MS, Delta, EditorController, NeedSaveAs
 from harness_tool.gui.dialogs import (
     Banner,
     ChangeDialog,
@@ -303,6 +303,10 @@ class MainWindow(QMainWindow):
         self._hash_timer.setSingleShot(True)
         self._hash_timer.setInterval(250)
         self._hash_timer.timeout.connect(self._update_hash)
+        self._badge_timer = QTimer(self)
+        self._badge_timer.setSingleShot(True)
+        self._badge_timer.setInterval(LIST_DELAY_MS)
+        self._badge_timer.timeout.connect(self._apply_tab_badges)
 
         self._restore_settings()
         self._on_state()
@@ -717,6 +721,12 @@ class MainWindow(QMainWindow):
             self.banner.hide()
 
     def _update_tab_badges(self) -> None:
+        if self.ctl.findings_are_many():
+            self._badge_timer.start()  # counting tens of thousands of findings waits for the redraw
+        else:
+            self._apply_tab_badges()
+
+    def _apply_tab_badges(self) -> None:
         errors, warnings = self.problems.counts()
         label = strings.PROBLEMS + (f" ({errors + warnings})" if errors + warnings else "")
         self.tabs.setTabText(0, label)

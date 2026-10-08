@@ -9,7 +9,13 @@ import sys
 import tempfile
 from pathlib import Path
 
-from harness_tool.gui.app import create_window, main
+if __name__ == "__main__" and "--drc-worker" in sys.argv[1:]:
+    # The editor starts this same program as its helper process for the design rule check.
+    from harness_tool.core.drc.worker import main as _drc_worker
+
+    raise SystemExit(_drc_worker())
+
+from harness_tool.gui.app import create_window, main  # noqa: E402
 
 
 def selftest() -> int:
@@ -34,9 +40,22 @@ def selftest() -> int:
         and not loaded.has_errors
     )
     ok = ok and _generate_and_export(ctl, tmp)
+    ok = ok and _rule_check_process_works(ctl)
     ctl.release()
     print("selftest ok" if ok else "selftest FAILED")
     return 0 if ok else 1
+
+
+def _rule_check_process_works(ctl: object) -> bool:
+    """The helper process starts from the packaged program and agrees with a check done here."""
+    from harness_tool.core import drc
+    from harness_tool.gui.drc_process import _shared, run_check
+
+    project = ctl.project  # type: ignore[attr-defined]
+    found = run_check(project)
+    alive = _shared.alive  # False would mean it silently fell back to running in this process
+    _shared.close()
+    return alive and found == drc.run(project)
 
 
 def _generate_and_export(ctl: object, tmp: Path) -> bool:
