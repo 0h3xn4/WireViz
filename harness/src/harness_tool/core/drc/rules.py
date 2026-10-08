@@ -17,6 +17,8 @@ from harness_tool.core.units import awg_to_area_mm2
 from harness_tool.core.vcs.consistency import release_integrity
 
 from .base import Hit, Rule, cfg, flag, number
+from .standard_rules import STANDARD_RULES
+from .standard_rules import unchecked as standard_unchecked
 
 # ---- helpers ---------------------------------------------------------------------------------------
 
@@ -516,6 +518,7 @@ def _unchecked(project: Project) -> Iterator[Hit]:
             "spare-pins",
             "Spare pins were not checked: the required fraction is still a placeholder",
         )
+    yield from standard_unchecked(project)
 
 
 RULES: tuple[Rule, ...] = (
@@ -575,6 +578,7 @@ RULES: tuple[Rule, ...] = (
     Rule("part-unapproved", "warning", "Approved parts",
          "Only approved parts may be built into flight hardware.",
          "Approve the part in the parts list, or choose an approved one.", _unapproved_parts, sources=("ESCC3901-4.4",)),
+    *STANDARD_RULES,
     Rule("config-invalid", "error", "Engineering values",
          "A value outside its possible range (a factor above 1, a table that falls as the wire grows) would silently produce wrong gauges and checks.",
          "Correct the value in config/*.json; `harness config DIR` lists what is missing or invalid.", _config_invalid),

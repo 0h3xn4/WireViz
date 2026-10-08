@@ -1,7 +1,7 @@
 <!-- harness-tool 0.1.0rc4 model 6c384d383e73 -->
 # Design rule check: mini3 (example data)
 
-Model hash: `6c384d383e73`. Rules run: 22.
+Model hash: `6c384d383e73`. Rules run: 30.
 Open: 0 error(s), 7 warning(s), 4 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.

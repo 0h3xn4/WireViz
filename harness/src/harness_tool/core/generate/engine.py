@@ -596,6 +596,7 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
             f"harness:{hid}",
             "lengths: service loop is a placeholder (0 used); lengths exclude service loops",
         )
+    bundle_wires = sum(len(links_of(p.interface_types[i.type_id])[0]) for i in ifaces)
     for i in ifaces:
         itype = p.interface_types[i.type_id]
         links, notes = links_of(itype)
@@ -643,7 +644,7 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
                     "override: the wire is locked, so its gauge, part, colour and length were kept",
                 )
             else:
-                wire = _size(ctx, wire, i, itype.category)
+                wire = _size(ctx, wire, i, itype.category, bundle_wires)
             wires.append(wire)
             ctx.note(
                 f"wire:{wid}",
@@ -717,7 +718,9 @@ def _wire_part(ctx: _Ctx, construction: str, iid: str) -> str | None:
     return part
 
 
-def _size(ctx: _Ctx, wire: Wire, i: InterfaceInstance, category: str) -> Wire:
+def _size(
+    ctx: _Ctx, wire: Wire, i: InterfaceInstance, category: str, bundle_wires: int | None = None
+) -> Wire:
     conductors = 2 if category in ("power", "ground") else 1
     sizing = size_wire(
         ctx.der,
@@ -725,6 +728,7 @@ def _size(ctx: _Ctx, wire: Wire, i: InterfaceInstance, category: str) -> Wire:
         current_a=i.max_current_a,
         length_m=wire.length_m,
         path_conductors=conductors,
+        bundle_wires=bundle_wires,
     )
     for line in sizing.notes:
         ctx.note(f"gauge:{wire.id}", f"wire-sizing: {line}")

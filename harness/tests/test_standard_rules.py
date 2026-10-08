@@ -1,0 +1,164 @@
+"""REQ-STD-03: rules from the supplied standards. Boundaries, quiet cases and "not checked" messages.
+
+Numbers are test inputs, not engineering data.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from harness_tool.core import drc
+from harness_tool.core.commands import Put, apply_ops
+from harness_tool.core.drc import standard_rules as sr
+from harness_tool.core.model import Project, evolve
+from tests import test_drc as t
+
+
+def hits(rule: str, p: Project) -> list[str]:
+    return [f.object_id for f in t.fire(rule, p)]
+
+
+def test_connector_voltage_uses_the_lower_of_the_two_limits() -> None:
+    p = t.base()
+    t.set_cfg(
+        p, "derating", connector_voltage_factor_withstand=0.25, connector_voltage_factor_rated=0.75
+    )
+    t.set_part(p, "EX-MICROD-9-F", rated_voltage_v=100.0, dielectric_withstand_v=200.0)
+    assert sr.connector_voltage_limit(p, "EX-MICROD-9-F") == 50.0  # min(0.25 x 200, 0.75 x 100)
+    t.set_part(p, "EX-MICROD-9-F", rated_voltage_v=60.0)
+    assert sr.connector_voltage_limit(p, "EX-MICROD-9-F") == 45.0
+
+
+def test_voltage_exactly_at_the_limit_passes() -> None:
+    p = t.pos_wire_voltage()
+    h, w = t.wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, voltage_v=25.0))])  # 0.5 x 50 V
+    assert hits("wire-voltage", p) == []
+
+
+def test_temperature_exactly_at_the_limit_passes() -> None:
+    p = t.pos_temperature_margin()
+    t.set_cfg(p, "derating", max_ambient_temperature_c=90.0)  # 120 - 30
+    assert hits("temperature-margin", p) == []
+
+
+def test_mating_cycles_at_the_limit_pass() -> None:
+    p = t.pos_mating_cycles()
+    h, w = t.wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    t.set_part(p, p.connectors[i.endpoints[0].connector_id or ""].part_id, mating_cycles=50.0)
+    assert hits("mating-cycles", p) == []
+
+
+def test_same_manufacturer_passes() -> None:
+    p = t.pos_connector_manufacturer()
+    for part in list(p.parts.values()):
+        if part.manufacturer == "Maker B":
+            apply_ops(p, [Put("parts", evolve(part, manufacturer="Maker A"))])
+    assert hits("connector-manufacturer", p) == []
+
+
+def test_specification_present_passes() -> None:
+    p = t.pos_wire_specification()
+    h, w = t.wire_of(p, "power")
+    part = p.parts[w.part_id or ""]
+    apply_ops(p, [Put("parts", evolve(part, specification="detail specification"))])
+    assert hits("wire-specification", p) == []
+
+
+def test_power_return_with_a_gap_passes_when_the_gap_is_zero() -> None:
+    p = t.pos_power_return_adjacent()
+    t.set_cfg(p, "generation", power_return_gap_pins=0)
+    assert hits("power-return-adjacent", p) == []
+
+
+def test_bundle_factor_takes_the_next_listed_count() -> None:
+    p = t.base()
+    t.set_cfg(p, "derating", bundle_factor_by_count={"1": 1.0, "10": 0.57, "300": 0.12})
+    assert sr.bundle_factor(p, 1) == 1.0
+    assert sr.bundle_factor(p, 2) == 0.57  # never a better factor than the standard gives
+    assert sr.bundle_factor(p, 10) == 0.57
+    assert sr.bundle_factor(p, 11) == 0.12
+    assert sr.bundle_factor(p, 301) is None
+
+
+def test_bundle_current_at_the_limit_passes() -> None:
+    p = t.pos_bundle_current()
+    h, w = t.wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    n = len(h.wires)
+    k = sr.bundle_factor(p, n)
+    assert k is not None
+    apply_ops(p, [Put("interfaces", evolve(i, max_current_a=5.0 * k))])
+    assert hits("bundle-current", p) == []
+
+
+def test_rules_are_silent_without_their_numbers() -> None:
+    p = t.base()
+    for rule in (
+        "connector-voltage", "wire-voltage", "temperature-margin", "mating-cycles",
+        "power-return-adjacent", "bundle-current",
+    ):  # fmt: skip
+        assert hits(rule, p) == [], rule
+
+
+def test_missing_ratings_are_reported_as_not_checked() -> None:
+    p = t.base()
+    t.set_cfg(
+        p,
+        "derating",
+        connector_voltage_factor_rated=0.75,
+        wire_voltage_factor=0.5,
+        max_mating_cycles=50,
+        bundle_factor_by_count={"1": 1.0, "300": 0.12},
+    )
+    h, w = t.wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, voltage_v=28.0))])
+    text = " ".join(f.title for f in drc.run(p) if f.rule == "unchecked-config")
+    assert "Connector working voltage was not checked" in text
+    assert "Wire voltage was not checked" in text
+    assert "Mating cycles were not checked" in text
+    assert "Table 6-42" in text  # L is not applied, and the report says so
+
+
+def test_every_finding_names_its_requirement() -> None:
+    for pos in (t.pos_bundle_current, t.pos_wire_voltage):
+        for f in (x for x in drc.run(pos()) if x.rule in ("bundle-current", "wire-voltage")):
+            assert "ECSS-Q-ST-30-11_" in f.why
+
+
+def test_sizing_uses_the_bundle_table_instead_of_the_single_factor() -> None:
+    from harness_tool.core.generate.sizing import size_wire
+
+    der = {
+        "ampacity_a_by_awg": {"24": 2.0, "20": 5.0, "18": 7.0},
+        "temperature_derating": 1.0,
+        "max_voltage_drop_v": 1000.0,
+        "bundle_factor_by_count": {"1": 1.0, "10": 0.5, "300": 0.12},
+    }
+    gen: dict[str, object] = {"conductor_resistivity_ohm_m": 1.7e-8}
+    kw: dict[str, Any] = {"current_a": 3.0, "length_m": 1.0, "path_conductors": 1}
+    one = size_wire(der, gen, **kw, bundle_wires=1)
+    ten = size_wire(der, gen, **kw, bundle_wires=10)
+    assert one.awg == 20  # 5 A x 1.0 carries 3 A
+    assert ten.awg == 18  # 5 A x 0.5 = 2.5 A is not enough, 7 A x 0.5 = 3.5 A is
+    assert any("bundle factor K 0.5 for 10 wires" in n for n in ten.notes)
+    big = size_wire(der, gen, **kw, bundle_wires=301)
+    assert big.awg is None and any("no entry for 301 wires" in x for x in big.pending)
+    # no table: the single factor still decides, exactly as before
+    single = size_wire(
+        {
+            "ampacity_a_by_awg": {"20": 5.0},
+            "bundle_derating": 0.6,
+            "temperature_derating": 1.0,
+            "max_voltage_drop_v": 1000.0,
+        },
+        gen,
+        current_a=2.9,
+        length_m=1.0,
+        path_conductors=1,
+        bundle_wires=10,
+    )
+    assert single.awg == 20 and not any("Table 6-41" in n for n in single.notes)

@@ -308,6 +308,90 @@ def neg_all_clean(rule_id: str) -> Project:
     return p
 
 
+# ---- rules from the supplied standards (D-131); the numbers below are test inputs ---------------
+
+
+def set_part(p: Project, part_id: str, **ratings: float) -> None:
+    part = p.parts[part_id]
+    apply_ops(p, [Put("parts", evolve(part, ratings={**part.ratings, **ratings}))])
+
+
+def pos_connector_voltage() -> Project:
+    p = base()
+    set_cfg(p, "derating", connector_voltage_factor_rated=0.75)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, voltage_v=100.0))])
+    conn = p.connectors[i.endpoints[0].connector_id or ""]
+    set_part(p, conn.part_id, rated_voltage_v=50.0)
+    return p
+
+
+def pos_wire_voltage() -> Project:
+    p = base()
+    set_cfg(p, "derating", wire_voltage_factor=0.5)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, voltage_v=40.0))])
+    set_part(p, w.part_id or "", rated_voltage_v=50.0)
+    return p
+
+
+def pos_temperature_margin() -> Project:
+    p = base()
+    set_cfg(p, "derating", max_ambient_temperature_c=100.0, connector_temperature_margin_c=30.0)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    conn = p.connectors[i.endpoints[0].connector_id or ""]
+    set_part(p, conn.part_id, max_temp_c=120.0)
+    return p
+
+
+def pos_mating_cycles() -> Project:
+    p = base()
+    set_cfg(p, "derating", max_mating_cycles=50)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    set_part(p, p.connectors[i.endpoints[0].connector_id or ""].part_id, mating_cycles=20.0)
+    return p
+
+
+def pos_connector_manufacturer() -> Project:
+    p = base()
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.connectors)
+    cable = h.connectors[0]
+    box = p.connectors[cable.mates_with or ""]
+    for pid, name in ((cable.part_id, "Maker A"), (box.part_id, "Maker B")):
+        apply_ops(p, [Put("parts", evolve(p.parts[pid], manufacturer=name))])
+    return p
+
+
+def pos_wire_specification() -> Project:
+    p = base()
+    h, w = wire_of(p, "power")
+    apply_ops(
+        p, [Put("parts", evolve(p.parts[w.part_id or ""], approval="approved", specification=None))]
+    )
+    return p
+
+
+def pos_power_return_adjacent() -> Project:
+    p = base()
+    set_cfg(p, "generation", power_return_gap_pins=1)
+    return p
+
+
+def pos_bundle_current() -> Project:
+    p = base()
+    full_config(p)
+    set_cfg(p, "derating", bundle_factor_by_count={"1": 1.0, "10": 0.5, "300": 0.12})
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, max_current_a=4.0))])
+    put_harness(p, h, wires=[evolve(x, gauge_awg=20) if x.id == w.id else x for x in h.wires])
+    return p
+
+
 POSITIVE: dict[str, Callable[[], Project]] = {
     "duplicate-id": pos_duplicate_id,
     "wire-dangling": pos_wire_dangling,
@@ -331,6 +415,14 @@ POSITIVE: dict[str, Callable[[], Project]] = {
     "connector-lookalike": pos_lookalike,
     "part-unapproved": pos_unapproved,
     "unchecked-config": pos_unchecked,
+    "connector-voltage": pos_connector_voltage,
+    "wire-voltage": pos_wire_voltage,
+    "temperature-margin": pos_temperature_margin,
+    "mating-cycles": pos_mating_cycles,
+    "connector-manufacturer": pos_connector_manufacturer,
+    "wire-specification": pos_wire_specification,
+    "power-return-adjacent": pos_power_return_adjacent,
+    "bundle-current": pos_bundle_current,
 }
 
 
