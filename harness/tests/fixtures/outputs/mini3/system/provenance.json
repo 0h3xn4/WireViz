@@ -1,0 +1,55 @@
+{
+ "design": {
+  "harnesses": 2,
+  "interfaces": 2,
+  "released_harnesses": 0,
+  "units": 3,
+  "wires": 6
+ },
+ "export_notes": "The WireViz-style YAML files are an export format; WireViz is not used to make any output.",
+ "format": "harness-tool-provenance",
+ "format_version": 1,
+ "library": {
+  "name": "Project parts library",
+  "parts": 28,
+  "parts_by_approval": {
+   "pending": 28
+  },
+  "unverified_parts": 28,
+  "version": "0"
+ },
+ "model_hash": "6c384d383e734573554e2009a3c14fbd122b9a086d00066c604673b9f3bd4505",
+ "project": "mini3 (example data)",
+ "settings": {
+  "derating": {
+   "placeholder": true,
+   "values_sha256_16": "c51535e4b748d48d"
+  },
+  "emc": {
+   "placeholder": true,
+   "values_sha256_16": "b08819adbf8dc141"
+  },
+  "generation": {
+   "placeholder": true,
+   "values_sha256_16": "8314265eb8e2127b"
+  },
+  "naming": {
+   "placeholder": false,
+   "values_sha256_16": "cb38d8275548e901"
+  },
+  "segmentation": {
+   "placeholder": true,
+   "values_sha256_16": "4812abc7ffed792e"
+  },
+  "segregation": {
+   "placeholder": true,
+   "values_sha256_16": "22279f8e490719f6"
+  },
+  "titleblock": {
+   "placeholder": true,
+   "values_sha256_16": "7188cb5b8734e625"
+  }
+ },
+ "tool": "harness-tool",
+ "tool_version": "0.1.0rc4"
+}

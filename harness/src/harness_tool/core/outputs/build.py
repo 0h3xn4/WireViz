@@ -17,6 +17,7 @@ from harness_tool.core.vcs.report import changelog_rows, revision_report
 
 from . import drawing, exports, system, tables
 from .canvas import SHEETS, Sheet, to_pdf, to_svg
+from .provenance import provenance_bytes
 from .stamp import Stamp, Table, csv_bytes, stamp_of
 
 MANIFEST = "manifest.json"
@@ -152,6 +153,7 @@ def build_outputs(
     out["system/changelog.csv"] = csv_bytes(changelog_rows(project), stamp)
     out["system/revision_report.md"] = revision_report(project, stamp.line).encode()
     out["system/export.json"] = exports.json_export(project, stamp)
+    out["system/provenance.json"] = provenance_bytes(project, stamp)
     out["system/system.xlsx"] = exports.xlsx_bytes(
         {"BOM": bom_all, "Mass and length": mass_all, "Mating matrix": mating, "Traceability": trace,
          "Box pinouts": boxes, "DRC findings": findings, "Change log": changelog_rows(project)}, stamp
