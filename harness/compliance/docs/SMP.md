@@ -6,7 +6,7 @@ DRD: ECSS-E-ST-40C Annex T. Status: draft, not reviewed. Flight-software provisi
 `SDP.md`.
 
 ## 5. Application of the plan, 6. General requirements
-System: Harness Design Studio, ground engineering software. Status: pre-release (`0.1.0rc4`). Support: the owner and the developer assistant on request. Maintainer organisation: to be named by the owner (action A-11). Contracts: none.
+System: Harness Design Studio, ground engineering software. Status: pre-release (`0.1.0rc5`). Support: the owner and the developer assistant on request. Maintainer organisation: to be named by the owner (action A-11). Contracts: none.
 
 ## 7. Maintenance concept
 Corrective (problem reports), adaptive (new Ubuntu versions, new library versions), perfective (owner requests). Support period: not set (A-11). Tailoring: the full maintenance process of the standard is reduced to the steps below.

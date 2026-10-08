@@ -2,7 +2,9 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## Unreleased
+## 0.1.0rc5 (release candidate; not yet signed off by the owner)
+
+This release candidate carries the baseline standards (D-130), the beginner documentation, examples and templates, the faster editor with the rule check in a helper process (D-128), the ECSS/ESCC compliance audit (D-131, `harness/compliance/`) and the UX/UI guidelines work (D-132, D-133). Still open and needing people: the owner's sign-off, D-10, D-11, D-12, D-15, usability sessions, a screen-reader pass and the actions in `compliance/OPEN_ACTIONS.md`.
 
 - **New name: Harness Design Studio**, everywhere: window title, About box, application menu entry, documents, installer text, and now also the names behind them: the Python package is `harness_design_studio` (was `harness_tool`), the distribution, `.deb` and `.tar.gz` are `harness-design-studio` (was `harness-tool`), and so are the application launcher, the install folders and the desktop and icon files. The short commands `harness` (command line) and `harness-gui` are unchanged. Remove an old installation with the uninstaller of the old version first (the new package does not replace the old `harness-tool` files). Project files are unaffected.
 - **Fixes found by running a 14-unit, 24-interface project through the tool**: the shield rules (`shield-unterminated`, `shield-wrong-end`, `shield-bonding`, `shield-parts`) no longer treat a plain twisted pair as a shield (with a grounding concept of floating ends, every twisted pair was reported as an unconnected shield: 31 false warnings on the reference satellite); the explanation of `unchecked-config` now also covers notes that need an analysis outside the tool.
