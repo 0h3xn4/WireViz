@@ -2,6 +2,10 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
+## Unreleased
+
+- **Platform**: Ubuntu 24.04 and newer only (D-127); CI tests on 24.04 only, the release build image is now `Dockerfile.build-24.04`. Editor speed: the problems panel builds only the cards it shows (add/undo/redo 3 to 6 times faster with many findings).
+
 ## 0.1.0rc4 (release candidate; not yet signed off by the owner)
 
 - **Audit fixes** (`docs/AUDIT.md`): data loss and lock holes closed (unit IDs, baselines and change log, carried interfaces, recovery journal, project lock on every writing command, linked folders), wrong generation results fixed (released interfaces wired twice, locked pins, naming templates, harness numbers, provenance), the release gate now sees every error and checks the output files, the output verifier compares values, one function gives wire lengths, command line and importers show messages instead of tracebacks and read semicolon and tab files, the editor gives the diagram more room and has safer toasts, plain wording, reasons on disabled buttons, a Delete harness button and grouped problem cards.

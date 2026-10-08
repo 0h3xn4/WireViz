@@ -3,7 +3,7 @@
 Clean-room project inside the WireViz repo. **Never copy or import code from `../src/wireviz` (GPL-3.0).** Specification: `docs/SPEC.md`; decisions: `docs/DECISIONS.md`; architecture: `docs/ARCHITECTURE.md`; plan: `docs/PLAN.md`.
 
 ## Status
-M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version 0.1.0rc4. Platform: Ubuntu only (D-110). What is left needs people: owner answers on D-10 (harness boundary rule) and D-15 (title block), the real derating/EMC values (D-11) and approved parts list (D-12) which the owner will supply, usability sessions, a screen-reader pass, sign-off (docs/RELEASE.md). D-20 is not needed. Generation runs on placeholders until then; results must say so.
+M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version 0.1.0rc4. Platform: Ubuntu 24.04 and newer only (D-110, D-127). What is left needs people: owner answers on D-10 (harness boundary rule) and D-15 (title block), the real derating/EMC values (D-11) and approved parts list (D-12) which the owner will supply, usability sessions, a screen-reader pass, sign-off (docs/RELEASE.md). D-20 is not needed. Generation runs on placeholders until then; results must say so.
 
 ## Commands (run from `harness/`)
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 libxcb-cursor0 for Qt)

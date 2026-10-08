@@ -3,7 +3,7 @@
 An offline desktop tool for designing the electrical harnesses of a spacecraft. You describe **units** (computer, power unit, wheels, ...) and the **interfaces** between them; the tool generates the harnesses (wires, connectors, pin allocation), checks them, writes drawings and lists, and keeps a change-controlled record of every release.
 
 - **Your design is the source of truth.** Harnesses, drawings and lists are generated from it and can be regenerated at any time.
-- **Offline.** It never uses the network (a test enforces this). Ubuntu 22.04 and 24.04 only.
+- **Offline.** It never uses the network (a test enforces this). Ubuntu 24.04 and newer only.
 - **Reproducible.** The same design always produces byte-identical files, so Git diffs show real changes only.
 - **Honest about what it does not know.** Engineering values (derating, ampacity, EMC rules, approved parts) are never invented. Until you supply them, results say *pending* or *not checked*.
 

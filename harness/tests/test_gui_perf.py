@@ -69,13 +69,19 @@ def test_problems_panel_is_capped(stress) -> None:  # type: ignore[no-untyped-de
 
 def test_add_undo_redo_stay_fast_with_many_findings(stress) -> None:  # type: ignore[no-untyped-def]
     """Regression: the problems panel used to build a card for every finding (2000) on each change
-    although it shows 25, making add/undo/redo 3 to 6 times slower."""
+    although it shows 25, making add/undo/redo 3 to 6 times slower than the same project's
+    ordinary edit. Compared with an edit timed on the same machine so slow runners do not matter."""
     stress.tabs.setCurrentIndex(0)
     QApplication.processEvents()
+    stress.ctl.update_unit("U001", name="warm")  # first edit pays one-off costs
+    QApplication.processEvents()
+    plain = min(
+        elapsed_ms(lambda k=k: stress.ctl.update_unit("U001", name=f"n{k}")) for k in range(3)
+    )
     for name, fn in (
         ("add", lambda: stress.ctl.add_unit("computer")),
         ("undo", stress.ctl.undo),
         ("redo", stress.ctl.redo),
     ):
         t = elapsed_ms(fn)
-        assert t < time_limit(1200), (name, t)
+        assert t < 6 * plain, (name, t, plain)
