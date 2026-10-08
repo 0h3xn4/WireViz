@@ -1,0 +1,5 @@
+part number,manufacturer,description,category,pin count,mass (g),approval status
+EX-DSUB-9-F,Example Co.,D-sub 9-pin female,connector,9,12.5,Approved
+EX-DSUB-9-M,Example Co.,D-sub 9-pin male,connector,9,11.0,Approved
+EX-MICROD-15-F,Example Co.,Micro-D 15-pin female,connector,15,6.0,Review
+EX-SMA-F,Example Co.,SMA coax female,connector,1,3.0,Rejected

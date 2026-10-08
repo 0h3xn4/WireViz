@@ -160,9 +160,14 @@ def deb_install() -> Result:
             return False, tail(out)
         code, out = run([f"{tmp}/opt/harness-tool/harness-tool", "--selftest"])
         cli_code, cli_out = run([f"{tmp}/opt/harness-tool/cli/harness", "--version"])
+        new_code, new_out = run([f"{tmp}/opt/harness-tool/cli/harness", "new", "--list"])
     return (
-        code == 0 and cli_code == 0 and "selftest ok" in out,
-        f"extracted deb runs: {_selftest_line(out)}; {cli_out}",
+        code == 0
+        and cli_code == 0
+        and new_code == 0
+        and "first-steps" in new_out
+        and "selftest ok" in out,
+        f"extracted deb runs: {_selftest_line(out)}; {cli_out}; examples present",
     )
 
 

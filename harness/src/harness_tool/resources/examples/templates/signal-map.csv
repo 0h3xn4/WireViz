@@ -1,0 +1,7 @@
+net,signal
+CAN_H,CANH
+CAN_L,CANL
+TXP,TX+
+TXN,TX-
+RXP,RX+
+RXN,RX-

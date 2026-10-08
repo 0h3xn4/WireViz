@@ -89,3 +89,92 @@ def test_help_menu_opens_the_guide(qtbot, tmp_path) -> None:  # type: ignore[no-
     assert w.act_guide.shortcut().toString() == "F1"
     w.act_guide.trigger()
     assert opened and opened[0].endswith("guide/index.html") and Path(opened[0]).is_file()
+
+
+def test_cli_reference_is_up_to_date() -> None:
+    from tools.gen_cli_docs import EXAMPLES, TARGET, render
+
+    assert TARGET.read_text() == render(), "run: python -m tools.gen_cli_docs"
+    parser = build_parser()
+    sub = next(a for a in parser._actions if a.dest == "command")
+    assert set(EXAMPLES) == set(sub.choices or ())  # type: ignore[union-attr]
+
+
+def test_cli_examples_name_real_commands_and_options() -> None:
+    """Every example line parses with the real parser (paths need not exist)."""
+    import shlex
+
+    from tools.gen_cli_docs import EXAMPLES
+
+    parser = build_parser()
+    for lines in EXAMPLES.values():
+        for line in lines:
+            argv = shlex.split(line.split(" > ")[0])[1:]
+            parser.parse_args(argv)
+
+
+def _commands_in(markdown: Path) -> list[str]:
+    """Command lines (harness ..., cp ...) from the fenced blocks of a document, in order."""
+    out: list[str] = []
+    inside = False
+    for line in markdown.read_text().splitlines():
+        if line.startswith("```"):
+            inside = not inside
+        elif inside and line.startswith(("harness ", "cp ")):
+            out.append(line.strip())
+    return out
+
+
+def _run_document(
+    markdown: Path, tmp: Path, expected: dict[str, list[int]]
+) -> list[tuple[str, str]]:
+    """Run every command of a document in order, in a scratch folder, and check the exit codes.
+    `expected` lists, per command start, the codes of its successive runs (default: 0)."""
+    import os
+    import subprocess
+    import sys
+
+    env = {**os.environ, "PATH": f"{Path(sys.executable).parent}{os.pathsep}{os.environ['PATH']}"}
+    seen: dict[str, int] = {}
+    results: list[tuple[str, str]] = []
+    for command in _commands_in(markdown):
+        key = next((k for k in expected if command.startswith(k)), command)
+        n = seen.get(key, 0)
+        seen[key] = n + 1
+        want = expected.get(key, [0])[min(n, len(expected.get(key, [0])) - 1)]
+        done = subprocess.run(
+            ["sh", "-c", command], cwd=tmp, env=env, capture_output=True, text=True, check=False
+        )
+        assert done.returncode == want, (
+            f"{markdown.name}: `{command}` exited {done.returncode}, expected {want}\n"
+            f"{done.stdout[-600:]}{done.stderr[-600:]}"
+        )
+        results.append((command, done.stdout))
+    return results
+
+
+def test_getting_started_commands_work_in_order(tmp_path: Path) -> None:
+    """The tutorial is run word for word, so it cannot drift from the program."""
+    doc = ROOT / "docs" / "GETTING_STARTED.md"
+    results = _run_document(
+        doc,
+        tmp_path,
+        {
+            "harness release wheel-link": [1, 0],  # blocked before the values, done after them
+            "harness config wheel-link": [1],  # exit 1 while values are missing
+        },
+    )
+    # the model hash quoted in the text is the one the first export prints
+    first_export = next(out for cmd, out in results if cmd == "harness export wheel-link")
+    printed = re.search(r"model ([0-9a-f]{12})", first_export)
+    assert printed and f"(model {printed.group(1)})" in doc.read_text(), (
+        "the model hash in docs/GETTING_STARTED.md is out of date: "
+        f"{printed.group(1) if printed else '?'}"
+    )
+    assert f"Model hash: `{printed.group(1)}`" in doc.read_text()
+    assert (tmp_path / "wheel-link" / "outputs" / "manifest.json").is_file()
+    assert (tmp_path / "my-first-design" / "project.json").is_file()
+
+
+def test_readme_quick_start_commands_work(tmp_path: Path) -> None:
+    _run_document(ROOT / "README.md", tmp_path, {})

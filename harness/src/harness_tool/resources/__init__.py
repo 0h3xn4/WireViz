@@ -1,4 +1,4 @@
-"""Bundled resources (the offline user guide)."""
+"""Bundled resources (the offline user guide, example projects and templates)."""
 
 import sys
 from pathlib import Path
@@ -13,5 +13,18 @@ def guide_path() -> Path | None:
     for root in roots:
         candidate = root / "guide" / "index.html"
         if candidate.is_file():
+            return candidate
+    return None
+
+
+def examples_path() -> Path | None:
+    """The bundled example projects and templates, also inside a PyInstaller build."""
+    roots = [Path(__file__).parent]
+    frozen = getattr(sys, "_MEIPASS", None)
+    if frozen:
+        roots.insert(0, Path(frozen) / "harness_tool" / "resources")
+    for root in roots:
+        candidate = root / "examples"
+        if (candidate / "projects").is_dir():
             return candidate
     return None

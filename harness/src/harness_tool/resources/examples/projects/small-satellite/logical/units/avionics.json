@@ -1,0 +1,22 @@
+{
+  "units": [
+    {
+      "id": "OBC1",
+      "mass_relevant": true,
+      "name": "Computer (many interfaces) 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "avionics",
+      "zone": "bus"
+    },
+    {
+      "id": "OBC1-R",
+      "mass_relevant": true,
+      "name": "Computer (many interfaces) 1 (redundant)",
+      "notes": "",
+      "side": "redundant",
+      "subsystem": "avionics",
+      "zone": "aocs"
+    }
+  ]
+}

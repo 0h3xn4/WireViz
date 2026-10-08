@@ -3,7 +3,7 @@
 Each milestone: tests first, ends with working tested software, a demo note in `docs/demos/` (M0 to M7 have one), and a UX self-review where a GUI exists. A milestone is done only when all its acceptance criteria pass in CI.
 
 ## M0 Foundation
-- Repo skeleton (`src/harness_tool/{core,cli,gui}`), `pyproject.toml` with pinned deps, `CLAUDE.md`, ruff + mypy strict + pytest in CI (Windows + Linux).
+- Repo skeleton (`src/harness_tool/{core,cli,gui}`), `pyproject.toml` with pinned deps, `CLAUDE.md`, ruff + mypy strict + pytest in CI (planned for Windows + Linux; now Ubuntu 24.04 only, D-127).
 - Vendored/mirrored wheel set script (`tools/vendor.py`) and a reproducible-build check.
 - Offline tests: module-scan for network imports; socket-blocked smoke run of CLI and empty GUI (offscreen).
 - Empty Qt app window + `harness --version`, packaged with PyInstaller; installer/portable zip built in CI.
@@ -48,7 +48,7 @@ Each milestone: tests first, ends with working tested software, a demo note in `
 - Every artefact stamped with generator version and model hash; stale detection in GUI and CLI.
 - Verifier v2 covers all artefacts (BOM vs drawing, pinout vs wire list).
 - Golden-file tests per output type on three reference projects; print-theme checks (greyscale legibility).
-**Acceptance:** goldens stable on Windows and Linux; verifier clean; PDFs use only bundled fonts.
+**Acceptance:** goldens stable on every supported platform (Ubuntu 24.04 and newer); verifier clean; PDFs use only bundled fonts.
 
 ## M6 Change control (done; see demos/M6.md for what is open)
 - Revisions, status, release with mandatory comment (blocked by verifier errors, stale outputs, DRC errors), baselines, locks on released items, diff engine and visual diff, change log, `harness check` for post-merge consistency, on-disk change detection and safe reload.

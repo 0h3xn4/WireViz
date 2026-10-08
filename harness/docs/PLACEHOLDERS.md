@@ -10,6 +10,8 @@ The tool never invents numbers from standards. These shipped values are placehol
 | `segmentation.json` | confirm the harness boundary rule (default: per connector pair, merge within a zone) | Owner (DECISIONS D-10) | M3 |
 | `titleblock.json` | company title block layout | Owner (D-15) | M5 |
 
+The templates (`harness templates FOLDER`) contain a set of **demo values** for these files so that wire sizing, voltage drop and test limits can be seen working. They are not engineering data and the files stay `"placeholder": true` (D-129). Replace them with your programme's values.
+
 Library: every starter part is `unverified: true`, `approval: "pending"`, with no mass or ratings. Import or enter real parts before any result is trusted.
 Interface types: starter types are `unverified`; impedance, EMC class and default gauge are `null`.
 

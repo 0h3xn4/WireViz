@@ -1,0 +1,56 @@
+# Questions and troubleshooting
+
+Short answers. If yours is not here, check the **Problems** tab (it says what is wrong and how to fix it) and [`HOWTO.md`](HOWTO.md).
+
+## Questions
+
+**Do I need to know how the tool works inside?** No. [`CONCEPTS.md`](CONCEPTS.md) is enough, and [`GETTING_STARTED.md`](GETTING_STARTED.md) walks you through it.
+
+**Why does it say "pending" and "not checked" everywhere?** Because the tool contains no engineering numbers. Derating factors, wire ratings, EMC rules and part approvals come from your programme; until they are entered, results say so instead of guessing. `harness config DIR` lists what is missing. See "Placeholders" in [`CONCEPTS.md`](CONCEPTS.md).
+
+**Can I just use the demo values?** For learning, yes (`harness templates DIR` copies them, see [`GETTING_STARTED.md`](GETTING_STARTED.md) part 7). They are not engineering data. Never release a real design with them.
+
+**Can I edit a generated harness by hand?** Not in the sense of editing a drawing. You change the design (units, interfaces, connectors, values) and generate again. To keep a wire or pin choice, **lock** it; generation then keeps it. A harness that is released is locked; start a new revision to change it.
+
+**What happens when I generate again?** IDs, locked wires and locked pins are kept, released harnesses are never touched, and a report says what was added, changed and removed. Generating twice gives the same result.
+
+**Which interface types exist? Can I add my own?** Sixteen ship with the tool (power, RS-422, RS-485, CAN, SpaceWire, MIL-STD-1553B, LVDS, I2C, analog, thermistor, heater, discrete, pyro, RF coax, ground). They are stored in the project's `logical/interface_types.json`. There is no editor for them in the app yet; a new type is another entry in that file in the same format (see [`FILE_FORMAT.md`](FILE_FORMAT.md)).
+
+**Can two or more units share one link (a bus)?** Not yet. A link between more than two units is skipped with a warning (D-116 in [`DECISIONS.md`](DECISIONS.md)).
+
+**Does it use the internet?** Never. A test checks it.
+
+**Where do I put the project in Git?** The project folder is the repository (or a folder in it). Everything in it is plain JSON in a fixed format, so diffs show real changes only. `.gitignore` is written for you. See [`HOWTO.md`](HOWTO.md) section 15.
+
+**What do I commit, and what not?** Commit the whole project folder. `outputs/` can be committed (reviewers like to see it) or ignored; it is always safe to delete and regenerate.
+
+**How do I know a printed drawing matches the design?** Every output carries the tool version and a *model hash* (12 characters). `harness verify DIR --outputs` checks the files against the design.
+
+**Where is the user guide?** In the app: **F1**. As a file: [`guide/USER_GUIDE.md`](guide/USER_GUIDE.md).
+
+## Problems
+
+| You see | Why and what to do |
+| --- | --- |
+| `harness: command not found` after `install.sh` | `~/.local/bin` is not on your PATH. Run `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && . ~/.bashrc`, or log out and in. |
+| The app does not start; a message about `xcb`, `libEGL` or `libxkbcommon` | System libraries are missing. `sudo apt install libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 libxcb-cursor0`. |
+| The window is tiny or the text is too small or large | **View > UI scale** (the settings file is `~/.config/HarnessDesigner/HarnessDesigner.ini`; delete it to reset). |
+| *Read-only* banner | The project was saved by a newer tool version, or is open in another window. Install the newer tool, or close the other window. Nothing was changed. |
+| *Project already open* | Another window or session has it open. Close it there, or choose **Open read-only**. A lock left by a crashed session on the same machine is taken over automatically. |
+| *This project has problems* (recovery view) | Some files could not be loaded; everything else did. **Save salvaged copy** writes a clean copy. The original is protected and never overwritten. |
+| *Unsaved changes found* at start | The last session ended before saving. **Restore** brings your last edits back. |
+| `harness new` says the folder is not empty | Choose a folder that does not exist yet (or is empty). It never overwrites. |
+| `harness generate` says *not saved* | The project has errors. Run `harness validate DIR` and fix what it prints. |
+| A wire gauge says *pending* | A value is missing. `harness config DIR` says which; a gauge also needs the interface's **Max current** and the segment lengths. |
+| `harness release` says *blocked* | Each reason is printed in words. Typically a gauge or length is missing, or an error is open. |
+| *Outputs: out of date* | The design changed since the last export. Export again. |
+| *Blocked because it touches released items* | The harness is released. Start a new revision. |
+| `import-netlist` says a file is not a netlist | It must be KiCad's `.net` (S-expression) or XML export, not a `.kicad_sch`. |
+| `kicad-cli` cannot load a library | A KiCad installation problem. Export the netlist from the schematic editor instead (File > Export > Netlist). |
+| An import says *row N* has a problem | Nothing was applied. Fix the row; the message says what is wrong. Use `--dry-run` to check first. |
+| Merge conflict in a project file | Open the file, resolve the markers like in any text file, then `harness check DIR` finds leftovers. |
+| Exit code 2 from `harness` | A usage error or an unreadable project. The message says which. Exit 1 means the project has errors or a step is blocked; 0 is success. |
+
+## Still stuck
+
+Run `harness validate DIR` and `harness drc DIR` and read the messages: each says what is wrong and how to fix it. Include their output when you ask for help, and check it first if the project is confidential: the messages name units, interfaces and parts.

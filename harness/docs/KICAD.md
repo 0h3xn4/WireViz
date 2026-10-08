@@ -8,6 +8,14 @@ KiCad is used only for the electronics inside each unit. The pinout of a unit's 
 
 A KiCad netlist, in either format: the S-expression `.net` that KiCad's schematic editor writes by default (File, Export, Netlist), or the XML one (`kicad-cli sch export netlist --format kicadxml`). The tool tells them apart by the first character. Reading `.kicad_sch` directly is not implemented: it would mean resolving wires, labels and sheets ourselves, where the netlist is KiCad's own computed connectivity.
 
+## Try it
+
+The templates (`harness templates FOLDER`) contain `wheel-connectors.net`, a small netlist for the connectors `RW1-J01` (power) and `RW1-J02` (RS-422) of the `first-steps` example, and `signal-map.csv`. On a copy of that example:
+
+    harness new wheel-link --template first-steps
+    harness import-netlist wheel-link wheel-connectors.net --unit RW1 --prefix J \
+        --connector J1=RW1-J01 --connector J2=RW1-J02 --dry-run
+
 ## Command
 
     harness import-netlist DIR FILE --unit OBC [--ref J7 ...] [--prefix J]
