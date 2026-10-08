@@ -1,7 +1,7 @@
-<!-- harness-design-studio 0.1.0rc6 model 33b2e9fc7681 -->
+<!-- harness-design-studio 0.1.0rc7 model 000f45f4998e -->
 # Design rule check: mini3 (example data)
 
-Model hash: `33b2e9fc7681`. Rules run: 33.
+Model hash: `000f45f4998e`. Rules run: 33.
 Open: 0 error(s), 7 warning(s), 4 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.

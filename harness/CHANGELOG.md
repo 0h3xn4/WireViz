@@ -2,7 +2,9 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## Unreleased
+## 0.1.0rc7 (release candidate; not yet signed off by the owner)
+
+This release candidate adds the release gate for placeholders (D-135) to rc6. Results are unchanged; only the stamps (version, model hash) differ.
 
 - **Release gate for placeholders (D-135)**: a harness cannot be released while a configuration file is still marked `"placeholder": true`, unless the person releasing gives a written reason (`harness release ... --accept-placeholders REASON`, or the new field in the release window). The reason and the names of the placeholder files are kept in the change log and in the baseline. A project whose values an engineer has reviewed (every mark cleared) releases as before. Existing released harnesses are not affected.
 
