@@ -12,7 +12,7 @@ ECSS-Q-ST-30-11_0140059,none,human,B-14,,Review checklist item
 ECSS-Q-ST-30-11_0140060,none,human,B-07,,"Record RF power per RF link; report as ""not checked: multipactor analysis needed"""
 ECSS-Q-ST-30-11_0140061,none,partial,B-03,,As 0140056 for RF connectors
 ECSS-Q-ST-30-11_0140213,none,partial,B-01,config/derating.json ampacity_a_by_awg (current only),"Wire part ratings: rated voltage, maximum temperature; rule checks 50 % voltage; temperature margin 50 degC"
-ECSS-Q-ST-30-11_0140214,none,partial,B-01,,Optional vacuum current calculation when the thermal inputs are supplied; otherwise reported as not checked
+ECSS-Q-ST-30-11_0140214,none,human,B-01,,"Formula ""may be used"" (optional, 6.32.4 b); the single-wire current is the ampacity table the project supplies. Reported as not checked when no table exists"
 ECSS-Q-ST-30-11_0140215,none,human,B-07,,"Reported as ""specific thermal analysis needed"" when conditions of 6.32.4b are not met or unknown"
 ECSS-Q-ST-30-11_0140216,none,human,B-14,,Review checklist item
 ECSS-Q-ST-30-11_0140217,partial,automatic,B-01,sizing.bundle_derating (one factor for all bundles),Bundle factor K from Table 6-41 by number of wires in the bundle (opt-in profile)
@@ -38,3 +38,5 @@ ECSS-E-ST-20-07_0080042,partial,partial,B-08,as above,Overshield: 360 degree at 
 ECSS-E-ST-20-07_0080167,none,human,B-14,,Review checklist item
 ESCC3901-4.4,partial,partial,B-11,Part.approval; DRC part-unapproved,Part specification field cites the ESCC detail specification; rule warns when a wire part has none
 ESCC3901-4.5,none,human,B-14,,Manufacturer evidence; checklist item
+ECSS-Q-ST-30-11_0140051,partial,partial,B-04,DRC current-over-contact (current only),"Table 6-10 as profile values: current 50 %, working voltage 25 % of withstand voltage or 75 % of rated (lower), temperature 30 degC below maximum"
+ECSS-Q-ST-30-11_0140058,none,partial,B-04,,"Table 6-11 (RF connectors): RF power 75 %, working voltage and temperature as Table 6-10"

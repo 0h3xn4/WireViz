@@ -95,7 +95,7 @@ def parse_ecss(standard: str, lines: list[str]) -> list[Req]:
             m = LETTER.match(text)
             if m:
                 current.letter, text = m.group(1), m.group(2)
-            current.deleted = "<<deleted>>" in text
+            current.deleted = text.startswith("<<deleted")
             current.text = text
             current.expected_output = squeeze(outputs)
             reqs.append(current)

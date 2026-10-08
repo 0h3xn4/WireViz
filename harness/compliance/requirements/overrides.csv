@@ -17,14 +17,12 @@ ECSS-Q-ST-30-11_0140015,,N,n/a,general derating rule or non-harness part family;
 ECSS-Q-ST-30-11_0140016,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
 ECSS-Q-ST-30-11_0140017,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
 ECSS-Q-ST-30-11_0140050,,Y,partial,connector derating derating table (family 02-01..02-09): needs connector ratings in part library
-ECSS-Q-ST-30-11_0140051,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
 ECSS-Q-ST-30-11_0140052,,Y,partial,power/return separated by an unassigned contact: pin allocation can check
 ECSS-Q-ST-30-11_0140053,,Y,human,connector savers in test: procedural
 ECSS-Q-ST-30-11_0140054,,Y,partial,wrong-mating protection: connector look-alike rule exists
 ECSS-Q-ST-30-11_0140055,,Y,partial,connector and parts from same manufacturer: part library manufacturer field
 ECSS-Q-ST-30-11_0140056,,Y,partial,max 50 mating cycles: tool can hold a limit per connector but not count mating events
 ECSS-Q-ST-30-11_0140057,,Y,partial,RF connector derating: needs ratings in part library
-ECSS-Q-ST-30-11_0140058,,N,n/a,general derating rule or non-harness part family; outside wire/cable/connector scope
 ECSS-Q-ST-30-11_0140059,,Y,human,connector savers in test: procedural
 ECSS-Q-ST-30-11_0140060,,Y,human,multipactor margin needs RF power analysis outside the tool
 ECSS-Q-ST-30-11_0140061,,Y,partial,max 50 mating cycles for RF connectors
@@ -193,3 +191,5 @@ ESCC3901-9.25,,N,n/a,"manufacturing, inspection or qualification test of the cab
 ESCC3901-9.27.1,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
 ESCC3901-9.27.2,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
 ESCC3901-12,,N,n/a,"manufacturing, inspection or qualification test of the cable; evidence belongs to the manufacturer, the tool only references the part"
+ECSS-Q-ST-30-11_0140051,,Y,partial,Table 6-10 is a requirement in its own right (the table carries the limits)
+ECSS-Q-ST-30-11_0140058,,Y,partial,Table 6-11 is a requirement in its own right

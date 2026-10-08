@@ -11,7 +11,7 @@ Nothing here says the tool *complies*. The status words are an assessment of wha
 | Kind | Standards | What is assessed | Basis of the assessment |
 | --- | --- | --- | --- |
 | **A. The tool as software** | ECSS-E-ST-40C Rev.1, ECSS-Q-ST-80C Rev.2 | the development process and products of this repository | **clause level**: every requirement inherits the assessment of its clause (about 1100 rows). Requirements that differ have their own row in `assessment/process_overrides.csv`. |
-| **B. The tool as a checker of designs** | ECSS-Q-ST-30-11C Rev.2, ECSS-E-ST-20-07C Rev.2, ESCC 3901 Issue 4 | what the tool does today about each wire, cable, connector, contact and harness requirement | **requirement level**: 39 requirements, each read and compared with the code (`assessment/design_assessment.csv`) |
+| **B. The tool as a checker of designs** | ECSS-Q-ST-30-11C Rev.2, ECSS-E-ST-20-07C Rev.2, ESCC 3901 Issue 4 | what the tool does today about each wire, cable, connector, contact and harness requirement | **requirement level**: 41 requirements, each read and compared with the code (`assessment/design_assessment.csv`) |
 
 The clause-level basis for kind A is a limit of this audit. It is enough to plan the work and to see where the large gaps are; it is not enough to claim anything on a single requirement. Where Phase 2 produces a document or a check, the rows it touches are re-assessed one by one in Phase 3.
 
@@ -28,13 +28,15 @@ Status words: **partial** = something exists that serves the requirement; **gap*
 - No row is "evidence-candidate" yet: even where tests or tools exist, nothing is cross-referenced to a requirement ID (gap G-02).
 - Honest summary: the project has strong engineering practice (839 tests, strict typing, linting, reproducible builds, a security review, recorded decisions) and almost none of the formal process records the two standards ask for (plans, reviews, reports, problem reporting, metrics, independence).
 
-## 3. Results: kind B (design checking), 39 requirements
+> Update during Phase 2: the extractor wrongly dropped two requirements that are tables (30-11C Table 6-10 and 6-11, IDs 0140051 and 0140058) because a table row said `<<deleted>>`. Fixed; the count of relevant 30-11C requirements is 25, kind B has 41.
+
+## 3. Results: kind B (design checking), 41 requirements
 
 Columns: what the tool does today and what is realistic as a target. "Automatic" means the tool can report a violation by itself once the project data are supplied; "partial" means it checks part of the requirement or needs data the model does not hold; "human" means a person must decide, and the tool can only remind (review checklist) or say *not checked*.
 
 | Standard | Relevant | Today: partial | Today: none | Target: automatic | Target: partial | Target: human |
 | --- | --- | --- | --- | --- | --- | --- |
-| ECSS-Q-ST-30-11C | 23 | 5 | 18 | 3 | 12 | 8 |
+| ECSS-Q-ST-30-11C | 25 | 6 | 19 | 3 | 13 | 9 |
 | ECSS-E-ST-20-07C | 14 | 4 | 10 | 1 | 6 | 7 |
 | ESCC 3901 | 2 | 1 | 1 | 0 | 1 | 1 |
 
@@ -78,7 +80,7 @@ Rules that already serve a requirement but do not cite it: `mate-mismatch`, `con
 | B-01 | 30-11C 0140002, 0140179, 0140213 to 0140220 | wire part ratings (rated voltage, maximum temperature); K and L as tables in the derating config; share of loaded wires per bundle; rules for 50 % voltage, 50 °C temperature margin, bundle current | large |
 | B-02 | 30-11C 0140052 | rule and pin allocator: unassigned contact between power and return on power connectors | medium |
 | B-03 | 30-11C 0140056, 0140061 | connector part rating `max_mating_cycles`, rule against the 50 cycle limit | small |
-| B-04 | 30-11C 0140050, 0140057 | connector voltage and temperature margins (Table 6-10, 6-11) | medium |
+| B-04 | 30-11C 0140050, 0140051, 0140057, 0140058 | connector voltage and temperature margins (Table 6-10, 6-11) | medium |
 | B-05 | 30-11C 0140055 | rule: connector and its parts from one manufacturer | small |
 | B-06 | 30-11C 0140054 | cite the requirement in `mate-mismatch` and `connector-lookalike` | small |
 | B-07 | 30-11C 0140060, 0140215, 0140221 to 0140223 | "not checked" entries stating that multipactor and thermal analyses are outside the tool | small |
