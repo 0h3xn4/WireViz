@@ -20,7 +20,7 @@ PROCESS = ("ECSS-E-ST-40C", "ECSS-Q-ST-80C")
 DESIGN = ("ECSS-Q-ST-30-11C", "ECSS-E-ST-20-07C", "ESCC-3901")
 HEADER = [
     "standard", "kind", "id", "clause", "requirement", "applicable", "status", "basis",
-    "evidence", "gap", "rationale",
+    "evidence", "gap", "rationale", "status_after_phase2", "evidence_after_phase2",
 ]  # fmt: skip
 
 
@@ -49,21 +49,34 @@ def process_rows(std: str) -> list[list[str]]:
         cat = r["cat_C"]
         base = [std, "A", r["ID"], r["clause"], r["text"][:160], cat]
         if cat == "N":
-            rows.append([*base, "na", "tailoring table", "", "", "Not applicable at criticality C"])
+            rows.append(
+                [
+                    *base,
+                    "na",
+                    "tailoring table",
+                    "",
+                    "",
+                    "Not applicable at criticality C",
+                    "na",
+                    "",
+                ]
+            )
             continue
         if r["ID"] in over:
             o = over[r["ID"]]
             rows.append(
-                [*base, o["status"], "requirement", o["evidence"], o["gap"], o["rationale"]]
-            )
+                [*base, o["status"], "requirement", o["evidence"], o["gap"], o["rationale"],
+                 o["status"], o["evidence"]]
+            )  # fmt: skip
             continue
         key = clause_key(r)
         rule = next((x for x in rules if matches(key, x["prefix"])), None)
         if rule is None:
             raise SystemExit(f"no assessment rule for {std} {r['ID']} clause {r['clause']}")
         rows.append(
-            [*base, rule["status"], "clause", rule["evidence"], rule["gap"], rule["rationale"]]
-        )
+            [*base, rule["status"], "clause", rule["evidence"], rule["gap"], rule["rationale"],
+             rule["after_status"], rule["after_evidence"]]
+        )  # fmt: skip
     return rows
 
 
@@ -79,7 +92,7 @@ def design_rows(std: str) -> list[list[str]]:
         status = f"today:{a['today']} target:{a['target']}"
         rows.append(
             [std, "B", r["ID"], r["clause"], r["text"][:160], "Y", status, "requirement",
-             a["evidence"], a["gap"], a["remediation"]]
+             a["evidence"], a["gap"], a["remediation"], f"after:{a['after']}", a["tests"]]
         )  # fmt: skip
     return rows
 

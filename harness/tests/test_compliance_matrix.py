@@ -36,3 +36,15 @@ def test_gap_references_are_in_the_analysis() -> None:
     for r in m.build():
         if r[9]:
             assert f"| {r[9]} |" in text, r[9]
+
+
+def test_files_named_as_evidence_exist() -> None:
+    import re
+
+    root = ROOT.parent
+    for r in m.build():
+        for field in (r[8], r[12]):
+            for path in re.findall(
+                r"\b((?:tests|tools|docs|compliance|src)/[\w./-]+\.(?:py|md|csv|json|toml))", field
+            ):
+                assert (root / path).exists(), f"{r[2]}: {path}"
