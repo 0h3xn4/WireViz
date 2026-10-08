@@ -13,6 +13,7 @@ Run `python -m tools.release_check` on the build host (Ubuntu 24.04; with Docker
 9. `python -m tools.check_reproducible`: the wheel builds identically twice.
 10. `python -m tools.build_installer` then `python -m tools.build_deb`; `dist/harness-tool/harness-tool --selftest` prints `selftest ok` (generates, exports and verifies a project, starts the rule check helper process and creates a project from a bundled example, all inside the package).
 11. The `.deb` is extracted with `dpkg-deb -x`; its program runs the self-test and its `harness new --list` shows the examples.
+11a. `python -m tools.gen_scf` writes `scf.json` (version, commit, dependencies, SHA-256 of every source file, integrity value) and `SHA256SUMS` of the deliverables into `dist/release-docs`. Hand `SHA256SUMS` to the recipient; they check with `sha256sum -c SHA256SUMS` (ECSS-Q-ST-80C 6.2.4.10, 6.2.4.11).
 12. Run the self-test on a clean Ubuntu VM with networking disabled, installing with `sudo apt install ./harness-tool_<version>_amd64.deb` and, separately, with `./install.sh` from the tarball.
 13. Usability sessions held and triaged (`docs/usability/README.md`); priority bugs fixed or accepted by the owner in writing.
 14. Owner sign-off, including the open decisions D-10 and D-15, and confirmation that D-11 (derating and EMC values) and D-12 (approved parts list) have been supplied (see `docs/OPEN_DECISIONS.md`; D-20 is not needed). Remove `rcN` from the version only after sign-off.

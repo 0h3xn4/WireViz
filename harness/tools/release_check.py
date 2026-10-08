@@ -139,6 +139,13 @@ def reproducible() -> Result:
     return code == 0, "wheel builds identically twice" if code == 0 else tail(out)
 
 
+def integrity() -> Result:
+    code, out = run([sys.executable, "-m", "tools.gen_scf"])
+    docs = ROOT / "dist" / "release-docs"
+    ok = code == 0 and (docs / "scf.json").is_file() and (docs / "SHA256SUMS").is_file()
+    return ok, tail(out)
+
+
 def package() -> Result:
     code, out = run([sys.executable, "-m", "tools.build_installer"])
     if code:
@@ -183,6 +190,7 @@ STEPS: list[tuple[str, Callable[[], Result], bool]] = [
     ("Reproducible wheel", reproducible, False),
     ("Package (tar.gz, deb) and self-test", package, False),
     ("Installed package runs (deb extracted)", deb_install, False),
+    ("Configuration file and SHA-256 of the deliverables", integrity, False),
 ]
 
 
