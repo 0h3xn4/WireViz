@@ -12,7 +12,7 @@ The tool never invents numbers from standards. These shipped values are placehol
 
 The templates (`harness templates FOLDER`) contain a set of **demo values** for these files so that wire sizing, voltage drop and test limits can be seen working. They are not engineering data and the files stay `"placeholder": true` (D-129). Replace them with your programme's values.
 
-Library: every starter part is `unverified: true`, `approval: "pending"`, with no mass or ratings. Import or enter real parts before any result is trusted.
+Library: every starter part (Micro-D 9, 15, 21, 25 and 31 pin, RJ45, SMA, wires, sleeving, labels, and some older D-sub, MDM, circular and TNC parts) is `unverified: true`, `approval: "pending"`, with no mass or ratings. Import or enter real parts before any result is trusted.
 Interface types: starter types are `unverified`; impedance, EMC class and default gauge are `null`.
 
 ## Additions in M3 (all defaults are `null`; generation reports what is missing)

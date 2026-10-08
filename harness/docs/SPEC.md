@@ -33,7 +33,7 @@ Logical layer and physical layer, linked so every physical item traces back to a
 
 **Logical layer**
 - **Unit:** ID, name, subsystem, location/zone, nominal or redundant side, mass-relevant flag, notes.
-- **Interface type:** reusable template: power (primary, secondary), RS-422/RS-485, SpaceWire, CAN, MIL-STD-1553B, LVDS, I²C, analog, thermistor, heater, discrete/bilevel, pyro, RF coax, ground/chassis. Defines signals (e.g. SpaceWire = 4 differential pairs, Data/Strobe in/out), required wire construction (twisted pair, twisted shielded pair, quad, coax), impedance, shielding and grounding rules, EMC class, default gauge.
+- **Interface type:** *(baseline since D-130: RS-422, RS-485 and CAN for communication, Ethernet for high data rates, Micro-D connectors, SMA for RF)* reusable template: power (primary, secondary), RS-422/RS-485, SpaceWire, CAN, MIL-STD-1553B, LVDS, I²C, analog, thermistor, heater, discrete/bilevel, pyro, RF coax, ground/chassis. Defines signals (e.g. SpaceWire = 4 differential pairs, Data/Strobe in/out), required wire construction (twisted pair, twisted shielded pair, quad, coax), impedance, shielding and grounding rules, EMC class, default gauge.
 - **Interface instance:** connection between two (or more, for buses) units using one interface type, with name, direction, nominal/redundant flag, max current, voltage, optional requirement ID.
 
 **Physical layer**

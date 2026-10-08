@@ -64,7 +64,7 @@ def case_wrong_part_category(p: Project) -> None:
 
 
 def case_too_many_pins(p: Project) -> None:
-    p.parts["EX-DSUB-9-F"] = evolve(p.parts["EX-DSUB-9-F"], pin_count=2)
+    p.parts["EX-MICROD-9-F"] = evolve(p.parts["EX-MICROD-9-F"], pin_count=2)
 
 
 def case_box_unknown_unit(p: Project) -> None:

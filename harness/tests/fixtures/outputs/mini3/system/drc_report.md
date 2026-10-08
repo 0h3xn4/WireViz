@@ -1,16 +1,24 @@
-<!-- harness-tool 0.1.0rc4 model 6c35cd91012b -->
+<!-- harness-tool 0.1.0rc4 model 6c384d383e73 -->
 # Design rule check: mini3 (example data)
 
-Model hash: `6c35cd91012b`. Rules run: 22.
-Open: 0 error(s), 3 warning(s), 4 note(s). Waived: 0.
+Model hash: `6c384d383e73`. Rules run: 22.
+Open: 0 error(s), 7 warning(s), 4 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.
 
-## Warnings (3)
+## Warnings (7)
 
-- **Part EX-DSUB-9-F is not approved yet but is used (8 place(s))** (`part-unapproved.EX-DSUB-9-F`)  
+- **Part EX-MICROD-15-F is not approved yet but is used (3 place(s))** (`part-unapproved.EX-MICROD-15-F`)  
   Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
-- **Part EX-DSUB-9-M is not approved yet but is used (4 place(s))** (`part-unapproved.EX-DSUB-9-M`)  
+- **Part EX-MICROD-15-M is not approved yet but is used (1 place(s))** (`part-unapproved.EX-MICROD-15-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-MICROD-25-F is not approved yet but is used (1 place(s))** (`part-unapproved.EX-MICROD-25-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-MICROD-25-M is not approved yet but is used (1 place(s))** (`part-unapproved.EX-MICROD-25-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-MICROD-9-F is not approved yet but is used (4 place(s))** (`part-unapproved.EX-MICROD-9-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-MICROD-9-M is not approved yet but is used (2 place(s))** (`part-unapproved.EX-MICROD-9-M`)  
   Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
 - **Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (4 place(s))** (`part-unapproved.EX-WIRE-TWISTED-SHIELDED`)  
   Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.

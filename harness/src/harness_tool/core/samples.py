@@ -54,14 +54,14 @@ def mini3() -> Project:
     ]  # allocated by hand for the manual harness W001
     free = _pins(("1", None), ("2", None), ("3", None))
     for conn in (
-        box("OBC-J01", "OBC", "EX-DSUB-9-F", ["rs422", "can", "spacewire", "discrete"], data_pins),
-        box("OBC-J02", "OBC", "EX-DSUB-9-F", ["power_primary"], free),
-        box("OBC-J03", "OBC", "EX-DSUB-9-F", ["rs422", "can"], free),
-        box("PCDU-J01", "PCDU", "EX-DSUB-9-F", ["power_primary"], pwr_pins),
-        box("PCDU-J02", "PCDU", "EX-DSUB-9-F", ["power_primary"], free),
-        box("PCDU-J03", "PCDU", "EX-DSUB-9-F", ["discrete", "rs422"], free),
-        box("RW1-J01", "RW1", "EX-DSUB-9-M", ["power_primary"], pwr_pins),
-        box("RW1-J02", "RW1", "EX-DSUB-9-M", ["rs422", "can"], data_pins),
+        box("OBC-J01", "OBC", "EX-MICROD-25-F", ["rs422", "rs485", "can", "discrete"], data_pins),
+        box("OBC-J02", "OBC", "EX-MICROD-9-F", ["power_primary"], free),
+        box("OBC-J03", "OBC", "EX-MICROD-15-F", ["rs422", "can"], free),
+        box("PCDU-J01", "PCDU", "EX-MICROD-9-F", ["power_primary"], pwr_pins),
+        box("PCDU-J02", "PCDU", "EX-MICROD-9-F", ["power_primary"], free),
+        box("PCDU-J03", "PCDU", "EX-MICROD-15-F", ["discrete", "rs422"], free),
+        box("RW1-J01", "RW1", "EX-MICROD-9-M", ["power_primary"], pwr_pins),
+        box("RW1-J02", "RW1", "EX-MICROD-15-M", ["rs422", "can"], data_pins),
     ):
         p.connectors[conn.id] = conn
     p.interfaces["IF-PWR-RW1"] = InterfaceInstance(
@@ -86,9 +86,9 @@ def mini3() -> Project:
     p.harnesses["W001"] = Harness(
         id="W001", name="PCDU to RW1 power",
         connectors=[
-            Connector(id="W001-P1", name="P1", role="cable", part_id="EX-DSUB-9-M", gender="male", mates_with="PCDU-J01",
+            Connector(id="W001-P1", name="P1", role="cable", part_id="EX-MICROD-9-M", gender="male", mates_with="PCDU-J01",
                       pins=_pins(("1", "PWR"), ("2", "RTN"), ("3", None))),
-            Connector(id="W001-P2", name="P2", role="cable", part_id="EX-DSUB-9-F", gender="female", mates_with="RW1-J01",
+            Connector(id="W001-P2", name="P2", role="cable", part_id="EX-MICROD-9-F", gender="female", mates_with="RW1-J01",
                       pins=_pins(("1", "PWR"), ("2", "RTN"), ("3", None))),
         ],
         wires=[
@@ -140,7 +140,7 @@ def sat15() -> Project:
         ("power_primary", pcdu, obc), ("power_primary", pcdu, trx), ("power_primary", pcdu, pl), ("power_primary", pcdu, st),
         ("power_primary", pcdu, rw1), ("power_primary", pcdu, rw2), ("power_primary", pcdu, ss), ("power_primary", pcdu, mtq),
         ("heater", pcdu, htr), ("power_primary", bat, pcdu), ("power_primary", sa, pcdu),
-        ("can", obc, pcdu), ("can", obc, bat), ("rs422", obc, trx), ("spacewire", obc, pl), ("rs422", obc, st),
+        ("can", obc, pcdu), ("can", obc, bat), ("rs422", obc, trx), ("ethernet", obc, pl), ("rs422", obc, st),
         ("can", obc, rw1), ("can", obc, rw2), ("analog", obc, ss), ("discrete", obc, mtq), ("thermistor", obc, htr),
         ("thermistor", obc, sa),
     ]  # fmt: skip

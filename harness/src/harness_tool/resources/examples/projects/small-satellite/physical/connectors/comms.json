@@ -10,7 +10,7 @@
       "mates_with": null,
       "name": "J01",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-MICROD-9-F",
       "pins": [
         {
           "contact_size": null,
@@ -108,7 +108,7 @@
       "mates_with": null,
       "name": "J02",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-MICROD-15-F",
       "pins": [
         {
           "contact_size": null,
@@ -186,6 +186,60 @@
           "contact_size": null,
           "fixed": false,
           "id": "9",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "10",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "11",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "12",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "13",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "14",
+          "interface_id": null,
+          "locked": false,
+          "signal": null,
+          "termination": "unspecified"
+        },
+        {
+          "contact_size": null,
+          "fixed": false,
+          "id": "15",
           "interface_id": null,
           "locked": false,
           "signal": null,
@@ -205,84 +259,12 @@
       "mates_with": null,
       "name": "J03",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-SMA-F",
       "pins": [
         {
           "contact_size": null,
           "fixed": false,
           "id": "1",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "2",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "3",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "4",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "5",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "6",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "7",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "8",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "9",
           "interface_id": null,
           "locked": false,
           "signal": null,

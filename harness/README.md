@@ -14,6 +14,7 @@ You describe the **units** (computer, power unit, reaction wheel ...) and the **
 - **Your design is the source of truth.** Harnesses, drawings and lists are generated from it and can be regenerated at any time.
 - **Offline.** It never uses the network (a test enforces this).
 - **Reproducible.** The same design always produces byte-identical files, so Git diffs show real changes only.
+- **Starts from the usual standards.** RS-422, RS-485 and CAN for communication, Micro-D (9 to 31 pin) for power and data, Ethernet as the alternative for high data rates, SMA for RF. Other types and connectors can be added.
 - **Honest about what it does not know.** Engineering values (derating, ampacity, EMC rules, approved parts) are never invented. Until you supply them, results say *pending* or *not checked*.
 
 Runs on **Ubuntu 24.04 or newer**. Release candidate `0.1.0rc4`, not yet signed off by the owner (see [Status](#status)).

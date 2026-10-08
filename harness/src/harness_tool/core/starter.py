@@ -1,4 +1,9 @@
-"""Starter library and interface types. EXAMPLE data only: no numbers, nothing is qualified."""
+"""Starter library and interface types. EXAMPLE data only: no numbers, nothing is qualified.
+
+Baseline (D-130): RS-422, RS-485 and CAN for communication; Micro-D 9, 15, 21, 25 and 31 pin for
+power and data; Ethernet (RJ45) as the alternative for high data rates; SMA for RF. The other
+connectors and interface types stay in the library for projects that need them.
+"""
 
 from .model import InterfaceType, Part, SignalDef
 
@@ -10,12 +15,77 @@ def starter_parts() -> list[Part]:
         ("EX-DSUB-9-F", "connector", "D-sub 9-pin, female (example)", 9),
         ("EX-DSUB-15-M", "connector", "D-sub 15-pin, male (example)", 15),
         ("EX-DSUB-15-F", "connector", "D-sub 15-pin, female (example)", 15),
-        ("EX-MICROD-15-M", "connector", "Micro-D 15-pin, male (example)", 15),
-        ("EX-MICROD-15-F", "connector", "Micro-D 15-pin, female (example)", 15),
+        ("EX-MICROD-9-M", "connector", "Micro-D 9-pin, male (example, baseline power and data)", 9),
+        (
+            "EX-MICROD-9-F",
+            "connector",
+            "Micro-D 9-pin, female (example, baseline power and data)",
+            9,
+        ),
+        (
+            "EX-MICROD-15-M",
+            "connector",
+            "Micro-D 15-pin, male (example, baseline power and data)",
+            15,
+        ),
+        (
+            "EX-MICROD-15-F",
+            "connector",
+            "Micro-D 15-pin, female (example, baseline power and data)",
+            15,
+        ),
+        (
+            "EX-MICROD-21-M",
+            "connector",
+            "Micro-D 21-pin, male (example, baseline power and data)",
+            21,
+        ),
+        (
+            "EX-MICROD-21-F",
+            "connector",
+            "Micro-D 21-pin, female (example, baseline power and data)",
+            21,
+        ),
+        (
+            "EX-MICROD-25-M",
+            "connector",
+            "Micro-D 25-pin, male (example, baseline power and data)",
+            25,
+        ),
+        (
+            "EX-MICROD-25-F",
+            "connector",
+            "Micro-D 25-pin, female (example, baseline power and data)",
+            25,
+        ),
+        (
+            "EX-MICROD-31-M",
+            "connector",
+            "Micro-D 31-pin, male (example, baseline power and data)",
+            31,
+        ),
+        (
+            "EX-MICROD-31-F",
+            "connector",
+            "Micro-D 31-pin, female (example, baseline power and data)",
+            31,
+        ),
+        (
+            "EX-RJ45-M",
+            "connector",
+            "Ethernet RJ45 8P8C, male plug (example, alternative for high data rates)",
+            8,
+        ),
+        (
+            "EX-RJ45-F",
+            "connector",
+            "Ethernet RJ45 8P8C, female jack (example, alternative for high data rates)",
+            8,
+        ),
         ("EX-MDM-21-M", "connector", "MDM 21-pin, male (example)", 21),
         ("EX-CIRC-19-F", "connector", "Circular MIL-DTL-38999-style, 19-pin, female (example)", 19),
-        ("EX-SMA-F", "connector", "SMA coax, female (example)", 1),
-        ("EX-SMA-M", "connector", "SMA coax, male (example)", 1),
+        ("EX-SMA-F", "connector", "SMA coax, female (example, baseline RF)", 1),
+        ("EX-SMA-M", "connector", "SMA coax, male (example, baseline RF)", 1),
         ("EX-TNC-M", "connector", "TNC coax, male (example)", 1),
         ("EX-TNC-F", "connector", "TNC coax, female (example)", 1),
         ("EX-MDM-21-F", "connector", "MDM 21-pin, female (example)", 21),
@@ -60,6 +130,8 @@ def starter_interface_types() -> list[InterfaceType]:
          sigs(("TX+", "out", "TX"), ("TX-", "out", "TX"), ("RX+", "in", "RX"), ("RX-", "in", "RX"))),
         ("rs485", "RS-485", "data", "twisted_shielded_pair", "overall",
          sigs(("A", "bidir", "BUS"), ("B", "bidir", "BUS"))),
+        ("ethernet", "Ethernet", "data", "twisted_shielded_pair", "per_pair",
+         sigs(("TX+", "out", "TX"), ("TX-", "out", "TX"), ("RX+", "in", "RX"), ("RX-", "in", "RX"))),
         ("spacewire", "SpaceWire", "data", "twisted_shielded_pair", "per_pair",
          sigs(("DIN+", "in", "DIN"), ("DIN-", "in", "DIN"), ("SIN+", "in", "SIN"), ("SIN-", "in", "SIN"),
               ("DOUT+", "out", "DOUT"), ("DOUT-", "out", "DOUT"), ("SOUT+", "out", "SOUT"), ("SOUT-", "out", "SOUT"))),

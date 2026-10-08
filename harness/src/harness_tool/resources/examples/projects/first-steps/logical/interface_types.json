@@ -73,6 +73,40 @@
       "unverified": true
     },
     {
+      "category": "data",
+      "construction": "twisted_shielded_pair",
+      "default_gauge_awg": null,
+      "emc_class": null,
+      "id": "ethernet",
+      "impedance_ohm": null,
+      "name": "Ethernet",
+      "notes": "",
+      "shielding": "per_pair",
+      "signals": [
+        {
+          "direction": "out",
+          "name": "TX+",
+          "pair": "TX"
+        },
+        {
+          "direction": "out",
+          "name": "TX-",
+          "pair": "TX"
+        },
+        {
+          "direction": "in",
+          "name": "RX+",
+          "pair": "RX"
+        },
+        {
+          "direction": "in",
+          "name": "RX-",
+          "pair": "RX"
+        }
+      ],
+      "unverified": true
+    },
+    {
       "category": "ground",
       "construction": "single",
       "default_gauge_awg": null,

@@ -23,8 +23,14 @@ def test_add_unit_creates_connectors_pins_and_placement() -> None:
     run(p, "add", ops)
     assert uid == "OBC1" and p.units[uid].name == "Computer 1" and p.units[uid].zone == "panel-A"
     conns = edit.unit_connectors(p, uid)
-    assert [c.id for c in conns] == ["OBC1-J01", "OBC1-J02", "OBC1-J03"]
-    assert len(conns[0].pins) == 9  # from the library part's pin count
+    assert [c.id for c in conns] == ["OBC1-J01", "OBC1-J02", "OBC1-J03", "OBC1-J04"]
+    assert [c.part_id for c in conns] == [
+        "EX-MICROD-25-F",  # four interface types
+        "EX-MICROD-9-F",  # power
+        "EX-MICROD-15-F",  # two interface types
+        "EX-RJ45-F",  # Ethernet
+    ]
+    assert len(conns[0].pins) == 25  # from the library part's pin count
     assert p.placements[uid].x == edit.lane_x(0)
 
 
@@ -304,3 +310,34 @@ def test_add_unit_rolls_back_when_harness_blocks_delete() -> None:
 
 def test_harness_object_import_is_used() -> None:
     assert Harness(id="H1", name="h").status == "draft"
+
+
+def test_unit_templates_follow_the_baseline_standards() -> None:
+    """D-130: RS-422, RS-485 and CAN; Micro-D 9 to 31 pin; Ethernet on RJ45; SMA for RF."""
+    from harness_tool.core.starter import starter_interface_types, starter_parts
+
+    parts = {x.id: x for x in starter_parts()}
+    types = {x.id for x in starter_interface_types()}
+    assert {"rs422", "rs485", "can", "ethernet"} <= types
+    assert {f"EX-MICROD-{n}-{g}" for n in (9, 15, 21, 25, 31) for g in "MF"} <= set(parts)
+    assert {"EX-RJ45-M", "EX-RJ45-F", "EX-SMA-M", "EX-SMA-F"} <= set(parts)
+    assert parts["EX-MICROD-31-F"].mates_with == "EX-MICROD-31-M"
+    for template in edit.TEMPLATES.values():
+        for conn in template.connectors:
+            assert conn.part_id in parts, (template.id, conn.part_id)
+            assert set(conn.carries) <= types
+            if conn.carries == ("rf_coax",):
+                assert conn.part_id == "EX-SMA-F"
+            elif conn.carries == ("ethernet",):
+                assert conn.part_id == "EX-RJ45-F"
+            else:
+                assert conn.part_id.startswith("EX-MICROD-"), (template.id, conn.part_id)
+                assert parts[conn.part_id].pin_count and parts[conn.part_id].pin_count >= 9  # type: ignore[operator]
+    sizes = {edit.TEMPLATES["power"].connectors[0].part_id: 9, "EX-MICROD-15-F": 15}
+    assert edit._box_part(("rs422",)) == "EX-MICROD-9-F"
+    assert edit._box_part(("rs422", "can")) == "EX-MICROD-15-F"
+    assert edit._box_part(("rs422", "rs485", "can")) == "EX-MICROD-21-F"
+    assert edit._box_part(("rs422", "rs485", "can", "discrete")) == "EX-MICROD-25-F"
+    assert edit._box_part(("rs422", "rs485", "can", "discrete", "analog")) == "EX-MICROD-31-F"
+    assert edit._box_part(("power_primary",)) == "EX-MICROD-9-F"
+    assert sizes

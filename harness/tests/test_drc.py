@@ -497,10 +497,12 @@ def test_regression_lookalike_rule_copes_with_mixed_keying() -> None:
     unit = next(
         u
         for u in p.units
-        if len([c for c in p.connectors.values() if c.unit_id == u and c.part_id == "EX-DSUB-9-F"])
+        if len(
+            [c for c in p.connectors.values() if c.unit_id == u and c.part_id == "EX-MICROD-9-F"]
+        )
         >= 3
     )
-    conns = [c for c in p.connectors.values() if c.unit_id == unit and c.part_id == "EX-DSUB-9-F"]
+    conns = [c for c in p.connectors.values() if c.unit_id == unit and c.part_id == "EX-MICROD-9-F"]
     apply_ops(
         p,
         [

@@ -3,8 +3,8 @@
     {
       "carries": [
         "rs422",
+        "rs485",
         "can",
-        "spacewire",
         "discrete"
       ],
       "gender": "female",
@@ -13,7 +13,7 @@
       "mates_with": null,
       "name": "J01",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-MICROD-25-F",
       "pins": [
         {
           "contact_size": null,
@@ -74,7 +74,7 @@
       "mates_with": null,
       "name": "J02",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-MICROD-9-F",
       "pins": [
         {
           "contact_size": null,
@@ -118,7 +118,7 @@
       "mates_with": null,
       "name": "J03",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-MICROD-15-F",
       "pins": [
         {
           "contact_size": null,

@@ -117,18 +117,17 @@ harness drc wheel-link
 ```
 # Design rule check: Wheel link
 
-Model hash: `5491dbdb3a7f`. Rules run: 22.
-Open: 0 error(s), 5 warning(s), 8 note(s). Waived: 0.
+Model hash: `39697e3c467b`. Rules run: 22.
+Open: 0 error(s), 10 warning(s), 8 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.
 ```
 
-You see **0 errors**, 5 warnings and 8 notes. Read the warnings; they are typical:
+You see **0 errors**, 10 warnings and 8 notes. The warnings are all the same kind:
 
-- **`RW1-J01, RW1-J02 on RW1 are identical ... and could be plugged in the wrong place`**. The example gives the wheel two identical connectors. In a real design you would use different keying or a different insert. Here, you can answer it in two ways: fix it, or **waive** it with a reason.
-- **`Part EX-DSUB-9-F is not approved yet but is used`** (and three more like it). The starter parts are examples, so none is approved. Part 8 shows how to import your approved parts list.
+- **`Part EX-MICROD-15-F is not approved yet but is used (2 place(s))`**, and nine more like it (other Micro-D sizes, the Ethernet jack, the two wire parts). The starter library contains *example* parts; none is approved, and only approved parts may be built into flight hardware. Part 8 imports an approved parts list and clears some of them.
 
-**Waive one warning (app):** in the Problems tab press **Waive…** on the look-alike warning, type a reason of at least 10 characters (for example *Different gender on the harness side, keyed by the cable*) and confirm. The card moves to **Waived** and stays in the report with your reason. Errors cannot be waived.
+A warning can be fixed, or **waived**. **Waive one (app):** in the Problems tab press **Waive…** on one of the part warnings, type a reason of at least 10 characters (for example *Example part, practice project only*) and confirm. The card moves to **Waived** and stays in the report with your reason. Errors cannot be waived.
 
 The **notes** say *not checked*: EMC separation, shield grounding and so on are not checked, **because the engineering values are still placeholders**. A silent pass would be a lie, so the tool says nothing was checked.
 
@@ -143,7 +142,7 @@ harness export wheel-link
 ```
 
 ```
-37 files written to wheel-link/outputs (model 5491dbdb3a7f).
+37 files written to wheel-link/outputs (model 39697e3c467b).
 ```
 
 The files are checked independently before they are written; if that check fails, nothing is written. Look in `wheel-link/outputs/`:
@@ -160,7 +159,7 @@ The files are checked independently before they are written; if that check fails
 | `system/harness_overview.pdf`, `box_pinouts.csv`, `mating_matrix.csv`, `traceability.csv` | all harnesses at a glance; the pinout of every unit connector; which cable mates with which unit; which interface is carried by which wires |
 | `system/drc_report.md`, `changelog.csv`, `revision_report.md`, `export.json` | the Problems report; the change log; the revision report; the whole model as one JSON |
 
-The harness drawing, with a title block and the model hash (`5491dbdb3a7f` is the same fingerprint you saw above):
+The harness drawing, with a title block and the model hash (`39697e3c467b` is the same fingerprint you saw above):
 
 ![A harness drawing](img/w001-drawing.png)
 
@@ -230,16 +229,51 @@ The three CSV files in `my-templates/` (`interfaces.csv`, `approved-parts.csv`, 
 
 ## Part 8: bring in your own data
 
-Each of these first shows what it would do. On the command line add `--dry-run` to look without changing anything:
+Every import first shows what it would do. On the command line add `--dry-run` to look without changing anything. Try the approved parts list from the templates, and say what the approval values in it mean (the tool never decides that a part is approved):
+
+```
+harness import-parts wheel-link my-templates/approved-parts.csv --approved Approved --pending Review --rejected Rejected --dry-run
+harness import-parts wheel-link my-templates/approved-parts.csv --approved Approved --pending Review --rejected Rejected
+```
+
+```
+Imported 5 part(s).
+```
+
+Ask the rules what they think now:
+
+```
+harness drc wheel-link
+```
+
+```
+Open: 1 error(s), 7 warning(s), 3 note(s). Waived: 0.
+```
+
+One **error**: *The model changed after the harness plans were generated. Generate again before releasing.* Approving parts changed the design's library, so the plans and outputs are out of date. That is exactly what the check is for. Make the plans and outputs current:
+
+```
+harness generate wheel-link
+harness export wheel-link
+```
+
+```
+harness drc wheel-link
+```
+
+```
+Open: 0 error(s), 7 warning(s), 3 note(s). Waived: 0.
+```
+
+0 errors, and 7 warnings: the three parts you approved no longer warn. Other imports work the same way:
 
 | You have | Do |
 | --- | --- |
-| an approved parts list | `harness import-parts wheel-link my-templates/approved-parts.csv --approved Approved --pending Review --rejected Rejected --dry-run` |
 | segment lengths from CAD or a spreadsheet | `harness import-lengths wheel-link my-templates/segment-lengths.csv --unit mm --dry-run` |
 | the interfaces as a table | app: **File > Import interfaces…** with `my-templates/interfaces.csv` |
 | the connector pinout of a unit in KiCad | `harness import-netlist wheel-link my-templates/wheel-connectors.net --unit RW1 --prefix J --connector J1=RW1-J01 --connector J2=RW1-J02 --dry-run` |
 
-You say what the approval values in your list mean (`--approved Approved`); the tool never decides that a part is approved. Details and column names: [`IMPORTS.md`](IMPORTS.md), [`KICAD.md`](KICAD.md).
+Details and column names: [`IMPORTS.md`](IMPORTS.md), [`KICAD.md`](KICAD.md).
 
 ## Part 9 (optional, practice only): release a harness
 

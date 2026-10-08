@@ -22,6 +22,17 @@ Seven words carry most of the meaning:
 | **Zone** | A lane of the diagram (a panel or compartment) that units sit in. |
 | **Placeholder** | A value nobody has entered yet. The tool never invents engineering numbers. |
 
+The starter library follows one baseline:
+
+| For | Baseline |
+| --- | --- |
+| Communication | RS-422, RS-485 and CAN |
+| High data rates (for example a payload) | Ethernet, on an RJ45 connector, as the alternative |
+| Power and data connectors | Micro-D 9, 15, 21, 25 and 31 pin (power: 9 pin; for data the size follows the number of interface types the connector carries) |
+| RF | SMA |
+
+Other interface types and older connector parts stay in the library for projects that need them. All parts are examples with fictional part numbers, none approved; your approved parts list replaces them.
+
 ## 2. Install and start (Ubuntu 24.04 or newer)
 
 1. Install the package: `sudo apt install ./harness-tool_<version>_amd64.deb`. Or unpack the `.tar.gz` anywhere and run `./harness-tool/install.sh` (no administrator rights needed; it installs for your user).

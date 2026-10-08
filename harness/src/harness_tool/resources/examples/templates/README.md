@@ -5,7 +5,7 @@ Files to copy and adapt. Get them with `harness templates FOLDER`.
 | File | Use it for | How |
 | --- | --- | --- |
 | `interfaces.csv` | importing interfaces between units | app: **File > Import interfaces** |
-| `approved-parts.csv` | importing your approved parts list | `harness import-parts DIR approved-parts.csv --approved Approved --pending Review --rejected Rejected` |
+| `approved-parts.csv` | importing your approved parts list (the rows name example Micro-D and RJ45 parts of the starter library) | `harness import-parts DIR approved-parts.csv --approved Approved --pending Review --rejected Rejected` |
 | `segment-lengths.csv` | importing harness segment lengths (millimetres) | `harness import-lengths DIR segment-lengths.csv --unit mm` |
 | `wheel-connectors.net` | a KiCad netlist for the unit connectors of `RW1` in the `first-steps` project | `harness import-netlist DIR wheel-connectors.net --unit RW1 --prefix J --connector J1=RW1-J01 --connector J2=RW1-J02 --dry-run` |
 | `signal-map.csv` | renaming KiCad net names to interface signal names | add `--signal-map signal-map.csv` to `import-netlist` |

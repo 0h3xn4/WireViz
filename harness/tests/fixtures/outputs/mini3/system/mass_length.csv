@@ -1,5 +1,5 @@
-# harness-tool 0.1.0rc4 model 6c35cd91012b
+# harness-tool 0.1.0rc4 model 6c384d383e73
 Harness,Wires,Connectors,Wire length known (m),Wires without length,Mass of known parts (g),Margin (g),Mass with margin (g),Complete,Missing data
-W001,2,2,0,2,0,,,no,mass of connector part EX-DSUB-9-F; mass of connector part EX-DSUB-9-M; mass per metre of wire part (none)
-W002,4,2,0,4,0,,,no,mass of connector part EX-DSUB-9-F; mass of connector part EX-DSUB-9-M; mass per metre of wire part EX-WIRE-TWISTED-SHIELDED
+W001,2,2,0,2,0,,,no,mass of connector part EX-MICROD-9-F; mass of connector part EX-MICROD-9-M; mass per metre of wire part (none)
+W002,4,2,0,4,0,,,no,mass of connector part EX-MICROD-15-F; mass of connector part EX-MICROD-25-M; mass per metre of wire part EX-WIRE-TWISTED-SHIELDED
 TOTAL,6,4,0,6,0,,,no,totals count only what is known

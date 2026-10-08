@@ -162,6 +162,7 @@ def test_getting_started_commands_work_in_order(tmp_path: Path) -> None:
         {
             "harness release wheel-link": [1, 0],  # blocked before the values, done after them
             "harness config wheel-link": [1],  # exit 1 while values are missing
+            "harness drc wheel-link": [0, 1, 0],  # the library import makes the plans stale (1)
         },
     )
     # the model hash quoted in the text is the one the first export prints

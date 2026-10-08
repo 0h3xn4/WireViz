@@ -14,7 +14,7 @@
       <property name="Sheetfile" value="unit.kicad_sch"/>
       <fields>
         <field name="HarnessConnector">TST1-J01</field>
-        <field name="HarnessPart">EX-DSUB-9-F</field>
+        <field name="HarnessPart">EX-MICROD-9-F</field>
       </fields>
     </comp>
     <comp ref="J2">

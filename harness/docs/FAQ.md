@@ -14,7 +14,9 @@ Short answers. If yours is not here, check the **Problems** tab (it says what is
 
 **What happens when I generate again?** IDs, locked wires and locked pins are kept, released harnesses are never touched, and a report says what was added, changed and removed. Generating twice gives the same result.
 
-**Which interface types exist? Can I add my own?** Sixteen ship with the tool (power, RS-422, RS-485, CAN, SpaceWire, MIL-STD-1553B, LVDS, I2C, analog, thermistor, heater, discrete, pyro, RF coax, ground). They are stored in the project's `logical/interface_types.json`. There is no editor for them in the app yet; a new type is another entry in that file in the same format (see [`FILE_FORMAT.md`](FILE_FORMAT.md)).
+**Which interface types exist? Can I add my own?** Seventeen ship with the tool. The baseline for communication is RS-422, RS-485 and CAN, with Ethernet as the alternative for high data rates; the others are power (primary, secondary), SpaceWire, MIL-STD-1553B, LVDS, I2C, analog, thermistor, heater, discrete, pyro, RF coax and ground. They are stored in the project's `logical/interface_types.json`. There is no editor for them in the app yet; a new type is another entry in that file in the same format (see [`FILE_FORMAT.md`](FILE_FORMAT.md)).
+
+**Which connectors does the tool use?** Micro-D 9, 15, 21, 25 and 31 pin for power and data, RJ45 for Ethernet and SMA for RF (see "The standards the tool starts from" in [`CONCEPTS.md`](CONCEPTS.md)). They are example parts; import your approved list to replace them. Older D-sub, MDM, circular and TNC parts stay in the library.
 
 **Can two or more units share one link (a bus)?** Not yet. A link between more than two units is skipped with a warning (D-116 in [`DECISIONS.md`](DECISIONS.md)).
 

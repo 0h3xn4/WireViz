@@ -24,7 +24,7 @@ Read this once, in ten minutes, and the rest of the documentation will make sens
 | Word | What it is | Example |
 | --- | --- | --- |
 | **Unit** | A box in the spacecraft with connectors on it. | `OBC1` (on-board computer), `PCDU1` (power unit), `RW1` (reaction wheel) |
-| **Interface type** | A kind of connection and its signals. The tool ships 16 (RS-422, CAN, SpaceWire, primary power, ...). | *RS-422* has the signals `TX+`, `TX-`, `RX+`, `RX-` |
+| **Interface type** | A kind of connection and its signals. The tool ships 17 (RS-422, RS-485, CAN, Ethernet, primary power, ...). | *RS-422* has the signals `TX+`, `TX-`, `RX+`, `RX-` |
 | **Interface** | One connection of a type between two units. This is what *you* add. | `IF-002`: RS-422 from `OBC1` to `RW1` |
 | **Connector** | A plug or socket. On a unit it is a *box connector*; on a harness it is a *cable connector* that mates with a box connector. | `RW1-J02` on the wheel; `W001-P2` on the cable |
 | **Pin** | One contact of a connector. It carries one signal. | pin 3 of `RW1-J02` carries `RX+` |
@@ -33,6 +33,19 @@ Read this once, in ten minutes, and the rest of the documentation will make sens
 | **Segment** | A stretch of the physical route a bundle follows; wire lengths are sums of segments. | `W001-L1` |
 | **Zone** | A lane of the diagram (a panel or compartment). Units sit in zones. | `panel-A`, `panel-B` |
 | **Nominal / redundant** | The main chain of units and its backup. They never share a connector or harness. | `PCDU1` and `PCDU1-R` |
+
+## The standards the tool starts from
+
+The starter library and the units you add follow one baseline (D-130):
+
+| For | Baseline | Notes |
+| --- | --- | --- |
+| Communication | **RS-422, RS-485, CAN** | what the starter units carry |
+| High data rates (for example a payload) | **Ethernet** | an alternative to the three above, on an RJ45 connector |
+| Power and data connectors | **Micro-D 9, 15, 21, 25 and 31 pin** | power: 9 pin. For data the size follows how many interface types the connector carries: 1 type 9, 2 types 15, 3 types 21, 4 types 25, more 31 |
+| RF | **SMA** | one connector per RF link |
+
+Other interface types (SpaceWire, MIL-STD-1553B, LVDS, I2C, analog, discrete, pyro ...) and older connector parts (D-sub, MDM, circular, TNC) stay in the library for projects that need them. All parts are **examples** with fictional part numbers, none approved: your approved parts list ([`IMPORTS.md`](IMPORTS.md)) replaces them. Unit connectors are female and the cable connector is the male half that mates with it.
 
 ## Guided and Expert
 

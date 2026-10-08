@@ -9,10 +9,10 @@
       "gender": "unspecified",
       "id": "W015-P1",
       "keying": null,
-      "mates_with": "OBC1-J12",
+      "mates_with": "OBC1-J13",
       "name": "P1",
       "notes": "",
-      "part_id": "EX-DSUB-9-M",
+      "part_id": "EX-RJ45-M",
       "pins": [
         {
           "contact_size": null,
@@ -81,15 +81,6 @@
           "contact_size": null,
           "fixed": false,
           "id": "8",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "9",
           "interface_id": null,
           "locked": false,
           "signal": null,
@@ -104,10 +95,10 @@
       "gender": "unspecified",
       "id": "W015-P2",
       "keying": null,
-      "mates_with": "SA1-J02",
+      "mates_with": "PL1-J02",
       "name": "P2",
       "notes": "",
-      "part_id": "EX-DSUB-9-M",
+      "part_id": "EX-RJ45-M",
       "pins": [
         {
           "contact_size": null,
@@ -180,15 +171,6 @@
           "locked": false,
           "signal": null,
           "termination": "unspecified"
-        },
-        {
-          "contact_size": null,
-          "fixed": false,
-          "id": "9",
-          "interface_id": null,
-          "locked": false,
-          "signal": null,
-          "termination": "unspecified"
         }
       ],
       "role": "cable",
@@ -196,12 +178,12 @@
     }
   ],
   "generated": true,
-  "group_key": "cp|nominal|OBC1-J12|SA1-J02",
+  "group_key": "cp|nominal|OBC1-J13|PL1-J02",
   "id": "W015",
   "interfaces": [
-    "IF-022"
+    "IF-015"
   ],
-  "name": "OBC1-J12 to SA1-J02",
+  "name": "OBC1-J13 to PL1-J02",
   "notes": "",
   "released_on": null,
   "revision": "A",
@@ -218,10 +200,20 @@
       "end_a": "floating",
       "end_b": "floating",
       "id": "W015-S1",
-      "kind": "twisted_pair",
+      "kind": "shielded_pair",
       "wire_ids": [
         "W015-001",
-        "W015-002"
+        "W015-003"
+      ]
+    },
+    {
+      "end_a": "floating",
+      "end_b": "floating",
+      "id": "W015-S2",
+      "kind": "shielded_pair",
+      "wire_ids": [
+        "W015-002",
+        "W015-004"
       ]
     }
   ],
@@ -234,27 +226,55 @@
       "from_pin": "1",
       "gauge_awg": null,
       "id": "W015-001",
-      "interface_id": "IF-022",
+      "interface_id": "IF-015",
       "length_m": null,
       "locked": false,
-      "part_id": "EX-WIRE-SINGLE",
-      "signal": "T+",
+      "part_id": "EX-WIRE-TWISTED-SHIELDED",
+      "signal": "TX+/RX+",
       "to_connector": "W015-P2",
-      "to_pin": "1"
+      "to_pin": "3"
+    },
+    {
+      "colour": null,
+      "from_connector": "W015-P2",
+      "from_pin": "1",
+      "gauge_awg": null,
+      "id": "W015-002",
+      "interface_id": "IF-015",
+      "length_m": null,
+      "locked": false,
+      "part_id": "EX-WIRE-TWISTED-SHIELDED",
+      "signal": "TX+/RX+",
+      "to_connector": "W015-P1",
+      "to_pin": "3"
     },
     {
       "colour": null,
       "from_connector": "W015-P1",
       "from_pin": "2",
       "gauge_awg": null,
-      "id": "W015-002",
-      "interface_id": "IF-022",
+      "id": "W015-003",
+      "interface_id": "IF-015",
       "length_m": null,
       "locked": false,
-      "part_id": "EX-WIRE-SINGLE",
-      "signal": "T-",
+      "part_id": "EX-WIRE-TWISTED-SHIELDED",
+      "signal": "TX-/RX-",
       "to_connector": "W015-P2",
-      "to_pin": "2"
+      "to_pin": "4"
+    },
+    {
+      "colour": null,
+      "from_connector": "W015-P2",
+      "from_pin": "2",
+      "gauge_awg": null,
+      "id": "W015-004",
+      "interface_id": "IF-015",
+      "length_m": null,
+      "locked": false,
+      "part_id": "EX-WIRE-TWISTED-SHIELDED",
+      "signal": "TX-/RX-",
+      "to_connector": "W015-P1",
+      "to_pin": "4"
     }
   ]
 }

@@ -5,7 +5,7 @@
   (components
     (comp (ref "J1") (value "Conn_01x09")
       (fields (field (name "HarnessConnector") "RW1-J01")))
-    (comp (ref "J2") (value "Conn_01x09")
+    (comp (ref "J2") (value "Conn_01x21")
       (fields (field (name "HarnessConnector") "RW1-J02")))
     (comp (ref "U1") (value "MCU")))
   (nets
