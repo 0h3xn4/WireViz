@@ -1,0 +1,8 @@
+ID,status,evidence,gap,rationale
+ECSS-Q-ST-80_0720185,human,,G-11,Customer witnessing of tests
+ECSS-Q-ST-80_0720186,human,,G-11,Witnessing by supplier personnel
+ECSS-Q-ST-80_0720190,human,,G-11,Review boards convened by people
+ECSS-Q-ST-80_0720338,human,,G-11,Security review board
+ECSS-Q-ST-80_0720195,human,,G-10,Validation by staff not involved in design
+ECSS-Q-ST-80_0720196,na,,,Flight software validation on flight hardware; not flight software
+ECSS-Q-ST-80_0720203,na,,,Operational environment tests of flight software

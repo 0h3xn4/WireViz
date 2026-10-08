@@ -1,0 +1,40 @@
+ID,today,target,gap,evidence,remediation
+ECSS-Q-ST-30-11_0140002,none,partial,B-01,,Record manufacturer maximum temperature per wire/connector part; DRC warns when no limit is recorded
+ECSS-Q-ST-30-11_0140179,partial,partial,B-01,config/derating.json max_ambient_temperature_c (recorded only),Use the recorded hot acceptance temperature in the temperature margin check
+ECSS-Q-ST-30-11_0140050,partial,partial,B-04,DRC current-over-contact (single contact_current_factor),"Add voltage and temperature margins per Table 6-10 (profile values, opt-in); contact current 50 %"
+ECSS-Q-ST-30-11_0140052,none,automatic,B-02,generation.power_signal_gap_pins (power/signal gap only),"New rule: on a power connector, power and return pins have at least one unassigned contact between them; pin allocator honours it"
+ECSS-Q-ST-30-11_0140053,none,human,B-14,,Add to the review checklist template
+ECSS-Q-ST-30-11_0140054,partial,partial,B-06,"DRC mate-mismatch, connector-lookalike",Cite the requirement in both rules; keying and contact assignment effect stay a human judgement
+ECSS-Q-ST-30-11_0140055,none,partial,B-05,Part.manufacturer,"New rule: connector, its mate and recorded contacts/backshell parts have the same manufacturer; warns when unknown"
+ECSS-Q-ST-30-11_0140056,none,partial,B-03,,Part rating max_mating_cycles; rule fails if a part allows more than the 50 cycle limit or is missing; counting actual mating cycles is a human/test record
+ECSS-Q-ST-30-11_0140057,none,partial,B-04,,RF connector (SMA) derating via the same connector margins
+ECSS-Q-ST-30-11_0140059,none,human,B-14,,Review checklist item
+ECSS-Q-ST-30-11_0140060,none,human,B-07,,"Record RF power per RF link; report as ""not checked: multipactor analysis needed"""
+ECSS-Q-ST-30-11_0140061,none,partial,B-03,,As 0140056 for RF connectors
+ECSS-Q-ST-30-11_0140213,none,partial,B-01,config/derating.json ampacity_a_by_awg (current only),"Wire part ratings: rated voltage, maximum temperature; rule checks 50 % voltage; temperature margin 50 degC"
+ECSS-Q-ST-30-11_0140214,none,partial,B-01,,Optional vacuum current calculation when the thermal inputs are supplied; otherwise reported as not checked
+ECSS-Q-ST-30-11_0140215,none,human,B-07,,"Reported as ""specific thermal analysis needed"" when conditions of 6.32.4b are not met or unknown"
+ECSS-Q-ST-30-11_0140216,none,human,B-14,,Review checklist item
+ECSS-Q-ST-30-11_0140217,partial,automatic,B-01,sizing.bundle_derating (one factor for all bundles),Bundle factor K from Table 6-41 by number of wires in the bundle (opt-in profile)
+ECSS-Q-ST-30-11_0140218,partial,automatic,B-01,,"Table 6-41 as a table in the config, interpolation rule stated"
+ECSS-Q-ST-30-11_0140219,none,partial,B-01,,Partial loading factor L from Table 6-42; needs the share of used wires (new field per wire: cold redundancy / not in same bundle)
+ECSS-Q-ST-30-11_0140220,none,partial,B-01,,Table 6-42 as a table in the config
+ECSS-Q-ST-30-11_0140221,none,human,B-07,,Reported as needed; analysis is outside the tool
+ECSS-Q-ST-30-11_0140222,none,human,B-07,,Outside the tool
+ECSS-Q-ST-30-11_0140223,none,human,B-07,,Outside the tool
+ECSS-E-ST-20-07_0080018,none,human,B-14,,Review checklist item
+ECSS-E-ST-20-07_0080021,none,human,B-14,,Review checklist item
+ECSS-E-ST-20-07_0080232,none,human,B-14,,Measured on hardware; checklist item
+ECSS-E-ST-20-07_0080033,partial,partial,B-08,"ShieldGroup (kind, ends); DRC shield rules","Rule: cables external to the structure have a shield; needs a per-unit/harness ""external"" flag"
+ECSS-E-ST-20-07_0080034,partial,partial,B-08,"interface category; config/emc.json classes; DRC category-mixed, emc-mixed",Show the requirement; categorisation criteria stay the programme's (critical lines per ECSS-E-ST-20)
+ECSS-E-ST-20-07_0080035,none,partial,B-08,,Rule: wires of one EMC class that run between the same units are in one bundle
+ECSS-E-ST-20-07_0080036,none,human,B-09,,Model has no bundle routing geometry; report as not checked and add to checklist
+ECSS-E-ST-20-07_0080037,none,automatic,B-10,,EMC class printed on wire list and labels
+ECSS-E-ST-20-07_0080038,none,partial,B-08,,Rule: shield pin used as signal or return conductor unless coax/RF
+ECSS-E-ST-20-07_0080039,none,human,B-14,,Part attribute shield_insulated; rule when missing
+ECSS-E-ST-20-07_0080040,none,human,B-14,,Part attribute conductive_finish; rule when missing
+ECSS-E-ST-20-07_0080041,partial,partial,B-08,"generation.shield_end_a/b with backshell_360, DRC shield-wrong-end",Check both ends bonded through the connector body/backshell; the 5 mOhm limit is a measurement (checklist)
+ECSS-E-ST-20-07_0080042,partial,partial,B-08,as above,Overshield: 360 degree at both ends
+ECSS-E-ST-20-07_0080167,none,human,B-14,,Review checklist item
+ESCC3901-4.4,partial,partial,B-11,Part.approval; DRC part-unapproved,Part specification field cites the ESCC detail specification; rule warns when a wire part has none
+ESCC3901-4.5,none,human,B-14,,Manufacturer evidence; checklist item
