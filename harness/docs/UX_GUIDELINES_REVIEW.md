@@ -8,7 +8,7 @@ The owner's document *UX/UI Guidelines for the Harness Tool* is written for a Wi
 | --- | --- | --- |
 | No background network use; works with networking off; an automated test checks it | done | `tests/test_offline.py`, self-test under `unshare -n` (`docs/RELEASE.md`) |
 | Downloads only with consent, with checksums, a diff and rollback | not applicable today: the tool has no download feature. If one is ever added it must follow this rule; `harness import-parts` already works from files the user provides | `docs/SECURITY.md` |
-| Component library by download or file import, with version, date and source visible | partly: file import with a per-row preview exists (`harness import-parts`, the editor's import); the library name and version appear in the provenance file (**new**). **Open:** a source and a date for the library need two new fields in the library record, which changes every project's model hash, so it needs the owner's decision (D-133 proposal) | `docs/IMPORTS.md`, `tests/test_provenance.py` |
+| Component library by download or file import, with version, date and source visible | partly: file import with a per-row preview exists (`harness import-parts`, the editor's import); the library name and version appear in the provenance file (**new**). **New (D-133):** the library record has `source` and `date`; `harness library` shows and sets them, `harness import-parts` records the file name and checksum, and the provenance file and the editor show them | `docs/IMPORTS.md`, `tests/test_provenance.py`, `tests/test_library_source.py` |
 | Everything else bundled locally: editor component, Graphviz, fonts, icons, JSON Schema | fonts **new** (IBM Plex Sans and Mono, SIL OFL, D-132); JSON Schema generated from the model, **new** (`harness schema`); Monaco and Graphviz are not used | `tests/test_fonts.py`, `tests/test_schemas.py` |
 | Help and examples built in | done | F1 guide, `harness new`, `harness templates`, **File > New project from an example** (**new**) |
 | No AI features; autocomplete only from schema and local library; deterministic, traceable checks | done: the tool contains no language model and every rule is deterministic; each finding now names the requirement it serves (**new**) | `docs/RULES.md`, `tests/test_drc.py` |
@@ -37,4 +37,7 @@ The owner's document *UX/UI Guidelines for the Harness Tool* is written for a Wi
 | Revision diffs highlighting added, removed and changed items | done | `tests/test_gui_changes.py` |
 | Print-ready A3/A4 output with a title block | done (title block fields still wait for D-15) | `docs/OUTPUTS.md` |
 
+## What I need from the owner
+
+Whether filtering the diagram by connector or by bundle is wanted (it is not a large change).
 Nothing is open from this review.

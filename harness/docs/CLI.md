@@ -17,7 +17,7 @@ Every command that changes a project takes the same lock as the app, so the two 
 - Start: [`new`](#harness-new), [`templates`](#harness-templates), [`schema`](#harness-schema)
 - Check: [`validate`](#harness-validate), [`check`](#harness-check), [`drc`](#harness-drc), [`verify`](#harness-verify)
 - Generate and export: [`generate`](#harness-generate), [`export`](#harness-export)
-- Bring in data: [`config`](#harness-config), [`import-parts`](#harness-import-parts), [`import-lengths`](#harness-import-lengths), [`import-netlist`](#harness-import-netlist)
+- Bring in data: [`config`](#harness-config), [`library`](#harness-library), [`import-parts`](#harness-import-parts), [`import-lengths`](#harness-import-lengths), [`import-netlist`](#harness-import-netlist)
 - Review, release and change: [`review`](#harness-review), [`release`](#harness-release), [`revise`](#harness-revise), [`diff`](#harness-diff), [`log`](#harness-log), [`compare`](#harness-compare)
 - Maintenance: [`migrate`](#harness-migrate)
 
@@ -200,6 +200,27 @@ harness config my-design --ampacity-csv ampacity.csv
 harness config my-design --apply-profile ecss-q-st-30-11c
 ```
 
+### harness library
+
+Without options: print the library's name, version, source and date. With options: record them. The date is the date of the data (YYYY-MM-DD) and is entered by you; the tool never reads the clock into a project.
+
+`harness library project [options]`
+
+| Argument | Meaning |
+| --- | --- |
+| `project` |  |
+| `--library-name LIBRARY_NAME` | name of the parts library |
+| `--library-version LIBRARY_VERSION` | version of the parts data |
+| `--library-source LIBRARY_SOURCE` | where the data comes from (default for import-parts: the file name and its SHA-256) |
+| `--library-date YYYY-MM-DD` | date of the data |
+
+Examples:
+
+```
+harness library my-design
+harness library my-design --library-version 4 --library-source "ESCC part data, supplier file" --library-date 2026-09-30
+```
+
 ### harness import-parts
 
 Import parts with their approval status. Say what the approval values in your list mean; unknown values are rejected, never guessed.
@@ -215,6 +236,10 @@ Import parts with their approval status. Say what the approval values in your li
 | `--rejected REJECTED` | a value that means not approved (repeat) (repeatable) |
 | `--category CATEGORY` | category for rows that have none (connector, contact, backshell, wire, sleeving, label) |
 | `--dry-run` | show the preview only |
+| `--library-name LIBRARY_NAME` | name of the parts library |
+| `--library-version LIBRARY_VERSION` | version of the parts data |
+| `--library-source LIBRARY_SOURCE` | where the data comes from (default for import-parts: the file name and its SHA-256) |
+| `--library-date YYYY-MM-DD` | date of the data |
 
 Examples:
 

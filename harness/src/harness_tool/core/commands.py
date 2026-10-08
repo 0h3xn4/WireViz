@@ -16,6 +16,7 @@ from .model import (
     Harness,
     InterfaceInstance,
     InterfaceType,
+    LibraryInfo,
     Part,
     Placement,
     Project,
@@ -83,6 +84,11 @@ class SetMeta:
 
 
 @dataclass(frozen=True)
+class SetLibraryInfo:
+    info: LibraryInfo
+
+
+@dataclass(frozen=True)
 class SetZones:
     zones: tuple[str, ...]
 
@@ -92,7 +98,7 @@ class SetGeneration:
     record: GenerationRecord | None
 
 
-Op = Put | Delete | SetConfig | DeleteConfig | SetMeta | SetZones | SetGeneration
+Op = Put | Delete | SetConfig | DeleteConfig | SetMeta | SetLibraryInfo | SetZones | SetGeneration
 
 
 def _apply(project: Project, op: Op) -> Op:
@@ -101,6 +107,10 @@ def _apply(project: Project, op: Op) -> Op:
         before_meta = project.meta
         project.meta = op.meta
         return SetMeta(before_meta)
+    if isinstance(op, SetLibraryInfo):
+        before_info = project.library_info
+        project.library_info = op.info
+        return SetLibraryInfo(before_info)
     if isinstance(op, SetGeneration):
         before_gen = project.generation
         project.generation = op.record

@@ -14,7 +14,7 @@ GROUPS = (
     ("Start", ("new", "templates", "schema")),
     ("Check", ("validate", "check", "drc", "verify")),
     ("Generate and export", ("generate", "export")),
-    ("Bring in data", ("config", "import-parts", "import-lengths", "import-netlist")),
+    ("Bring in data", ("config", "library", "import-parts", "import-lengths", "import-netlist")),
     ("Review, release and change", ("review", "release", "revise", "diff", "log", "compare")),
     ("Maintenance", ("migrate",)),
 )
@@ -36,6 +36,10 @@ EXAMPLES: dict[str, list[str]] = {
         "harness config my-design",
         "harness config my-design --ampacity-csv ampacity.csv",
         "harness config my-design --apply-profile ecss-q-st-30-11c",
+    ],
+    "library": [
+        "harness library my-design",
+        'harness library my-design --library-version 4 --library-source "ESCC part data, supplier file" --library-date 2026-09-30',
     ],
     "import-parts": [
         "harness import-parts my-design parts.csv --approved Approved --pending Review "

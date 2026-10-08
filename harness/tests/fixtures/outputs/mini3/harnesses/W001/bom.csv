@@ -1,4 +1,4 @@
-# harness-tool 0.1.0rc4 model 6c384d383e73
+# harness-tool 0.1.0rc4 model 85aa3c207e98
 Part,Category,Manufacturer,Part number,Description,Approval,Quantity,Unit,Wires without length,Used in
 (no part),unknown,,,,missing from parts list,0,m,2,W001
 EX-MICROD-9-F,connector,,,"Micro-D 9-pin, female (example, baseline power and data)",pending (example data),1,ea,,W001
