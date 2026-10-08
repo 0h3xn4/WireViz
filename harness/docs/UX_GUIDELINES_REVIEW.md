@@ -32,7 +32,7 @@ The owner's document *UX/UI Guidelines for the Harness Tool* is written for a Wi
 | Schema-driven editing (autocomplete, inline validation, hover documentation) | **new** for people who edit project files by hand: `harness schema FOLDER` writes JSON Schemas made from the model and an editor settings fragment. No Monaco | `docs/FILE_FORMAT.md` |
 | Problems panel with severity and requirement ID, linking to the offending object, highlighted in the diagram | **new**: the card shows the requirement ID(s) as text; `drc_findings.csv` has a `Requirement` column; Show selects the object | `tests/test_gui_drc.py`, `docs/OUTPUTS.md` |
 | Colour does not carry meaning alone | done: signal classes also differ by letter, line weight and legend; redundancy is dashed; changes are dotted halos; wire colours are written as text and never used as drawing colours; separation under colour blindness is tested | `tests/test_tokens.py`, `core/outputs/drawing.py` |
-| Navigation for large harnesses: zoom, pan, search, filter by connector, signal class or bundle | zoom, pan, search (Ctrl+K), a text filter in the interface table and the minimap exist. **New:** a toolbar filter that shows one signal class and fades the rest. **Open:** filtering the diagram by connector or by bundle (harness) | `tests/test_gui_journeys.py` |
+| Navigation for large harnesses: zoom, pan, search, filter by connector, signal class or bundle | zoom, pan, search (Ctrl+K), a text filter in the interface table and the minimap exist. **New:** a toolbar filter that shows one signal class, one connector or one bundle (harness) and fades the rest | `tests/test_gui_filters.py` |
 | Component library picker with ESCC part data | the picker exists; **new:** it shows description, maker, pins, specification, approval and ratings. No ESCC part data is bundled (the tool ships example parts only, marked as such); the owner's approved parts list and any ESCC data come in through the import | `tests/test_gui_journeys.py` |
 | Revision diffs highlighting added, removed and changed items | done | `tests/test_gui_changes.py` |
 | Print-ready A3/A4 output with a title block | done (title block fields still wait for D-15) | `docs/OUTPUTS.md` |
@@ -40,3 +40,4 @@ The owner's document *UX/UI Guidelines for the Harness Tool* is written for a Wi
 ## What I need from the owner
 
 Whether filtering the diagram by connector or by bundle is wanted (it is not a large change).
+Nothing is open from this review.

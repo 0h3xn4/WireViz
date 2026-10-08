@@ -819,32 +819,6 @@ def test_choosing_cancel_in_the_example_dialog_changes_nothing(win, tmp_path) ->
     assert win.ctl.root is None or win.ctl.root != tmp_path / "x"
 
 
-def test_filtering_by_signal_class_fades_the_others_and_changes_nothing(win) -> None:  # type: ignore[no-untyped-def]
-    """REQ-GUI-04: the filter dims links and units of other signal classes; the model is untouched."""
-    before = win.ctl.project
-    scene = win.view.dscene
-    cats = {iid: scene._link_category(iid) for iid in scene.link_items}
-    assert len(set(cats.values())) >= 2, "the sample has more than one signal class"
-    chosen = next(iter(set(cats.values())))
-    index = win.filter_combo.findData(chosen)
-    win.filter_combo.setCurrentIndex(index)
-    for iid, link in scene.link_items.items():
-        assert link.opacity() == (1.0 if cats[iid] == chosen else scene.FADED_LINK)
-    assert win.ctl.project is before and not win.ctl.dirty
-    win.filter_combo.setCurrentIndex(0)
-    assert all(link.opacity() == 1.0 for link in scene.link_items.values())
-    assert all(item.opacity() == 1.0 for item in scene.unit_items.values())
-
-
-def test_the_filter_survives_adding_an_interface(win) -> None:  # type: ignore[no-untyped-def]
-    scene = win.view.dscene
-    win.filter_combo.setCurrentIndex(win.filter_combo.findData("power"))
-    scene.rebuild()
-    assert scene.category_filter == "power"
-    for iid, link in scene.link_items.items():
-        assert link.opacity() == (1.0 if scene._link_category(iid) == "power" else scene.FADED_LINK)
-
-
 def test_the_part_picker_says_what_each_part_is(win) -> None:  # type: ignore[no-untyped-def]
     """REQ-GUI-05: choosing a library part shows its description, pins, approval and ratings."""
     from PySide6.QtWidgets import QComboBox, QLabel
