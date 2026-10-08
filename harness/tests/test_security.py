@@ -144,8 +144,16 @@ def test_the_code_never_evaluates_data_or_starts_programs() -> None:
         "requests",
         "ctypes",
     }
+    # The design rule check runs in a helper process of this same program (D-128). These two
+    # files are the only exceptions: the first starts it with fixed arguments, the second talks
+    # over its own stdin/stdout pipes. Nothing else may use these modules.
+    allowed = {
+        "gui/drc_process.py": {"subprocess"},
+        "core/drc/worker.py": {"pickle"},
+    }
     for path in SRC.rglob("*.py"):
         tree = ast.parse(path.read_text())
+        exempt = allowed.get(path.relative_to(SRC).as_posix(), set())
         for node in ast.walk(tree):
             if (
                 isinstance(node, ast.Call)
@@ -155,11 +163,11 @@ def test_the_code_never_evaluates_data_or_starts_programs() -> None:
                 pytest.fail(f"{path.name}: {node.func.id}() call")
             if isinstance(node, ast.Import):
                 for a in node.names:
-                    assert a.name.split(".")[0] not in banned_modules, (
+                    assert a.name.split(".")[0] not in banned_modules - exempt, (
                         f"{path.name}: import {a.name}"
                     )
             if isinstance(node, ast.ImportFrom) and node.module:
-                assert node.module.split(".")[0] not in banned_modules, (
+                assert node.module.split(".")[0] not in banned_modules - exempt, (
                     f"{path.name}: from {node.module}"
                 )
             if (
@@ -191,4 +199,26 @@ def test_save_never_writes_outside_the_project_folder(tmp_path: Path) -> None:
         "baselines",
         ".harness-recovery",
         "outputs",
+    }
+
+
+def test_the_process_exceptions_stay_narrow() -> None:
+    """Only the helper-process files may use subprocess or pickle, and the helper's input is only
+    ever read as pickle from its own parent (the client never unpickles anything but the reply)."""
+    users: dict[str, set[str]] = {}
+    for path in SRC.rglob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text())):
+            names = (
+                [a.name for a in node.names]
+                if isinstance(node, ast.Import)
+                else [node.module or ""]
+                if isinstance(node, ast.ImportFrom)
+                else []
+            )
+            for name in names:
+                if name.split(".")[0] in ("subprocess", "pickle"):
+                    users.setdefault(path.relative_to(SRC).as_posix(), set()).add(name)
+    assert users == {
+        "gui/drc_process.py": {"subprocess"},
+        "core/drc/worker.py": {"pickle"},
     }

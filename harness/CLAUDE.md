@@ -52,8 +52,8 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 
 ## Design rule check layout (M4)
 `core/drc/` (`base` Rule/Hit, `rules` RULES registry, `report` Markdown report, `__init__` run/fix_ops/locate). Add a rule: write a check generator, register it in `RULES`, add a positive case to `POSITIVE` in `tests/test_drc.py` (a test fails if a rule has none) and make sure it stays quiet on the clean project. Rules needing numbers must stay silent while config is `null` and be listed in `_unchecked`.
-- `checks.find` stays the fast synchronous logical layer; the controller merges it with background DRC results (`DrcWorker`, 1.2 s after the last edit; waivers applied at display time).
-- A background Python thread slows the UI (GIL): do not shorten the DRC delay or add synchronous DRC calls to edit paths.
+- `checks.find` stays the fast synchronous logical layer; the controller merges it with background DRC results (`DrcWorker` waits for the helper process, 1.2 s after the last edit; waivers applied at display time).
+- The check runs in a helper process (`gui/drc_process.py`, `core/drc/worker.py`, D-128; a thread held the GIL and stalled edits). Do not add synchronous DRC calls to edit paths. The packaged program must route `--drc-worker` first (`packaging/gui_entry.py`; `--selftest` checks it). Keep the pieces small: one pickle call holds the sender's GIL.
 - Regenerate the sat15 DRC report golden on purpose: `python -m harness_tool.cli.main drc tests/fixtures/projects/sat15 > tests/fixtures/drc/sat15.md`.
 
 ## Outputs layout (M5)

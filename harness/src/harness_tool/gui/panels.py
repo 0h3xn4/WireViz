@@ -590,28 +590,34 @@ class ProblemsPanel(QScrollArea):
     def refresh(self) -> None:
         self._dirty = False
         checking = not self.ctl.drc_current
-        # (the key changes with every edit and rule result; comparing every finding instead cost
-        # hundreds of milliseconds per edit when a project has tens of thousands of them)
-        signature = (self.ctl.findings_key(), self.ctl.read_only, checking)
-        if signature == self._signature:
-            return  # same findings as last time: keep the widgets
-        self._signature = signature
         findings = self.ctl.findings()
-        clear_layout(self.lay)
         open_ = self.ctl.open_findings()
+        cards, total = self._cards(open_)
+        waived = (
+            [f for f in findings if f.waiver is not None] if len(findings) != len(open_) else []
+        )
+        # What would be on screen. When an edit leaves it unchanged (a rename, a move), the widgets
+        # stay: rebuilding the cards and laying them out cost 150 to 300 ms after every edit.
+        signature = (
+            tuple(identity for identity, _ in cards),
+            total,
+            tuple((f.id, f.waiver.justification if f.waiver else "") for f in waived),
+            self.ctl.read_only,
+            checking,
+        )
+        if signature == self._signature:
+            return
+        self._signature = signature
+        clear_layout(self.lay)
         state = muted(strings.DRC_CHECKING if checking else strings.DRC_DONE.format(len(drc.RULES)))
         state.setObjectName("drc-state")
         self.lay.addWidget(state)
         if not open_ and not checking:
             self.lay.addWidget(muted(strings.NO_PROBLEMS))
-        cards, total = self._cards(open_)
-        for build in cards:
+        for _, build in cards:
             self.lay.addWidget(build())
         if total > MAX_CARDS:
             self.lay.addWidget(muted(strings.MORE_PROBLEMS.format(total - MAX_CARDS)))
-        waived = (
-            [f for f in findings if f.waiver is not None] if len(findings) != len(open_) else []
-        )
         if waived:
             self.lay.addWidget(heading(strings.WAIVED))
             for f in waived:
@@ -619,7 +625,9 @@ class ProblemsPanel(QScrollArea):
                     self.lay.addWidget(muted(f"✓ {f.id}: “{f.waiver.justification}”"))
         self.lay.addStretch(1)
 
-    def _cards(self, open_: list[checks.Finding]) -> tuple[list[Callable[[], QFrame]], int]:
+    def _cards(
+        self, open_: list[checks.Finding]
+    ) -> tuple[list[tuple[object, Callable[[], QFrame]]], int]:
         """Builders for the first MAX_CARDS cards and the total number of cards. One card per
         finding, except that three or more unwaivable findings of one rule about the same object
         (a wire missing for each signal of an interface) share a single card. Counted in one
@@ -644,7 +652,7 @@ class ProblemsPanel(QScrollArea):
                 firsts.setdefault(key, []).append(f)
         total = waivable + sum(1 if n >= 3 else n for n in counts.values())
         done: set[Key] = set()
-        cards: list[Callable[[], QFrame]] = []
+        cards: list[tuple[object, Callable[[], QFrame]]] = []
         for f in open_:
             if len(cards) >= MAX_CARDS:
                 break
@@ -652,9 +660,14 @@ class ProblemsPanel(QScrollArea):
             if key is not None and counts[key] >= 3:
                 if key not in done:
                     done.add(key)
-                    cards.append(partial(self._group_card, firsts[key], counts[key]))
+                    cards.append(
+                        (
+                            ("group", key, counts[key], firsts[key][0].id),
+                            partial(self._group_card, firsts[key], counts[key]),
+                        )
+                    )
                 continue
-            cards.append(partial(self._card, f))
+            cards.append((("finding", f.id, f.title, f.severity), partial(self._card, f)))
         return cards, total
 
     def _group_card(self, fs: list[checks.Finding], count: int) -> QFrame:

@@ -2,7 +2,7 @@
 
 import math
 
-from PySide6.QtCore import QPointF, QRectF, Qt, QTimer
+from PySide6.QtCore import QLineF, QPointF, QRectF, Qt, QTimer
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -382,6 +382,7 @@ class LinkItem(QGraphicsPathItem):
         self.interface_id = interface_id
         self._chip = QRectF()
         self._chip_placed = False
+        self.ends: QLineF | None = None  # straight line between the two anchors (for the map)
         self.setZValue(1)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsFocusable)
         self.setAcceptHoverEvents(True)
@@ -396,9 +397,11 @@ class LinkItem(QGraphicsPathItem):
         if i is None or a_item is None or b_item is None:
             self.prepareGeometryChange()
             self.setPath(QPainterPath())
+            self.ends = None
             return True
         p1 = a_item.anchor(i.endpoints[0].connector_id, i.id)
         p2 = b_item.anchor(i.endpoints[1].connector_id, i.id)
+        self.ends = QLineF(p1, p2)
         da = 1 if a_item.side() == "right" else -1
         db = 1 if b_item.side() == "right" else -1
         same = a_item.side() == b_item.side()
@@ -738,59 +741,91 @@ class DiagramScene(QGraphicsScene):
 
 
 LANE_STEP = 256.0  # lane height grows in steps of this many pixels
-MAP_DELAY_MS = 150  # how long the overview map may lag behind an edit
+MAP_DELAY_MS = 400  # the overview map repaints this long after the last change
 
 
-class MiniMap(QGraphicsView):
-    """Small overview of the whole diagram; click to centre the main view there."""
+class MiniMap(QWidget):
+    """Small overview of the whole diagram; click to centre the main view there.
+
+    It draws plain boxes and lines straight from the item positions instead of showing the scene a
+    second time: painting 2,200 real items in a tiny view cost about 300 ms at stress size."""
 
     def __init__(self, main: "DiagramView") -> None:
-        super().__init__(main.scene(), main)
+        super().__init__(main)
         self.main = main
         self.setFixedSize(190, 130)
-        self.setInteractive(False)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setFrameShape(QGraphicsView.Shape.Box)
         self.setAccessibleName(strings.MINIMAP)
         self.setToolTip(strings.MINIMAP)
-        main.scene().sceneRectChanged.connect(lambda _r: self.refit())
-        # The map shows the same items as the main view, so repainting it inside every edit nearly
-        # doubled the time to the next frame at stress size. It follows the scene on a short
-        # timer instead, once per burst of edits.
-        self.setViewportUpdateMode(QGraphicsView.ViewportUpdateMode.NoViewportUpdate)
         self._lag = QTimer(self)
         self._lag.setSingleShot(True)
         self._lag.setInterval(MAP_DELAY_MS)
         self._lag.timeout.connect(self._catch_up)
         main.scene().changed.connect(self._scene_changed)
+        main.scene().sceneRectChanged.connect(lambda _r: self.update())
+
+    def viewport(self) -> "MiniMap":
+        return self  # (the earlier version was a graphics view; callers update its viewport)
+
+    def refit(self) -> None:
+        self.update()
 
     def _scene_changed(self, _regions: object) -> None:
-        if self.isVisible() and not self._lag.isActive():
-            self._lag.start()
+        if self.isVisible():
+            self._lag.start()  # restarts: the map catches up when the edits pause
 
     def _catch_up(self) -> None:
         if self.isVisible():
-            self.viewport().update()
+            self.update()
 
-    def refit(self) -> None:
-        rect = self.scene().sceneRect()
-        if rect.isValid() and not rect.isEmpty():
-            self.fitInView(rect, Qt.AspectRatioMode.KeepAspectRatio)
+    def _scale(self) -> tuple[float, float, float]:
+        """(scale, x offset, y offset) that fit the scene into the widget."""
+        rect = self.main.scene().sceneRect()
+        if not rect.isValid() or rect.isEmpty():
+            return 1.0, 0.0, 0.0
+        scale = min((self.width() - 2) / rect.width(), (self.height() - 2) / rect.height())
+        return (
+            scale,
+            (self.width() - rect.width() * scale) / 2 - rect.x() * scale,
+            (self.height() - rect.height() * scale) / 2 - rect.y() * scale,
+        )
 
-    def showEvent(self, event: object) -> None:
-        super().showEvent(event)  # type: ignore[arg-type]
-        self.refit()
-
-    def drawForeground(self, painter: QPainter, rect: QRectF | object) -> None:
+    def paintEvent(self, event: object) -> None:
+        theme = self.main.theme
+        scene = self.main.dscene
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), theme.color("bg"))
+        scale, dx, dy = self._scale()
+        painter.translate(dx, dy)
+        painter.scale(scale, scale)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(theme.color("surface"))
+        for k in range(len(scene.zone_items)):
+            painter.drawRect(
+                QRectF(
+                    edit.LANE_X0 + k * edit.LANE_WIDTH, 0, edit.LANE_WIDTH - 10, scene.lane_height
+                )
+            )
+        painter.setPen(QPen(theme.color("border"), 0))
+        painter.drawLines([ln for ln in (lk.ends for lk in scene.link_items.values()) if ln])
+        painter.setBrush(theme.color("surface"))
+        painter.setPen(QPen(theme.color("text"), 0))
+        painter.drawRects(
+            [QRectF(it.pos().x(), it.pos().y(), W, it.height()) for it in scene.unit_items.values()]
+        )
         view_rect = self.main.mapToScene(self.main.viewport().rect()).boundingRect()
-        painter.setPen(QPen(self.main.theme.color("primary"), 0))
+        painter.setPen(QPen(theme.color("primary"), 0))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(view_rect)
+        painter.resetTransform()
+        painter.setPen(QPen(theme.color("border"), 1))
+        painter.drawRect(self.rect().adjusted(0, 0, -1, -1))
+        painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        self.main.centerOn(self.mapToScene(event.position().toPoint()))
-        self.viewport().update()
+        scale, dx, dy = self._scale()
+        pos = event.position()
+        self.main.centerOn(QPointF((pos.x() - dx) / scale, (pos.y() - dy) / scale))
+        self.update()
 
 
 class DiagramView(QGraphicsView):

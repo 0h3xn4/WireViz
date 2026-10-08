@@ -34,13 +34,15 @@ from harness_tool.core.samples import mini3, new_project
 from harness_tool.core.vcs.release import ReleasePlan
 
 from . import strings
+from .drc_process import run_check
 
 JOURNAL_DELAY_MS = 1500
-DRC_DELAY_MS = 1200  # run only after the user pauses: the check shares the interpreter with the UI
+DRC_DELAY_MS = 1200  # run only after the user pauses (the check itself runs in another process)
 
 
 class DrcWorker(QThread):
-    """Runs the design rule check on a private copy of the project (entities are immutable)."""
+    """Runs the design rule check on a private copy of the project, in a helper process (this thread
+    only waits for it, so it does not hold up the editor)."""
 
     def __init__(self, snapshot: Project, token: tuple[int, int]) -> None:
         super().__init__()
@@ -49,7 +51,7 @@ class DrcWorker(QThread):
         self.found: list[checks.Finding] = []
 
     def run(self) -> None:
-        self.found = drc.run(self.snapshot)
+        self.found = run_check(self.snapshot)
 
 
 @dataclass

@@ -4,7 +4,7 @@ The tool runs offline on an engineer's workstation, reads project folders (which
 
 ## What the tool never does
 - No network access (tested: sockets blocked, no network modules imported).
-- No `eval`, `exec`, `pickle`, `subprocess`, `os.system`, `ctypes`, no YAML loader (an AST scan fails the test suite if one appears).
+- No `eval`, `exec`, `pickle`, `subprocess`, `os.system`, `ctypes`, no YAML loader (an AST scan fails the test suite if one appears). The one exception is the design rule check helper process (D-128): `gui/drc_process.py` may use `subprocess` (it starts this same program with fixed arguments, no shell, no user data in the command) and `core/drc/worker.py` may use `pickle` (the project and the findings cross its own stdin/stdout pipes, between two copies of this program; nothing read from a project file or from the network is ever unpickled). The scan lists exactly these two files.
 - No macros, formulas or scripts from project data are executed.
 
 ## Threats and measures
