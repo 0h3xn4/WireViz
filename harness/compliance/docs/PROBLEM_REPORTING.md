@@ -1,6 +1,6 @@
 # Software problem reporting and nonconformance handling
 
-Addresses ECSS-Q-ST-80C 5.2.5.1 to 5.2.5.4 and 5.2.6.1 (gap G-04). Status: **procedure defined; the board and the customer interface need people** (see `OPEN_ACTIONS.md`).
+Addresses ECSS-Q-ST-80C 5.2.5.1 to 5.2.5.4 and 5.2.6.1 (gap G-04). Status: **in use from 2026-10-08 (GitHub issues adopted by the owner); the board and the customer interface still need people** (see `OPEN_ACTIONS.md`).
 
 ## 1. What is a problem
 

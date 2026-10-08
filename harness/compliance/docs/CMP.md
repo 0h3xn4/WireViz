@@ -1,5 +1,7 @@
 # Configuration management plan
 
+Status: approved by the owner on 2026-10-08 (approval given in the working session; the owner is also customer and supplier, so no independent reviewer, see A-01).
+
 Addresses ECSS-Q-ST-80C 6.2.4.1 to 6.2.4.12 and ECSS-E-ST-40C 5.3.2 (gaps G-14, G-07). ECSS-M-ST-40, referred to by 6.2.4.1, was not supplied; this plan does not claim to meet it.
 
 ## Items under control

@@ -21,7 +21,7 @@ See `SDP.md`, `SRS.md`.
 | VAL-04 | Release gate | release a harness with an undecided gauge | refused with reasons | `tests/test_change_control.py` |
 | VAL-05 | Rule check silence | default project with a current but no derating values | report says *not checked* | `tests/test_drc.py` |
 | VAL-06 | Standard profile | `harness config DIR --apply-profile ecss-q-st-30-11c` | unset values filled, cited, placeholder kept | `tests/test_profiles.py` |
-| VAL-07 | Usability | five users, ten tasks | SUS and success per `docs/usability` | **not done** (action A-12) |
-| VAL-08 | Real harness | owner's real design | outputs accepted by the owner | **not done** (action A-13) |
+| VAL-07 | Usability | five users, ten tasks | SUS and success per `docs/usability` | **not done** (action A-12; material: `docs/usability/`) |
+| VAL-08 | Real harness | owner's real design | outputs accepted by the owner | **not done** (action A-13; checklist: `compliance/templates/real_harness_acceptance.md`) |
 
 Items that cannot be validated by test: VAL-07, VAL-08 and the correctness of the engineering values, which belong to the owner (D-10, D-11, D-12). Test platform: as above.

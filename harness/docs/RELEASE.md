@@ -9,7 +9,9 @@ Run `python -m tools.release_check` on the build host (Ubuntu 24.04; with Docker
 5. Fuzzing and security tests pass (`HARNESS_FUZZ_EXAMPLES=5000 pytest tests/test_fuzz.py` for the long search; findings in `docs/SECURITY.md`).
 6. Soak test: 3,000 random editing steps with all invariants held (`python -m tools.soak 5000 <seed>` for the long run).
 7. The full test suite passes with the 90% core coverage gate (docs, goldens, GUI journeys and accessibility audit included).
+7a. The same suite passes again **without** coverage instrumentation (ECSS-Q-ST-80C 6.2.3.8); the release report keeps both results.
 8. `python -m tools.gen_sbom` writes `sbom.cdx.json` and `licence-report.md` with nothing rejected (needs the wheelhouse from `python -m tools.vendor`, or network access, on the build host).
+8a. `python -m tools.check_vulnerabilities`: no known vulnerabilities in the shipped dependencies (needs network access on the build host; output in `vulnerability-report.txt`). If the scan cannot run, the release check fails.
 9. `python -m tools.check_reproducible`: the wheel builds identically twice.
 10. `python -m tools.build_installer` then `python -m tools.build_deb`; `dist/harness-tool/harness-tool --selftest` prints `selftest ok` (generates, exports and verifies a project, starts the rule check helper process and creates a project from a bundled example, all inside the package).
 11. The `.deb` is extracted with `dpkg-deb -x`; its program runs the self-test and its `harness new --list` shows the examples.

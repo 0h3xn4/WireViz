@@ -1,5 +1,7 @@
 # Design, coding and tool standards
 
+Status: approved by the owner on 2026-10-08 (approval given in the working session; the owner is also customer and supplier, so no independent reviewer, see A-01).
+
 Addresses ECSS-Q-ST-80C 5.6.1.1 to 5.6.2.3, 6.3.3.2, 6.3.3.4, 6.3.4.1 to 6.3.4.5 (gap G-06). These standards already exist as practice in `CLAUDE.md`, `pyproject.toml` and the CI workflow; this document makes them one mandatory list.
 
 ## Tools and environment
@@ -29,4 +31,4 @@ Review with the customer (6.3.4.4): this document is sent to the owner with the 
 
 ## Verification of correct use of the tools (5.6.1.3)
 
-CI runs the static checks and tests on every push; a failing run blocks merging by the owner's practice, not by a technical lock (open action A-06: protect the branch).
+CI runs the static checks and tests on every push; a failing run blocks merging by the owner's practice, not by a technical lock (the owner waived the protection on 2026-10-08: `../DEVIATIONS.md` T-18).
