@@ -1,5 +1,5 @@
 standard,prefix,status,evidence,gap,rationale,after_status,after_evidence
-ECSS-E-ST-40C,5.2.2,partial,docs/SPEC.md; docs/REQUIREMENTS.md; docs/SECURITY.md,G-01,Owner requirements exist in prose but not as a system specification (SSS) with allocated software requirements,partial,docs/SPEC.md; docs/REQUIREMENTS.md; docs/SECURITY.md
+ECSS-E-ST-40C,5.2.2,partial,docs/SPEC.md; docs/REQUIREMENTS.md; docs/SECURITY.md,G-01,Owner requirements exist in prose but not as a system specification (SSS) with allocated software requirements,partial,docs/SPEC.md; docs/REQUIREMENTS.md; compliance/docs/SRS.md
 ECSS-E-ST-40C,5.2.3,partial,docs/SPEC.md (quality); docs/RELEASE.md,G-01,Verification and acceptance needs are stated informally,partial,docs/SPEC.md (quality); docs/RELEASE.md
 ECSS-E-ST-40C,5.2.4,partial,docs/INSTALL.md; tools/build_deb.py; docs/RELEASE.md,G-07,"Delivery content is defined by the release procedure, not by a customer-side specification",partial,docs/INSTALL.md; tools/build_deb.py; docs/RELEASE.md
 ECSS-E-ST-40C,5.2.5,human,,G-11,System requirements review needs the owner and a record,human,
@@ -7,95 +7,95 @@ ECSS-E-ST-40C,5.3.2,partial,git history; CHANGELOG.md; docs/DECISIONS.md,G-14,Ba
 ECSS-E-ST-40C,5.3.3,human,docs/AUDIT.md (one internal audit),G-11,Technical reviews need owner participation and review records,human,docs/AUDIT.md (one internal audit)
 ECSS-E-ST-40C,5.3.4,human,,G-11,Acceptance review is an owner action,human,
 ECSS-E-ST-40C,5.3.5,human,,G-11,Validation specification review is an owner action,human,
-ECSS-E-ST-40C,5.3.6,gap,,G-01,No software review plan (SRevP),gap,
-ECSS-E-ST-40C,5.3.7,partial,docs/FILE_FORMAT.md; docs/OUTPUTS.md,G-01,"External interfaces (files, CLI) are documented but not as an ICD",partial,docs/FILE_FORMAT.md; docs/OUTPUTS.md
+ECSS-E-ST-40C,5.3.6,gap,,G-01,No software review plan (SRevP),partial,compliance/docs/SRevP.md
+ECSS-E-ST-40C,5.3.7,partial,docs/FILE_FORMAT.md; docs/OUTPUTS.md,G-01,"External interfaces (files, CLI) are documented but not as an ICD",partial,compliance/docs/ICD.md
 ECSS-E-ST-40C,5.3.8,partial,tools/bench_gui.py; tools/bench_stress.py; tests/test_gui_perf.py,G-05,Performance margins are measured; no budget and margin document,partial,tools/metrics.py; tests/test_numerics.py; tests/test_gui_perf.py
-ECSS-E-ST-40C,5.3.9,gap,,G-01,Documents do not follow the DRDs yet,gap,
+ECSS-E-ST-40C,5.3.9,gap,,G-01,Documents do not follow the DRDs yet,partial,compliance/docs/README.md (documents follow the DRD headings; not reviewed)
 ECSS-E-ST-40C,5.4.2,human,,G-11,Software requirements review is an owner action,human,
 ECSS-E-ST-40C,5.4.3,partial,docs/SPEC.md; docs/REQUIREMENTS.md,G-02,"Requirements are not numbered, classified and traced to tests",partial,docs/REQUIREMENTS.md with 65 numbered requirements; compliance/traceability.csv; tools/trace.py
 ECSS-E-ST-40C,5.4.4,human,,G-11,Preliminary design review is an owner action,human,
-ECSS-E-ST-40C,5.5.2,partial,docs/ARCHITECTURE.md; docs/DECISIONS.md,G-01,Design is documented but not as an SDD with traceability,partial,docs/ARCHITECTURE.md; docs/DECISIONS.md
+ECSS-E-ST-40C,5.5.2,partial,docs/ARCHITECTURE.md; docs/DECISIONS.md,G-01,Design is documented but not as an SDD with traceability,partial,compliance/docs/SDD.md; docs/ARCHITECTURE.md
 ECSS-E-ST-40C,5.5.3,partial,tests/ (839 tests); pyproject.toml coverage gate 90 % on core,G-02,"Unit tests exist; no unit test plan, no traceability to design",partial,tests/ (902 tests); tools/metrics.py
-ECSS-E-ST-40C,5.5.4,partial,tests/test_gui_journeys.py; tests/test_pipeline*.py,G-01,Integration tests exist; no integration test plan,partial,tests/test_gui_journeys.py; tests/test_pipeline*.py
+ECSS-E-ST-40C,5.5.4,partial,tests/test_gui_journeys.py; tests/test_generate.py; tests/test_outputs.py,G-01,Integration tests exist; no integration test plan,partial,compliance/docs/SUITP.md; tests/test_generate.py; tests/test_outputs.py
 ECSS-E-ST-40C,5.6.2,human,,G-10,Independence of the validation organisation needs a human decision,human,
 ECSS-E-ST-40C,5.6.3,human,,G-11,Critical design review is an owner action,human,
 ECSS-E-ST-40C,5.6.4,human,,G-11,Qualification review is an owner action,human,
-ECSS-E-ST-40C,5.6.5,partial,tests/; tools/release_check.py,G-01,Validation information is not collected in a validation specification (SVS),partial,tests/; tools/release_check.py
+ECSS-E-ST-40C,5.6.5,partial,tests/; tools/release_check.py,G-01,Validation information is not collected in a validation specification (SVS),partial,compliance/docs/SValP_SVS.md
 ECSS-E-ST-40C,5.7.2,partial,docs/INSTALL.md; tools/build_deb.py; tools/release_check.py,G-07,Installation is scripted and checked; no installation report,partial,tools/gen_scf.py; tools/release_check.py
 ECSS-E-ST-40C,5.7.3,human,,G-11,Acceptance review is an owner action,human,
 ECSS-E-ST-40C,5.8.2,human,,G-10,Independent verification needs a person other than the developer,human,
 ECSS-E-ST-40C,5.8.3,partial,"ruff, mypy strict, pytest, tools/check_reproducible.py, .github/workflows",G-02,"Verification is automated; no verification plan or report, no traceability matrix",partial,compliance/traceability.csv; tools/trace.py; compliance/evidence/*_tests.txt
 ECSS-E-ST-40C,5.9.2,gap,,G-04,No problem handling procedure,partial,compliance/docs/PROBLEM_REPORTING.md; compliance/templates/problem_report.md
 ECSS-E-ST-40C,5.9.3,partial,docs/RELEASE.md; tools/release_check.py; CHANGELOG.md,G-07,Release procedure exists; no release document (SRelD),partial,docs/RELEASE.md step 11a; tools/gen_scf.py
-ECSS-E-ST-40C,5.9.4,gap,tools/gen_sbom.py (inventory only),G-09,No procedure to watch for vulnerabilities in dependencies; the tool is offline by design,gap,tools/gen_sbom.py (inventory only)
+ECSS-E-ST-40C,5.9.4,gap,tools/gen_sbom.py (inventory only),G-09,No procedure to watch for vulnerabilities in dependencies; the tool is offline by design,partial,"compliance/docs/SECURITY_DOCS.md (vulnerability watching is open, A-08)"
 ECSS-E-ST-40C,5.9.5,partial,docs/FAQ.md,G-04,Work-arounds are in the FAQ; no formal handling,partial,compliance/docs/PROBLEM_REPORTING.md; docs/FAQ.md
 ECSS-E-ST-40C,5.10.2,na,,,Applies to flight software; the tool is ground engineering software,na,
-ECSS-E-ST-40C,5.10.3,gap,,G-18,No maintenance plan,gap,
-ECSS-E-ST-40C,5.10.4,gap,,G-18,No maintenance plan,gap,
+ECSS-E-ST-40C,5.10.3,gap,,G-18,No maintenance plan,partial,compliance/docs/SMP.md
+ECSS-E-ST-40C,5.10.4,gap,,G-18,No maintenance plan,partial,compliance/docs/SMP.md
 ECSS-E-ST-40C,5.10.5,partial,git history,G-18,Change baselines are git commits; not described,partial,compliance/docs/CMP.md
-ECSS-E-ST-40C,5.10.6,gap,,G-18,No migration plan,gap,
-ECSS-E-ST-40C,5.10.7,gap,,G-18,No retirement plan,gap,
-ECSS-E-ST-40C,5.11.2,partial,docs/SECURITY.md,G-09,Security measures are described; no security management plan (SSMP),partial,docs/SECURITY.md
-ECSS-E-ST-40C,5.11.3,partial,docs/SECURITY.md; tests/test_security.py; tests/test_offline.py,G-09,Threat review exists; no security analysis report (SSAR),partial,docs/SECURITY.md; tests/test_security.py; tests/test_offline.py
-ECSS-E-ST-40C,5.11.4,gap,docs/SECURITY.md (accepted risks),G-09,No security risk treatment plan (SRTP),gap,docs/SECURITY.md (accepted risks)
-ECSS-E-ST-40C,5.11.5,partial,docs/SECURITY.md; tests/test_security.py,G-09,Operations and maintenance security is not described as such,partial,docs/SECURITY.md; tests/test_security.py
-ECSS-E-ST-40C,B,human,docs/SPEC.md (informal),G-01,Annex B (SSS) content requirement; document to be produced in Phase 4,human,docs/SPEC.md (informal)
-ECSS-E-ST-40C,C,human,docs/FILE_FORMAT.md (informal),G-01,Annex C (IRD) content requirement; document to be produced in Phase 4,human,docs/FILE_FORMAT.md (informal)
-ECSS-E-ST-40C,D,gap,docs/SPEC.md; docs/REQUIREMENTS.md,G-01,Annex D (SRS) content requirement; document to be produced in Phase 4,gap,docs/SPEC.md; docs/REQUIREMENTS.md
-ECSS-E-ST-40C,E,gap,docs/FILE_FORMAT.md; docs/OUTPUTS.md; docs/CLI.md,G-01,Annex E (ICD) content requirement; document to be produced in Phase 4,gap,docs/FILE_FORMAT.md; docs/OUTPUTS.md; docs/CLI.md
-ECSS-E-ST-40C,F,gap,docs/ARCHITECTURE.md; docs/DECISIONS.md,G-01,Annex F (SDD) content requirement; document to be produced in Phase 4,gap,docs/ARCHITECTURE.md; docs/DECISIONS.md
-ECSS-E-ST-40C,G,gap,CHANGELOG.md; docs/RELEASE.md,G-01,Annex G (SRelD) content requirement; document to be produced in Phase 4,gap,CHANGELOG.md; docs/RELEASE.md
-ECSS-E-ST-40C,H,gap,docs/guide/USER_GUIDE.md; docs/GETTING_STARTED.md,G-01,Annex H (SUM) content requirement; document to be produced in Phase 4,gap,docs/guide/USER_GUIDE.md; docs/GETTING_STARTED.md
-ECSS-E-ST-40C,I,gap,,G-01,Annex I (SVerP) content requirement; document to be produced in Phase 4,gap,
-ECSS-E-ST-40C,J,gap,,G-01,Annex J (SValP) content requirement; document to be produced in Phase 4,gap,
-ECSS-E-ST-40C,K,gap,,G-01,Annex K (SUITP) content requirement; document to be produced in Phase 4,gap,
-ECSS-E-ST-40C,L,gap,,G-01,Annex L (SVS) content requirement; document to be produced in Phase 4,gap,
-ECSS-E-ST-40C,M,gap,,G-01,Annex M (SVR) content requirement; document to be produced in Phase 4,gap,
-ECSS-E-ST-40C,N,gap,tools/gen_sbom.py output,G-08,Annex N (SRF) content requirement; document to be produced in Phase 4,gap,tools/gen_sbom.py output
-ECSS-E-ST-40C,O,gap,docs/PLAN.md; CLAUDE.md,G-01,Annex O (SDP) content requirement; document to be produced in Phase 4,gap,docs/PLAN.md; CLAUDE.md
-ECSS-E-ST-40C,P,gap,,G-01,Annex P (SRevP) content requirement; document to be produced in Phase 4,gap,
-ECSS-E-ST-40C,R,human,compliance/PHASE0.md,G-19,Tailoring record: category C approved by owner in chat; record as a deviation list,human,compliance/PHASE0.md
-ECSS-E-ST-40C,T,gap,,G-18,Annex T (SMP) content requirement; document to be produced in Phase 4,gap,
+ECSS-E-ST-40C,5.10.6,gap,,G-18,No migration plan,partial,"compliance/docs/SMP.md (migration through schema versions; plan open, A-11)"
+ECSS-E-ST-40C,5.10.7,gap,,G-18,No retirement plan,partial,"compliance/docs/SMP.md (retirement plan open, A-11)"
+ECSS-E-ST-40C,5.11.2,partial,docs/SECURITY.md,G-09,Security measures are described; no security management plan (SSMP),partial,compliance/docs/SECURITY_DOCS.md
+ECSS-E-ST-40C,5.11.3,partial,docs/SECURITY.md; tests/test_security.py; tests/test_offline.py,G-09,Threat review exists; no security analysis report (SSAR),partial,compliance/docs/SECURITY_DOCS.md; docs/SECURITY.md
+ECSS-E-ST-40C,5.11.4,gap,docs/SECURITY.md (accepted risks),G-09,No security risk treatment plan (SRTP),partial,compliance/docs/SECURITY_DOCS.md (risk treatment table)
+ECSS-E-ST-40C,5.11.5,partial,docs/SECURITY.md; tests/test_security.py,G-09,Operations and maintenance security is not described as such,partial,compliance/docs/SECURITY_DOCS.md
+ECSS-E-ST-40C,B,human,docs/SPEC.md (informal),G-01,Annex B (SSS) content requirement; document to be produced in Phase 4,human,SSS is a system-level document of the owner; context recorded in compliance/docs/SRS.md section 4
+ECSS-E-ST-40C,C,human,docs/FILE_FORMAT.md (informal),G-01,Annex C (IRD) content requirement; document to be produced in Phase 4,human,IRD is a system-level document of the owner; interfaces of the tool in compliance/docs/ICD.md
+ECSS-E-ST-40C,D,gap,docs/SPEC.md; docs/REQUIREMENTS.md,G-01,Annex D (SRS) content requirement; document to be produced in Phase 4,partial,"compliance/docs/SRS.md (draft, not reviewed)"
+ECSS-E-ST-40C,E,gap,docs/FILE_FORMAT.md; docs/OUTPUTS.md; docs/CLI.md,G-01,Annex E (ICD) content requirement; document to be produced in Phase 4,partial,compliance/docs/ICD.md (draft)
+ECSS-E-ST-40C,F,gap,docs/ARCHITECTURE.md; docs/DECISIONS.md,G-01,Annex F (SDD) content requirement; document to be produced in Phase 4,partial,"compliance/docs/SDD.md (draft; component table open, A-10)"
+ECSS-E-ST-40C,G,gap,CHANGELOG.md; docs/RELEASE.md,G-01,Annex G (SRelD) content requirement; document to be produced in Phase 4,partial,compliance/docs/SRelD.md (draft)
+ECSS-E-ST-40C,H,gap,docs/guide/USER_GUIDE.md; docs/GETTING_STARTED.md,G-01,Annex H (SUM) content requirement; document to be produced in Phase 4,partial,compliance/docs/SUM.md; docs/guide/USER_GUIDE.md
+ECSS-E-ST-40C,I,gap,,G-01,Annex I (SVerP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SVerP.md (draft)
+ECSS-E-ST-40C,J,gap,,G-01,Annex J (SValP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SValP_SVS.md (draft)
+ECSS-E-ST-40C,K,gap,,G-01,Annex K (SUITP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SUITP.md (draft)
+ECSS-E-ST-40C,L,gap,,G-01,Annex L (SVS) content requirement; document to be produced in Phase 4,partial,compliance/docs/SValP_SVS.md (draft)
+ECSS-E-ST-40C,M,gap,,G-01,Annex M (SVR) content requirement; document to be produced in Phase 4,partial,compliance/docs/SVR.md (draft)
+ECSS-E-ST-40C,N,gap,tools/gen_sbom.py output,G-08,Annex N (SRF) content requirement; document to be produced in Phase 4,partial,compliance/docs/SRF.md (draft)
+ECSS-E-ST-40C,O,gap,docs/PLAN.md; CLAUDE.md,G-01,Annex O (SDP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SDP.md (draft)
+ECSS-E-ST-40C,P,gap,,G-01,Annex P (SRevP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SRevP.md (draft)
+ECSS-E-ST-40C,R,human,compliance/PHASE0.md,G-19,Tailoring record: category C approved by owner in chat; record as a deviation list,human,compliance/DEVIATIONS.md (tailoring record); owner approval open
+ECSS-E-ST-40C,T,gap,,G-18,Annex T (SMP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SMP.md (draft)
 ECSS-Q-ST-80C,5.1,human,,G-12,"Organisation, resources, training: owner and organisation actions",human,
-ECSS-Q-ST-80C,5.2.1,gap,,G-01,No software product assurance plan (SPAP) or compliance matrix before this audit,gap,
-ECSS-Q-ST-80C,5.2.2,gap,,G-01,No product assurance reports (SPAMR),gap,
+ECSS-Q-ST-80C,5.2.1,gap,,G-01,No software product assurance plan (SPAP) or compliance matrix before this audit,partial,compliance/docs/SPAP.md
+ECSS-Q-ST-80C,5.2.2,gap,,G-01,No product assurance reports (SPAMR),partial,compliance/docs/SPAMR.md
 ECSS-Q-ST-80C,5.2.3,human,,G-12,Audits,human,
 ECSS-Q-ST-80C,5.2.4,human,,G-04,Alerts: no procedure,human,
 ECSS-Q-ST-80C,5.2.5,gap,,G-04,No software problem reporting procedure,partial,compliance/docs/PROBLEM_REPORTING.md; compliance/templates/problem_report.md
 ECSS-Q-ST-80C,5.2.6,gap,,G-04,No nonconformance handling,partial,compliance/docs/PROBLEM_REPORTING.md section 6 (NRB needs people)
 ECSS-Q-ST-80C,5.2.7,gap,,G-05,No quality model,gap,
-ECSS-Q-ST-80C,5.3,partial,docs/OPEN_DECISIONS.md; docs/PLACEHOLDERS.md,G-12,Open points are tracked; no risk register,partial,docs/OPEN_DECISIONS.md; docs/PLACEHOLDERS.md
+ECSS-Q-ST-80C,5.3,partial,docs/OPEN_DECISIONS.md; docs/PLACEHOLDERS.md,G-12,Open points are tracked; no risk register,partial,compliance/docs/SPAP.md 5.6; docs/OPEN_DECISIONS.md
 ECSS-Q-ST-80C,5.4,na,,,No lower-level suppliers; open-source dependencies are handled under 5.5 and 6.2.7,na,
-ECSS-Q-ST-80C,5.5,partial,tools/gen_sbom.py; docs/DECISIONS.md (every dependency recorded with version and licence),G-08,Procured software is identified and licensed; no receiving inspection record,partial,tools/gen_sbom.py; docs/DECISIONS.md (every dependency recorded with version and licence)
+ECSS-Q-ST-80C,5.5,partial,tools/gen_sbom.py; docs/DECISIONS.md (every dependency recorded with version and licence),G-08,Procured software is identified and licensed; no receiving inspection record,partial,compliance/docs/SRF.md; tools/gen_sbom.py
 ECSS-Q-ST-80C,5.6.1,partial,CLAUDE.md; docs/DECISIONS.md; pyproject.toml,G-06,Methods and tools are chosen and recorded; no justification document,partial,compliance/docs/STANDARDS.md
 ECSS-Q-ST-80C,5.6.2,partial,pyproject.toml pins; .github/workflows; tools/vendor.py,G-06,Development environment is pinned and reproducible,partial,compliance/docs/STANDARDS.md; pyproject.toml pins
 ECSS-Q-ST-80C,5.7,human,,G-12,Process assessment and improvement,human,
-ECSS-Q-ST-80C,6.1,partial,docs/SPEC.md; docs/PLAN.md,G-01,Life cycle exists as milestones M0 to M9; not as a life cycle definition in an SDP,partial,docs/SPEC.md; docs/PLAN.md
+ECSS-Q-ST-80C,6.1,partial,docs/SPEC.md; docs/PLAN.md,G-01,Life cycle exists as milestones M0 to M9; not as a life cycle definition in an SDP,partial,compliance/docs/SDP.md; docs/PLAN.md
 ECSS-Q-ST-80C,6.1.5,human,,G-11,Test readiness review,human,
-ECSS-Q-ST-80C,6.2.1,gap,,G-01,No set of plans,gap,
+ECSS-Q-ST-80C,6.2.1,gap,,G-01,No set of plans,partial,"compliance/docs/SPAP.md section 6.2 lists the plans: SDP, SRevP, SVerP, SValP, SUITP, CMP, SMP, SECURITY_DOCS"
 ECSS-Q-ST-80C,6.2.2,gap,compliance/PHASE0.md (system level),G-03,Component criticality classification not done,partial,compliance/docs/CRITICALITY.md (component classification proposed; dependability analysis open)
 ECSS-Q-ST-80C,6.2.3,partial,"tests/ (regression suite, run without instrumentation)",G-03,Regression testing exists; no critical software measures defined,partial,compliance/docs/CRITICALITY.md section 3; tests/
 ECSS-Q-ST-80C,6.2.4,partial,git; docs/RELEASE.md; tools/build_deb.py,G-07,"Configuration management by git; no SCF, no integrity value for deliveries",partial,compliance/docs/CMP.md; tools/gen_scf.py; tests/test_scf.py
 ECSS-Q-ST-80C,6.2.5,gap,,G-05,No metrics collected,partial,tools/metrics.py; tests/test_metrics.py; compliance/metrics.json
-ECSS-Q-ST-80C,6.2.6,partial,"ruff, mypy, pytest, review of diffs by the owner",G-01,"Verification activities exist; no verification plan, reports or review records",partial,"ruff, mypy, pytest, review of diffs by the owner"
+ECSS-Q-ST-80C,6.2.6,partial,"ruff, mypy, pytest, review of diffs by the owner",G-01,"Verification activities exist; no verification plan, reports or review records",partial,"compliance/docs/SVerP.md; compliance/docs/SVR.md; ruff, mypy, pytest"
 ECSS-Q-ST-80C,6.2.7,partial,tools/gen_sbom.py; docs/DECISIONS.md,G-08,Reused software inventory exists; no reuse file with assessment,partial,tools/gen_sbom.py; docs/DECISIONS.md
 ECSS-Q-ST-80C,6.2.8,human,,G-17,"The tool generates documents, not code; whether AI assistance in writing the code counts as a code generation tool needs a human decision",human,
-ECSS-Q-ST-80C,6.2.9,partial,docs/SECURITY.md; tests/test_security.py,G-09,Security assurance not in a plan,partial,docs/SECURITY.md; tests/test_security.py
-ECSS-Q-ST-80C,6.2.10,partial,docs/SECURITY.md,G-09,Failure propagation between components not analysed,partial,docs/SECURITY.md
-ECSS-Q-ST-80C,6.3.1,partial,docs/SPEC.md; docs/REQUIREMENTS.md,G-02,"Requirements baseline in git, no formal baseline document",partial,docs/SPEC.md; docs/REQUIREMENTS.md
-ECSS-Q-ST-80C,6.3.2,partial,docs/SPEC.md,G-02,Technical specification is not separate and not traced,partial,docs/SPEC.md
+ECSS-Q-ST-80C,6.2.9,partial,docs/SECURITY.md; tests/test_security.py,G-09,Security assurance not in a plan,partial,compliance/docs/SECURITY_DOCS.md; docs/SECURITY.md
+ECSS-Q-ST-80C,6.2.10,partial,docs/SECURITY.md,G-09,Failure propagation between components not analysed,partial,compliance/docs/CRITICALITY.md; docs/SECURITY.md
+ECSS-Q-ST-80C,6.3.1,partial,docs/SPEC.md; docs/REQUIREMENTS.md,G-02,"Requirements baseline in git, no formal baseline document",partial,docs/SPEC.md; compliance/docs/SRS.md
+ECSS-Q-ST-80C,6.3.2,partial,docs/SPEC.md,G-02,Technical specification is not separate and not traced,partial,compliance/docs/SRS.md; compliance/traceability.csv
 ECSS-Q-ST-80C,6.3.3,partial,docs/ARCHITECTURE.md; CLAUDE.md conventions,G-06,"Design standards are conventions, not a standard",partial,compliance/docs/STANDARDS.md; docs/ARCHITECTURE.md
 ECSS-Q-ST-80C,6.3.4,partial,ruff and mypy configuration in pyproject.toml; CI,G-06,Coding standard is enforced by tools; not written as a standard,partial,compliance/docs/STANDARDS.md; ruff and mypy configuration
-ECSS-Q-ST-80C,6.3.5,partial,tests/; pyproject.toml coverage gate; .github/workflows,G-02,Testing is automated; test strategy and procedures not documented,partial,tests/; pyproject.toml coverage gate; .github/workflows
-ECSS-Q-ST-80C,6.3.6,partial,docs/RELEASE.md; docs/INSTALL.md,G-07,Delivery is scripted; no delivery review board,partial,docs/RELEASE.md; docs/INSTALL.md
+ECSS-Q-ST-80C,6.3.5,partial,tests/; pyproject.toml coverage gate; .github/workflows,G-02,Testing is automated; test strategy and procedures not documented,partial,compliance/docs/SUITP.md; compliance/docs/SValP_SVS.md; tests/
+ECSS-Q-ST-80C,6.3.6,partial,docs/RELEASE.md; docs/INSTALL.md,G-07,Delivery is scripted; no delivery review board,partial,docs/RELEASE.md; compliance/docs/SRelD.md; compliance/docs/SCF.md
 ECSS-Q-ST-80C,6.3.7,human,,G-11,Acceptance is a customer action,human,
 ECSS-Q-ST-80C,6.3.8,human,,G-18,"Operation of the tool is by users, not by the developer",human,
-ECSS-Q-ST-80C,6.3.9,gap,,G-18,No maintenance plan or records,gap,
+ECSS-Q-ST-80C,6.3.9,gap,,G-18,No maintenance plan or records,partial,compliance/docs/SMP.md
 ECSS-Q-ST-80C,7.1,gap,,G-05,No quantitative quality requirements or metrics,partial,tools/metrics.py; compliance/metrics.json (quality model still open)
 ECSS-Q-ST-80C,7.1.7,gap,,G-13,Numerical accuracy of derating and voltage drop calculations not estimated,partial,tests/test_numerics.py
-ECSS-Q-ST-80C,7.2,partial,docs/SPEC.md; tests/,G-02,Requirements quality and test documentation not formal,partial,docs/SPEC.md; tests/
+ECSS-Q-ST-80C,7.2,partial,docs/SPEC.md; tests/,G-02,Requirements quality and test documentation not formal,partial,compliance/docs/SRS.md; compliance/docs/SValP_SVS.md
 ECSS-Q-ST-80C,7.3,na,,,The tool is not developed for reuse as a component,na,
 ECSS-Q-ST-80C,7.4,na,,,No hardware or operational service procurement,na,
 ECSS-Q-ST-80C,7.5,na,,,No device programming,na,
-ECSS-Q-ST-80C,B,gap,,G-01,Annex B (SPAP) content requirement; document to be produced in Phase 4,gap,
-ECSS-Q-ST-80C,C,gap,,G-01,Annex C (SPAMR) content requirement; document to be produced in Phase 4,gap,
+ECSS-Q-ST-80C,B,gap,,G-01,Annex B (SPAP) content requirement; document to be produced in Phase 4,partial,compliance/docs/SPAP.md (draft)
+ECSS-Q-ST-80C,C,gap,,G-01,Annex C (SPAMR) content requirement; document to be produced in Phase 4,partial,compliance/docs/SPAMR.md (draft)
