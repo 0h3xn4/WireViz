@@ -14,7 +14,7 @@ Every command that changes a project takes the same lock as the app, so the two 
 
 ## Contents
 
-- Start: [`new`](#harness-new), [`templates`](#harness-templates)
+- Start: [`new`](#harness-new), [`templates`](#harness-templates), [`schema`](#harness-schema)
 - Check: [`validate`](#harness-validate), [`check`](#harness-check), [`drc`](#harness-drc), [`verify`](#harness-verify)
 - Generate and export: [`generate`](#harness-generate), [`export`](#harness-export)
 - Bring in data: [`config`](#harness-config), [`import-parts`](#harness-import-parts), [`import-lengths`](#harness-import-lengths), [`import-netlist`](#harness-import-netlist)
@@ -58,6 +58,22 @@ Examples:
 
 ```
 harness templates my-templates
+```
+
+### harness schema
+
+Write one JSON Schema per kind of project file, made from the program's own model, and a settings fragment that maps the files to them. For people who edit project files by hand. Nothing is downloaded. The folder must not exist yet or be empty.
+
+`harness schema folder`
+
+| Argument | Meaning |
+| --- | --- |
+| `folder` | where to put the schemas (for example my-design/schemas) |
+
+Examples:
+
+```
+harness schema my-design/schemas
 ```
 
 ## Check

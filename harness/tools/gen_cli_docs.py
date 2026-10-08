@@ -11,7 +11,7 @@ TARGET = Path(__file__).resolve().parents[1] / "docs" / "CLI.md"
 
 # command -> (group, examples). Examples are written by hand; a test checks every command has some.
 GROUPS = (
-    ("Start", ("new", "templates")),
+    ("Start", ("new", "templates", "schema")),
     ("Check", ("validate", "check", "drc", "verify")),
     ("Generate and export", ("generate", "export")),
     ("Bring in data", ("config", "import-parts", "import-lengths", "import-netlist")),
@@ -25,6 +25,7 @@ EXAMPLES: dict[str, list[str]] = {
         "harness new wheel-link --template first-steps",
     ],
     "templates": ["harness templates my-templates"],
+    "schema": ["harness schema my-design/schemas"],
     "validate": ["harness validate my-design"],
     "check": ["harness check my-design"],
     "drc": ["harness drc my-design > drc-report.md"],
