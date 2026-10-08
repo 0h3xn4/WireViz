@@ -1,6 +1,6 @@
 # Software release document (SRelD)
 
-DRD: ECSS-E-ST-40C Annex G. Version described: `0.1.0rc4` plus the unreleased changes of the branch `compliance/ecss-esccc-audit`. Status: draft, not reviewed. The release itself is not made: the owner has not signed off (`../../docs/RELEASE.md` steps 12 to 14).
+DRD: ECSS-E-ST-40C Annex G. Version described: `0.1.0rc5`. Status: draft, not reviewed. The release itself is not made: the owner has not signed off (`../../docs/RELEASE.md` steps 12 to 14).
 
 ## 1 to 3, 4. Introduction, references, terms, release overview
 Item: Harness tool (package `harness-tool`). Delivered as `.deb` and `.tar.gz` for Ubuntu 24.04+. Contents and integrity values: `scf.json` and `SHA256SUMS` (`SCF.md`).

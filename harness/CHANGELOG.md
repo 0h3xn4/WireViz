@@ -2,7 +2,9 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## Unreleased
+## 0.1.0rc5 (release candidate; not yet signed off by the owner)
+
+This release candidate carries the baseline standards (D-130), the beginner documentation, examples and templates, the faster editor with the rule check in a helper process (D-128), the ECSS/ESCC compliance audit (D-131, `harness/compliance/`) and the UX/UI guidelines work (D-132, D-133). Still open and needing people: the owner's sign-off, D-10, D-11, D-12, D-15, usability sessions, a screen-reader pass and the actions in `compliance/OPEN_ACTIONS.md`.
 
 - **Library source and date (D-133)**: the parts library records where its data come from. `harness library DIR` shows and sets name, version, source and date; `harness import-parts` records the file name and checksum; the editor and `system/provenance.json` show them. Every model hash changes once (the manifest has two more keys): goldens, examples and the tutorial were regenerated; older projects load unchanged.
 - **Diagram filters**: besides a signal class, the toolbar filter can now show one connector or one bundle (harness) and fade the rest; it follows a new project and added interfaces.

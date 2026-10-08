@@ -17,7 +17,7 @@ You describe the **units** (computer, power unit, reaction wheel ...) and the **
 - **Starts from the usual standards.** RS-422, RS-485 and CAN for communication, Micro-D (9 to 31 pin) for power and data, Ethernet as the alternative for high data rates, SMA for RF. Other types and connectors can be added.
 - **Honest about what it does not know.** Engineering values (derating, ampacity, EMC rules, approved parts) are never invented. Until you supply them, results say *pending* or *not checked*.
 
-Runs on **Ubuntu 24.04 or newer**. Release candidate `0.1.0rc4`, not yet signed off by the owner (see [Status](#status)).
+Runs on **Ubuntu 24.04 or newer**. Release candidate `0.1.0rc5`, not yet signed off by the owner (see [Status](#status)).
 
 ## Try it in five minutes
 
@@ -74,7 +74,7 @@ A project is a folder of small JSON files (`project.json`, `config/`, `library/`
 
 ## Status
 
-Release candidate `0.1.0rc4`. Still needed from people: the harness boundary rule (D-10), real derating and EMC values (D-11), the approved parts list (D-12), the title block (D-15), usability sessions and a screen-reader pass. See [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md) and [`docs/RELEASE.md`](docs/RELEASE.md). Until the engineering values exist, results say so.
+Release candidate `0.1.0rc5`. Still needed from people: the harness boundary rule (D-10), real derating and EMC values (D-11), the approved parts list (D-12), the title block (D-15), usability sessions and a screen-reader pass. See [`docs/OPEN_DECISIONS.md`](docs/OPEN_DECISIONS.md) and [`docs/RELEASE.md`](docs/RELEASE.md). Until the engineering values exist, results say so.
 
 ## For developers
 
