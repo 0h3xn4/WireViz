@@ -40,7 +40,7 @@ Rules that need numbers from your standards (see PLACEHOLDERS.md) check nothing 
 | `bundle-current` | error (not waivable) | Bundle current | A wire in a large bundle heats more than a single wire and must carry less. | Choose a larger gauge or split the bundle. | `ECSS-Q-ST-30-11_0140217`, `ECSS-Q-ST-30-11_0140218` |
 | `config-invalid` | error (not waivable) | Engineering values | A value outside its possible range (a factor above 1, a table that falls as the wire grows) would silently produce wrong gauges and checks. | Correct the value in config/*.json; `harness config DIR` lists what is missing or invalid. | none |
 | `released-modified` | error (not waivable) | Released items | A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored. | Restore the harness from its baseline, or start a new revision for the change. | none |
-| `unchecked-config` | info (not waivable) | Checks not run | A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. | Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md). | none |
+| `unchecked-config` | info (not waivable) | Checks not run | A rule that needs a number nobody has entered, or an analysis outside the tool, cannot say anything, and silence must not look like a pass. | Fill in the missing value (see docs/PLACEHOLDERS.md), or do the analysis the note names and record it in the design review. | none |
 
 ## Logical rules (instant, in the editor)
 

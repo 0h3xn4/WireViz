@@ -251,7 +251,7 @@ def test_the_output_verifier_catches_a_wrong_emc_class() -> None:
 
 def test_shield_parts_pass_with_finish_and_unknown_is_reported() -> None:
     p = t.pos_shield_parts()
-    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    h = t.harness_with_real_shield(p)
     t.set_part(p, h.connectors[0].part_id, conductive_finish=1.0)
     assert hits("shield-parts", p) == []
     t.set_part(p, h.connectors[0].part_id, conductive_finish=0.0)
@@ -272,3 +272,24 @@ def test_multipactor_is_named_as_not_checked_when_there_is_rf() -> None:
     has_rf = any(x.category == "rf" for x in p.interface_types.values())
     text = " ".join(f.title for f in drc.run(p) if f.rule == "unchecked-config")
     assert ("multipactor" in text) == has_rf
+
+
+def test_a_plain_twisted_pair_is_not_a_shield_and_never_raises_shield_findings() -> None:
+    """Found by running a real-size project through the tool: with a grounding concept of
+    floating ends, every twisted pair (which has no shield) was reported as an unconnected shield."""
+    p = t.base()
+    t.set_cfg(p, "generation", shield_end_a="floating", shield_end_b="floating")
+    t.set_cfg(p, "emc", shield_bonding="both_ends_backshell")
+    for h in list(p.harnesses.values()):
+        t.put_harness(
+            p,
+            h,
+            shields=[
+                evolve(s, end_a="floating", end_b="floating") if s.kind == "twisted_pair" else s
+                for s in h.shields
+            ],
+        )
+    plain = {s.id for h in p.harnesses.values() for s in h.shields if s.kind == "twisted_pair"}
+    assert plain
+    for rule in ("shield-unterminated", "shield-wrong-end", "shield-bonding", "shield-parts"):
+        assert not any(f.object_id.split(".")[-1] in plain for f in t.fire(rule, p)), rule
