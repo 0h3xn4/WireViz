@@ -59,6 +59,15 @@ def interface_of(p: Project, category: str, *, redundancy: str = "nominal") -> s
     raise AssertionError(category)
 
 
+def harness_with_real_shield(p: Project) -> Harness:
+    """A harness with a shield that exists (a plain twisted pair has none)."""
+    return next(
+        h
+        for h in sorted(p.harnesses.values(), key=lambda x: x.id)
+        if any(s.kind != "twisted_pair" for s in h.shields)
+    )
+
+
 def wire_of(p: Project, category: str) -> tuple[Harness, Wire]:
     h = harness_with_category(p, category)
     w = next(
@@ -210,7 +219,7 @@ def pos_spare_pins_low() -> Project:
 def pos_shield_unterminated() -> Project:
     p = base()
     set_cfg(p, "generation", shield_end_a="backshell_360", shield_end_b="floating")
-    h = next(h for h in p.harnesses.values() if h.shields)
+    h = harness_with_real_shield(p)
     put_harness(p, h, shields=[evolve(s, end_a="floating", end_b="floating") for s in h.shields])
     return p
 
@@ -218,7 +227,7 @@ def pos_shield_unterminated() -> Project:
 def pos_shield_wrong_end() -> Project:
     p = base()
     set_cfg(p, "generation", shield_end_a="backshell_360", shield_end_b="floating")
-    h = next(h for h in p.harnesses.values() if h.shields)
+    h = harness_with_real_shield(p)
     put_harness(
         p, h, shields=[evolve(s, end_a="floating", end_b="backshell_360") for s in h.shields]
     )
@@ -395,7 +404,7 @@ def pos_bundle_current() -> Project:
 def pos_shield_bonding() -> Project:
     p = base()
     set_cfg(p, "emc", shield_bonding="both_ends_backshell")
-    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    h = harness_with_real_shield(p)
     put_harness(p, h, shields=[evolve(s, end_a="pigtail", end_b="floating") for s in h.shields])
     return p
 
@@ -403,7 +412,7 @@ def pos_shield_bonding() -> Project:
 def pos_shield_parts() -> Project:
     p = base()
     set_cfg(p, "emc", shield_bonding="both_ends_backshell")
-    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    h = harness_with_real_shield(p)
     set_part(p, h.connectors[0].part_id, conductive_finish=0.0)
     return p
 

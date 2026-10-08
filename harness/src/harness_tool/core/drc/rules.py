@@ -303,6 +303,8 @@ def _shield_unterminated(project: Project) -> Iterator[Hit]:
         return  # no grounding concept yet: "not checked" is reported instead
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
         for s in h.shields:
+            if s.kind == "twisted_pair":
+                continue  # a twisted pair has no shield to terminate
             if s.end_a == "floating" and s.end_b == "floating":
                 yield Hit(
                     f"{h.id}.{s.id}", f"Shield {s.id} in {h.id} is not connected at either end"
@@ -316,6 +318,8 @@ def _shield_wrong_end(project: Project) -> Iterator[Hit]:
         return
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
         for s in h.shields:
+            if s.kind == "twisted_pair":
+                continue  # a twisted pair has no shield to ground
             if (s.end_a, s.end_b) != want:
                 yield Hit(
                     f"{h.id}.{s.id}",
@@ -586,6 +590,6 @@ RULES: tuple[Rule, ...] = (
          "A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored.",
          "Restore the harness from its baseline, or start a new revision for the change.", _released_modified),
     Rule("unchecked-config", "info", "Checks not run",
-         "A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass.",
-         "Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).", _unchecked),
+         "A rule that needs a number nobody has entered, or an analysis outside the tool, cannot say anything, and silence must not look like a pass.",
+         "Fill in the missing value (see docs/PLACEHOLDERS.md), or do the analysis the note names and record it in the design review.", _unchecked),
 )  # fmt: skip

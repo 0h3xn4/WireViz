@@ -51,13 +51,13 @@ Placeholder configuration in use: derating, emc, generation, segmentation, segre
 ## Not checked / note (28)
 
 - **EMC class separation was not checked: the EMC rules are still a placeholder** (`unchecked-config.emc`)  
-  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+  A rule that needs a number nobody has entered, or an analysis outside the tool, cannot say anything, and silence must not look like a pass. To fix it: Fill in the missing value (see docs/PLACEHOLDERS.md), or do the analysis the note names and record it in the design review.
 - **Shield grounding was not checked against a concept: it is still a placeholder** (`unchecked-config.grounding`)  
-  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+  A rule that needs a number nobody has entered, or an analysis outside the tool, cannot say anything, and silence must not look like a pass. To fix it: Fill in the missing value (see docs/PLACEHOLDERS.md), or do the analysis the note names and record it in the design review.
 - **Power, signal and sensitive-analog separation was not checked: the category pairs are still a placeholder** (`unchecked-config.separation`)  
-  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+  A rule that needs a number nobody has entered, or an analysis outside the tool, cannot say anything, and silence must not look like a pass. To fix it: Fill in the missing value (see docs/PLACEHOLDERS.md), or do the analysis the note names and record it in the design review.
 - **Spare pins were not checked: the required fraction is still a placeholder** (`unchecked-config.spare-pins`)  
-  A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. To fix it: Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md).
+  A rule that needs a number nobody has entered, or an analysis outside the tool, cannot say anything, and silence must not look like a pass. To fix it: Fill in the missing value (see docs/PLACEHOLDERS.md), or do the analysis the note names and record it in the design review.
 - **IF-001 uses connectors the tool chose for you** (`unconfirmed.IF-001`)  
   Auto-filled choices are marked until a person confirms them, so nobody assumes they were reviewed.
 - **IF-001-R uses connectors the tool chose for you** (`unconfirmed.IF-001-R`)  
