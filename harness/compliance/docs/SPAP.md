@@ -19,7 +19,7 @@ An offline desktop tool in which a user draws a spacecraft system (units and int
 - **5.3 Resources:** the repository, CI (`.github/workflows/harness-ci.yml`), Ubuntu 24.04 build host (`docs/RELEASE.md`).
 - **5.4 Reporting:** milestone report `SPAMR.md`, `CHANGELOG.md`, problem reports (`PROBLEM_REPORTING.md`).
 - **5.5 Quality models:** not defined (gap G-05); metrics are collected by `tools/metrics.py` (size, complexity, coverage, tests); a quality model with targets is proposed in `SVerP.md` section 6.3.
-- **5.6 Risk management:** open decisions and placeholders are the risk list (`../../docs/OPEN_DECISIONS.md`, `../../docs/PLACEHOLDERS.md`); no formal register (action A-03).
+- **5.6 Risk management:** open decisions and placeholders are the risk list (`../../docs/OPEN_DECISIONS.md`, `../../docs/PLACEHOLDERS.md`); the register is `../RISK_REGISTER.md` (started; ratings and owners are for people, action A-03).
 - **5.7 Supplier selection and control:** no lower-level suppliers; third-party software in `SRF.md`.
 - **5.8 Methods and tools:** `STANDARDS.md`.
 - **5.9 Process assessment and improvement:** none (action A-03).

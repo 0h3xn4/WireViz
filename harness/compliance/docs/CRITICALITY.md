@@ -30,4 +30,4 @@ Defined measures, all applied to C components: the independent verifier (no shar
 
 ## 4. Dependability analysis (6.2.2.2 to 6.2.2.9)
 
-Not done as a formal analysis. A software failure mode review of the C components is a task for the safety side of the owner's project; it needs the system-level analyses (ECSS-Q-ST-30/40) that were not supplied. Listed as open action A-07.
+Not done as a formal analysis. A software failure mode review of the C components is a task for the safety side of the owner's project; it needs the system-level analyses (ECSS-Q-ST-30/40) that were not supplied. Listed as open action A-07; the input sheet with the proposed failure modes is `../templates/dependability_input_sheet.md`.
