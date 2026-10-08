@@ -1,4 +1,6 @@
-# Architecture (proposal for owner review)
+# Architecture
+
+> **Status.** Written as a proposal and since built as described, with these changes: the platform is Ubuntu 24.04 and newer only (D-110, D-127), so the Windows and RHEL remarks below are historical; the design rule check runs in a helper process (D-128). The layout in section 2 and the mechanisms in section 4 match the code.
 
 ## 1. Stack comparison
 
@@ -31,9 +33,12 @@ harness/src/harness_tool/
     verify/        independent output verifier (separate code path from generate/ and outputs/)
     vcs/           revisions, baselines, diff, change log
     imports/       CSV/XLSX importers with preview and per-row errors
-  cli/             `harness validate | check | generate | verify | export | diff`
+    templates.py   example projects and import templates shipped with the tool (`harness new`)
+  cli/             `harness` commands: start (new, templates), check, generate, export, change control, imports
+    start.py       `harness new` and `harness templates`
+
   gui/             PySide6: canvas, table view, panels, command palette, design-system tokens
-  resources/       bundled fonts, icons, sample project, help (offline HTML)
+  resources/       bundled help (offline HTML) and examples: example projects (built by tools/build_examples.py) and templates (CSV, netlist, CI scripts, checklist, demo values)
 ```
 
 Rules: `gui` and `cli` depend on `core`; `core` depends on nothing in `gui`/`cli`. The GUI never mutates the model directly; every change is a `Command` run in a transaction (all-or-nothing, invariant check after each in debug builds).
@@ -65,6 +70,7 @@ Properties: stable key ordering, stable IDs (`<kind>-<ULID-free short id>` assig
 - **Locks and overrides:** user-edited pins/wires carry `locked: true` or `override` records. Regeneration runs in "merge" mode and returns a `RegenReport` (kept / changed / conflicts) shown before applying.
 - **Explain:** every generator decision appends a provenance record `{object_id, rule_id, inputs, reason}`. The "Explain" action and the DRC fix text read these.
 - **Verifier:** `verify/` reads only emitted artefacts (CSV/JSON/SVG data) and the model, and recomputes expected end-to-end connectivity with its own simple implementation (no shared code with `generate/` beyond model types). Release command refuses on any verifier error. Stale detection: each artefact stores `model_hash`; GUI/CLI compare it with the current hash.
+- **DRC process:** the background check runs in a long-lived helper process (`gui/drc_process.py` starts `core/drc/worker.py`; a packaged program is started with `--drc-worker`), because a thread shared the interpreter lock with the editor and stalled edits. The project and the findings cross the pipes in small pieces. If the helper cannot start it falls back to a thread (D-128).
 - **DRC:** each rule is a class with `id`, `severity`, `check(model) -> [Finding]`, message template (what / why / fix), optional `fix(model) -> Command`. Rules and thresholds come from config. Waivers are keyed by (rule id, object id, hash of finding) with mandatory justification.
 - **Recovery mode:** loader validates per file; broken files are quarantined into a `RecoveryReport`, the rest loads; nothing is dropped silently and originals are never overwritten.
 - **Offline guarantee:** test 1 scans all source and imported modules for `socket`, `http`, `urllib`, `requests`, `ssl`, `QtNetwork` etc.; test 2 patches `socket.socket` to raise and runs the CLI and a GUI smoke test; GUI build excludes QtNetwork/QtWebEngine.
@@ -73,12 +79,12 @@ Properties: stable key ordering, stable IDs (`<kind>-<ULID-free short id>` assig
 
 ## 5. Testing architecture
 
-pytest + hypothesis (property tests, fuzzing loaders/importers/generator), pytest-cov (>= 90% core gate), mypy strict, ruff, pytest-qt for journeys, golden-file tests per output type on three reference projects (`mini3`, `sat15`, `stress`), soak test (random edits/undo/redo/save/reload with invariants + verifier), offline test, migration fixtures per schema version, CI matrix Windows + Linux.
+pytest + hypothesis (property tests, fuzzing loaders/importers/generator), pytest-cov (>= 90% core gate), mypy strict, ruff, pytest-qt for journeys, golden-file tests per output type on three reference projects (`mini3`, `sat15`, `stress`), soak test (random edits/undo/redo/save/reload with invariants + verifier), offline test, migration fixtures per schema version, CI on Ubuntu 24.04 (the supported platform).
 
 ## 6. Risks
 
 1. Pin allocation is the hardest algorithm: start with a constraint-ordered greedy allocator with explicit rule list and provenance; keep it replaceable.
 2. Real derating/EMC numbers are missing (D-11); generator and DRC must run with placeholders and mark every result "uses placeholder rules" until replaced.
-3. Installer size and PyInstaller on RHEL 8 (glibc): build on the oldest supported OS in CI.
+3. Installer size and PyInstaller: build on the supported OS (Ubuntu 24.04) in CI.
 4. Locked-down hosts may block unsigned executables; code signing is configurable (D-19).
 5. UX sign-off is a gate: no full editor before the prototype review (spec UX process step 2).

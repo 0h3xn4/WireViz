@@ -13,7 +13,7 @@
 				(field
 					(name "HarnessConnector") "TST1-J01")
 				(field
-					(name "HarnessPart") "EX-DSUB-9-F")
+					(name "HarnessPart") "EX-MICROD-9-F")
 			)
 		)
 		(comp

@@ -18,7 +18,7 @@ A fully offline desktop tool in which a user draws a system block diagram (units
 
 ### Hard constraints
 1. **Completely offline.** No network calls of any kind: no telemetry, analytics, crash upload, update check, licence check, CDN fonts, map tiles or remote schemas. All fonts, icons and libraries bundled. Automated test fails if any networking module is imported or a socket is opened at runtime.
-2. **Runs on locked-down workstations** without admin rights and internet. Self-contained installer or portable build for Windows 10/11 and Linux (RHEL/Rocky 8+, Ubuntu LTS). macOS optional.
+2. **Runs on locked-down workstations** without admin rights and internet. Self-contained installer or portable build. *Now: Ubuntu 24.04 and newer only (D-110, D-127); the original list was Windows 10/11, RHEL/Rocky 8+ and Ubuntu LTS.*
 3. **Only permissively licensed or LGPL dependencies** allowing closed internal use. SBOM (CycloneDX or SPDX) and licence report with every release. Pin all versions; reproducible builds from a vendored or mirrored package set.
 4. **Sensitive data.** Project files may contain export-controlled information. Never write project content to logs, temp files outside the project folder, or crash dumps. Logs stay local and contain no design data by default.
 5. **Data is the source of truth, drawings are generated.** Users edit the model and regenerate.
@@ -33,7 +33,7 @@ Logical layer and physical layer, linked so every physical item traces back to a
 
 **Logical layer**
 - **Unit:** ID, name, subsystem, location/zone, nominal or redundant side, mass-relevant flag, notes.
-- **Interface type:** reusable template: power (primary, secondary), RS-422/RS-485, SpaceWire, CAN, MIL-STD-1553B, LVDS, I²C, analog, thermistor, heater, discrete/bilevel, pyro, RF coax, ground/chassis. Defines signals (e.g. SpaceWire = 4 differential pairs, Data/Strobe in/out), required wire construction (twisted pair, twisted shielded pair, quad, coax), impedance, shielding and grounding rules, EMC class, default gauge.
+- **Interface type:** *(baseline since D-130: RS-422, RS-485 and CAN for communication, Ethernet for high data rates, Micro-D connectors, SMA for RF)* reusable template: power (primary, secondary), RS-422/RS-485, SpaceWire, CAN, MIL-STD-1553B, LVDS, I²C, analog, thermistor, heater, discrete/bilevel, pyro, RF coax, ground/chassis. Defines signals (e.g. SpaceWire = 4 differential pairs, Data/Strobe in/out), required wire construction (twisted pair, twisted shielded pair, quad, coax), impedance, shielding and grounding rules, EMC class, default gauge.
 - **Interface instance:** connection between two (or more, for buses) units using one interface type, with name, direction, nominal/redundant flag, max current, voltage, optional requirement ID.
 
 **Physical layer**

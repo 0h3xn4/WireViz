@@ -32,7 +32,7 @@ def test_parse_reads_components_pins_and_symbol_fields() -> None:
     n = read_netlist(FIXTURE)
     assert set(n.components) == {"J1", "J2", "U1"}
     j1 = n.components["J1"]
-    assert j1.fields == {"harnessconnector": "TST1-J01", "harnesspart": "EX-DSUB-9-F"}
+    assert j1.fields == {"harnessconnector": "TST1-J01", "harnesspart": "EX-MICROD-9-F"}
     assert {k: v.net for k, v in j1.pins.items() if k in ("1", "3", "8", "9")} == {
         "1": "/TX+",
         "3": "/io/RX+",
@@ -135,6 +135,9 @@ def test_errors_per_row_and_unit() -> None:
 
 def test_updating_an_existing_connector_keeps_what_the_netlist_does_not_say() -> None:
     p = project_with_unit()
+    # the netlist names its part (EX-MICROD-9-F); give the box connector that part so that only
+    # what the netlist does not say is compared
+    p.connectors["OBC-J01"] = evolve(p.connectors["OBC-J01"], part_id="EX-MICROD-9-F")
     box = p.connectors["OBC-J01"]
     plan = plan_netlist_import(
         p, read_netlist(FIXTURE), "OBC", refs=["J1"], connector_ids={"J1": "OBC-J01"}

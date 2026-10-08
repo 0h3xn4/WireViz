@@ -12,7 +12,7 @@
       "mates_with": "PCDU-J01",
       "name": "P1",
       "notes": "",
-      "part_id": "EX-DSUB-9-M",
+      "part_id": "EX-MICROD-9-M",
       "pins": [
         {
           "contact_size": null,
@@ -53,7 +53,7 @@
       "mates_with": "RW1-J01",
       "name": "P2",
       "notes": "",
-      "part_id": "EX-DSUB-9-F",
+      "part_id": "EX-MICROD-9-F",
       "pins": [
         {
           "contact_size": null,

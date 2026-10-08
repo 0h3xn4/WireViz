@@ -10,7 +10,7 @@
       "mates_with": null,
       "name": "J01",
       "notes": "",
-      "part_id": "EX-DSUB-9-M",
+      "part_id": "EX-MICROD-9-M",
       "pins": [
         {
           "contact_size": null,
@@ -54,7 +54,7 @@
       "mates_with": null,
       "name": "J02",
       "notes": "",
-      "part_id": "EX-DSUB-9-M",
+      "part_id": "EX-MICROD-15-M",
       "pins": [
         {
           "contact_size": null,

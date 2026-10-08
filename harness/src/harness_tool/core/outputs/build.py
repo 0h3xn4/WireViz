@@ -17,6 +17,7 @@ from harness_tool.core.vcs.report import changelog_rows, revision_report
 
 from . import drawing, exports, system, tables
 from .canvas import SHEETS, Sheet, to_pdf, to_svg
+from .provenance import provenance_bytes
 from .stamp import Stamp, Table, csv_bytes, stamp_of
 
 MANIFEST = "manifest.json"
@@ -72,7 +73,18 @@ def findings_table(project: Project) -> Table:
         [*checks.find(project), *drc.run(project)],
         key=lambda f: ({"error": 0, "warning": 1, "info": 2}[f.severity], f.id),
     )
-    rows = [["Finding", "Rule", "Severity", "Object", "Statement", "Waived", "Justification"]]
+    rows = [
+        [
+            "Finding",
+            "Rule",
+            "Severity",
+            "Object",
+            "Statement",
+            "Waived",
+            "Justification",
+            "Requirement",
+        ]
+    ]
     for f in found:
         rows.append(
             [
@@ -83,6 +95,7 @@ def findings_table(project: Project) -> Table:
                 f.title,
                 "yes" if f.waiver else "",
                 f.waiver.justification if f.waiver else "",
+                " ".join(f.sources),
             ]
         )
     return rows
@@ -152,6 +165,7 @@ def build_outputs(
     out["system/changelog.csv"] = csv_bytes(changelog_rows(project), stamp)
     out["system/revision_report.md"] = revision_report(project, stamp.line).encode()
     out["system/export.json"] = exports.json_export(project, stamp)
+    out["system/provenance.json"] = provenance_bytes(project, stamp)
     out["system/system.xlsx"] = exports.xlsx_bytes(
         {"BOM": bom_all, "Mass and length": mass_all, "Mating matrix": mating, "Traceability": trace,
          "Box pinouts": boxes, "DRC findings": findings, "Change log": changelog_rows(project)}, stamp

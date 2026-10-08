@@ -1,48 +1,52 @@
 # Design rule check: sat15 (example data)
 
-Model hash: `48394267db1f`. Rules run: 22.
-Open: 0 error(s), 18 warning(s), 28 note(s). Waived: 0.
+Model hash: `63a758967598`. Rules run: 33.
+Open: 0 error(s), 20 warning(s), 28 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.
 
-## Warnings (18)
+## Warnings (20)
 
-- **BAT1-J01, BAT1-J02 on BAT1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.BAT1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **HTR1-J01, HTR1-J02 on HTR1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.HTR1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **MTQ1-J01, MTQ1-J02 on MTQ1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.MTQ1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **OBC1-J01, OBC1-J02, OBC1-J03 and 10 more on OBC1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.OBC1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **PCDU1-J01, PCDU1-J02, PCDU1-J03 and 9 more on PCDU1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PCDU1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **PCDU1-R-J01, PCDU1-R-J12 on PCDU1-R are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PCDU1-R-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **PL1-J01, PL1-J02 on PL1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PL1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **RW1-J01, RW1-J02 on RW1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.RW1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **RW2-J01, RW2-J02 on RW2 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.RW2-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **SA1-J01, SA1-J02 on SA1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SA1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **SS1-J01, SS1-J02 on SS1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SS1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **ST1-J01, ST1-J02 on ST1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.ST1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
-- **TRX1-J01, TRX1-J02 on TRX1 are identical (EX-DSUB-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.TRX1-J01`)  
-  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them.
+- **HTR1-J01, HTR1-J02 on HTR1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.HTR1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
+- **MTQ1-J01, MTQ1-J02 on MTQ1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.MTQ1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
+- **OBC1-J02, OBC1-J03, OBC1-J04 and 8 more on OBC1 are identical (EX-MICROD-31-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.OBC1-J02`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
+- **PCDU1-J01, PCDU1-J02, PCDU1-J03 and 8 more on PCDU1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.PCDU1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
+- **SA1-J01, SA1-J02 on SA1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SA1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
+- **SS1-J01, SS1-J02 on SS1 are identical (EX-MICROD-9-F, same keying) and could be plugged in the wrong place** (`connector-lookalike.SS1-J01`)  
+  Identical connectors on one unit can be swapped by mistake. To fix it: Use different keying or a different insert on one of them. Requirement: ECSS-Q-ST-30-11_0140054.
 - **IF-012-R connects the nominal chain to the redundant chain** (`cross-strap.IF-012-R`)  
   One unit is nominal and the other redundant. A cross-strap like this means one failure could affect both chains, so reviewers will ask about it.
-- **Part EX-DSUB-9-F is not approved yet but is used (72 place(s))** (`part-unapproved.EX-DSUB-9-F`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
-- **Part EX-DSUB-9-M is not approved yet but is used (48 place(s))** (`part-unapproved.EX-DSUB-9-M`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+- **Part EX-MICROD-15-F is not approved yet but is used (5 place(s))** (`part-unapproved.EX-MICROD-15-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-15-M is not approved yet but is used (5 place(s))** (`part-unapproved.EX-MICROD-15-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-21-F is not approved yet but is used (3 place(s))** (`part-unapproved.EX-MICROD-21-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-21-M is not approved yet but is used (2 place(s))** (`part-unapproved.EX-MICROD-21-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-31-F is not approved yet but is used (22 place(s))** (`part-unapproved.EX-MICROD-31-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-31-M is not approved yet but is used (11 place(s))** (`part-unapproved.EX-MICROD-31-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-9-F is not approved yet but is used (38 place(s))** (`part-unapproved.EX-MICROD-9-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-MICROD-9-M is not approved yet but is used (28 place(s))** (`part-unapproved.EX-MICROD-9-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-RJ45-F is not approved yet but is used (5 place(s))** (`part-unapproved.EX-RJ45-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-RJ45-M is not approved yet but is used (2 place(s))** (`part-unapproved.EX-RJ45-M`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-SMA-F is not approved yet but is used (2 place(s))** (`part-unapproved.EX-SMA-F`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 - **Part EX-WIRE-SINGLE is not approved yet but is used (30 place(s))** (`part-unapproved.EX-WIRE-SINGLE`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
-- **Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (28 place(s))** (`part-unapproved.EX-WIRE-TWISTED-SHIELDED`)  
-  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one.
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
+- **Part EX-WIRE-TWISTED-SHIELDED is not approved yet but is used (24 place(s))** (`part-unapproved.EX-WIRE-TWISTED-SHIELDED`)  
+  Only approved parts may be built into flight hardware. To fix it: Approve the part in the parts list, or choose an approved one. Requirement: ESCC3901-4.4.
 
 ## Not checked / note (28)
 

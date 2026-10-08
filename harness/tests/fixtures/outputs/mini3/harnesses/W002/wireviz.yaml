@@ -1,15 +1,15 @@
-# harness-tool 0.1.0rc4 model 6c35cd91012b
+# harness-tool 0.1.0rc4 model 6c384d383e73
 metadata:
   title: "W002 OBC-J01 to RW1-J02"
 connectors:
   "W002-P1":
     pincount: 5
     pinlabels: ["1", "2", "3", "4", "5"]
-    type: "EX-DSUB-9-M"
+    type: "EX-MICROD-25-M"
   "W002-P2":
     pincount: 5
     pinlabels: ["1", "2", "3", "4", "5"]
-    type: "EX-DSUB-9-F"
+    type: "EX-MICROD-15-F"
 cables:
   "W002-001":
     wirecount: 1

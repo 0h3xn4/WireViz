@@ -50,12 +50,15 @@ def render() -> str:
         "",
         "## Design rules (background check)",
         "",
-        "| Rule | Severity | Topic | Why it matters | How to fix |",
-        "| --- | --- | --- | --- | --- |",
+        "| Rule | Severity | Topic | Why it matters | How to fix | Standard requirements |",
+        "| --- | --- | --- | --- | --- | --- |",
     ]
     for r in RULES:
         waive = "waivable" if r.can_waive else "not waivable"
-        lines.append(f"| `{r.id}` | {r.severity} ({waive}) | {r.topic} | {r.why} | {r.how} |")
+        cited = ", ".join(f"`{x}`" for x in r.sources) or "none"
+        lines.append(
+            f"| `{r.id}` | {r.severity} ({waive}) | {r.topic} | {r.why} | {r.how} | {cited} |"
+        )
     lines += [
         "",
         "## Logical rules (instant, in the editor)",

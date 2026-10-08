@@ -1,15 +1,15 @@
-# harness-tool 0.1.0rc4 model 6c35cd91012b
+# harness-tool 0.1.0rc4 model 6c384d383e73
 metadata:
   title: "W001 PCDU to RW1 power"
 connectors:
   "W001-P1":
     pincount: 3
     pinlabels: ["1", "2", "3"]
-    type: "EX-DSUB-9-M"
+    type: "EX-MICROD-9-M"
   "W001-P2":
     pincount: 3
     pinlabels: ["1", "2", "3"]
-    type: "EX-DSUB-9-F"
+    type: "EX-MICROD-9-F"
 cables:
   "W001-001":
     wirecount: 1

@@ -26,6 +26,7 @@ class Rule:
     how: str  # how to fix it by hand
     check: Callable[[Project], Iterator[Hit]]
     waivable: bool | None = None  # default: warnings can be waived, errors and info cannot
+    sources: tuple[str, ...] = ()  # IDs of the standard requirements this rule serves (compliance/)
 
     @property
     def can_waive(self) -> bool:
@@ -35,7 +36,7 @@ class Rule:
         return [
             Finding(
                 finding_id(self.id, h.object_id), self.id, self.severity, h.object_id,
-                h.title, f"{self.why} To fix it: {self.how}", h.fix_label, self.can_waive,
+                h.title, f"{self.why} To fix it: {self.how}", h.fix_label, self.can_waive, None, self.sources,
             )
             for h in self.check(project)
         ]  # fmt: skip

@@ -3,8 +3,8 @@
   {
    "carries": [
     "rs422",
+    "rs485",
     "can",
-    "spacewire",
     "discrete"
    ],
    "gender": "female",
@@ -13,7 +13,7 @@
    "mates_with": null,
    "name": "J01",
    "notes": "",
-   "part_id": "EX-DSUB-9-F",
+   "part_id": "EX-MICROD-25-F",
    "pins": [
     {
      "contact_size": null,
@@ -74,7 +74,7 @@
    "mates_with": null,
    "name": "J02",
    "notes": "",
-   "part_id": "EX-DSUB-9-F",
+   "part_id": "EX-MICROD-9-F",
    "pins": [
     {
      "contact_size": null,
@@ -118,7 +118,7 @@
    "mates_with": null,
    "name": "J03",
    "notes": "",
-   "part_id": "EX-DSUB-9-F",
+   "part_id": "EX-MICROD-15-F",
    "pins": [
     {
      "contact_size": null,
@@ -161,7 +161,7 @@
    "mates_with": null,
    "name": "J01",
    "notes": "",
-   "part_id": "EX-DSUB-9-F",
+   "part_id": "EX-MICROD-9-F",
    "pins": [
     {
      "contact_size": null,
@@ -204,7 +204,7 @@
    "mates_with": null,
    "name": "J02",
    "notes": "",
-   "part_id": "EX-DSUB-9-F",
+   "part_id": "EX-MICROD-9-F",
    "pins": [
     {
      "contact_size": null,
@@ -248,7 +248,7 @@
    "mates_with": null,
    "name": "J03",
    "notes": "",
-   "part_id": "EX-DSUB-9-F",
+   "part_id": "EX-MICROD-15-F",
    "pins": [
     {
      "contact_size": null,
@@ -291,7 +291,7 @@
    "mates_with": null,
    "name": "J01",
    "notes": "",
-   "part_id": "EX-DSUB-9-M",
+   "part_id": "EX-MICROD-9-M",
    "pins": [
     {
      "contact_size": null,
@@ -335,7 +335,7 @@
    "mates_with": null,
    "name": "J02",
    "notes": "",
-   "part_id": "EX-DSUB-9-M",
+   "part_id": "EX-MICROD-15-M",
    "pins": [
     {
      "contact_size": null,
@@ -408,7 +408,7 @@
      "mates_with": "PCDU-J01",
      "name": "P1",
      "notes": "",
-     "part_id": "EX-DSUB-9-M",
+     "part_id": "EX-MICROD-9-M",
      "pins": [
       {
        "contact_size": null,
@@ -449,7 +449,7 @@
      "mates_with": "RW1-J01",
      "name": "P2",
      "notes": "",
-     "part_id": "EX-DSUB-9-F",
+     "part_id": "EX-MICROD-9-F",
      "pins": [
       {
        "contact_size": null,
@@ -540,7 +540,7 @@
      "mates_with": "OBC-J01",
      "name": "P1",
      "notes": "",
-     "part_id": "EX-DSUB-9-M",
+     "part_id": "EX-MICROD-25-M",
      "pins": [
       {
        "contact_size": null,
@@ -599,7 +599,7 @@
      "mates_with": "RW1-J02",
      "name": "P2",
      "notes": "",
-     "part_id": "EX-DSUB-9-F",
+     "part_id": "EX-MICROD-15-F",
      "pins": [
       {
        "contact_size": null,
@@ -822,6 +822,40 @@
      "direction": "passive",
      "name": "RTN",
      "pair": null
+    }
+   ],
+   "unverified": true
+  },
+  {
+   "category": "data",
+   "construction": "twisted_shielded_pair",
+   "default_gauge_awg": null,
+   "emc_class": null,
+   "id": "ethernet",
+   "impedance_ohm": null,
+   "name": "Ethernet",
+   "notes": "",
+   "shielding": "per_pair",
+   "signals": [
+    {
+     "direction": "out",
+     "name": "TX+",
+     "pair": "TX"
+    },
+    {
+     "direction": "out",
+     "name": "TX-",
+     "pair": "TX"
+    },
+    {
+     "direction": "in",
+     "name": "RX+",
+     "pair": "RX"
+    },
+    {
+     "direction": "in",
+     "name": "RX-",
+     "pair": "RX"
     }
    ],
    "unverified": true
@@ -1226,7 +1260,7 @@
    "voltage_v": null
   }
  ],
- "model_hash": "6c35cd91012bb4871e4073c5190d6d0017cd0c3e478d15c0d3bde646aad3ef6a",
+ "model_hash": "6c384d383e734573554e2009a3c14fbd122b9a086d00066c604673b9f3bd4505",
  "parts": [
   {
    "approval": "pending",
@@ -1375,7 +1409,7 @@
   {
    "approval": "pending",
    "category": "connector",
-   "description": "Micro-D 15-pin, female (example)",
+   "description": "Micro-D 15-pin, female (example, baseline power and data)",
    "id": "EX-MICROD-15-F",
    "manufacturer": null,
    "mass_g": null,
@@ -1391,7 +1425,7 @@
   {
    "approval": "pending",
    "category": "connector",
-   "description": "Micro-D 15-pin, male (example)",
+   "description": "Micro-D 15-pin, male (example, baseline power and data)",
    "id": "EX-MICROD-15-M",
    "manufacturer": null,
    "mass_g": null,
@@ -1400,6 +1434,166 @@
    "notes": "",
    "part_number": null,
    "pin_count": 15,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 21-pin, female (example, baseline power and data)",
+   "id": "EX-MICROD-21-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-21-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 21,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 21-pin, male (example, baseline power and data)",
+   "id": "EX-MICROD-21-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-21-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 21,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 25-pin, female (example, baseline power and data)",
+   "id": "EX-MICROD-25-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-25-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 25,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 25-pin, male (example, baseline power and data)",
+   "id": "EX-MICROD-25-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-25-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 25,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 31-pin, female (example, baseline power and data)",
+   "id": "EX-MICROD-31-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-31-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 31,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 31-pin, male (example, baseline power and data)",
+   "id": "EX-MICROD-31-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-31-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 31,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 9-pin, female (example, baseline power and data)",
+   "id": "EX-MICROD-9-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-9-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 9,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Micro-D 9-pin, male (example, baseline power and data)",
+   "id": "EX-MICROD-9-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-MICROD-9-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 9,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Ethernet RJ45 8P8C, female jack (example, alternative for high data rates)",
+   "id": "EX-RJ45-F",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-RJ45-M",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 8,
+   "ratings": {},
+   "specification": null,
+   "unverified": true
+  },
+  {
+   "approval": "pending",
+   "category": "connector",
+   "description": "Ethernet RJ45 8P8C, male plug (example, alternative for high data rates)",
+   "id": "EX-RJ45-M",
+   "manufacturer": null,
+   "mass_g": null,
+   "mass_per_m_g": null,
+   "mates_with": "EX-RJ45-F",
+   "notes": "",
+   "part_number": null,
+   "pin_count": 8,
    "ratings": {},
    "specification": null,
    "unverified": true
@@ -1423,7 +1617,7 @@
   {
    "approval": "pending",
    "category": "connector",
-   "description": "SMA coax, female (example)",
+   "description": "SMA coax, female (example, baseline RF)",
    "id": "EX-SMA-F",
    "manufacturer": null,
    "mass_g": null,
@@ -1439,7 +1633,7 @@
   {
    "approval": "pending",
    "category": "connector",
-   "description": "SMA coax, male (example)",
+   "description": "SMA coax, male (example, baseline RF)",
    "id": "EX-SMA-M",
    "manufacturer": null,
    "mass_g": null,

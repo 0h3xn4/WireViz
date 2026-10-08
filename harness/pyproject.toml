@@ -27,6 +27,9 @@ harness-gui = "harness_tool.gui.app:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"harness_tool.resources" = ["guide/*.html", "examples/**/*", "fonts/*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

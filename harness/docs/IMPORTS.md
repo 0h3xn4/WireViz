@@ -1,9 +1,11 @@
 # Importing outside data
 
-Everything is previewed row by row and applied as one undo step (CLI: nothing is written if any row has a problem).
+Everything is previewed row by row and applied as one undo step (CLI: nothing is written if any row has a problem, and `--dry-run` shows the rows without changing anything).
+
+Starting files for every import below are in the templates (`harness templates FOLDER`): `interfaces.csv`, `approved-parts.csv`, `segment-lengths.csv`, `wheel-connectors.net`, `signal-map.csv` and `ampacity-DEMO-ONLY.csv`. They are written for the `first-steps` example (`harness new DIR --template first-steps`), so you can try each one before using your own data. Walk-through: [`GETTING_STARTED.md`](GETTING_STARTED.md), parts 7 and 8.
 
 ## Interfaces (CSV or XLSX)
-Editor: File > Import interfaces. Columns: id, type, from, to, redundancy (optional); headers are matched by name.
+Editor: File > Import interfaces. Columns: id, type, from, to, redundancy (optional); headers are matched by name (`from` is also read from `from unit`, `source` or `a`; `to` from `to unit`, `destination`, `target` or `b`; the type from `interface type`, `kind` or `protocol`). The units must exist; `type` is an interface type's name or ID. Each row needs a free connector on both units that can carry the type; a row that cannot be placed says why and nothing is applied.
 
 ## File formats
 CSV files may use commas, semicolons or tabs between columns (the header line decides), UTF-8 with or without a byte order mark. A number with a decimal comma must be in quotes when commas separate the columns (`"1,5"`), or the file must use semicolons; a row with more columns than the header is refused rather than cut off. At most 20,000 rows and 8 MB; XLSX files are read from the first sheet. Only regular files are read (not pipes or devices).
@@ -23,7 +25,7 @@ CSV files may use commas, semicolons or tabs between columns (the header line de
 
 `harness config DIR --ampacity-csv FILE` loads the current-by-gauge table from a two-column CSV (gauge, amperes; header optional; decimal commas accepted). It is validated before anything is written. The other values are edited in `config/*.json` (see CONFIG.md); set `"placeholder": false` in a file once it is reviewed.
 
-Until the values exist, wire gauges stay "pending", the affected checks say "not checked", and nothing can be released.
+Until the values exist, wire gauges stay "pending", the affected checks say "not checked", and a harness cannot be released while a wire has no gauge or length. To see the machinery work first, the templates contain **demo** values (`config-demo-values/`, `ampacity-DEMO-ONLY.csv`); they are not engineering data and the files stay marked as placeholders.
 
 ## Segment lengths from a CAD or spreadsheet (D-13)
 `harness import-lengths DIR FILE [--unit mm|cm|m] [--dry-run]` with columns harness ID, segment ID, length (default unit millimetres, decimal commas accepted). Run `harness generate DIR` afterwards so the wire lengths follow.

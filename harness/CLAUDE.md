@@ -9,14 +9,14 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 - Setup: `python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[gui,dev]"` (Linux also needs libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 libxcb-cursor0 for Qt)
 - Test: `pytest` (Qt runs offscreen via tests/conftest.py); coverage: `pytest --cov` (90% gate on core, enforced)
 - Lint/type: `ruff format . && ruff check . && mypy`
-- CLI: `harness --version | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR | drc DIR | export DIR | verify DIR --outputs | review/release/revise/diff/log DIR HARNESS | compare OLD NEW | config DIR | import-parts/import-lengths/import-netlist DIR FILE`; GUI: `harness-gui`
+- CLI: `harness --version | new FOLDER [--template NAME] | templates FOLDER | validate DIR | check DIR | migrate DIR | generate DIR | verify DIR | drc DIR | export DIR | verify DIR --outputs | review/release/revise/diff/log DIR HARNESS | compare OLD NEW | config DIR | import-parts/import-lengths/import-netlist DIR FILE`; GUI: `harness-gui`
 - GUI tests: `QT_QPA_PLATFORM=offscreen pytest tests/test_gui_journeys.py` (conftest sets it); timings: `python -m tools.bench_gui`; screenshots of the real editor: `python -m tools.gui_screenshots` (docs/ux/qt)
 - Prototype: edit `prototype/template.html` / `prototype/app.js` or `gui/tokens.py`, then `python -m tools.build_prototype` (a test fails if `index.html` is stale); screenshots: `python -m tools.ux_screenshots`; journeys: `pytest tests/test_prototype.py` (needs Chromium, skips otherwise)
 - Stress benchmarks: `python -m tools.bench_stress`, `python -m tools.bench_generate`
 - Output goldens: `PYTHONPATH=. python -m tools.gen_output_goldens` (on purpose; review the diff)
 - Package (Ubuntu): `python -m tools.build_installer`, `python -m tools.build_deb`, then `dist/harness-tool/harness-tool --selftest`
 - Release checklist: `python -m tools.release_check [--quick]`; soak: `python -m tools.soak 5000 <seed>`
-- Docs that must stay in sync (tests fail otherwise): `python -m tools.build_guide`, `python -m tools.gen_rule_docs`; usability: `python -m tools.usability_setup DIR`, `python -m tools.usability_summary results.csv sus.csv`
+- Docs that must stay in sync (tests fail otherwise): `python -m tools.build_guide` (in-app guide), `python -m tools.gen_rule_docs` (`docs/RULES.md`), `python -m tools.gen_cli_docs` (`docs/CLI.md`), `python -m tools.build_examples` (example projects). `tests/test_docs.py` also runs the commands of `docs/GETTING_STARTED.md` and `README.md`, and `tests/test_docs_links.py` checks every relative link and anchor; usability: `python -m tools.usability_setup DIR`, `python -m tools.usability_summary results.csv sus.csv`
 - SBOM + licence report: `python -m tools.gen_sbom`; reproducible check: `python -m tools.check_reproducible`
 - Offline wheelhouse: `python -m tools.vendor`
 
@@ -72,6 +72,18 @@ M0 to M9 done (`docs/demos/`), then the October audit (`docs/AUDIT.md`); version
 
 ## KiCad import (M9+)
 `core/kicad.py` (S-expression and XML netlist reader + import planner), `cli/data.py` `import-netlist`, `Pin.fixed` honoured in `generate/pins.py` and `engine.py`. Docs `docs/KICAD.md`, D-123/D-124. Fixtures are hand-made; one real KiCad 10.0.6 file was checked.
+
+## Examples, templates and documentation
+`core/templates.py` (`create_project`, `copy_import_templates`), `cli/start.py` (`harness new`, `harness templates`), `resources/examples/` (`projects/` built by `tools/build_examples.py`; `templates/` written by hand: CSV, netlist, CI scripts, review checklist, demo values), `resources.examples_path()` (also inside PyInstaller). Docs for newcomers: `docs/GETTING_STARTED.md`, `CONCEPTS.md`, `INSTALL.md`, `FAQ.md`, `CLI.md`; map in `docs/README.md`.
+- A new CLI command needs an entry in `tools/gen_cli_docs.py` (group and examples) and in the user guide; a changed example needs `python -m tools.build_examples`.
+- Demo values in the templates are for learning only, never engineering data, and stay `"placeholder": true` (D-129). Do not make the examples look reviewed.
+- If you change what the tutorial prints (the example, the sizing, the drawings), update `docs/GETTING_STARTED.md` and `docs/img/` (a test checks the commands and the quoted model hash).
+
+## Compliance audit (ECSS/ESCC)
+`compliance/` (requirement lists, assessment, matrix, gap analysis, evidence, process documents), `core/standard_profiles.py` (optional value profiles, D-131), `core/drc/standard_rules.py` (rules that apply the supplied standards), `tools/extract_requirements.py`, `tools/build_compliance_matrix.py`, `tools/trace.py`, `tools/metrics.py`, `tools/gen_scf.py`.
+- Never add a standard value as a default; profiles fill unset values only and cite a requirement ID that exists in `compliance/requirements` (a test checks it).
+- A new rule that serves a requirement names it in `sources=`; a rule that needs a number stays silent without it and adds a line to `standard_rules.unchecked`.
+- Rebuild after changing assessments: `python -m tools.build_compliance_matrix`, `python -m tools.trace`; both outputs are checked for freshness by tests.
 
 ## Polish layout (M7)
 User guide `docs/guide/USER_GUIDE.md` (HTML bundled in `src/harness_tool/resources/guide/`, F1), `docs/RULES.md` (generated), `docs/CONFIG.md`, `docs/usability/`, Ubuntu packaging in `packaging/ubuntu/` and `tools/build_deb.py`, `tools/release_check.py`, `tools/soak.py`.

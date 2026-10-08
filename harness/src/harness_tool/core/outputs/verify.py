@@ -34,7 +34,8 @@ HARNESS_FILES = (
 )
 SYSTEM_FILES = (
     "bom.csv", "mass_length.csv", "mating_matrix.csv", "traceability.csv", "box_pinouts.csv",
-    "drc_findings.csv", "drc_report.md", "changelog.csv", "revision_report.md", "export.json", "system.xlsx", "block_diagram.svg",
+    "drc_findings.csv", "drc_report.md", "changelog.csv", "revision_report.md", "export.json", "provenance.json", "system.xlsx",
+    "block_diagram.svg",
     "block_diagram.pdf", "harness_overview.svg", "harness_overview.pdf",
 )  # fmt: skip
 
@@ -375,6 +376,11 @@ def _harness_cells(r: VerifyReport, project: Project, h: Harness, files: dict[st
             if w is None or len(row) < 13:
                 continue
             wrong = []
+            if any(t.emc_class for t in project.interface_types.values()):
+                i = project.interfaces.get(w.interface_id or "")
+                t = project.interface_types.get(i.type_id) if i else None
+                if len(row) < 14 or row[13] != ((t.emc_class if t else None) or ""):
+                    wrong.append("EMC class")
             if row[1] != (w.signal or ""):
                 wrong.append("signal")
             if row[2] != (w.interface_id or ""):
@@ -499,11 +505,46 @@ def _drawings(r: VerifyReport, h: Harness, files: dict[str, bytes]) -> None:
                     break
 
 
+def _provenance(r: VerifyReport, project: Project, files: dict[str, bytes]) -> None:
+    """The provenance file must say which design it was made from and which settings were
+    placeholders, derived here from the project and not from the builder."""
+    raw = files.get("system/provenance.json")
+    if raw is None:
+        return
+    try:
+        doc = json.loads(raw)
+    except ValueError:
+        r.error("out_provenance", "system/provenance.json is not valid JSON.", "provenance")
+        return
+    if not isinstance(doc, dict) or doc.get("format") != "harness-tool-provenance":
+        r.error("out_provenance", "system/provenance.json has the wrong format.", "provenance")
+        return
+    settings = doc.get("settings", {})
+    placeholders = sorted(n for n, c in project.config.items() if c.placeholder)
+    listed = sorted(n for n, v in settings.items() if isinstance(v, dict) and v.get("placeholder"))
+    if listed != placeholders:
+        r.error(
+            "out_provenance",
+            "system/provenance.json does not list the placeholder settings of the design.",
+            "provenance",
+        )
+    design = doc.get("design", {})
+    if design.get("wires") != sum(len(h.wires) for h in project.harnesses.values()) or design.get(
+        "harnesses"
+    ) != len(project.harnesses):
+        r.error(
+            "out_provenance",
+            "system/provenance.json counts differ from the design.",
+            "provenance",
+        )
+
+
 def _system(r: VerifyReport, project: Project, files: dict[str, bytes]) -> None:
     for name in SYSTEM_FILES:
         if f"system/{name}" not in files:
             r.error("out_missing", f"system/{name} was not generated.", name)
     wires = [w for h in project.harnesses.values() for w in h.wires]
+    _provenance(r, project, files)
     ml = _table(files, "system/mass_length.csv")
     if ml and (ml[-1][0] != "TOTAL" or ml[-1][1] != str(len(wires))):
         r.error(

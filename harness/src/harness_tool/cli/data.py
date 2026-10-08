@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from harness_tool.core import configcheck
+from harness_tool.core import configcheck, standard_profiles
 from harness_tool.core.commands import History, SetConfig
 from harness_tool.core.errors import HarnessError
 from harness_tool.core.generate.lengths import plan_length_import
@@ -29,6 +29,13 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
         type=Path,
         default=None,
         help="CSV with a gauge column and an amperes column; sets derating.ampacity_a_by_awg",
+    )
+    c.add_argument(
+        "--apply-profile",
+        default=None,
+        metavar="NAME",
+        help="fill the unset values from a standard profile (ecss-q-st-30-11c, ecss-e-st-20-07c); "
+        "values you already set are kept; the files stay placeholders until you review them",
     )
     pp = sub.add_parser(
         "import-parts",
@@ -155,6 +162,26 @@ def _config(project, args: argparse.Namespace) -> int:  # type: ignore[no-untype
         save_project(project, args.project)
         print(
             f'Loaded {len(table)} gauges into config/derating.json. Review it, then set "placeholder": false when the file is complete.'
+        )
+    if args.apply_profile is not None:
+        try:
+            plan = standard_profiles.plan_profile(project, args.apply_profile)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        if plan.configs:
+            History(project).execute(
+                f"Apply profile {args.apply_profile}", [SetConfig(c) for c in plan.configs]
+            )
+            save_project(project, args.project)
+        for s in plan.applied:
+            print(f"set {s.file}.{s.key} = {s.value!r}  ({s.source}: {s.note})")
+        for s, current in plan.kept:
+            print(f"kept {s.file}.{s.key} = {current!r}; the profile says {s.value!r} ({s.source})")
+        print(
+            f"Profile {args.apply_profile}: {len(plan.applied)} value(s) set, {len(plan.kept)} kept. "
+            "These values come from the supplied standard and still need an engineer's review; "
+            'the files stay "placeholder": true until you set it to false.'
         )
     text, ok = configcheck.report(project)
     print(text)

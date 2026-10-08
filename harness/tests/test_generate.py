@@ -36,7 +36,7 @@ def test_sat15_generates_and_verifies():
     report = verify_project(p)
     assert report.ok, report.summary()
     assert report.interfaces_checked == 24
-    assert report.wires_checked == 58
+    assert report.wires_checked == 54  # Ethernet has four signals, SpaceWire had eight
     assert generation_status(p) == "current"
 
 

@@ -34,6 +34,21 @@ def ampacity_table(raw: object) -> dict[int, float] | None:
     return out
 
 
+def bundle_k(raw: object, count: int) -> float | None:
+    """K of ECSS-Q-ST-30-11C Table 6-41 for `count` wires: the next listed count, never a better
+    factor than the table gives; None if there is no table or the bundle is larger than it lists."""
+    if not isinstance(raw, dict) or not raw:
+        return None
+    try:
+        points = sorted((int(k), float(v)) for k, v in raw.items())
+    except (TypeError, ValueError):
+        return None
+    for n, k in points:
+        if count <= n:
+            return k
+    return None
+
+
 def size_wire(
     derating: dict[str, object],
     generation: dict[str, object],
@@ -41,6 +56,7 @@ def size_wire(
     current_a: float | None,
     length_m: float | None,
     path_conductors: int,
+    bundle_wires: int | None = None,
 ) -> Sizing:
     """Smallest conductor whose derated ampacity and voltage drop satisfy the project rules."""
     s = Sizing()
@@ -50,6 +66,13 @@ def size_wire(
     table = ampacity_table(derating.get("ampacity_a_by_awg"))
     bundle = _num(derating.get("bundle_derating"))
     temp = _num(derating.get("temperature_derating"))
+    by_count = derating.get("bundle_factor_by_count")
+    if isinstance(by_count, dict) and by_count and bundle_wires is not None:
+        bundle = bundle_k(by_count, bundle_wires)  # the table replaces the single factor
+        if bundle is None:
+            s.pending.append(f"derating.bundle_factor_by_count (no entry for {bundle_wires} wires)")
+        else:
+            s.notes.append(f"bundle factor K {bundle:g} for {bundle_wires} wires (Table 6-41)")
     if table is None:
         s.pending.append("derating.ampacity_a_by_awg")
     if bundle is None:

@@ -1,6 +1,8 @@
 # How to: the whole app, task by task
 
-Short recipes. Each says what you do, what you should see, and what to do if you do not. Background is in the user guide (`docs/guide/USER_GUIDE.md`, F1 in the app). Commands take the project folder as `DIR`.
+Short recipes. Each says what you do, what you should see, and what to do if you do not. Commands take the project folder as `DIR`.
+
+**New to the tool?** Do [`GETTING_STARTED.md`](GETTING_STARTED.md) first (45 minutes, with real output), and read [`CONCEPTS.md`](CONCEPTS.md) for the words. Background is also in the user guide ([`guide/USER_GUIDE.md`](guide/USER_GUIDE.md), **F1** in the app); every command and option is in [`CLI.md`](CLI.md); problems are in [`FAQ.md`](FAQ.md). The example files used below come from `harness templates FOLDER`.
 
 ## Contents
 
@@ -24,6 +26,8 @@ Short recipes. Each says what you do, what you should see, and what to do if you
 
 ## 1. Install
 
+Full instructions with checks and troubleshooting: [`INSTALL.md`](INSTALL.md). In short:
+
 - `sudo apt install ./harness-tool_<version>_amd64.deb`, or unpack the `.tar.gz` and run `./harness-tool/install.sh`.
 - After `install.sh`, if it says `~/.local/bin` is not on your PATH, the commands `harness-tool` and `harness` are not found yet. Start the app from the application menu or `~/.local/bin/harness-tool`, and fix it for good with `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && . ~/.bashrc` (or log out and in).
 - Run `install.sh` from the **unpacked package** (`harness-tool-<version>-linux-<arch>.tar.gz`), not from `packaging/ubuntu` in the source tree; there it stops with a message because the built program is missing. To build the package yourself: `pip install -e ".[gui,dev]" && python -m tools.build_installer`, then use `dist/harness-tool/install.sh`. The CI run also uploads the `.deb` and `.tar.gz` as a downloadable artifact.
@@ -32,7 +36,9 @@ Short recipes. Each says what you do, what you should see, and what to do if you
 
 ## 2. Start a project
 
-- GUI: **File > New project**, pick an **empty** folder, name it.
+- GUI: **File > New project…**, pick an **empty** folder, name it.
+- Command line: `harness new DIR --name "My design"` makes an empty project. `harness new --list` shows the examples; `harness new DIR --template first-steps` starts from three connected units, `--template small-satellite` from a realistic system. The folder must not exist yet or be empty; nothing is ever overwritten.
+- Open a project in the app with **File > Open project…**.
 - The folder is the project. Everything in it is plain JSON; **Ctrl+S** saves.
 - Check it any time: `harness validate DIR` (exit code 0 means no errors).
 
@@ -48,8 +54,9 @@ A link between more than two units (a bus) is not generated yet (D-116); it is s
 
 ## 4. Import interfaces from a spreadsheet
 
-- GUI: **File > Import interfaces** (CSV or XLSX).
-- Columns: `id`, `type`, `from`, `to`, and optionally `redundancy`. Headers are matched by name.
+- GUI: **File > Import interfaces…** (CSV or XLSX). A starting file is `interfaces.csv` in the templates.
+- Columns: `id`, `type`, `from`, `to`, and optionally `redundancy`. Headers are matched by name. The units must exist already; `type` is an interface type's name or ID (for example `RS-422`).
+- Each row needs a free connector on both units that can carry the type. A row that cannot be placed says why (for example *RW1 has no free CAN connector*) and nothing is applied.
 - You get a row-by-row preview. Nothing changes until you accept, and it is one undo step.
 
 ## 5. Take connector pinouts from KiCad
@@ -96,12 +103,14 @@ In **Harness plans** select a harness, then the **Why** tab: every wire, pin, ga
 
 ## 9. Fill in the engineering values
 
-The tool never invents derating factors, ampacity, EMC rules or masses. Until they exist, wire gauges are *pending*, affected checks say *not checked*, and nothing can be released.
+The tool never invents derating factors, ampacity, EMC rules or masses. Until they exist, wire gauges are *pending*, affected checks say *not checked*, and a harness cannot be released while a wire has no gauge or length.
 
 1. `harness config DIR` lists what is missing, what depends on it, and which set values are invalid.
-2. Load the current-by-gauge table: `harness config DIR --ampacity-csv table.csv` (two columns: gauge, amperes; validated before anything is written).
+2. Load the current-by-gauge table: `harness config DIR --ampacity-csv table.csv` (two columns: gauge, amperes; validated before anything is written). `ampacity-DEMO-ONLY.csv` in the templates shows the format; its numbers are **not** engineering data.
 3. Edit the rest in `DIR/config/*.json` (`docs/CONFIG.md`). When reviewed, set `"placeholder": false` in that file.
-4. `harness generate DIR` again so gauges are chosen.
+4. `harness generate DIR` again so gauges are chosen. A gauge also needs the interface's **Max current (A)** and the segment lengths (recipe 11), because the voltage drop is checked over the length.
+
+To see all of this work before you have real values, copy the four files of `config-demo-values/` from the templates over a **practice** project's `config/` folder. They are demo numbers, not engineering data, and the files stay marked `"placeholder": true`, so every result built on them says so. Never release a real design with them.
 
 ## 10. Import the approved parts list
 
@@ -109,7 +118,7 @@ The tool never invents derating factors, ampacity, EMC rules or masses. Until th
 harness import-parts DIR parts.xlsx --approved Yes --approved Approved --pending Review --rejected No --dry-run
 ```
 
-You say what the approval values in your list mean; a value in none of the lists is an error for that row, and the tool never decides on its own that something is approved. Columns are matched by header (part number, manufacturer, category, pin count, mass, approval status, ...). Every row needs a category: a `category` column, or `--category connector` for the whole file. Details: `docs/IMPORTS.md`.
+A starting file is `approved-parts.csv` in the templates. You say what the approval values in your list mean; a value in none of the lists is an error for that row, and the tool never decides on its own that something is approved. Columns are matched by header (part number, manufacturer, category, pin count, mass, approval status, ...). Every row needs a category: a `category` column, or `--category connector` for the whole file. Details: `docs/IMPORTS.md`.
 
 ## 11. Import segment lengths
 
@@ -121,7 +130,7 @@ harness import-lengths DIR lengths.csv --unit mm
 harness generate DIR
 ```
 
-Columns: harness ID, segment ID, length (decimal commas accepted).
+Columns: harness ID, segment ID, length (decimal commas accepted). Generate once first: the segment IDs (`W001-L1`, ...) belong to the generated harnesses. A starting file is `segment-lengths.csv` in the templates.
 
 ## 12. Export outputs
 
@@ -158,6 +167,8 @@ Exit codes: 0 success, 1 the project has errors or a step is blocked, 2 usage er
 harness validate DIR && harness generate DIR && harness drc DIR && harness export DIR
 ```
 
+The templates contain a ready script (`ci/build.sh`: check, generate, verify, drc, export, verify the outputs, stopping at the first problem) and a GitHub Actions workflow (`ci/github-actions.yml`) that does the same on every push. The review checklist (`design-review-checklist.md`) is a list for the person who releases.
+
 `harness migrate DIR` upgrades a project saved by an older version (originals are kept).
 
 ## 17. When something goes wrong
@@ -172,5 +183,7 @@ harness validate DIR && harness generate DIR && harness drc DIR && harness expor
 | *Blocked because it touches released items* | Start a new revision. |
 | `kicad-cli` fails to load a library | A KiCad install problem. Export the netlist from the schematic editor instead. |
 | `import-netlist` says a file is not a netlist | It must be KiCad's `.net` (S-expression) or XML export, not a `.kicad_sch`. |
+
+More: [`FAQ.md`](FAQ.md) has a longer troubleshooting table.
 
 Keyboard: Ctrl+K command palette, Ctrl+Z/Y undo/redo, Ctrl+S save, Ctrl+=/-/0 zoom, F1 guide. Full list in the user guide.

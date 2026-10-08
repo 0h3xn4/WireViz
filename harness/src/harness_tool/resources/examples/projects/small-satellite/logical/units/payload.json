@@ -1,0 +1,13 @@
+{
+  "units": [
+    {
+      "id": "PL1",
+      "mass_relevant": true,
+      "name": "Payload 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "payload",
+      "zone": "payload"
+    }
+  ]
+}

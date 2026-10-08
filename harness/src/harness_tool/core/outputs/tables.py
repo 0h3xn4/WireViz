@@ -6,7 +6,7 @@ from collections import defaultdict
 
 from harness_tool.core.generate.lengths import clear_length_cache, wire_length
 from harness_tool.core.generate.mass import harness_mass
-from harness_tool.core.model import Connector, Harness, Project
+from harness_tool.core.model import Connector, Harness, Project, Wire
 
 from .stamp import Table
 
@@ -26,18 +26,33 @@ def shield_of(h: Harness) -> dict[str, str]:
     return {wid: s.id for s in h.shields for wid in s.wire_ids}
 
 
+def emc_class_of(project: Project, w: Wire) -> str:
+    """EMC class of the interface type a wire carries (ECSS-E-ST-20-07C 4.2.13.1 d)."""
+    i = project.interfaces.get(w.interface_id or "")
+    t = project.interface_types.get(i.type_id) if i else None
+    return (t.emc_class or "") if t else ""
+
+
+def uses_emc_classes(project: Project) -> bool:
+    return any(t.emc_class for t in project.interface_types.values())
+
+
 def wire_list(project: Project, h: Harness) -> Table:
+    """The EMC class column exists only when the project defines EMC classes, so projects that
+    do not use them keep byte-identical wire lists."""
     shields = shield_of(h)
+    emc = uses_emc_classes(project)
     rows: Table = [[
         "Wire", "Signal", "Interface", "From connector", "From pin", "To connector", "To pin",
         "AWG", "Part", "Colour", "Length (m)", "Shield group", "Locked",
+        *(["EMC class"] if emc else []),
     ]]  # fmt: skip
     for w in sorted(h.wires, key=lambda x: x.id):
         rows.append([
             w.id, w.signal or "", w.interface_id or "", w.from_connector, w.from_pin,
             w.to_connector, w.to_pin, PENDING if w.gauge_awg is None else str(w.gauge_awg),
             w.part_id or "", w.colour or "", num(wire_length(h, w)), shields.get(w.id, ""),
-            "yes" if w.locked else "",
+            "yes" if w.locked else "", *([emc_class_of(project, w)] if emc else []),
         ])  # fmt: skip
     return rows
 
@@ -202,11 +217,13 @@ def labels(project: Project, h: Harness) -> Table:
     for w in sorted(h.wires, key=lambda x: x.id):
         far = f"{w.to_connector}.{w.to_pin}"
         near = f"{w.from_connector}.{w.from_pin}"
+        emc = emc_class_of(project, w)
+        tag = f" [EMC {emc}]" if emc else ""  # personnel can see the category (20-07C 4.2.13.1 d)
         rows.append(
-            [f"{w.id}-A", "wire", f"{w.id} {w.signal or ''} to {far}".replace("  ", " "), "1"]
+            [f"{w.id}-A", "wire", f"{w.id} {w.signal or ''} to {far}{tag}".replace("  ", " "), "1"]
         )
         rows.append(
-            [f"{w.id}-B", "wire", f"{w.id} {w.signal or ''} to {near}".replace("  ", " "), "1"]
+            [f"{w.id}-B", "wire", f"{w.id} {w.signal or ''} to {near}{tag}".replace("  ", " "), "1"]
         )
     return rows
 

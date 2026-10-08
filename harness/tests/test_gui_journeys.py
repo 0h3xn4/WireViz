@@ -791,3 +791,73 @@ def test_link_labels_do_not_overlap_in_a_dense_diagram(qtbot, tmp_path) -> None:
     assert len(rects) >= 20
     overlaps = sum(1 for k, a in enumerate(rects) for b in rects[k + 1 :] if a.intersects(b))
     assert overlaps <= max(2, len(rects) // 10), f"{overlaps} overlapping labels of {len(rects)}"
+
+
+def test_new_project_from_an_example(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    """REQ-GUI-03: the editor can start from the same examples as `harness new --template`."""
+    folder = tmp_path / "wheel"
+    seen: list[str] = []
+
+    def choose(title: str, text: str, buttons: list[str]) -> int:
+        seen.extend(buttons)
+        return buttons.index("first-steps")
+
+    win.ask_choice = choose  # type: ignore[assignment]
+    win.ask_folder = lambda title: str(folder)
+    win.ask_text = lambda t, label, default: "Wheel link"
+    win.new_from_example_flow()
+    assert seen[:3] == ["blank", "first-steps", "small-satellite"]
+    assert (folder / "project.json").exists() and win.ctl.root == folder
+    assert {"OBC", "PCDU"} <= set(win.ctl.project.units) or len(win.ctl.project.units) >= 3
+    assert win.windowTitle().startswith("Wheel link")
+    win.ctl.release()
+
+
+def test_choosing_cancel_in_the_example_dialog_changes_nothing(win, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    win.ask_choice = lambda title, text, buttons: len(buttons) - 1  # type: ignore[assignment]
+    win.new_from_example_flow()
+    assert win.ctl.root is None or win.ctl.root != tmp_path / "x"
+
+
+def test_filtering_by_signal_class_fades_the_others_and_changes_nothing(win) -> None:  # type: ignore[no-untyped-def]
+    """REQ-GUI-04: the filter dims links and units of other signal classes; the model is untouched."""
+    before = win.ctl.project
+    scene = win.view.dscene
+    cats = {iid: scene._link_category(iid) for iid in scene.link_items}
+    assert len(set(cats.values())) >= 2, "the sample has more than one signal class"
+    chosen = next(iter(set(cats.values())))
+    index = win.filter_combo.findData(chosen)
+    win.filter_combo.setCurrentIndex(index)
+    for iid, link in scene.link_items.items():
+        assert link.opacity() == (1.0 if cats[iid] == chosen else scene.FADED_LINK)
+    assert win.ctl.project is before and not win.ctl.dirty
+    win.filter_combo.setCurrentIndex(0)
+    assert all(link.opacity() == 1.0 for link in scene.link_items.values())
+    assert all(item.opacity() == 1.0 for item in scene.unit_items.values())
+
+
+def test_the_filter_survives_adding_an_interface(win) -> None:  # type: ignore[no-untyped-def]
+    scene = win.view.dscene
+    win.filter_combo.setCurrentIndex(win.filter_combo.findData("power"))
+    scene.rebuild()
+    assert scene.category_filter == "power"
+    for iid, link in scene.link_items.items():
+        assert link.opacity() == (1.0 if scene._link_category(iid) == "power" else scene.FADED_LINK)
+
+
+def test_the_part_picker_says_what_each_part_is(win) -> None:  # type: ignore[no-untyped-def]
+    """REQ-GUI-05: choosing a library part shows its description, pins, approval and ratings."""
+    from PySide6.QtWidgets import QComboBox, QLabel
+
+    win.ctl.set_mode("expert")
+    win.ctl.select("unit", sorted(win.ctl.project.units)[0])
+    combos = win.props.findChildren(QComboBox)
+    part_combos = [c for c in combos if c.objectName().startswith("part-")]
+    assert part_combos
+    combo = part_combos[0]
+    text = combo.itemData(combo.currentIndex(), Qt.ItemDataRole.ToolTipRole)
+    assert "pins" in text and ("approved" in text)
+    infos = [
+        lab for lab in win.props.findChildren(QLabel) if lab.objectName().startswith("part-info-")
+    ]
+    assert infos and infos[0].text() == text

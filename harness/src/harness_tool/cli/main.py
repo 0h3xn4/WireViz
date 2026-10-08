@@ -10,7 +10,7 @@ from collections.abc import Iterator, Sequence
 from pathlib import Path
 
 from harness_tool import __version__
-from harness_tool.cli import changes, data
+from harness_tool.cli import changes, data, start
 from harness_tool.core.errors import HarnessError, ProjectLockedError, TransactionError
 from harness_tool.core.io.fs import ProjectLock
 from harness_tool.core.io.loader import LoadResult, load_project, non_canonical_files
@@ -48,6 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
                 action="store_true",
                 help="also check <project>/outputs against the design",
             )
+    start.register(sub)
     changes.register(sub)
     data.register(sub)
     return parser
@@ -237,7 +238,11 @@ def _project_lock(args: argparse.Namespace) -> Iterator[None]:
     """Commands that write take the same lock as the editor, so two writers never overlap."""
     path = getattr(args, "project", None)
     writes = args.command in MUTATING or (
-        args.command == "config" and getattr(args, "ampacity_csv", None) is not None
+        args.command == "config"
+        and (
+            getattr(args, "ampacity_csv", None) is not None
+            or getattr(args, "apply_profile", None) is not None
+        )
     )
     if (
         not writes
@@ -256,6 +261,8 @@ def _project_lock(args: argparse.Namespace) -> Iterator[None]:
 
 
 def _dispatch(args: argparse.Namespace) -> int:
+    if args.command in start.COMMANDS:
+        return start.run(args)
     if args.command in ("migrate", "export"):
         probe = load_project(args.project).project
         if probe.read_only:

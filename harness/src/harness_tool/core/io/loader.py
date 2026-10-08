@@ -1,7 +1,8 @@
 """Load a project folder. Never raises on bad content: problems become issues and quarantine."""
 
 import hashlib
-from dataclasses import dataclass, field
+import json
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -100,8 +101,60 @@ def read_tree(root: Path) -> tuple[dict[str, Any], dict[str, bytes], list[Issue]
             if b"<<<<<<<" in data or b">>>>>>>" in data:
                 issues.append(Issue("error", "merge_conflict", "The file contains unresolved Git merge conflict markers. Resolve the conflict first.", rel))  # fmt: skip
             else:
-                issues.append(Issue("error", "invalid_json", f"The file is not valid JSON or UTF-8 ({type(exc).__name__}: {str(exc)[:120]}).", rel))  # fmt: skip
+                issues.append(Issue("error", "invalid_json", _json_problem(exc), rel))
     return parsed, broken, issues
+
+
+def _json_problem(exc: ValueError) -> str:
+    """Where the file is damaged and what is wrong, without quoting any of its content."""
+    if isinstance(exc, json.JSONDecodeError):
+        return f"The file is not valid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}."
+    if isinstance(exc, UnicodeDecodeError):
+        return f"The file is not valid UTF-8 at byte {exc.start}."
+    return f"The file is not valid JSON or UTF-8 ({type(exc).__name__}: {str(exc)[:120]})."
+
+
+def _line_of(data: bytes, object_id: str) -> int | None:
+    """Line of `"id": "<object_id>"` in a project file, if it is there once."""
+    needle = f'"id": "{object_id}"'.encode()
+    at = data.find(needle)
+    if at < 0 or data.find(needle, at + 1) >= 0:
+        return None
+    return data.count(b"\n", 0, at) + 1
+
+
+def _add_lines(root: Path, result: "LoadResult") -> None:
+    """Tell where in its file each set-aside object starts (line numbers help hand repair)."""
+    base = long_path(root)
+    fixed: dict[tuple[str, str], int | None] = {}
+    for item in result.project.quarantine:
+        raw = item.raw
+        oid = raw.get("id") if isinstance(raw, dict) else None
+        if not isinstance(oid, str):
+            continue
+        try:
+            data = (base / item.file).read_bytes()
+        except OSError:
+            continue
+        key = (item.file, item.reason)
+        fixed[key] = None if key in fixed else _line_of(data, oid)  # same reason twice: unsure
+    lines = {k: v for k, v in fixed.items() if v is not None}
+    if not lines:
+        return
+    out = []
+    for issue in result.issues:
+        hit = next(
+            (
+                n
+                for (file, reason), n in lines.items()
+                if issue.code == "quarantined"
+                and issue.location == file
+                and issue.message.endswith(reason)
+            ),
+            None,
+        )
+        out.append(replace(issue, message=f"{issue.message} (line {hit})") if hit else issue)
+    result.issues[:] = out
 
 
 class _Builder:
@@ -242,7 +295,9 @@ def load_project(root: Path | str) -> LoadResult:
     if not (base / "project.json").is_file():
         raise LoadError(f"'{root}' is not a harness project folder (no project.json).")
     files, broken, issues = read_tree(root)
-    return load_from_files(files, broken, issues)
+    result = load_from_files(files, broken, issues)
+    _add_lines(root, result)
+    return result
 
 
 def load_from_files(

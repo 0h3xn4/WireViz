@@ -1,5 +1,8 @@
 """Design tokens: the single source for GUI colours, type, spacing. No Qt imports on purpose.
 
+The tokens follow the IBM Carbon design system (the White and Gray 100 themes, IBM Plex type) with
+the status tones darkened where our stricter rule needs AA text contrast on every surface.
+
 The clickable prototype (tools/build_prototype.py) and the real GUI both read these values.
 Colour is never the only carrier of meaning: signal categories also differ by label, icon and
 line weight; redundancy is a dashed line. Category colours were chosen to stay apart under
@@ -8,23 +11,23 @@ simulated colour blindness. Contrast and separation are verified in tests/test_t
 
 from typing import Final
 
-LIGHT: Final[dict[str, str]] = {
+LIGHT: Final[dict[str, str]] = {  # IBM Carbon "White" theme (darker status tones for AA text)
     "bg": "#FFFFFF",
-    "surface": "#F4F6F8",
-    "surface-2": "#E6EAEE",
-    "border": "#6B7686",
-    "text": "#1B1F24",
-    "text-muted": "#4A5565",
-    "primary": "#0B5CAD",
+    "surface": "#F4F4F4",
+    "surface-2": "#E8E8E8",
+    "border": "#6F6F6F",
+    "text": "#161616",
+    "text-muted": "#525252",
+    "primary": "#0353E9",
     "on-primary": "#FFFFFF",
-    "focus": "#6A2FD8",
-    "error": "#B3261E",
-    "warning": "#8A5200",
-    "success": "#1B6E3C",
-    "info": "#0B5CAD",
+    "focus": "#0353E9",
+    "error": "#A2191F",
+    "warning": "#684E00",
+    "success": "#0E6027",
+    "info": "#0043CE",
     "auto-fill": "#7A5C00",
-    "locked": "#4A5565",
-    "released": "#1B6E3C",
+    "locked": "#525252",
+    "released": "#0E6027",
     "cat-power": "#B83014",
     "cat-data": "#000080",
     "cat-analog": "#235C53",
@@ -34,23 +37,23 @@ LIGHT: Final[dict[str, str]] = {
     "cat-ground": "#3A0953",
 }
 
-DARK: Final[dict[str, str]] = {
-    "bg": "#12161B",
-    "surface": "#1B2129",
-    "surface-2": "#26303B",
-    "border": "#8793A3",
-    "text": "#ECEFF3",
-    "text-muted": "#B4BDC9",
-    "primary": "#6DB3F2",
-    "on-primary": "#0A1A2B",
-    "focus": "#B79BFF",
-    "error": "#FF8A80",
-    "warning": "#F2B04A",
-    "success": "#6FD39A",
-    "info": "#6DB3F2",
-    "auto-fill": "#E6C34D",
-    "locked": "#B4BDC9",
-    "released": "#6FD39A",
+DARK: Final[dict[str, str]] = {  # IBM Carbon "Gray 100" theme
+    "bg": "#161616",
+    "surface": "#262626",
+    "surface-2": "#393939",
+    "border": "#8D8D8D",
+    "text": "#F4F4F4",
+    "text-muted": "#C6C6C6",
+    "primary": "#78A9FF",
+    "on-primary": "#161616",
+    "focus": "#FFFFFF",
+    "error": "#FF8389",
+    "warning": "#F1C21B",
+    "success": "#42BE65",
+    "info": "#78A9FF",
+    "auto-fill": "#F1C21B",
+    "locked": "#C6C6C6",
+    "released": "#42BE65",
     "cat-power": "#DDFF33",
     "cat-data": "#33FFFF",
     "cat-analog": "#9EF075",
@@ -81,8 +84,10 @@ def style_category(category: str) -> str:
     return key if key in CATEGORIES else "data"
 
 
-FONT_UI: Final[str] = "Inter, 'Segoe UI', system-ui, sans-serif"  # Inter bundled in the release
-FONT_MONO: Final[str] = "'JetBrains Mono', Consolas, monospace"
+FONT_UI: Final[str] = (
+    "'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif"  # bundled, see gui/fonts.py
+)
+FONT_MONO: Final[str] = "'IBM Plex Mono', Consolas, monospace"
 # Type scale in px (base 14, ratio ~1.2) and spacing on a 4/8 px grid.
 TYPE_SCALE: Final[dict[str, int]] = {"xs": 11, "sm": 12, "base": 14, "md": 16, "lg": 20, "xl": 24}
 SPACING: Final[tuple[int, ...]] = (4, 8, 12, 16, 24, 32, 48)

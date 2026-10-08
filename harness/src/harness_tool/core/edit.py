@@ -50,23 +50,41 @@ class UnitTemplate:
     connectors: tuple[ConnectorTemplate, ...]
 
 
+_POWER = {"power_primary", "power_secondary", "heater"}
+_MICROD_BY_TYPES = {1: 9, 2: 15, 3: 21, 4: 25}  # distinct interface types on one connector -> pins
+
+
+def _box_part(carries: tuple[str, ...]) -> str:
+    """The baseline connector (D-130) for a unit connector that carries these interface types:
+    SMA for RF, an RJ45 for Ethernet, otherwise the Micro-D size that fits the number of types."""
+    if carries == ("rf_coax",):
+        return "EX-SMA-F"
+    if carries == ("ethernet",):
+        return "EX-RJ45-F"
+    if set(carries) <= _POWER:
+        return "EX-MICROD-9-F"
+    return f"EX-MICROD-{_MICROD_BY_TYPES.get(len(carries), 31)}-F"
+
+
 def _t(id_: str, label: str, prefix: str, sub: str, *conns: tuple[str, ...]) -> UnitTemplate:
     return UnitTemplate(
-        id_, label, prefix, sub, tuple(ConnectorTemplate("EX-DSUB-9-F", c) for c in conns)
+        id_, label, prefix, sub, tuple(ConnectorTemplate(_box_part(c), c) for c in conns)
     )
 
+
+_COMMS = ("rs422", "rs485", "can")  # the baseline communication standards (D-130)
 
 TEMPLATES: dict[str, UnitTemplate] = {
     t.id: t
     for t in (
-        _t("computer", "Computer", "OBC", "avionics", ("rs422", "can", "spacewire", "discrete"), ("power_primary",), ("rs422", "can")),
+        _t("computer", "Computer", "OBC", "avionics", (*_COMMS, "discrete"), ("power_primary",), ("rs422", "can"), ("ethernet",)),
         _t("power", "Power unit", "PCDU", "power", ("power_primary",), ("power_primary",), ("discrete", "rs422")),
-        _t("actuator", "Actuator (wheel)", "RW", "aocs", ("power_primary",), ("rs422", "can")),
-        _t("sensor", "Sensor (star tracker)", "ST", "aocs", ("power_primary",), ("spacewire", "rs422")),
-        _t("payload", "Payload", "PL", "payload", ("power_primary",), ("spacewire",), ("rf_coax",)),
+        _t("actuator", "Actuator (wheel)", "RW", "aocs", ("power_primary",), _COMMS),
+        _t("sensor", "Sensor (star tracker)", "ST", "aocs", ("power_primary",), ("rs422", "rs485")),
+        _t("payload", "Payload", "PL", "payload", ("power_primary",), ("ethernet",), _COMMS, ("rf_coax",)),
         _t("transceiver", "Transceiver", "TRX", "comms", ("power_primary",), ("rs422", "can"), ("rf_coax",)),
         _t("pyro", "Pyro unit", "PYRO", "mechanisms", ("power_primary",), ("pyro",), ("discrete",)),
-        _t("computer_xl", "Computer (many interfaces)", "OBC", "avionics", ("power_primary",), *[("rs422", "can", "spacewire", "discrete", "analog", "thermistor")] * 12),
+        _t("computer_xl", "Computer (many interfaces)", "OBC", "avionics", ("power_primary",), *[(*_COMMS, "discrete", "analog", "thermistor")] * 11, ("ethernet",), ("ethernet",)),
         _t("pdu", "Power distribution unit", "PCDU", "power", *[("power_primary",)] * 10, ("heater",), ("can", "rs422")),
         _t("battery", "Battery", "BAT", "power", ("power_primary",), ("can", "rs422")),
         _t("solar_array", "Solar array", "SA", "power", ("power_primary",), ("thermistor",)),

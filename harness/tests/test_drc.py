@@ -308,6 +308,118 @@ def neg_all_clean(rule_id: str) -> Project:
     return p
 
 
+# ---- rules from the supplied standards (D-131); the numbers below are test inputs ---------------
+
+
+def set_part(p: Project, part_id: str, **ratings: float) -> None:
+    part = p.parts[part_id]
+    apply_ops(p, [Put("parts", evolve(part, ratings={**part.ratings, **ratings}))])
+
+
+def pos_connector_voltage() -> Project:
+    p = base()
+    set_cfg(p, "derating", connector_voltage_factor_rated=0.75)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, voltage_v=100.0))])
+    conn = p.connectors[i.endpoints[0].connector_id or ""]
+    set_part(p, conn.part_id, rated_voltage_v=50.0)
+    return p
+
+
+def pos_wire_voltage() -> Project:
+    p = base()
+    set_cfg(p, "derating", wire_voltage_factor=0.5)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, voltage_v=40.0))])
+    set_part(p, w.part_id or "", rated_voltage_v=50.0)
+    return p
+
+
+def pos_temperature_margin() -> Project:
+    p = base()
+    set_cfg(p, "derating", max_ambient_temperature_c=100.0, connector_temperature_margin_c=30.0)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    conn = p.connectors[i.endpoints[0].connector_id or ""]
+    set_part(p, conn.part_id, max_temp_c=120.0)
+    return p
+
+
+def pos_mating_cycles() -> Project:
+    p = base()
+    set_cfg(p, "derating", max_mating_cycles=50)
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    set_part(p, p.connectors[i.endpoints[0].connector_id or ""].part_id, mating_cycles=20.0)
+    return p
+
+
+def pos_connector_manufacturer() -> Project:
+    p = base()
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.connectors)
+    cable = h.connectors[0]
+    box = p.connectors[cable.mates_with or ""]
+    for pid, name in ((cable.part_id, "Maker A"), (box.part_id, "Maker B")):
+        apply_ops(p, [Put("parts", evolve(p.parts[pid], manufacturer=name))])
+    return p
+
+
+def pos_wire_specification() -> Project:
+    p = base()
+    h, w = wire_of(p, "power")
+    apply_ops(
+        p, [Put("parts", evolve(p.parts[w.part_id or ""], approval="approved", specification=None))]
+    )
+    return p
+
+
+def pos_power_return_adjacent() -> Project:
+    p = base()
+    set_cfg(p, "generation", power_return_gap_pins=1)
+    return p
+
+
+def pos_bundle_current() -> Project:
+    p = base()
+    full_config(p)
+    set_cfg(p, "derating", bundle_factor_by_count={"1": 1.0, "10": 0.5, "300": 0.12})
+    h, w = wire_of(p, "power")
+    i = p.interfaces[w.interface_id or ""]
+    apply_ops(p, [Put("interfaces", evolve(i, max_current_a=4.0))])
+    put_harness(p, h, wires=[evolve(x, gauge_awg=20) if x.id == w.id else x for x in h.wires])
+    return p
+
+
+def pos_shield_bonding() -> Project:
+    p = base()
+    set_cfg(p, "emc", shield_bonding="both_ends_backshell")
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    put_harness(p, h, shields=[evolve(s, end_a="pigtail", end_b="floating") for s in h.shields])
+    return p
+
+
+def pos_shield_parts() -> Project:
+    p = base()
+    set_cfg(p, "emc", shield_bonding="both_ends_backshell")
+    h = next(h for h in sorted(p.harnesses.values(), key=lambda x: x.id) if h.shields)
+    set_part(p, h.connectors[0].part_id, conductive_finish=0.0)
+    return p
+
+
+def pos_emc_class_split() -> Project:
+    p = base()
+    set_cfg(p, "emc", same_class_one_bundle=True)
+    for tid in {
+        i.type_id
+        for i in p.interfaces.values()
+        if {e.unit_id for e in i.endpoints} == {"OBC1", "PCDU1"}
+    }:
+        apply_ops(p, [Put("interface_types", evolve(p.interface_types[tid], emc_class="A"))])
+    return p
+
+
 POSITIVE: dict[str, Callable[[], Project]] = {
     "duplicate-id": pos_duplicate_id,
     "wire-dangling": pos_wire_dangling,
@@ -331,6 +443,17 @@ POSITIVE: dict[str, Callable[[], Project]] = {
     "connector-lookalike": pos_lookalike,
     "part-unapproved": pos_unapproved,
     "unchecked-config": pos_unchecked,
+    "connector-voltage": pos_connector_voltage,
+    "wire-voltage": pos_wire_voltage,
+    "temperature-margin": pos_temperature_margin,
+    "mating-cycles": pos_mating_cycles,
+    "connector-manufacturer": pos_connector_manufacturer,
+    "wire-specification": pos_wire_specification,
+    "power-return-adjacent": pos_power_return_adjacent,
+    "bundle-current": pos_bundle_current,
+    "shield-bonding": pos_shield_bonding,
+    "shield-parts": pos_shield_parts,
+    "emc-class-split": pos_emc_class_split,
 }
 
 
@@ -497,10 +620,12 @@ def test_regression_lookalike_rule_copes_with_mixed_keying() -> None:
     unit = next(
         u
         for u in p.units
-        if len([c for c in p.connectors.values() if c.unit_id == u and c.part_id == "EX-DSUB-9-F"])
+        if len(
+            [c for c in p.connectors.values() if c.unit_id == u and c.part_id == "EX-MICROD-9-F"]
+        )
         >= 3
     )
-    conns = [c for c in p.connectors.values() if c.unit_id == unit and c.part_id == "EX-DSUB-9-F"]
+    conns = [c for c in p.connectors.values() if c.unit_id == unit and c.part_id == "EX-MICROD-9-F"]
     apply_ops(
         p,
         [
@@ -509,3 +634,19 @@ def test_regression_lookalike_rule_copes_with_mixed_keying() -> None:
         ],
     )
     list(next(r for r in RULES if r.id == "connector-lookalike").check(p))
+
+
+def test_cited_requirements_exist_in_the_extracted_lists() -> None:
+    """REQ-STD-01: a rule can only cite a requirement that is in compliance/requirements."""
+    import csv
+    from pathlib import Path
+
+    folder = Path(__file__).resolve().parent.parent / "compliance" / "requirements"
+    known: set[str] = set()
+    for f in folder.glob("*.csv"):
+        if f.name != "overrides.csv":
+            with f.open(newline="", encoding="utf-8") as fh:
+                known |= {row["ID"] for row in csv.DictReader(fh)}
+    for rule in RULES:
+        for source in rule.sources:
+            assert source in known, f"{rule.id} cites unknown {source}"

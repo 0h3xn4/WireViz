@@ -1,0 +1,3 @@
+id,type,from,to,redundancy
+IF-010,RS-422,OBC1,PCDU1,nominal
+IF-011,Primary power,PCDU1,OBC1,nominal

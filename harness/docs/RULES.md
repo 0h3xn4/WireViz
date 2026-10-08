@@ -6,30 +6,41 @@ Rules that need numbers from your standards (see PLACEHOLDERS.md) check nothing 
 
 ## Design rules (background check)
 
-| Rule | Severity | Topic | Why it matters | How to fix |
-| --- | --- | --- | --- | --- |
-| `duplicate-id` | error (not waivable) | Duplicate IDs | Two objects with the same ID make every table, label and drawing ambiguous. | Rename one of them. |
-| `wire-dangling` | error (not waivable) | Dangling wires | A wire that ends nowhere cannot be built or tested. | Connect the wire end to an existing pin or delete the wire. |
-| `model-inconsistent` | warning (waivable) | Model consistency | The logical and physical parts of the model disagree, so later outputs may be wrong. | Open the object and correct the mismatch. |
-| `signal-unassigned` | warning (waivable) | Unassigned signals | A signal without a pin never reaches a wire. | Regenerate the harnesses, or assign the pin by hand. |
-| `pin-floating` | warning (waivable) | Floating pins | A named pin with no wire looks connected on the drawing but carries nothing. | Attach a wire or clear the signal name. |
-| `mate-mismatch` | error (not waivable) | Mating halves | Connectors that do not fit, or fit only by force, damage hardware. | Choose the mating part, opposite gender and the same pin count and keying. |
-| `direction-conflict` | error (not waivable) | Signal directions | Two drivers fight each other, or nothing drives a receiver. | Swap the wire to the correct pin of the interface. |
-| `current-over-contact` | error (not waivable) | Contact current | An overloaded contact overheats. | Use a larger contact or split the load over more pins. |
-| `current-over-wire` | error (not waivable) | Wire current | An overloaded wire overheats. | Choose a larger gauge. |
-| `voltage-drop` | error (not waivable) | Voltage drop | Too much drop leaves the load under-supplied. | Choose a larger gauge or shorten the run. |
-| `spare-pins-low` | warning (waivable) | Spare pins | Without spares there is no room for late changes. | Use a connector with more pins. |
-| `shield-unterminated` | warning (waivable) | Shield termination | A shield connected at neither end does not shield. | Terminate the shield at one or both ends. |
-| `shield-wrong-end` | warning (waivable) | Shield grounding | The grounding concept decides which end of a shield is grounded. | Change the shield ends. |
-| `chains-mixed` | error (not waivable) | Nominal and redundant chains | A shared harness or connector lets one failure hit both chains. | Move one chain to its own harness or connector. |
-| `pyro-mixed` | error (not waivable) | Pyro lines | Firing lines next to other wires risk accidental firing. | Give the pyro lines their own harness and connector. |
-| `category-mixed` | warning (waivable) | Category separation | Noisy and sensitive interfaces in one bundle couple into each other. | Split them into separate harnesses. |
-| `emc-mixed` | warning (waivable) | EMC classes | EMC classes that must stay apart couple when bundled. | Split them into separate harnesses. |
-| `connector-lookalike` | warning (waivable) | Look-alike connectors | Identical connectors on one unit can be swapped by mistake. | Use different keying or a different insert on one of them. |
-| `part-unapproved` | warning (waivable) | Approved parts | Only approved parts may be built into flight hardware. | Approve the part in the parts list, or choose an approved one. |
-| `config-invalid` | error (not waivable) | Engineering values | A value outside its possible range (a factor above 1, a table that falls as the wire grows) would silently produce wrong gauges and checks. | Correct the value in config/*.json; `harness config DIR` lists what is missing or invalid. |
-| `released-modified` | error (not waivable) | Released items | A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored. | Restore the harness from its baseline, or start a new revision for the change. |
-| `unchecked-config` | info (not waivable) | Checks not run | A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. | Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md). |
+| Rule | Severity | Topic | Why it matters | How to fix | Standard requirements |
+| --- | --- | --- | --- | --- | --- |
+| `duplicate-id` | error (not waivable) | Duplicate IDs | Two objects with the same ID make every table, label and drawing ambiguous. | Rename one of them. | none |
+| `wire-dangling` | error (not waivable) | Dangling wires | A wire that ends nowhere cannot be built or tested. | Connect the wire end to an existing pin or delete the wire. | none |
+| `model-inconsistent` | warning (waivable) | Model consistency | The logical and physical parts of the model disagree, so later outputs may be wrong. | Open the object and correct the mismatch. | none |
+| `signal-unassigned` | warning (waivable) | Unassigned signals | A signal without a pin never reaches a wire. | Regenerate the harnesses, or assign the pin by hand. | none |
+| `pin-floating` | warning (waivable) | Floating pins | A named pin with no wire looks connected on the drawing but carries nothing. | Attach a wire or clear the signal name. | none |
+| `mate-mismatch` | error (not waivable) | Mating halves | Connectors that do not fit, or fit only by force, damage hardware. | Choose the mating part, opposite gender and the same pin count and keying. | `ECSS-Q-ST-30-11_0140054` |
+| `direction-conflict` | error (not waivable) | Signal directions | Two drivers fight each other, or nothing drives a receiver. | Swap the wire to the correct pin of the interface. | none |
+| `current-over-contact` | error (not waivable) | Contact current | An overloaded contact overheats. | Use a larger contact or split the load over more pins. | `ECSS-Q-ST-30-11_0140050` |
+| `current-over-wire` | error (not waivable) | Wire current | An overloaded wire overheats. | Choose a larger gauge. | `ECSS-Q-ST-30-11_0140217` |
+| `voltage-drop` | error (not waivable) | Voltage drop | Too much drop leaves the load under-supplied. | Choose a larger gauge or shorten the run. | none |
+| `spare-pins-low` | warning (waivable) | Spare pins | Without spares there is no room for late changes. | Use a connector with more pins. | none |
+| `shield-unterminated` | warning (waivable) | Shield termination | A shield connected at neither end does not shield. | Terminate the shield at one or both ends. | none |
+| `shield-wrong-end` | warning (waivable) | Shield grounding | The grounding concept decides which end of a shield is grounded. | Change the shield ends. | `ECSS-E-ST-20-07_0080041`, `ECSS-E-ST-20-07_0080042` |
+| `chains-mixed` | error (not waivable) | Nominal and redundant chains | A shared harness or connector lets one failure hit both chains. | Move one chain to its own harness or connector. | none |
+| `pyro-mixed` | error (not waivable) | Pyro lines | Firing lines next to other wires risk accidental firing. | Give the pyro lines their own harness and connector. | none |
+| `category-mixed` | warning (waivable) | Category separation | Noisy and sensitive interfaces in one bundle couple into each other. | Split them into separate harnesses. | `ECSS-E-ST-20-07_0080034` |
+| `emc-mixed` | warning (waivable) | EMC classes | EMC classes that must stay apart couple when bundled. | Split them into separate harnesses. | `ECSS-E-ST-20-07_0080034` |
+| `connector-lookalike` | warning (waivable) | Look-alike connectors | Identical connectors on one unit can be swapped by mistake. | Use different keying or a different insert on one of them. | `ECSS-Q-ST-30-11_0140054` |
+| `part-unapproved` | warning (waivable) | Approved parts | Only approved parts may be built into flight hardware. | Approve the part in the parts list, or choose an approved one. | `ESCC3901-4.4` |
+| `connector-voltage` | error (not waivable) | Connector working voltage | A connector worked close to its voltage rating can arc or break down. | Use a connector with a higher voltage rating or lower the working voltage. | `ECSS-Q-ST-30-11_0140051`, `ECSS-Q-ST-30-11_0140058` |
+| `wire-voltage` | error (not waivable) | Wire working voltage | A wire worked close to its voltage rating can break down. | Use a wire with a higher voltage rating or lower the working voltage. | `ECSS-Q-ST-30-11_0140213` |
+| `temperature-margin` | error (not waivable) | Temperature margin | A part used close to its maximum temperature ages faster and fails earlier. | Use a part with a higher temperature rating or reduce the ambient temperature. | `ECSS-Q-ST-30-11_0140051`, `ECSS-Q-ST-30-11_0140213` |
+| `mating-cycles` | warning (waivable) | Mating cycles | A connector mated more often than it is rated for wears out. | Choose a connector rated for at least the permitted number of cycles. | `ECSS-Q-ST-30-11_0140056`, `ECSS-Q-ST-30-11_0140061` |
+| `connector-manufacturer` | warning (waivable) | One manufacturer per connector pair | Halves from different manufacturers may not mate within the specified tolerances. | Use mating halves from the same manufacturer. | `ECSS-Q-ST-30-11_0140055` |
+| `wire-specification` | warning (waivable) | Wire specification | An approved wire that cites no specification cannot be traced to a qualification. | Enter the detail specification the wire is procured to in the part. | `ESCC3901-4.4` |
+| `shield-bonding` | warning (waivable) | Shield bonding | A shield that is not bonded to the housing at both ends through the connector does not shield reliably. | Terminate the shield with a 360 degree backshell at both ends. | `ECSS-E-ST-20-07_0080041`, `ECSS-E-ST-20-07_0080042` |
+| `shield-parts` | warning (waivable) | Shield parts | A connector without a conductive finish cannot bond a shield, and a shield without an insulating sheath can ground uncontrolled. | Choose a connector with a conductive finish and a wire with an insulated shield. | `ECSS-E-ST-20-07_0080039`, `ECSS-E-ST-20-07_0080040` |
+| `emc-class-split` | warning (waivable) | One bundle per EMC class | Wires of one EMC category spread over several bundles make the segregation of categories harder to keep. | Carry the interfaces of one class between two units in one harness. | `ECSS-E-ST-20-07_0080035` |
+| `power-return-adjacent` | warning (waivable) | Power and return pins | Power and return on neighbouring contacts raise the risk of a short circuit. | Leave at least one contact unassigned between them (regenerate the harness). | `ECSS-Q-ST-30-11_0140052` |
+| `bundle-current` | error (not waivable) | Bundle current | A wire in a large bundle heats more than a single wire and must carry less. | Choose a larger gauge or split the bundle. | `ECSS-Q-ST-30-11_0140217`, `ECSS-Q-ST-30-11_0140218` |
+| `config-invalid` | error (not waivable) | Engineering values | A value outside its possible range (a factor above 1, a table that falls as the wire grows) would silently produce wrong gauges and checks. | Correct the value in config/*.json; `harness config DIR` lists what is missing or invalid. | none |
+| `released-modified` | error (not waivable) | Released items | A released harness must match its baseline exactly; otherwise the released drawings no longer describe what is stored. | Restore the harness from its baseline, or start a new revision for the change. | none |
+| `unchecked-config` | info (not waivable) | Checks not run | A rule that needs a number nobody has entered cannot say anything, and silence must not look like a pass. | Ask the responsible engineer to fill in the placeholder (see docs/PLACEHOLDERS.md). | none |
 
 ## Logical rules (instant, in the editor)
 

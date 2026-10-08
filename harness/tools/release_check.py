@@ -139,6 +139,13 @@ def reproducible() -> Result:
     return code == 0, "wheel builds identically twice" if code == 0 else tail(out)
 
 
+def integrity() -> Result:
+    code, out = run([sys.executable, "-m", "tools.gen_scf"])
+    docs = ROOT / "dist" / "release-docs"
+    ok = code == 0 and (docs / "scf.json").is_file() and (docs / "SHA256SUMS").is_file()
+    return ok, tail(out)
+
+
 def package() -> Result:
     code, out = run([sys.executable, "-m", "tools.build_installer"])
     if code:
@@ -160,9 +167,14 @@ def deb_install() -> Result:
             return False, tail(out)
         code, out = run([f"{tmp}/opt/harness-tool/harness-tool", "--selftest"])
         cli_code, cli_out = run([f"{tmp}/opt/harness-tool/cli/harness", "--version"])
+        new_code, new_out = run([f"{tmp}/opt/harness-tool/cli/harness", "new", "--list"])
     return (
-        code == 0 and cli_code == 0 and "selftest ok" in out,
-        f"extracted deb runs: {_selftest_line(out)}; {cli_out}",
+        code == 0
+        and cli_code == 0
+        and new_code == 0
+        and "first-steps" in new_out
+        and "selftest ok" in out,
+        f"extracted deb runs: {_selftest_line(out)}; {cli_out}; examples present",
     )
 
 
@@ -178,6 +190,7 @@ STEPS: list[tuple[str, Callable[[], Result], bool]] = [
     ("Reproducible wheel", reproducible, False),
     ("Package (tar.gz, deb) and self-test", package, False),
     ("Installed package runs (deb extracted)", deb_install, False),
+    ("Configuration file and SHA-256 of the deliverables", integrity, False),
 ]
 
 
