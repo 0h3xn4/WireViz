@@ -29,4 +29,4 @@ Review with the customer (6.3.4.4): this document is sent to the owner with the 
 
 ## Verification of correct use of the tools (5.6.1.3)
 
-CI runs the static checks and tests on every push; a failing run blocks merging by the owner's practice, not by a technical lock (the owner decided on 2026-10-08 not to protect the branch: `../DEVIATIONS.md` T-18).
+CI runs the static checks and tests on every push; a failing run blocks merging by the owner's practice, not by a technical lock (the owner waived the protection on 2026-10-08: `../DEVIATIONS.md` T-18).

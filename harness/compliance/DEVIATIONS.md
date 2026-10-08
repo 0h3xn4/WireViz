@@ -21,7 +21,7 @@ Every item is **proposed by the developer assistant and waits for the owner's ap
 | T-15 | Wire surface temperature is not computed | ECSS-Q-ST-30-11C 6.32.4 a.2, b, c | only the ambient temperature is compared with the part limit; a thermal analysis outside the tool is needed; the report says so | proposed |
 | T-16 | "Family-group codes" not mapped | ECSS-Q-ST-30-11C 6.11, 6.12, 6.32 | profile values are applied to all connectors and wires of the project (A-16) | proposed |
 | T-17 | A bundle is every wire of one harness | ECSS-Q-ST-30-11C 6.32.5.1 | conservative; bundles that run together across harnesses are not combined | proposed |
-| T-18 | Default branch is not technically protected | ECSS-Q-ST-80C 5.6.1.3 (see `docs/STANDARDS.md`) | CI is not made a required check; a failing run blocks merging by the owner's practice only. The owner chose not to protect the branch (2026-10-08); the reason was not stated and is still to be written here. | decided by the owner (2026-10-08); reason open |
+| T-18 | Default branch is not technically protected | ECSS-Q-ST-80C 5.6.1.3 (see `docs/STANDARDS.md`) | CI is not a required check; a failing run blocks merging by the owner's practice only. | waived by the owner (2026-10-08); the owner gave no reason, none is recorded |
 
 ## Waivers
-None requested, none granted. A finding of the design rule check can be waived inside a project with a written reason (existing mechanism); that is a design waiver and not a waiver of the standards for the tool.
+One granted: T-18 (default branch not protected), waived by the owner on 2026-10-08 without a stated reason. No other waiver requested or granted. A finding of the design rule check can be waived inside a project with a written reason (existing mechanism); that is a design waiver and not a waiver of the standards for the tool.
