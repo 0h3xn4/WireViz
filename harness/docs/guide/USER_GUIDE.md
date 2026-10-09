@@ -85,6 +85,17 @@ On a power interface set **Max current (A)** in the Properties panel on the righ
 
 Switching modes never changes your data.
 
+### Reading a dense diagram
+
+A system with many units has many links, and seen all at once they form a tangle. The editor helps you in four ways:
+
+- **Click a unit or a link.** Only its links stay in full colour, with their labels; everything else fades. Click the empty background to see everything again. This is the quickest way to answer "what is connected to this?".
+- **Show** (toolbar) fades everything except one signal class, one connector or one bundle. It can be combined with a selection.
+- **A link leaves on the edge that faces the unit at its other end**, so it does not run through its own unit, and the links on one edge are ordered by the height of their other ends, so parallel links cross less. Links between two units of the same lane bulge out on the side away from the middle, as nested curves.
+- **Arrange diagram** (View menu) puts the units in order and keeps room for each one: a unit with many connectors is tall in Expert mode, and the units around it make way. One undo step restores the old positions.
+
+Zoomed far out, the diagram shows lines only; zoom in to see labels.
+
 ## 6. Problems, fixes and waivers
 
 - **Error**: must be fixed. Errors cannot be waived.

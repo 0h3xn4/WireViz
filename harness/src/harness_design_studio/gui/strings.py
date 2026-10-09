@@ -78,7 +78,10 @@ CONNECT_HELP = "Pick an interface type, then click the first and the second unit
 BRING_IN_DATA = "Bring in data"
 IMPORT_BUTTON = "Import interfaces from CSV / XLSX…"
 PROPERTIES = "Properties"
-NOTHING_SELECTED = "Select a unit or an interface to see its details."
+NOTHING_SELECTED = (
+    "Select a unit or an interface to see its details. The rest of the diagram fades, so you can "
+    "follow its links."
+)
 UNIT = "Unit"
 INTERFACE = "Interface"
 FIELD_ID = "ID"

@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from harness_design_studio.core import edit
+from harness_design_studio.core import edit, routing
 from harness_design_studio.gui import strings
 from harness_design_studio.gui.controller import Delta, EditorController
 from harness_design_studio.gui.theme import ThemeManager
@@ -36,7 +36,7 @@ from harness_design_studio.gui.tokens import CATEGORIES, style_category
 
 W = edit.UNIT_W
 HEADER_H = 30
-PORT_ROW = 22
+PORT_ROW = edit.PORT_ROW
 GRID = 10
 
 
@@ -70,9 +70,8 @@ class UnitItem(QGraphicsItem):
 
     def height(self) -> float:
         if self.ctl.mode == "expert":
-            return 46 + PORT_ROW * len(self.connectors())
-        n = len(self.dscene.adjacent(self.unit_id))
-        return 70 + 14 * max(0, n - 2)
+            return edit.expert_height(len(self.connectors()))
+        return edit.guided_height(len(self.dscene.adjacent(self.unit_id)))
 
     def lane(self) -> int:
         return edit.lane_index(self.dscene.zone_count, self.pos().x())
@@ -91,30 +90,46 @@ class UnitItem(QGraphicsItem):
     def port_y(self, index: int) -> float:
         return 46 + index * PORT_ROW + PORT_ROW / 2 - 4
 
-    def port_rect(self, index: int) -> QRectF:
-        x = W - 7 if self.side() == "right" else -7
+    def link_side(self, interface_id: str) -> str:
+        """The edge a link leaves from: the one that faces the unit at its other end, so a link
+        never runs through its own unit."""
+        other = self.dscene.partner_item(self.unit_id, interface_id)
+        if other is None:
+            return self.side()
+        within = routing.same_lane_side(self.lane(), self.dscene.zone_count, self.side())
+        return routing.side_toward(self.lane(), other.lane(), within)
+
+    def port_side(self, connector_id: str) -> str:
+        """The edge a connector is drawn on: where its link leaves, else the lane's default edge."""
+        iid = self.dscene.connector_link(connector_id)
+        return self.link_side(iid) if iid is not None else self.side()
+
+    def port_rect(self, index: int, connector_id: str | None = None) -> QRectF:
+        if connector_id is None:
+            conns = self.connectors()
+            connector_id = str(conns[index].id) if 0 <= index < len(conns) else ""
+        x = W - 7 if self.port_side(connector_id) == "right" else -7
         return QRectF(x, self.port_y(index) - 7, 14, 14)
 
     def port_at(self, pos: QPointF) -> str | None:
         if self.ctl.mode != "expert":
             return None
         for k, c in enumerate(self.connectors()):
-            if self.port_rect(k).adjusted(-6, -4, 6, 4).contains(pos) or QRectF(
+            if self.port_rect(k, str(c.id)).adjusted(-6, -4, 6, 4).contains(pos) or QRectF(
                 0, self.port_y(k) - 11, W, 22
             ).contains(pos):
                 return str(c.id)
         return None
 
     def anchor(self, connector_id: str | None, interface_id: str) -> QPointF:
-        x = self.pos().x() + (W if self.side() == "right" else 0)
+        x = self.pos().x() + (W if self.link_side(interface_id) == "right" else 0)
         h = self.height()
         if self.ctl.mode == "expert" and connector_id is not None:
             ids = [c.id for c in self.connectors()]
             if connector_id in ids:
                 return QPointF(x, self.pos().y() + self.port_y(ids.index(connector_id)))
-        adj = self.dscene.adjacent(self.unit_id)
-        k = adj.index(interface_id) if interface_id in adj else 0
-        slot = (h - 44) / max(1, len(adj))
+        _, k, count = self.dscene.slot(self.unit_id, interface_id)
+        slot = (h - 44) / max(1, count)
         return QPointF(x, self.pos().y() + 36 + (k + 0.5) * slot)
 
     # ---- state shown on the item ------------------------------------------------------------
@@ -164,7 +179,8 @@ class UnitItem(QGraphicsItem):
             and ctl.selection.id == self.unit_id
         )
         faded = state == "no"
-        painter.setOpacity(0.55 if faded else 1.0)
+        base = painter.opacity()  # the item's own opacity (a filter or a focus fades the unit)
+        painter.setOpacity(base * (0.55 if faded else 1.0))
         body = QRectF(0, 0, W, h)
         pen = QPen(th.color("border"), 2)
         if unit.side == "redundant":
@@ -207,7 +223,7 @@ class UnitItem(QGraphicsItem):
             painter.drawText(
                 QRectF(10, 52, W - 20, 16), Qt.AlignmentFlag.AlignVCenter, f"{n} connectors (auto)"
             )
-        painter.setOpacity(1.0)
+        painter.setOpacity(base)
         if reason:
             painter.setPen(th.color("error"))
             painter.setFont(bold)
@@ -258,9 +274,9 @@ class UnitItem(QGraphicsItem):
         ctl = self.ctl
         auto = self._auto_connectors()
         painter.setFont(small)
-        right = self.side() == "right"
         for k, c in enumerate(self.connectors()):
-            rect = self.port_rect(k)
+            rect = self.port_rect(k, str(c.id))
+            right = self.port_side(str(c.id)) == "right"
             compat = (
                 ctl.connector_compat(c.id)
                 if state in ("ok", "no", "from") and ctl.connect_type
@@ -402,12 +418,19 @@ class LinkItem(QGraphicsPathItem):
         p1 = a_item.anchor(i.endpoints[0].connector_id, i.id)
         p2 = b_item.anchor(i.endpoints[1].connector_id, i.id)
         self.ends = QLineF(p1, p2)
-        da = 1 if a_item.side() == "right" else -1
-        db = 1 if b_item.side() == "right" else -1
-        same = a_item.side() == b_item.side()
-        reach = 70 if same else max(50, abs(p2.x() - p1.x()) / 2)
-        c1 = QPointF(p1.x() + da * reach, p1.y())
-        c2 = QPointF(p2.x() + db * reach, p2.y())
+        side_a = a_item.link_side(i.id)
+        side_b = b_item.link_side(i.id)
+        da = 1 if side_a == "right" else -1
+        db = 1 if side_b == "right" else -1
+        same = side_a == side_b
+        if same:
+            reach_a = reach_b = routing.loop_reach(p2.y() - p1.y())
+        else:  # parallel links turn at different places, so they fan out instead of piling up
+            reach = abs(p2.x() - p1.x())
+            share = routing.channel_share(self.dscene.link_order(i.id))
+            reach_a, reach_b = max(30.0, reach * share), max(30.0, reach * (1 - share))
+        c1 = QPointF(p1.x() + da * reach_a, p1.y())
+        c2 = QPointF(p2.x() + db * reach_b, p2.y())
         path = QPainterPath(p1)
         path.cubicTo(c1, c2, p2)
         if path == self.path() and self._chip_placed:
@@ -468,7 +491,7 @@ class LinkItem(QGraphicsPathItem):
         painter.setPen(pen)
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawPath(self.path())
-        if far:  # zoomed out: lines only, no labels
+        if far or self.opacity() < 0.5:  # zoomed out or faded: the line only, no label
             return
         c = self._chip_center
         font = QFont(painter.font())
@@ -562,6 +585,8 @@ class DiagramScene(QGraphicsScene):
         self._order: dict[str, int] = {}
         self.zone_count = len(edit.effective_zones(ctl.project))
         self._last_sel: object = None
+        self._conn_link: dict[str, str] = {}  # box connector ID -> the interface that uses it
+        self._slots: dict[str, dict[str, tuple[str, int, int]]] = {}
         self.filter: tuple[str, str] | None = None  # view state, not part of the project
         ctl.changed.connect(self.apply)
         ctl.selectionChanged.connect(self._on_selection)
@@ -573,6 +598,36 @@ class DiagramScene(QGraphicsScene):
 
     def adjacent(self, unit_id: str) -> list[str]:
         return self._adj.get(unit_id, [])
+
+    def connector_link(self, connector_id: str) -> str | None:
+        return self._conn_link.get(connector_id)
+
+    def partner_item(self, unit_id: str, interface_id: str) -> "UnitItem | None":
+        other = routing.partner(self.ctl.project, interface_id, unit_id)
+        return self.unit_items.get(other) if other is not None else None
+
+    def slots(self, unit_id: str) -> dict[str, tuple[str, int, int]]:
+        """For every link of a unit: (edge, position among the links on that edge, their number).
+        The links on one edge are ordered by the height of their other ends, so they do not cross."""
+        got = self._slots.get(unit_id)
+        if got is None:
+            got = {}
+            item = self.unit_items.get(unit_id)
+            if item is not None:
+                by_edge: dict[str, list[tuple[str, float]]] = {"left": [], "right": []}
+                for iid in self._adj.get(unit_id, []):
+                    other = self.partner_item(unit_id, iid)
+                    y = other.pos().y() if other is not None else item.pos().y()
+                    by_edge[item.link_side(iid)].append((iid, y))
+                for edge, links in by_edge.items():
+                    ordered = routing.order_links(links)
+                    for k, iid in enumerate(ordered):
+                        got[iid] = (edge, k, len(ordered))
+            self._slots[unit_id] = got
+        return got
+
+    def slot(self, unit_id: str, interface_id: str) -> tuple[str, int, int]:
+        return self.slots(unit_id).get(interface_id, ("right", 0, 1))
 
     # ---- filter by signal class, connector or bundle: the others fade, nothing is hidden --------------
     FADED_LINK = 0.15
@@ -617,14 +672,29 @@ class DiagramScene(QGraphicsScene):
             return set()
         return set(h.interfaces) | {w.interface_id for w in h.wires if w.interface_id}
 
+    def focus_sets(self) -> tuple[set[str], set[str]] | None:
+        """(interfaces, units) that stay in full colour because they belong to the selection, or
+        None when nothing is selected (or the selection has no links): then nothing fades."""
+        sel = self.ctl.selection
+        if sel is None:
+            return None
+        links, units = routing.focus(self.ctl.project, sel.kind, sel.id)
+        return (links, units) if links else None
+
     def _apply_filter(self) -> None:
+        """Fade what the Show filter does not keep and what the selection does not concern.
+        Only opacity changes (and only where it differs), so the model and editing are untouched."""
         keep = self.matching_interfaces()
+        focus = self.focus_sets()
         for iid, link in self.link_items.items():
-            want = 1.0 if keep is None or iid in keep else self.FADED_LINK
+            on = (keep is None or iid in keep) and (focus is None or iid in focus[0])
+            want = 1.0 if on else self.FADED_LINK
             if link.opacity() != want:
                 link.setOpacity(want)
         for uid, item in self.unit_items.items():
-            on = keep is None or any(i in keep for i in self._adj.get(uid, []))
+            on = (keep is None or any(i in keep for i in self._adj.get(uid, []))) and (
+                focus is None or uid in focus[1]
+            )
             want = 1.0 if on else self.FADED_UNIT
             if item.opacity() != want:
                 item.setOpacity(want)
@@ -664,12 +734,17 @@ class DiagramScene(QGraphicsScene):
     def _rebuild_adjacency(self) -> None:
         adj: dict[str, list[str]] = {}
         order: dict[str, int] = {}
+        conn_link: dict[str, str] = {}
         for k, i in enumerate(sorted(self.ctl.project.interfaces.values(), key=lambda x: x.id)):
             order[i.id] = k
             for e in i.endpoints:
                 adj.setdefault(e.unit_id, []).append(i.id)
+                if e.connector_id is not None:
+                    conn_link[e.connector_id] = i.id
         self._adj = adj
         self._order = order
+        self._conn_link = conn_link
+        self._slots.clear()
 
     def rebuild(self) -> None:
         self.clear()
@@ -677,6 +752,7 @@ class DiagramScene(QGraphicsScene):
         self.link_items.clear()
         self._chips.clear()
         self._chip_rects.clear()
+        self._slots.clear()
         self.zone_items.clear()
         self._rebuild_adjacency()
         self._sync_zones()
@@ -686,7 +762,7 @@ class DiagramScene(QGraphicsScene):
         for iid in sorted(project.interfaces):
             self._add_link(iid)
         self._update_extent()
-        if self.filter is not None:
+        if self.filter is not None or self.ctl.selection is not None:
             self._apply_filter()
 
     def _add_unit(self, uid: str) -> None:
@@ -768,16 +844,30 @@ class DiagramScene(QGraphicsScene):
         for uid in delta.units:  # heights may have changed: relink neighbours
             self.relink(uid)
         self._update_extent()
-        if self.filter is not None:
+        if self.filter is not None or self.ctl.selection is not None:
             self._apply_filter()
 
     def relink(self, unit_id: str) -> None:
-        for iid in self._adj.get(unit_id, []):
-            link = self.link_items.get(iid)
-            if link is not None:
-                link.update_path()
+        """Redraw the links of a unit that moved or changed. The links of a neighbour are redrawn
+        only when the order of its links changed (a unit that moves past another one)."""
+        project = self.ctl.project
+        neighbours = {
+            n for iid in self._adj.get(unit_id, []) if (n := routing.partner(project, iid, unit_id))
+        }
+        old = {n: self._slots.pop(n, None) for n in neighbours}
+        self._slots.pop(unit_id, None)
+        redraw = {unit_id}
+        for n, before in old.items():
+            if before is not None and self.slots(n) != before:
+                redraw.add(n)
+        for uid in redraw:
+            for iid in self._adj.get(uid, []):
+                link = self.link_items.get(iid)
+                if link is not None:
+                    link.update_path()
 
     def refresh_all(self) -> None:
+        self._slots.clear()
         for it in self.unit_items.values():
             it.prepareGeometryChange()
             it.update()
@@ -798,6 +888,7 @@ class DiagramScene(QGraphicsScene):
             if item is not None:
                 item.update()
         self._last_sel = self.ctl.selection
+        self._apply_filter()  # a selection puts its own links in focus and fades the rest
 
 
 LANE_STEP = 256.0  # lane height grows in steps of this many pixels
@@ -1004,13 +1095,15 @@ class DiagramView(QGraphicsView):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         item = self.itemAt(event.position().toPoint())
-        if item is None and self.ctl.tool == "select":
-            self.ctl.select(None)
+        if (item is None or isinstance(item, ZoneItem)) and self.ctl.tool == "select":
+            self.ctl.select(None)  # a click on the background (a lane is background too)
         super().mousePressEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Escape:
             self.ctl.end_connect()
+            if self.ctl.tool == "select":
+                self.ctl.select(None)  # Escape also takes the focus off a selection
             event.accept()
             return
         super().keyPressEvent(event)
