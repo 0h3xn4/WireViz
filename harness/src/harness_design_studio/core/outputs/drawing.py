@@ -15,7 +15,7 @@ repeats the connectors it needs and marks a continued cable block.
 from dataclasses import dataclass
 
 from harness_design_studio.core.generate.lengths import wire_length
-from harness_design_studio.core.model import Connector, Harness, Project, Wire
+from harness_design_studio.core.model import Connector, Harness, Project, ShieldGroup, Wire
 
 from .canvas import SHEETS, Curve, Line, Rect, Sheet, Text, fit
 from .stamp import Stamp
@@ -72,6 +72,8 @@ ROW = 4.2  # height of a pin row and of a wire row
 HEAD_ROW = 3.9
 HEAD_H = 3 * HEAD_ROW  # connector and cable headers: three lines
 GAP = 7.0
+SLEEVE_HEAD = 5.4  # the line above a sleeve: its name and how its two ends are terminated
+SLEEVE_OVER = 8.0  # how far a sleeve reaches beyond the cable block on each side
 MAX_WIRE_RUN = 45.0  # longest stretch of wire between a connector table and a cable block
 WIRE_W = 0.8
 PIN_SIZE = 2.5
@@ -151,29 +153,64 @@ def _stack_height(items: list[float]) -> float:
     return sum(items) + GAP * max(0, len(items) - 1)
 
 
-def _fits(wires: list[tuple[tuple[str, str], Wire]], side: dict[str, int], capacity: float) -> bool:
+_END_WORDS = {"backshell_360": "backshell 360", "pigtail": "pigtail", "floating": "floating"}
+
+
+def _block_rows(
+    wires: list[Wire], shield_of: dict[str, str]
+) -> list[tuple[str, str | None, Wire | None]]:
+    """The rows of a cable block, top down: ("wire", shield id or None, wire) for a wire row and
+    ("head", shield id, None) for the line above a sleeve. The wires of one shield sit together
+    under their sleeve, in the order of their first member."""
+    rows: list[tuple[str, str | None, Wire | None]] = []
+    placed: set[str] = set()
+    for w in wires:
+        sid = shield_of.get(w.id)
+        if sid is None:
+            rows.append(("wire", None, w))
+        elif sid not in placed:
+            placed.add(sid)
+            rows.append(("head", sid, None))
+            rows += [("wire", sid, m) for m in wires if shield_of.get(m.id) == sid]
+    return rows
+
+
+def _block_height(wires: list[Wire], shield_of: dict[str, str]) -> float:
+    rows = _block_rows(wires, shield_of)
+    return HEAD_H + sum(SLEEVE_HEAD if kind == "head" else ROW for kind, _s, _w in rows)
+
+
+def _fits(
+    wires: list[tuple[tuple[str, str], Wire]],
+    side: dict[str, int],
+    capacity: float,
+    shield_of: dict[str, str],
+) -> bool:
     pins: dict[str, set[str]] = {}
-    per_group: dict[tuple[str, str], int] = {}
+    per_group: dict[tuple[str, str], list[Wire]] = {}
     for g, w in wires:
         pins.setdefault(w.from_connector, set()).add(w.from_pin)
         pins.setdefault(w.to_connector, set()).add(w.to_pin)
-        per_group[g] = per_group.get(g, 0) + 1
+        per_group.setdefault(g, []).append(w)
     cols: list[list[float]] = [[], []]
     for cid, used in pins.items():
         cols[side.get(cid, 0)].append(HEAD_H + len(used) * ROW)
-    cable = [HEAD_H + n * ROW for n in per_group.values()]
+    cable = [_block_height(ws, shield_of) for ws in per_group.values()]
     return max(_stack_height(cols[0]), _stack_height(cols[1]), _stack_height(cable)) <= capacity
 
 
 def _paginate(
-    items: list[tuple[tuple[str, str], Wire]], side: dict[str, int], capacity: float
+    items: list[tuple[tuple[str, str], Wire]],
+    side: dict[str, int],
+    capacity: float,
+    shield_of: dict[str, str],
 ) -> list[_Page]:
     pages: list[_Page] = []
     cur: list[tuple[tuple[str, str], Wire]] = []
     prev_groups: set[tuple[str, str]] = set()
     cont: set[tuple[str, str]] = set()
     for item in items:
-        if cur and not _fits([*cur, item], side, capacity):
+        if cur and not _fits([*cur, item], side, capacity, shield_of):
             pages.append(_Page(cur, cont))
             prev_groups = {g for g, _ in cur}
             cur = []
@@ -232,6 +269,51 @@ def _cable_summary(h: Harness, wires: list[Wire]) -> str:
     return f"{len(wires)}x  {gauge}  {length}"
 
 
+def _draw_sleeve(
+    sh: Sheet,
+    shield: ShieldGroup,
+    side: dict[str, int],
+    box_x: float,
+    head_y: float,
+    span: list[float],
+    wires: list[Wire],
+) -> None:
+    """A shield as a sleeve around its wires: a grey jacket reaching a little beyond the cable
+    block, a line above it with the shield's name and kind, and each end drawn as it is
+    terminated (a bar for a 360 degree backshell connection, a pigtail line, an open end)."""
+    x0, x1 = box_x - SLEEVE_OVER, box_x + BOX_W + SLEEVE_OVER
+    top, bottom = span[0] - 1.6, span[1] - 0.3  # room above for the first wire's label
+    sh.add(Rect(x0, top, x1 - x0, bottom - top, width=0.45, fill="#e9e9e9", color="#444444"))
+    first = next(w for w in wires if w.id in shield.wire_ids)
+    left_is_a = side.get(first.from_connector, 0) == 0  # end A is the end of the first wire's start
+    left, right = (shield.end_a, shield.end_b) if left_is_a else (shield.end_b, shield.end_a)
+    base = head_y + 3.0
+    sh.add(
+        Text(
+            box_x + BOX_W / 2,
+            base,
+            fit(f"{shield.id}  {shield.kind}", BOX_W - 40.0, HEAD_SIZE),
+            size=HEAD_SIZE,
+            bold=True,
+            anchor="middle",
+        )
+    )
+    sh.add(Text(x0, base, _END_WORDS.get(left, left), size=HEAD_SIZE, color=GREY))
+    sh.add(Text(x1, base, _END_WORDS.get(right, right), size=HEAD_SIZE, color=GREY, anchor="end"))
+    mid = (top + bottom) / 2
+    for x, end, away in ((x0, left, -1.0), (x1, right, 1.0)):
+        if end == "backshell_360":  # a solid bar: the shield is bonded all round
+            sh.add(
+                Rect(x - 0.8, top, 1.6, bottom - top, width=0.2, fill="#000000", color="#000000")
+            )
+        elif end == "pigtail":  # a lead that leaves the sleeve
+            sh.add(Line(x, mid, x + away * 5.0, mid, width=0.5, color="#000000"))
+            sh.add(Rect(x + away * 5.0 - 0.6, mid - 0.6, 1.2, 1.2, width=0.2, fill="#000000"))
+        else:  # floating: an open end, drawn as a cross
+            sh.add(Line(x - 1.2, mid - 1.2, x + 1.2, mid + 1.2, width=0.4, color="#444444"))
+            sh.add(Line(x - 1.2, mid + 1.2, x + 1.2, mid - 1.2, width=0.4, color="#444444"))
+
+
 def _draw_page(
     sh: Sheet, project: Project, h: Harness, page: _Page, side: dict[str, int], y0: float
 ) -> float:
@@ -271,10 +353,11 @@ def _draw_page(
             pin_pos(w.to_connector, w.to_pin)[1] for w in ws
         ]
         want[g] = sum(ys) / len(ys)
+    shield_of = {wid: sg.id for sg in h.shields for wid in sg.wire_ids}
     box_top: dict[tuple[str, str], float] = {}
     edge = y0
     for g in sorted(groups, key=lambda k: (want[k], k)):
-        height = HEAD_H + len(groups[g]) * ROW
+        height = _block_height(groups[g], shield_of)
         box_top[g] = max(edge, want[g] - height / 2)
         edge = box_top[g] + height + GAP / 2
     # connector tables
@@ -315,11 +398,13 @@ def _draw_page(
             else:
                 sh.add(Text(x + 1.5, base, pin, size=PIN_SIZE, bold=True))
                 sh.add(Text(x + 12.0 + 1.5, base, signal, size=PIN_SIZE))
-    # cable blocks and wires
+    # cable blocks, sleeves and wires
+    shields = {sg.id: sg for sg in h.shields}
     for g in sorted(groups, key=lambda k: (box_top[k], k)):
         ws = groups[g]
         bt = box_top[g]
-        height = HEAD_H + len(ws) * ROW
+        block = _block_rows(ws, shield_of)
+        height = _block_height(ws, shield_of)
         sh.add(Rect(box_x, bt, BOX_W, height, width=0.3, dash=(1.5, 1.0), color=GREY))
         title = f"{g[0]} - {g[1]}" + ("  (continued)" if g in page.continued else "")
         sh.add(
@@ -343,8 +428,28 @@ def _draw_page(
             )
         )
         mixed = len({(w.gauge_awg, wire_length(h, w)) for w in ws}) > 1
-        for k, w in enumerate(ws):
-            cy = bt + HEAD_H + (k + 0.5) * ROW
+        # place the rows, then draw the sleeves (behind), then the wires
+        y = bt + HEAD_H
+        placed: list[tuple[float, str | None, Wire | None]] = []
+        spans: dict[str, list[float]] = {}
+        for kind, sid, bw in block:
+            if kind == "head":
+                placed.append((y, sid, None))
+                y += SLEEVE_HEAD
+            else:
+                placed.append((y, sid, bw))
+                if sid is not None:
+                    span = spans.setdefault(sid, [y, y])
+                    span[1] = y + ROW
+                y += ROW
+        for yy, sid, pw in placed:
+            if pw is None and sid is not None:
+                _draw_sleeve(sh, shields[sid], side, box_x, yy, spans[sid], ws)
+        for yy, _sid, wire in placed:
+            if wire is None:
+                continue
+            w = wire
+            cy = yy + ROW / 2
             code, hexcolour = wire_colour(w.colour)
             (ca, pa), (cb, pb) = (w.from_connector, w.from_pin), (w.to_connector, w.to_pin)
             if side.get(ca, 0) == 1 and side.get(cb, 0) == 0:
@@ -423,7 +528,8 @@ def harness_sheets(project: Project, h: Harness, stamp: Stamp, size: str) -> lis
     items = [(g, w) for g in keys for w in groups[g]]
     layout = sketch_layout(h)
     sketch_h = sketch_height(layout) if layout is not None else 0.0
-    pages = _paginate(items, side, capacity - sketch_h)
+    shield_of = {wid: sh_.id for sh_ in h.shields for wid in sh_.wire_ids}
+    pages = _paginate(items, side, capacity - sketch_h, shield_of)
     extras = _extras(h)
     sheets: list[Sheet] = []
     bottoms: list[float] = []
