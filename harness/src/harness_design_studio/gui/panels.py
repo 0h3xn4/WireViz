@@ -42,6 +42,7 @@ from harness_design_studio.core.generate.explain import explain_harness, explain
 from harness_design_studio.core.library_import import describe_library
 from harness_design_studio.core.model import InterfaceInstance, Part
 from harness_design_studio.core.verify import verify_project
+from harness_design_studio.core.wirecolours import name_of, resolve
 from harness_design_studio.gui import strings
 from harness_design_studio.gui.controller import LIST_DELAY_MS, Delta, EditorController
 from harness_design_studio.gui.preview import DrawingPreview
@@ -1248,6 +1249,14 @@ class HarnessPanel(QWidget):
         self._update_cc_buttons()
         self._update_preview()
 
+    @staticmethod
+    def _colour_text(colour: str | None) -> str:
+        """ "red (RD)" for a colour the table knows, the text as typed otherwise, "" if unset."""
+        if not colour:
+            return ""
+        name = name_of(colour)
+        return f"{name} ({resolve(colour)[0]})" if name else colour
+
     def _show_wires(self) -> None:
         p = self.ctl.project
         h = p.harnesses.get(self.selected_harness() or "")
@@ -1258,6 +1267,7 @@ class HarnessPanel(QWidget):
                      f"{w.to_connector}.{w.to_pin}",
                      "pending" if w.gauge_awg is None else str(w.gauge_awg),
                      "" if w.length_m is None else f"{w.length_m:g}",
+                     self._colour_text(w.colour),
                      "yes" if w.locked else ""]  # fmt: skip
             for c, text in enumerate(cells):
                 self.wires.setItem(r, c, QTableWidgetItem(text))

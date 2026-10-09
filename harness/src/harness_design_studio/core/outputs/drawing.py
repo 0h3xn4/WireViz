@@ -16,6 +16,7 @@ from dataclasses import dataclass
 
 from harness_design_studio.core.generate.lengths import wire_length
 from harness_design_studio.core.model import Connector, Harness, Project, ShieldGroup, Wire
+from harness_design_studio.core.wirecolours import resolve
 
 from .canvas import SHEETS, Curve, Line, Rect, Sheet, Text, fit
 from .stamp import Stamp
@@ -79,30 +80,10 @@ WIRE_W = 0.8
 PIN_SIZE = 2.5
 HEAD_SIZE = 2.2
 
-# IEC 60757 colour codes with a screen colour for drawing: display only, nothing is decided by it
-_COLOURS = {
-    "BK": "#1a1a1a", "BN": "#8b5a2b", "RD": "#e02020", "OG": "#ff8c00", "YE": "#ffd700",
-    "GN": "#22aa22", "BU": "#1e5bd8", "VT": "#8a2be2", "GY": "#9a9a9a", "WH": "#ffffff",
-    "PK": "#ff8fb0", "TQ": "#20b2aa",
-}  # fmt: skip
-_COLOUR_NAMES = {
-    "black": "BK", "brown": "BN", "red": "RD", "orange": "OG", "yellow": "YE", "green": "GN",
-    "blue": "BU", "violet": "VT", "purple": "VT", "grey": "GY", "gray": "GY", "white": "WH",
-    "pink": "PK", "turquoise": "TQ",
-}  # fmt: skip
-UNSET_COLOUR = "#808080"
-
 
 def wire_colour(name: str | None) -> tuple[str, str]:
-    """(code, screen colour) of a wire colour: ("BK", "#1a1a1a"); a colour that is not set gives
-    ("", grey) and one this table does not know keeps its text (shortened) and is drawn grey."""
-    if not name:
-        return "", UNSET_COLOUR
-    key = name.strip()
-    code = _COLOUR_NAMES.get(key.lower()) or (key.upper() if key.upper() in _COLOURS else None)
-    if code:
-        return code, _COLOURS[code]
-    return key[:6], UNSET_COLOUR
+    """(code, screen colour) of a wire colour, see `core.wirecolours`."""
+    return resolve(name)
 
 
 def _pin_key(pin: str) -> tuple[bool, int, str]:
