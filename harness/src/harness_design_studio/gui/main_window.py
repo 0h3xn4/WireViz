@@ -49,6 +49,7 @@ from harness_design_studio.core.vcs.release import (
     plan_release,
     plan_submit_review,
     release_blockers,
+    unapproved_parts,
 )
 from harness_design_studio.core.vcs.report import baselines_of, changelog_rows, working_diff
 from harness_design_studio.core.verify import VerifyReport
@@ -1008,7 +1009,7 @@ class MainWindow(QMainWindow):
             # the dialog asks for the reason itself, so a stand-in keeps that blocker out of the list
             blockers = release_blockers(
                 project, hid, by="x", comment="x" * 10, when=today, outputs_folder=folder,
-                accept_placeholders="x" * 10,
+                accept_placeholders="x" * 10, accept_unapproved_parts="x" * 10,
             )  # fmt: skip
             dlg = ChangeDialog(
                 self,
@@ -1018,6 +1019,7 @@ class MainWindow(QMainWindow):
                 ask_checker=True,
                 ok_text=strings.RELEASE_CONFIRM,
                 placeholders=project.placeholder_configs(),
+                unapproved_parts=unapproved_parts(project, project.harnesses[hid]),
             )
         else:
             dlg = ChangeDialog(
@@ -1044,6 +1046,7 @@ class MainWindow(QMainWindow):
                 when=today,
                 outputs_folder=folder,
                 accept_placeholders=dlg.accepted_placeholders(),
+                accept_unapproved_parts=dlg.accepted_unapproved_parts(),
             )
             msg = strings.RELEASE_DONE.format(hid)
         else:

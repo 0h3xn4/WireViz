@@ -34,6 +34,7 @@ from harness_design_studio.core.vcs.release import (
     plan_release,
     plan_submit_review,
     release_blockers,
+    unapproved_parts,
 )
 from harness_design_studio.core.vcs.report import (
     baselines_of,
@@ -80,7 +81,7 @@ def do_release(
 ) -> History:
     plan = plan_release(
         p, hid, by="Ada", checker="Bob", comment=comment, when=when, outputs_folder=folder,
-        accept_placeholders=REASON,
+        accept_placeholders=REASON, accept_unapproved_parts=REASON,
     )  # fmt: skip
     assert plan.ok, [b.message for b in plan.blockers]
     hist = hist or History(p)
@@ -91,7 +92,7 @@ def do_release(
 def codes(p: Project, hid: str, folder: Path | None, **kw: str) -> set[str]:
     args = {
         "by": "Ada", "comment": "a long enough comment", "when": WHEN,
-        "accept_placeholders": REASON,
+        "accept_placeholders": REASON, "accept_unapproved_parts": REASON,
     }  # fmt: skip
     args.update(kw)
     return {b.code for b in release_blockers(p, hid, outputs_folder=folder, **args)}
@@ -147,6 +148,66 @@ def test_a_comment_too_long_for_the_baseline_is_a_blocker_not_a_crash(tmp_path: 
     hid = releasable(p)
     folder = exported(p, tmp_path)
     assert "comment_long" in codes(p, hid, folder, comment="x" * 1990)
+
+
+# ---- the unapproved-parts gate (D-136) --------------------------------------------------------------
+
+
+def _approve_all_parts(p: Project, hid: str) -> None:
+    h = p.harnesses[hid]
+    for pid in {c.part_id for c in h.connectors} | {w.part_id for w in h.wires if w.part_id}:
+        part = p.parts.get(pid)
+        if part is not None:
+            p.parts[pid] = evolve(part, approval="approved", unverified=False)
+
+
+def test_unapproved_parts_block_a_release_without_a_reason(tmp_path: Path) -> None:
+    p = full()
+    hid = releasable(p)
+    folder = exported(p, tmp_path)
+    assert unapproved_parts(p, p.harnesses[hid])
+    assert "parts_unapproved" in codes(p, hid, folder, accept_unapproved_parts=None)  # type: ignore[arg-type]
+    short = codes(p, hid, folder, accept_unapproved_parts="short")
+    assert "parts_reason_short" in short and "parts_unapproved" not in short
+    assert not codes(p, hid, folder) & {"parts_unapproved", "parts_reason_short"}
+
+
+def test_approved_parts_release_without_a_reason(tmp_path: Path) -> None:
+    p = full()
+    hid = releasable(p)
+    folder = exported(p, tmp_path)
+    _approve_all_parts(p, hid)
+    assert unapproved_parts(p, p.harnesses[hid]) == []
+    assert "parts_unapproved" not in codes(p, hid, folder, accept_unapproved_parts=None)  # type: ignore[arg-type]
+
+
+def test_a_missing_rejected_or_example_part_counts_as_unapproved() -> None:
+    p = full()
+    hid = releasable(p)
+    _approve_all_parts(p, hid)
+    h = p.harnesses[hid]
+    pid = h.wires[0].part_id
+    assert pid is not None
+    base = p.parts[pid]
+    for changed in (
+        evolve(base, approval="pending"),
+        evolve(base, approval="not_approved"),
+        evolve(base, unverified=True),
+    ):
+        p.parts[pid] = changed
+        assert unapproved_parts(p, h) == [pid]
+    del p.parts[pid]
+    assert unapproved_parts(p, h) == [pid]
+
+
+def test_the_parts_reason_is_kept_in_the_change_log_and_the_baseline(tmp_path: Path) -> None:
+    p = full()
+    hid = releasable(p)
+    ids = unapproved_parts(p, p.harnesses[hid])
+    do_release(p, hid, exported(p, tmp_path))
+    entry = next(iter(p.changelog.values()))
+    for text in (entry.comment, p.baselines[f"{hid}.A"].comment):
+        assert REASON in text and ids[0] in text and "not approved" in text
 
 
 # ---- revisions -------------------------------------------------------------------------------------
@@ -704,6 +765,8 @@ def test_cli_full_change_control_cycle(tmp_path: Path, capsys: pytest.CaptureFix
                 "--comment",
                 "First release for CDR",
                 "--accept-placeholders",
+                REASON,
+                "--accept-unapproved-parts",
                 REASON,
                 "--date",
                 WHEN,

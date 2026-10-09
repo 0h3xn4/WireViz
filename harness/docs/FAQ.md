@@ -44,7 +44,7 @@ Short answers. If yours is not here, check the **Problems** tab (it says what is
 | `harness new` says the folder is not empty | Choose a folder that does not exist yet (or is empty). It never overwrites. |
 | `harness generate` says *not saved* | The project has errors. Run `harness validate DIR` and fix what it prints. |
 | A wire gauge says *pending* | A value is missing. `harness config DIR` says which; a gauge also needs the interface's **Max current** and the segment lengths. |
-| `harness release` says *blocked* | Each reason is printed in words. Typically a gauge or length is missing, an error is open, or the configuration files are still placeholders (review them and set `"placeholder": false`, or give a reason with `--accept-placeholders`). |
+| `harness release` says *blocked* | Each reason is printed in words. Typically a gauge or length is missing, an error is open, or the configuration files are still placeholders (review them and set `"placeholder": false`, or give a reason with `--accept-placeholders`), or a part is not approved (approve it in the parts list, or give a reason with `--accept-unapproved-parts`). |
 | *Outputs: out of date* | The design changed since the last export. Export again. |
 | *Blocked because it touches released items* | The harness is released. Start a new revision. |
 | `import-netlist` says a file is not a netlist | It must be KiCad's `.net` (S-expression) or XML export, not a `.kicad_sch`. |

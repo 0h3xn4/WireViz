@@ -10,7 +10,7 @@ from collections.abc import Iterator
 
 from harness_design_studio.core.configcheck import validate as validate_config
 from harness_design_studio.core.generate.lengths import wire_length
-from harness_design_studio.core.generate.sizing import ampacity_table
+from harness_design_studio.core.generate.sizing import ampacity_table, bundle_k
 from harness_design_studio.core.integrity import check_integrity
 from harness_design_studio.core.model import Connector, Harness, InterfaceInstance, Project, Wire
 from harness_design_studio.core.units import awg_to_area_mm2
@@ -235,10 +235,15 @@ def _current_over_contact(project: Project) -> Iterator[Hit]:
                 )
 
 
-def _wire_current_limit(project: Project, w: Wire) -> float | None:
+def _wire_current_limit(project: Project, w: Wire, h: Harness | None = None) -> float | None:
+    """Ampacity of the wire's gauge after derating. When the table of bundle factors is set it
+    replaces the single factor, as in wire sizing, so the check and the sizing agree."""
     d = cfg(project, "derating")
     table = ampacity_table(d.get("ampacity_a_by_awg"))
     bundle, temp = number(d.get("bundle_derating")), number(d.get("temperature_derating"))
+    by_count = d.get("bundle_factor_by_count")
+    if isinstance(by_count, dict) and by_count and h is not None:
+        bundle = bundle_k(by_count, len(h.wires))
     if table is None or bundle is None or temp is None or w.gauge_awg not in table:
         return None
     return table[w.gauge_awg] * bundle * temp
@@ -248,7 +253,7 @@ def _current_over_wire(project: Project) -> Iterator[Hit]:
     for h in sorted(project.harnesses.values(), key=lambda x: x.id):
         for w in h.wires:
             i = project.interfaces.get(w.interface_id or "")
-            limit = _wire_current_limit(project, w)
+            limit = _wire_current_limit(project, w, h)
             if i and i.max_current_a is not None and limit is not None and limit < i.max_current_a:
                 yield Hit(
                     w.id,

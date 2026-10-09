@@ -308,6 +308,8 @@ def _lengths(project, table: list[list[str]], args: argparse.Namespace) -> int: 
         print(f"row {r.row_number}: {'OK' if r.ok else 'ERROR ' + r.message}")
     bad = [r for r in plan.rows if not r.ok]
     print(f"{len(plan.rows) - len(bad)} length(s) ready, {len(bad)} row(s) with problems.")
+    if plan.hint:
+        print(plan.hint)
     if args.dry_run or bad:
         print("Nothing was changed." if bad else "Dry run: nothing was changed.")
         return 1 if bad else 0

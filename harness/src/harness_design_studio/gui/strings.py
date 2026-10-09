@@ -203,6 +203,12 @@ GEN_PLACEHOLDERS = "Some engineering values are not filled in yet, so wire gauge
 GEN_PREVIEW_HEAD = "Nothing changes until you press Apply, and Undo reverses it."
 RELEASE_CONFIRM = "Release"
 PLACEHOLDER_REASON = "Reason for releasing on placeholder values (kept in the change log)"
+UNAPPROVED_PARTS_REASON = (
+    "Reason for releasing with parts that are not approved (kept in the change log)"
+)
+UNAPPROVED_PARTS_WARNING = (
+    "These parts are not approved, or are example data: {0}. A release needs a written reason."
+)
 PLACEHOLDER_WARNING = (
     "These configuration files are still placeholders: {0}. A release needs a written reason."
 )

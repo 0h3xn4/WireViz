@@ -564,12 +564,14 @@ class ChangeDialog(QDialog):
         ask_comment: bool = True,
         ok_text: str = strings.OK,
         placeholders: list[str] | None = None,
+        unapproved_parts: list[str] | None = None,
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setObjectName("change-dialog")
         self._comment_needed = ask_comment
         self._placeholders = placeholders or []
+        self._unapproved = unapproved_parts or []
         lay = QVBoxLayout(self)
         lay.addWidget(QLabel(f"<h3>{title}</h3>"))
         self.blockers = blockers
@@ -612,11 +614,24 @@ class ChangeDialog(QDialog):
             lay.addWidget(warn)
             lay.addWidget(QLabel(strings.PLACEHOLDER_REASON))
             lay.addWidget(self.placeholder_reason)
+        self.parts_reason = QLineEdit()
+        self.parts_reason.setObjectName("change-parts-reason")
+        self.parts_reason.setAccessibleName(strings.UNAPPROVED_PARTS_REASON)
+        if self._unapproved:
+            shown = ", ".join(self._unapproved[:5])
+            more = f" and {len(self._unapproved) - 5} more" if len(self._unapproved) > 5 else ""
+            pwarn = QLabel(strings.UNAPPROVED_PARTS_WARNING.format(shown + more))
+            pwarn.setWordWrap(True)
+            pwarn.setObjectName("change-parts-warning")
+            lay.addWidget(pwarn)
+            lay.addWidget(QLabel(strings.UNAPPROVED_PARTS_REASON))
+            lay.addWidget(self.parts_reason)
         self.ok, self.cancel, row = _buttons(self, ok_text, danger=False, primary=True)
         lay.addLayout(row)
         self.by.textChanged.connect(self._validate)
         self.comment.textChanged.connect(self._validate)
         self.placeholder_reason.textChanged.connect(self._validate)
+        self.parts_reason.textChanged.connect(self._validate)
         self.setMinimumWidth(480)
         self._validate()
 
@@ -626,7 +641,13 @@ class ChangeDialog(QDialog):
             good = good and len(self.comment.toPlainText().strip()) >= 10
         if self._placeholders:
             good = good and len(self.placeholder_reason.text().strip()) >= 10
+        if self._unapproved:
+            good = good and len(self.parts_reason.text().strip()) >= 10
         self.ok.setEnabled(good)
+
+    def accepted_unapproved_parts(self) -> str | None:
+        """The written reason for releasing with parts that are not approved (None if none)."""
+        return self.parts_reason.text().strip() or None if self._unapproved else None
 
     def accepted_placeholders(self) -> str | None:
         """The written reason for releasing on placeholder values (None when there are none)."""

@@ -42,6 +42,7 @@ def fill(by: str = "Ada", comment: str = "First release for the CDR", checker: s
         d.checker.setText(checker)
         d.comment.setPlainText(comment)
         d.placeholder_reason.setText("Test project: values are placeholders")
+        d.parts_reason.setText("Test project: example parts")
 
     return fn
 
@@ -84,7 +85,13 @@ def test_release_dialog_asks_for_a_reason_while_values_are_placeholders(win) -> 
     dlg.placeholder_reason.setText("short")
     assert not dlg.ok.isEnabled()
     dlg.placeholder_reason.setText("Practice project, demo values")
-    assert dlg.ok.isEnabled() and dlg.accepted_placeholders() == "Practice project, demo values"
+    assert dlg.accepted_placeholders() == "Practice project, demo values"
+    assert not dlg.ok.isEnabled()  # the example parts need a reason too
+    assert dlg.accepted_unapproved_parts() is None
+    dlg.parts_reason.setText("Too short")
+    assert not dlg.ok.isEnabled()  # too short
+    dlg.parts_reason.setText("Example parts, practice only")
+    assert dlg.ok.isEnabled() and dlg.accepted_unapproved_parts() == "Example parts, practice only"
 
 
 def test_full_cycle_release_lock_new_revision_changes_and_log(win, qtbot) -> None:  # type: ignore[no-untyped-def]
