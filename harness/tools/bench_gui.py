@@ -62,16 +62,17 @@ def main() -> None:
         ("select other unit", lambda: ctl.select("unit", "U006")),
         ("rename unit name", lambda: ctl.update_unit("U001", name="renamed")),
         ("move unit", lambda: ctl.move_unit("U003", 500, 300)),
-        ("add unit", lambda: ctl.add_unit("computer")),
-        ("undo", ctl.undo),
-        ("redo", ctl.redo),
-        ("full repaint (grab)", lambda: view.grab()),
     ):
-        print(
-            f"{name:28}",
-            [ms(fn) for _ in range(3)] if name not in ("add unit", "undo", "redo") else ms(fn),
-            "ms",
-        )
+        print(f"{name:28}", [ms(fn) for _ in range(3)], "ms")
+    # undo and redo are timed in whole cycles (add, undo, redo, undo): the first undo after
+    # start-up pays for one-off work and says little about the next ones
+    cycles = [
+        (ms(lambda: ctl.add_unit("computer")), ms(ctl.undo), ms(ctl.redo), ms(ctl.undo))
+        for _ in range(3)
+    ]
+    for label, column in (("add unit", 0), ("undo", 1), ("redo", 2), ("undo (again)", 3)):
+        print(f"{label:28}", [c[column] for c in cycles], "ms")
+    print(f"{'full repaint (grab)':28}", [ms(lambda: view.grab()) for _ in range(3)], "ms")
     win.tabs.setCurrentIndex(0)
     print("problems tab visible: change", ms(lambda: ctl.update_unit("U002", name="x")), "ms")
     win.tabs.setCurrentIndex(2)
