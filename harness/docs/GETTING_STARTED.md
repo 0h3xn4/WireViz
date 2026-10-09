@@ -177,11 +177,12 @@ harness release wheel-link W002 --by "A. Engineer" --comment "First release of t
 
 ```
 blocked: [placeholder_config] These configuration files are still placeholders: derating, emc, generation, segmentation, segregation, titleblock. Have an engineer review the values and set "placeholder" to false in each file (`harness config DIR` lists them). Or release on placeholders with a written reason; the reason is kept in the change log.
+blocked: [parts_unapproved] 2 part(s) used by W002 are not approved (or are example data): EX-MICROD-9-M, EX-WIRE-SINGLE. Approve them in the parts list, or release with a written reason; the reason is kept in the change log.
 blocked: [gauge_pending] 2 wire(s) have no gauge decided (first: W002-001). Fill in the derating values (the file config/derating.json; `harness config DIR` lists what is missing) or set the gauge by hand.
 blocked: [length_unknown] 2 wire(s) have no length (first: W002-001). Enter the routing segment lengths (`harness import-lengths DIR FILE` loads them from a table).
 ```
 
-The tool refuses and says why, in words. Nothing was changed. The first reason (placeholders) waits until Part 9; the next part removes the other two.
+The tool refuses and says why, in words. Nothing was changed. The first two reasons (placeholders and unapproved parts) wait until Part 9; the next part removes the other two.
 
 ## Part 7: fill in values, and see wires get sized
 
@@ -278,7 +279,7 @@ Details and column names: [`IMPORTS.md`](IMPORTS.md), [`KICAD.md`](KICAD.md).
 
 ## Part 9 (optional, practice only): release a harness
 
-With the demo values and the lengths of Part 7 the gauge and length reasons of Part 6 are gone, but one is left: the configuration files are still marked `"placeholder": true`. A release is refused until a person has reviewed the values and cleared that mark, or accepts the placeholders with a written reason:
+With the demo values and the lengths of Part 7 the gauge and length reasons of Part 6 are gone, but two are left: the configuration files are still marked `"placeholder": true`, and the parts are the example parts, which nobody has approved. A release is refused until a person has reviewed the values and approved the parts, or accepts both with a written reason:
 
 ```
 harness release wheel-link W002 --by "A. Engineer" --comment "First release of the wheel power harness"
@@ -286,12 +287,13 @@ harness release wheel-link W002 --by "A. Engineer" --comment "First release of t
 
 ```
 blocked: [placeholder_config] These configuration files are still placeholders: derating, emc, generation, segmentation, segregation, titleblock. Have an engineer review the values and set "placeholder" to false in each file (`harness config DIR` lists them). Or release on placeholders with a written reason; the reason is kept in the change log.
+blocked: [parts_unapproved] 1 part(s) used by W002 are not approved (or are example data): EX-WIRE-SINGLE. Approve them in the parts list, or release with a written reason; the reason is kept in the change log.
 ```
 
-For a real design the engineer reviews the values and sets `"placeholder": false` in each file. For this practice project, accept the placeholders and say why; the reason is kept in the change log and in the baseline:
+For a real design the engineer reviews the values and sets `"placeholder": false` in each file, and the parts list approves the parts. For this practice project, accept both and say why; the reasons are kept in the change log and in the baseline:
 
 ```
-harness release wheel-link W002 --by "A. Engineer" --comment "First release of the wheel power harness" --accept-placeholders "Practice project: demo values only"
+harness release wheel-link W002 --by "A. Engineer" --comment "First release of the wheel power harness" --accept-placeholders "Practice project: demo values only" --accept-unapproved-parts "Practice project: example parts only"
 ```
 
 ```
@@ -299,9 +301,9 @@ Release W002 revision A: done.
 Outputs re-exported with the released status (38 files).
 ```
 
-`W002` is now **released (locked)**: it, the interfaces it carries and the pins it uses cannot be edited, a baseline and a change log entry are stored, and the drawing says *released*. To change it you start a revision with `harness revise wheel-link W002 --by NAME --comment "..."`; `harness log wheel-link` prints the history, including the reason for releasing on placeholders. In the app the same steps are **Release…**, **New revision…** and **Change log…** in **Harness plans**; the release window asks for the reason when placeholders remain.
+`W002` is now **released (locked)**: it, the interfaces it carries and the pins it uses cannot be edited, a baseline and a change log entry are stored, and the drawing says *released*. To change it you start a revision with `harness revise wheel-link W002 --by NAME --comment "..."`; `harness log wheel-link` prints the history, including the reasons for releasing on placeholders and with unapproved parts. In the app the same steps are **Release…**, **New revision…** and **Change log…** in **Harness plans**; the release window asks for the reason when placeholders remain.
 
-Do this only in the practice project. Releasing on placeholders teaches the flow and nothing more: the change log records that the release rested on placeholder values.
+Do this only in the practice project. Releasing on placeholders and example parts teaches the flow and nothing more: the change log records that the release rested on them.
 
 ## Part 10: build your own from blank
 

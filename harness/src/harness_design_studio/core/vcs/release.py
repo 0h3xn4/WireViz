@@ -3,8 +3,9 @@
 A release needs a comment, a name, and a design that passes the gate: no verifier or rule
 errors for the harness, harness plans current, every wire sized and measured, outputs that
 were exported from the current design, and engineering values that a person has reviewed (no
-configuration file marked as a placeholder). A release on placeholders is possible only with a
-written reason, which is kept in the change log and the baseline (D-135). It writes a baseline (a frozen snapshot) and a change log
+configuration file marked as a placeholder) and parts that are approved (D-136). A release on
+placeholders or with parts that are not approved is possible only with a written reason, which is
+kept in the change log and the baseline (D-135). It writes a baseline (a frozen snapshot) and a change log
 entry, and locks the harness (see `locks`). The only way to change it afterwards is a new
 revision, which keeps the old baseline.
 """
@@ -158,6 +159,61 @@ def placeholder_note(project: Project, by: str, accept_placeholders: str | None)
     )
 
 
+def unapproved_parts(project: Project, h: Harness) -> list[str]:
+    """Parts the harness uses that no one has approved: missing from the parts list, not
+    approved, or example data nobody has verified."""
+    used = {c.part_id for c in h.connectors} | {w.part_id for w in h.wires if w.part_id}
+    out = []
+    for pid in sorted(used):
+        part = project.parts.get(pid)
+        if part is None or part.approval != "approved" or part.unverified:
+            out.append(pid)
+    return out
+
+
+def _listed(ids: list[str], limit: int = 5) -> str:
+    more = f" and {len(ids) - limit} more" if len(ids) > limit else ""
+    return ", ".join(ids[:limit]) + more
+
+
+def part_blockers(project: Project, h: Harness, accept_unapproved: str | None) -> list[Blocker]:
+    """Unapproved parts block a release unless the person releasing gives a written reason."""
+    ids = unapproved_parts(project, h)
+    if not ids:
+        return []
+    if accept_unapproved is None:
+        return [
+            Blocker(
+                "parts_unapproved",
+                f"{len(ids)} part(s) used by {h.id} are not approved (or are example data): "
+                f"{_listed(ids)}. Approve them in the parts list, or release with a written "
+                "reason; the reason is kept in the change log.",
+                h.id,
+            )
+        ]
+    if len(accept_unapproved.strip()) < MIN_COMMENT:
+        return [
+            Blocker(
+                "parts_reason_short",
+                f"The reason for releasing with parts that are not approved needs at least "
+                f"{MIN_COMMENT} characters.",
+                h.id,
+            )
+        ]
+    return []
+
+
+def part_note(project: Project, h: Harness, by: str, accept_unapproved: str | None) -> str:
+    """The sentence added to the comment of a release made with unapproved parts ('' otherwise)."""
+    ids = unapproved_parts(project, h)
+    if not ids or accept_unapproved is None:
+        return ""
+    return (
+        f" [Released with parts that are not approved ({_listed(ids)}); "
+        f"accepted by {by.strip()}: {accept_unapproved.strip()}]"
+    )
+
+
 def release_blockers(
     project: Project,
     hid: str,
@@ -167,13 +223,18 @@ def release_blockers(
     when: str,
     outputs_folder: Path | None,
     accept_placeholders: str | None = None,
+    accept_unapproved_parts: str | None = None,
 ) -> list[Blocker]:
     out = _common(project, hid, by, comment, when)
     h = project.harnesses.get(hid)
     if h is None:
         return out
     out.extend(placeholder_blockers(project, accept_placeholders))
-    if len(comment.strip() + placeholder_note(project, by, accept_placeholders)) > MAX_COMMENT:
+    out.extend(part_blockers(project, h, accept_unapproved_parts))
+    notes = placeholder_note(project, by, accept_placeholders) + part_note(
+        project, h, by, accept_unapproved_parts
+    )
+    if len(comment.strip() + notes) > MAX_COMMENT:
         out.append(
             Blocker(
                 "comment_long",
@@ -308,10 +369,11 @@ def plan_release(
     when: str,
     outputs_folder: Path | None,
     accept_placeholders: str | None = None,
+    accept_unapproved_parts: str | None = None,
 ) -> ReleasePlan:
     blockers = release_blockers(
         project, hid, by=by, comment=comment, when=when, outputs_folder=outputs_folder,
-        accept_placeholders=accept_placeholders,
+        accept_placeholders=accept_placeholders, accept_unapproved_parts=accept_unapproved_parts,
     )  # fmt: skip
     plan = ReleasePlan(blockers=blockers, label=f"Release {hid}")
     if blockers:
@@ -328,7 +390,11 @@ def plan_release(
         )
     )
     snapshot = snapshot_for(project, released)
-    full_comment = comment.strip() + placeholder_note(project, by, accept_placeholders)
+    full_comment = (
+        comment.strip()
+        + placeholder_note(project, by, accept_placeholders)
+        + part_note(project, h, by, accept_unapproved_parts)
+    )
     entry = _entry(project, released, "release", by.strip(), when, full_comment)
     baseline = Baseline(
         id=f"{hid}.{h.revision}", harness_id=hid, revision=h.revision, released_on=when, by=by.strip(),
@@ -395,10 +461,13 @@ __all__ = [
     "ReleasePlan",
     "next_revision",
     "plan_new_revision",
+    "part_blockers",
+    "part_note",
     "placeholder_blockers",
     "placeholder_note",
     "plan_release",
     "plan_submit_review",
     "release_blockers",
     "release_integrity",
+    "unapproved_parts",
 ]

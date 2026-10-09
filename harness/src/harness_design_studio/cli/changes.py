@@ -51,6 +51,13 @@ def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None
         help="release although configuration files are still placeholders: the reason "
         "(at least 10 characters) is kept in the change log and the baseline",
     )
+    r.add_argument(
+        "--accept-unapproved-parts",
+        metavar="REASON",
+        default=None,
+        help="release although the harness uses parts that are not approved (or are example "
+        "data): the reason (at least 10 characters) is kept in the change log and the baseline",
+    )
     who(add("revise", "start a new revision of a released harness"), True)
     d = add("diff", "show what changed in a harness since a baseline (or between two baselines)")
     d.add_argument(
@@ -126,6 +133,7 @@ def run(args: argparse.Namespace) -> int:
             when=when,
             outputs_folder=folder,
             accept_placeholders=args.accept_placeholders,
+            accept_unapproved_parts=args.accept_unapproved_parts,
         )
     else:
         plan = plan_new_revision(project, args.harness, by=args.by, comment=args.comment, when=when)

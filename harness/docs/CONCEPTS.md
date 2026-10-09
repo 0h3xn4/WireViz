@@ -90,7 +90,7 @@ The files that hold these values are in the project's `config/` folder and are d
 
 A harness has a **status**: `draft`, then optionally `in_review`, then `released`.
 
-- **Release** needs a person's name and a comment (at least 10 characters). It is blocked while something is missing (a wire without a gauge or length, unresolved errors) and the reasons are listed in plain words. It is also blocked while a configuration file is still marked `"placeholder": true`, unless you give a written reason (`--accept-placeholders`), which is kept in the change log and the baseline.
+- **Release** needs a person's name and a comment (at least 10 characters). It is blocked while something is missing (a wire without a gauge or length, unresolved errors) and the reasons are listed in plain words. It is also blocked while a configuration file is still marked `"placeholder": true`, unless you give a written reason (`--accept-placeholders`), which is kept in the change log and the baseline. The same goes for parts: a release is blocked while the harness uses a part that is not approved (or is example data), unless you give a written reason (`--accept-unapproved-parts`).
 - A released harness is **locked**: it, the interfaces it carries and the pins it uses cannot be edited. A **baseline** (frozen snapshot) and a **change log** entry are stored.
 - To change it you start a new **revision** (A, B, C ...). The old revision stays.
 

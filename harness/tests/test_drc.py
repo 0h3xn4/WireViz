@@ -659,3 +659,27 @@ def test_cited_requirements_exist_in_the_extracted_lists() -> None:
     for rule in RULES:
         for source in rule.sources:
             assert source in known, f"{rule.id} cites unknown {source}"
+
+
+def test_wire_current_check_uses_the_bundle_table_like_the_sizing() -> None:
+    """With both bundle settings set, the table replaces the single factor everywhere, so the
+    wire current check and the wire sizing agree (the single factor alone was used before)."""
+    from harness_design_studio.core.drc.rules import _wire_current_limit
+
+    p = base()
+    h = next(x for x in sorted(p.harnesses.values(), key=lambda x: x.id) if x.wires)
+    w = h.wires[0]
+    p.harnesses[h.id] = h = evolve(h, wires=[evolve(w, gauge_awg=20), *h.wires[1:]])
+    w = h.wires[0]
+    set_cfg(
+        p, "derating",
+        ampacity_a_by_awg={str(w.gauge_awg): 10.0}, bundle_derating=1.0, temperature_derating=1.0,
+    )  # fmt: skip
+    single = _wire_current_limit(p, w, h)
+    assert single == 10.0
+    set_cfg(p, "derating", bundle_factor_by_count={"1": 1.0, "300": 0.12})
+    limit = _wire_current_limit(p, w, h)
+    from harness_design_studio.core.generate.sizing import bundle_k
+
+    expected = bundle_k({"1": 1.0, "300": 0.12}, len(h.wires))
+    assert expected is not None and limit == pytest.approx(10.0 * expected)

@@ -153,6 +153,22 @@ def test_length_import_refuses_released() -> None:
     assert not plan.rows[0].ok and not plan.ops
 
 
+def test_length_import_with_columns_in_another_order_explains_the_cause() -> None:
+    p = _tree()
+    h = next(x for x in p.harnesses.values() if x.segments)
+    swapped = [["segment", "harness", "length_mm"], ["S1", h.id, "1500"], ["S2", h.id, "800"]]
+    plan = plan_length_import(p, swapped)
+    assert not any(r.ok for r in plan.rows)
+    assert "segment, harness, length_mm" in plan.hint and "harness, segment, length" in plan.hint
+
+
+def test_length_import_gives_no_hint_when_only_some_rows_fail() -> None:
+    p = _tree()
+    h = next(x for x in p.harnesses.values() if x.segments)
+    plan = plan_length_import(p, [["h", "s", "l"], [h.id, "S1", "1"], ["NOPE", "S1", "1"]])
+    assert plan.hint == "" and [r.ok for r in plan.rows] == [True, False]
+
+
 # ---- pins -----------------------------------------------------------------------------------------
 
 
