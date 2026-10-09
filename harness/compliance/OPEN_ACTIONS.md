@@ -2,6 +2,8 @@
 
 Things the tool and its documents cannot do for themselves. None of them was done by the developer assistant, and no document claims it. Each action names the requirements it blocks.
 
+**Note of 2026-10-09:** the owner has said that no further feedback from people will come. Every action below that is still *open* or *prepared* therefore stays open. It is not done, accepted or waived by silence; only a recorded decision with a name and a date changes a status (`DEVIATIONS.md`).
+
 | ID | Action | Who | Blocks (gap, clauses) | Status |
 | --- | --- | --- | --- | --- |
 | A-01 | Appoint an independent verifier and validator (a person who did not write the design, code or tests) and let them review the verification and validation evidence | owner | G-10; ECSS-E-ST-40C 5.6.2, 5.8.2; ECSS-Q-ST-80C 6.3.5.19 | prepared (2026-10-08): brief for the reviewer `templates/independent_review_brief.md`; a person must be named |

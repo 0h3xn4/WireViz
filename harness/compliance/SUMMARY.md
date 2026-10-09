@@ -1,8 +1,21 @@
 # ECSS/ESCC compliance audit: summary report
 
-Branch `compliance/ecss-esccc-audit`. Software criticality category **C** (owner). Standards: ECSS-E-ST-40C Rev.1, ECSS-Q-ST-80C Rev.2 (the tool as software); ECSS-Q-ST-30-11C Rev.2, ECSS-E-ST-20-07C Rev.2, ESCC 3901 Issue 4 (the tool's ability to check harness designs). WireViz was not touched.
+Status of 2026-10-09 (release candidate 0.1.0rc8, on `master`); the audit itself was done on the branch `compliance/ecss-esccc-audit`. Software criticality category **C** (owner). Standards: ECSS-E-ST-40C Rev.1, ECSS-Q-ST-80C Rev.2 (the tool as software); ECSS-Q-ST-30-11C Rev.2, ECSS-E-ST-20-07C Rev.2, ESCC 3901 Issue 4 (the tool's ability to check harness designs). WireViz was not touched.
 
 **The tool is not claimed to comply with anything.** The matrix records what exists and what evidence there is; compliance is a decision of the owner after the reviews in `OPEN_ACTIONS.md`.
+
+## Status of 2026-10-09
+This section was added after the audit; the sections below describe the audit and are otherwise unchanged. The matrix statuses below were **not** re-assessed after the audit (the figures are the same as at the end of phase 4).
+
+**Done since the audit**
+- Owner decisions recorded with their date in `DEVIATIONS.md` and `OPEN_ACTIONS.md`: coverage target (T-07) and the controls on AI assistance (T-08) approved; the plans and standards (SPAP, SDP, STANDARDS, CMP, CRITICALITY) approved, without an independent reviewer; the standard value profiles accepted as a whole, without a value-by-value check by a second person; GitHub issues adopted as problem reports. **Waived** by the owner, without a stated reason: protection of the default branch (T-18) and signing of packages (T-19). The owner will not supply the standards that were referred to and not supplied (T-09).
+- Release gates (D-135, D-136): a harness cannot be released while a configuration file is a placeholder or while it uses parts that are not approved, unless the releaser gives a written reason, which is kept in the change log and the baseline.
+- Release check: a second test run without coverage instrumentation, a scan of the shipped dependencies for known vulnerabilities (D-134), and a generated component table with a requirement-to-component trace for the SDD (`sdd_components.csv`).
+- Prepared for people, with nothing filled in on their behalf: the independent-review brief, the review record, the family-group worksheet, the organisation record, the risk register, the dependability input sheet, the usability schedule, the screen-reader checklist and the real-harness acceptance checklist (see `OPEN_ACTIONS.md`).
+- The product was renamed Harness Design Studio. Release candidate 0.1.0rc8: 964 tests passed, 1 skipped, with the coverage gate and again without instrumentation; no known vulnerabilities in the 10 shipped packages (`evidence/release_0.1.0rc8_report.md`).
+
+**Not done, and not going to be done by the project team**
+The owner has said (2026-10-09) that no further feedback from people will come. These actions therefore stay **open**; no document treats silence as approval, and none of them is marked done or waived: an independent verifier and validator (A-01), the reviews (A-02), organisation, training, audits and process assessment (A-03), the review board and customer interface (A-04), the dependability and safety analysis (A-07), the maintainer organisation and support period (A-11), the usability sessions and the screen-reader pass (A-12), the acceptance of the outputs for a real harness (A-13), the mapping of family-group codes (A-16), and the real values and parts the owner has still to supply (D-10, D-11, D-12, D-15; A-17 for the project files). Until they are done the tool must be used as it is labelled: results rest on placeholders and example parts unless a person has reviewed them, the packages are unsigned, and no compliance with any standard is claimed.
 
 ## What was done
 | Phase | Result |
@@ -34,19 +47,19 @@ Kind B (design checking), 41 requirements, after phase 2 (`assessment/design_ass
 "Automatic" means the tool reports a violation by itself once the project data are supplied. Every rule is silent without its numbers and the report lists what it could not check.
 
 ## Evidence (`evidence/`)
-- Tests before the audit: 839 passed, 1 skipped. After the design-check features: 902 passed, 1 skipped. Final runs: 910 passed, 1 skipped, without instrumentation and with coverage (`evidence/final_runs.md`).
+- Tests before the audit: 839 passed, 1 skipped. After the design-check features: 902 passed, 1 skipped. Final runs of the audit: 910 passed, 1 skipped, without instrumentation and with coverage (`evidence/final_runs.md`). Latest: 964 passed, 1 skipped (`evidence/release_0.1.0rc8_report.md`).
 - Outputs before and after for three reference projects: 592 of 595 files identical; the 3 that differ are the design rule reports (`evidence/output_comparison.md`, `evidence/output_differences.md`). Drawings and BOMs are unchanged.
 - Coverage of `core`: 96.63 % statements, 93.16 % branches (`metrics.json`).
-- Traceability: `traceability.csv` (65 tool requirements, `tools/trace.py`).
+- Traceability: `traceability.csv` (78 tool requirements, `tools/trace.py`); `sdd_components.csv` (89 modules; 60 reached by a requirement directly, 74 directly or indirectly).
 
 ## Changes to the tool
 Everything is opt-in or silent by default. Projects that do not use the new settings behave as before, except that the design rule report says `Rules run: 33` and cites a requirement ID in findings of the rules that serve one. See `CHANGELOG.md` and `docs/DECISIONS.md` D-131.
 
 ## Where the tool is weakest against the standards
-1. No independent verification or validation, no recorded reviews, no problem reports yet (A-01, A-02, A-04).
+1. No independent verification or validation and no recorded reviews (A-01, A-02); the review board and customer interface are not named (A-04).
 2. Wire surface temperature under load, the partial-load factor L, bundle spacing, multipactor, bond resistances and the "family-group code" mapping cannot be checked by the tool (T-14 to T-16, checklist).
-3. The security method is not agreed with anyone and no specialist has reviewed it (A-08).
+3. No specialist has reviewed the security analysis (A-08); packages are unsigned by the owner's waiver (T-19). Dependencies are scanned for known vulnerabilities at each release.
 4. Standards referred to by the supplied ones were not supplied, so many "shall apply" clauses are marked *human* (T-09).
 
 ## Files
-`PHASE0.md`, `gap_analysis.md`, `compliance_matrix.csv`, `traceability.csv`, `metrics.json`, `DEVIATIONS.md`, `OPEN_ACTIONS.md`, `docs/` (drafts), `requirements/`, `assessment/`, `evidence/`, `templates/`.
+`PHASE0.md`, `gap_analysis.md`, `compliance_matrix.csv`, `traceability.csv`, `sdd_components.csv`, `family_group_mapping.csv`, `FAMILY_GROUP_MAPPING.md`, `ORGANISATION.md`, `RISK_REGISTER.md`, `metrics.json`, `DEVIATIONS.md`, `OPEN_ACTIONS.md`, `docs/` (drafts; five approved), `requirements/`, `assessment/`, `evidence/`, `templates/`.
