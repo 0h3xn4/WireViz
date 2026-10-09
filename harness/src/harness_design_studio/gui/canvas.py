@@ -231,18 +231,11 @@ class UnitItem(QGraphicsItem):
             self._paint_halves(painter, th, h)
             self._paint_ports(painter, small, th, state)
         else:
-            kinds = self.link_kinds()
-            room = W - 20 - 20 * len(kinds)
             painter.drawText(
-                QRectF(10, 34, room, 16),
+                QRectF(10, 34, W - 20, 16),
                 Qt.AlignmentFlag.AlignVCenter,
-                QFontMetrics(small).elidedText(unit.name, Qt.TextElideMode.ElideRight, int(room)),
+                QFontMetrics(small).elidedText(unit.name, Qt.TextElideMode.ElideRight, int(W - 20)),
             )
-            for k, (tid, cat) in enumerate(kinds):  # what the unit's links carry, drawn
-                glyphs.draw_link_glyph(
-                    painter, W - 10 - 20 * (len(kinds) - k), 35, tid, cat,
-                    th.color(f"cat-{style_category(cat)}"), 1.0,
-                )  # fmt: skip
             self._paint_connector_row(painter, small, th)
         painter.setOpacity(base)
         if reason:
@@ -266,26 +259,6 @@ class UnitItem(QGraphicsItem):
             painter.setBrush(Qt.BrushStyle.NoBrush)
             painter.drawRoundedRect(body.adjusted(-4, -4, 4, 4), 10, 10)
 
-    @staticmethod
-    def _port_text(
-        painter: QPainter,
-        cursor: float,
-        y: float,
-        right: bool,
-        ink: QColor,
-        width: float,
-        text: str,
-    ) -> float:
-        """Draw `text` from `cursor` towards the middle of the unit; return the new cursor."""
-        painter.setPen(ink)
-        painter.drawText(
-            QRectF(cursor - width if right else cursor, y - 9, width, 18),
-            Qt.AlignmentFlag.AlignVCenter
-            | (Qt.AlignmentFlag.AlignRight if right else Qt.AlignmentFlag.AlignLeft),
-            text,
-        )
-        return cursor + (-width if right else width)
-
     def _paint_halves(self, painter: QPainter, th: ThemeManager, h: float) -> None:
         """Expert mode: a line down the middle splits the unit into the left side (ports on the
         left edge) and the right side (ports on the right edge), the right one a little darker."""
@@ -297,17 +270,6 @@ class UnitItem(QGraphicsItem):
         painter.setPen(QPen(th.color("border"), 1.2, Qt.PenStyle.DashLine))
         painter.drawLine(QPointF(W / 2, HEADER_H + 4), QPointF(W / 2, h - 5))
 
-    def link_kinds(self) -> list[tuple[str, str]]:
-        """The kinds of link that end on this unit: (type id, category), each once, at most 3."""
-        project = self.ctl.project
-        seen: dict[str, str] = {}
-        for iid in self.dscene.adjacent(self.unit_id):
-            i = project.interfaces.get(iid)
-            t = project.interface_types.get(i.type_id) if i is not None else None
-            if i is not None and t is not None:
-                seen.setdefault(i.type_id, t.category)
-        return sorted(seen.items())[:3]
-
     def _paint_connector_row(self, painter: QPainter, small: QFont, th: ThemeManager) -> None:
         """Guided mode: the unit's connectors as little pictures (the same ones are counted)."""
         project = self.ctl.project
@@ -317,14 +279,12 @@ class UnitItem(QGraphicsItem):
             counts[key] = counts.get(key, 0) + 1
         x = 10.0
         for (family, pins, gender), n in counts.items():
-            if x + glyphs.CONNECTOR_W + glyphs.GENDER_W + (16 if n > 1 else 0) > W - 8:
+            if x + glyphs.CONNECTOR_W * 0.75 + (16 if n > 1 else 0) > W - 8:
                 break  # no room for more: the unit's properties list them all
             glyphs.draw_connector(
-                painter, x, 52, family, pins, gender, th.color("text"), th.color("surface")
+                painter, x, 51, family, pins, gender, th.color("text"), th.color("surface"), 0.75
             )
-            x += glyphs.CONNECTOR_W + 1
-            glyphs.draw_gender(painter, x, 52, gender, th.color("text"))
-            x += glyphs.GENDER_W + 1
+            x += glyphs.CONNECTOR_W * 0.75 + 1
             if n > 1:
                 painter.setPen(th.color("text-muted"))
                 painter.drawText(QRectF(x, 50, 18, 20), Qt.AlignmentFlag.AlignVCenter, f"×{n}")
@@ -379,38 +339,24 @@ class UnitItem(QGraphicsItem):
                 th.color("text") if (compat is None or valid) else th.color("text-muted")
             )
             y = self.port_y(k)
-            kinds = []
-            linked = self.dscene.connector_link(str(c.id))  # a linked port shows what it carries
-            li = ctl.project.interfaces.get(linked) if linked else None
-            for tid in [li.type_id] if li is not None else list(dict.fromkeys(c.carries))[:2]:
-                t = ctl.project.interface_types.get(tid)
-                if t is not None:
-                    kinds.append((tid, t.category))
             family, pins, gender = describe.connector_family(ctl.project, str(c.id))
             muted = compat is not None and not valid
             ink = th.color("text-muted") if muted else th.color("text")
-            # from the edge inwards: the designator, what it carries, the connector, its pin count
-            sign = -1.0 if right else 1.0
-            cursor = W - 12.0 if right else 12.0
-
-            cursor = self._port_text(painter, cursor, y, right, ink, 26, c.name)
-            for tid, cat in kinds[:2]:
-                gx = cursor - glyphs.LINK_GLYPH_W if right else cursor
-                glyphs.draw_link_glyph(
-                    painter, gx, y - 7, tid, cat, th.color(f"cat-{style_category(cat)}"), 1.0
-                )  # fmt: skip
-                cursor += sign * (glyphs.LINK_GLYPH_W + 2)
-            cursor += sign * 3
-            pic_x = cursor - glyphs.CONNECTOR_W if right else cursor
+            # from the edge inwards: the designator, the connector, the pin count; glyphs.port_row
+            # keeps every part inside its half. What a link carries is drawn on the link.
+            row = glyphs.port_row(W, right, pins > 1)
+            align = Qt.AlignmentFlag.AlignVCenter | (
+                Qt.AlignmentFlag.AlignRight if right else Qt.AlignmentFlag.AlignLeft
+            )
+            painter.setPen(ink)
+            painter.drawText(QRectF(row["name"][0], y - 9, glyphs.ROW_NAME_W, 18), align, c.name)
             glyphs.draw_connector(
-                painter, pic_x, y - glyphs.CONNECTOR_H / 2, family, pins, gender, ink, th.color("surface")
+                painter, row["connector"][0], y - glyphs.CONNECTOR_H / 2, family, pins, gender, ink, th.color("surface")
             )  # fmt: skip
-            cursor += sign * (glyphs.CONNECTOR_W + 1)
-            gx = cursor - glyphs.GENDER_W if right else cursor
-            glyphs.draw_gender(painter, gx, y - 8, gender, ink)  # male or female, drawn
-            cursor += sign * (glyphs.GENDER_W + 2)
             if pins > 1:
-                cursor = self._port_text(painter, cursor, y, right, ink, 14, str(pins))
+                painter.drawText(
+                    QRectF(row["count"][0], y - 9, glyphs.ROW_COUNT_W, 18), align, str(pins)
+                )
 
     # ---- interaction ------------------------------------------------------------------------
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent) -> None:

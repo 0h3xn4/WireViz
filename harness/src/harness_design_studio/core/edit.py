@@ -22,12 +22,12 @@ from .model import (
     evolve,
 )
 
-LANE_WIDTH = 490.0
+LANE_WIDTH = 470.0
 LANE_X0 = 10.0
-UNIT_W = 264.0
+UNIT_W = 240.0
 UNIT_FOOTPRINT_H = 150.0  # smallest room a unit gets, whatever its size
 SLOT_STEP = 70.0
-PORT_ROW = 22.0  # height of one connector row of a unit drawn in expert mode
+PORT_ROW = 28.0  # height of one connector row of a unit drawn in expert mode
 UNIT_GAP = 24.0  # empty space kept between two stacked units
 MAX_DIAGRAM_HEIGHT = 200_000.0  # no unit is placed lower than this
 

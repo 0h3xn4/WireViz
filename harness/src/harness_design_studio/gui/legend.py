@@ -12,7 +12,7 @@ from harness_design_studio.gui import glyphs, strings
 from harness_design_studio.gui.theme import ThemeManager
 from harness_design_studio.gui.tokens import CATEGORIES, style_category
 
-ROW = 22
+ROW = 26
 GAP = 18
 
 
@@ -62,7 +62,7 @@ class LegendBar(QWidget):
             (
                 "gender",
                 None,
-                "male: plug with pins, solid · female: socket, outline · number: pins",
+                "solid: male (pins) · outline: female (sockets) · dashed: not set · number: pins",
             ),
         ]
         return out
@@ -79,7 +79,7 @@ class LegendBar(QWidget):
         for kind, _payload, label in self._entries():
             icon = {
                 "conn": glyphs.CONNECTOR_W,
-                "gender": 2 * (glyphs.CONNECTOR_W + glyphs.GENDER_W + 2),
+                "gender": 2 * (glyphs.CONNECTOR_W + 2),
             }.get(kind, 26.0)
             w = icon + 6 + fm.horizontalAdvance(label)
             if x and x + w > width:
@@ -110,16 +110,15 @@ class LegendBar(QWidget):
             elif kind == "conn":
                 icon = glyphs.CONNECTOR_W
                 glyphs.draw_connector(
-                    p, x, cy - 8, str(payload), 15, "female", th.color("text"), th.color("bg")
+                    p, x, cy - 11, str(payload), 15, "female", th.color("text"), th.color("bg")
                 )
             elif kind == "gender":
-                icon = 2 * (glyphs.CONNECTOR_W + glyphs.GENDER_W + 2)
+                icon = 2 * (glyphs.CONNECTOR_W + 2)
                 for k, g in enumerate(("male", "female")):
-                    gx = x + k * (glyphs.CONNECTOR_W + glyphs.GENDER_W + 2)
+                    gx = x + k * (glyphs.CONNECTOR_W + 2)
                     glyphs.draw_connector(
-                        p, gx, cy - 8, "dsub", 15, g, th.color("text"), th.color("bg")
+                        p, gx, cy - 11, "dsub", 15, g, th.color("text"), th.color("bg")
                     )
-                    glyphs.draw_gender(p, gx + glyphs.CONNECTOR_W + 1, cy - 8, g, th.color("text"))
             elif kind == "line":
                 pen = QPen(th.color("text"), 2)
                 if payload == "redundant":

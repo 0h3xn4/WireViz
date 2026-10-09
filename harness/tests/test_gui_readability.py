@@ -176,3 +176,17 @@ def test_the_key_lists_what_the_project_uses(win) -> None:
     labels = {label for _kind, _p, label in entries}
     assert {"CAN", "Primary power", "Ethernet"} <= labels
     assert any(kind == "conn" for kind, _p, _l in entries)
+
+
+@pytest.mark.parametrize("right", [False, True])
+@pytest.mark.parametrize("count", [False, True])
+def test_a_port_row_stays_inside_its_half(right, count) -> None:
+    """Nothing in a port row may touch the line down the middle or leave the unit."""
+    from harness_design_studio.gui import glyphs
+
+    row = glyphs.port_row(W, right, count)
+    assert glyphs.row_fits(W, row, right), row
+    spans = sorted(row.values())
+    assert all(a[1] <= b[0] + 0.01 for a, b in zip(spans, spans[1:], strict=False)), (
+        spans
+    )  # no overlap

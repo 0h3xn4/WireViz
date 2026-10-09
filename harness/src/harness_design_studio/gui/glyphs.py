@@ -182,8 +182,8 @@ def draw_link_glyph(
 
 
 # ---- connectors ------------------------------------------------------------------------------
-CONNECTOR_W = 40.0
-CONNECTOR_H = 16.0
+CONNECTOR_W = 46.0
+CONNECTOR_H = 22.0
 
 
 def _dots(p: QPainter, rect: QRectF, pins: int, filled: bool, ink: QColor, rows: int = 2) -> None:
@@ -205,36 +205,69 @@ def _dots(p: QPainter, rect: QRectF, pins: int, filled: bool, ink: QColor, rows:
 
 
 def draw_connector(
-    p: QPainter, x: float, y: float, family: str, pins: int, gender: str, color: QColor, bg: QColor
+    p: QPainter,
+    x: float,
+    y: float,
+    family: str,
+    pins: int,
+    gender: str,
+    color: QColor,
+    bg: QColor,
+    scale: float = 1.0,
 ) -> None:
     """A connector's outline (30 x 16), its top left corner at (x, y): the family shows in the
     shape, the pin count in the dots, the gender in the whole look: a male (pins) is solid, a female
-    (sockets) an outline."""
+    (sockets) an outline, a gender that is not set a dashed outline."""
     p.save()
     p.translate(x, y)
+    p.scale(scale, scale)
     p.setPen(
         QPen(color, 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
     )
     male = gender == "male"
+    if gender not in (
+        "male",
+        "female",
+    ):  # gender not set: a dashed outline, neither solid nor plain
+        p.setPen(
+            QPen(
+                color, 1.6, Qt.PenStyle.DashLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin
+            )
+        )
     p.setBrush(QBrush(color if male else bg))  # a male is drawn solid, a female as an outline
     detail = bg if male else color  # what is drawn inside the shell
-    if family == "dsub":  # the tapered D, wide at the top, as wide as its pin count asks
-        w = min(40.0, 22.0 + 0.8 * pins)
+    if family in ("dsub", "microd"):
+        # a flange with two screw holes, and in front of it the shell with its two rows of pins:
+        # the D-sub shell is a tapered D, the Micro-D shell a small rounded block
+        w = min(38.0, 26.0 + 0.5 * pins) if family == "dsub" else min(36.0, 18.0 + 0.6 * pins)
         x0 = (CONNECTOR_W - w) / 2
-        _poly(p, [(x0, 1), (x0 + w, 1), (x0 + w - 4.5, 15), (x0 + 4.5, 15)])
-        _dots(p, QRectF(x0 + 6, 3.6, w - 12, 8.8), pins, male, detail)
-    elif family == "microd":  # the small, square-shouldered one: a cut bottom and a double rim
-        w = min(40.0, 14.0 + 0.8 * pins)
-        x0 = (CONNECTOR_W - w) / 2
-        _poly(
-            p,
-            [(x0, 1), (x0 + w, 1), (x0 + w, 11.5), (x0 + w - 3.5, 15), (x0 + 3.5, 15), (x0, 11.5)],
-        )
-        p.setPen(QPen(detail, 0.7))
+        p.setBrush(QBrush(bg))
+        p.drawRoundedRect(QRectF(x0 - 5, 3, w + 10, 16), 3, 3)  # the flange, never filled
         p.setBrush(Qt.BrushStyle.NoBrush)
-        p.drawRect(QRectF(x0 + 2.2, 3.2, w - 4.4, 8.6))
-        _dots(p, QRectF(x0 + 3.5, 4.4, w - 7, 6.2), pins, male, detail)
+        p.setPen(QPen(color, 1.0))
+        p.drawEllipse(QPointF(x0 - 2, 11), 1.3, 1.3)  # the screw holes
+        p.drawEllipse(QPointF(x0 + w + 2, 11), 1.3, 1.3)
+        p.setPen(
+            QPen(
+                color,
+                1.6,
+                Qt.PenStyle.SolidLine,
+                Qt.PenCapStyle.RoundCap,
+                Qt.PenJoinStyle.RoundJoin,
+            )
+        )
+        p.setBrush(QBrush(color if male else bg))
+        if family == "dsub":
+            _poly(p, [(x0, 5), (x0 + w, 5), (x0 + w - 4.5, 17.5), (x0 + 4.5, 17.5)])
+            _dots(p, QRectF(x0 + 7, 7.4, w - 14, 8), pins, male, detail)
+        else:
+            p.drawRoundedRect(QRectF(x0, 5, w, 12.5), 2.5, 2.5)
+            p.setPen(QPen(detail, 0.7))
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            p.drawRoundedRect(QRectF(x0 + 2.2, 7, w - 4.4, 8.5), 1.5, 1.5)
+            _dots(p, QRectF(x0 + 4, 8.2, w - 8, 6.2), pins, male, detail)
     elif family == "circular":
+        p.translate(3, 3)
         p.translate(5, 0)  # a round shell with a key and pins on the ring
         p.drawEllipse(QPointF(15, 8), 7.2, 7.2)
         p.setPen(QPen(color, 1.6))
@@ -250,6 +283,7 @@ def draw_connector(
         _line(p, 3, 8, 7.8, 8)  # a coupling nut either side
         _line(p, 22.2, 8, 27, 8)
     elif family == "rj45":
+        p.translate(3, 3)
         p.translate(5, 0)  # the plug: a box with a latch and a row of contacts
         p.drawRect(QRectF(7, 3, 16, 12))
         p.drawRect(QRectF(11, 0.8, 8, 2.2))
@@ -260,6 +294,7 @@ def draw_connector(
         _line(p, 1, 9, 7, 9)
         _line(p, 23, 9, 29, 9)
     elif family == "coax":
+        p.translate(3, 3)
         p.translate(5, 0)  # concentric rings, a solid centre pin for a plug
         p.drawEllipse(QPointF(15, 8), 7.2, 7.2)
         p.setPen(QPen(detail, 1.0))
@@ -269,37 +304,40 @@ def draw_connector(
         _line(p, 1, 8, 7.8, 8)
         _line(p, 22.2, 8, 29, 8)
     else:  # an unknown family: a plain box with its dots
+        p.translate(3, 3)
         p.translate(5, 0)
         p.drawRoundedRect(QRectF(1, 1, 28, 14), 3, 3)
         _dots(p, QRectF(5, 4, 20, 8), pins, male, detail)
     p.restore()
 
 
-GENDER_W = 16.0
+ROW_START = 10.0  # from the edge of the unit to the designator
+ROW_NAME_W = 24.0
+ROW_COUNT_W = 14.0
+ROW_MARGIN = 8.0  # kept free on the inner side, next to the line down the middle
 
 
-def draw_gender(p: QPainter, x: float, y: float, gender: str, color: QColor) -> None:
-    """The sign of a connector's gender, 16 x 16 at (x, y): the male sign (a circle with an arrow
-    pointing out: a plug, pins) or the female sign (a circle on a cross: a socket); an unset gender
-    is a dashed circle with a dot, so that nobody takes it for either."""
-    p.save()
-    p.translate(x, y)
-    p.setPen(
-        QPen(color, 1.8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
-    )
-    p.setBrush(Qt.BrushStyle.NoBrush)
-    if gender == "male":
-        p.drawEllipse(QPointF(6.2, 9.8), 4.4, 4.4)
-        _line(p, 9.4, 6.6, 14.2, 1.8)
-        _path(p, [(9.6, 1.6), (14.4, 1.6), (14.4, 6.4)])
-    elif gender == "female":
-        p.drawEllipse(QPointF(8, 5.4), 4.4, 4.4)
-        _line(p, 8, 9.8, 8, 15.2)
-        _line(p, 5.2, 12.6, 10.8, 12.6)
-    else:
-        pen = QPen(color, 1.4, Qt.PenStyle.DashLine)
-        p.setPen(pen)
-        p.drawEllipse(QPointF(8, 8), 5.6, 5.6)
-        p.setBrush(color)
-        p.drawEllipse(QPointF(8, 8), 0.9, 0.9)
-    p.restore()
+def port_row(width: float, right: bool, has_count: bool) -> dict[str, tuple[float, float]]:
+    """Where the parts of a port row go, as (left, right) in the unit's coordinates: from the
+    edge inwards the designator, the connector and the pin count. Every part stays on its own
+    side of the middle line."""
+    parts: list[tuple[str, float, float]] = [
+        ("name", ROW_NAME_W, 2.0),
+        ("connector", CONNECTOR_W, 3.0),
+    ]
+    if has_count:
+        parts.append(("count", ROW_COUNT_W, 0.0))
+    out: dict[str, tuple[float, float]] = {}
+    cursor = width - ROW_START if right else ROW_START
+    for name, w, gap in parts:
+        out[name] = (cursor - w, cursor) if right else (cursor, cursor + w)
+        cursor += -(w + gap) if right else w + gap
+    return out
+
+
+def row_fits(width: float, rows: dict[str, tuple[float, float]], right: bool) -> bool:
+    """True when every part is inside its half of the unit, clear of the middle line."""
+    middle = width / 2
+    if right:
+        return all(x0 >= middle + ROW_MARGIN and x1 <= width - 2 for x0, x1 in rows.values())
+    return all(x0 >= 2 and x1 <= middle - ROW_MARGIN for x0, x1 in rows.values())
