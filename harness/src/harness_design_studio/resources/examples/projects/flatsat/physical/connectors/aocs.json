@@ -4,7 +4,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "MTQ1-J01",
       "keying": null,
       "mates_with": null,
@@ -101,7 +101,7 @@
       "carries": [
         "discrete"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "MTQ1-J02",
       "keying": null,
       "mates_with": null,
@@ -198,7 +198,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW1-J01",
       "keying": null,
       "mates_with": null,
@@ -297,7 +297,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW1-J02",
       "keying": null,
       "mates_with": null,
@@ -502,7 +502,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW2-J01",
       "keying": null,
       "mates_with": null,
@@ -601,7 +601,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW2-J02",
       "keying": null,
       "mates_with": null,
@@ -806,7 +806,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW3-J01",
       "keying": null,
       "mates_with": null,
@@ -905,7 +905,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW3-J02",
       "keying": null,
       "mates_with": null,
@@ -1110,7 +1110,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW4-J01",
       "keying": null,
       "mates_with": null,
@@ -1209,7 +1209,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW4-J02",
       "keying": null,
       "mates_with": null,
@@ -1414,7 +1414,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SS1-J01",
       "keying": null,
       "mates_with": null,
@@ -1511,7 +1511,7 @@
       "carries": [
         "analog"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SS1-J02",
       "keying": null,
       "mates_with": null,
@@ -1608,7 +1608,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SS2-J01",
       "keying": null,
       "mates_with": null,
@@ -1705,7 +1705,7 @@
       "carries": [
         "analog"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SS2-J02",
       "keying": null,
       "mates_with": null,
@@ -1802,7 +1802,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "ST1-J01",
       "keying": null,
       "mates_with": null,
@@ -1900,7 +1900,7 @@
         "rs422",
         "rs485"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "ST1-J02",
       "keying": null,
       "mates_with": null,
@@ -2051,7 +2051,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "ST2-J01",
       "keying": null,
       "mates_with": null,
@@ -2149,7 +2149,7 @@
         "rs422",
         "rs485"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "ST2-J02",
       "keying": null,
       "mates_with": null,

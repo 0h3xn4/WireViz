@@ -236,7 +236,16 @@ def mating_matrix(project: Project) -> Table:
             if c.mates_with:
                 mated[c.mates_with].append((h.id, c))
     rows: Table = [
-        ["Box connector", "Unit", "Part", "Gender", "Cable connector", "Cable part", "Harness"]
+        [
+            "Box connector",
+            "Unit",
+            "Part",
+            "Gender",
+            "Cable connector",
+            "Cable part",
+            "Cable gender",
+            "Harness",
+        ]
     ]
     for b in sorted(project.connectors.values(), key=lambda x: x.id):
         pairs = sorted(mated.get(b.id, []), key=lambda t: t[1].id) or [("", None)]  # type: ignore[list-item]
@@ -249,6 +258,7 @@ def mating_matrix(project: Project) -> Table:
                     b.gender,
                     c.id if c else "",
                     c.part_id if c else "",
+                    c.gender if c else "",
                     hid,
                 ]
             )

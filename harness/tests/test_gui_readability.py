@@ -133,3 +133,46 @@ def test_a_click_on_the_background_or_escape_ends_the_focus(win) -> None:
     win.view.setFocus()
     QTest.keyClick(win.view, Qt.Key.Key_Escape)
     assert win.ctl.selection is None
+
+
+def test_every_kind_of_link_and_connector_has_its_own_picture(win) -> None:
+    """Meaning is drawn, not spelled: each link type and connector family gets a distinct,
+    non-empty picture."""
+    from PySide6.QtGui import QColor, QImage, QPainter
+
+    from harness_design_studio.gui import glyphs
+
+    def render(draw) -> bytes:  # type: ignore[no-untyped-def]
+        img = QImage(40, 24, QImage.Format.Format_ARGB32)
+        img.fill(QColor("white"))
+        p = QPainter(img)
+        draw(p)
+        p.end()
+        return bytes(img.constBits())
+
+    blank = render(lambda p: None)
+    types = win.ctl.project.interface_types
+    pictures = {
+        tid: render(
+            lambda p, t=t: glyphs.draw_link_glyph(p, 4, 4, t.id, t.category, QColor("black"))
+        )
+        for tid, t in types.items()
+    }
+    assert all(pic != blank for pic in pictures.values())
+    assert len(set(pictures.values())) >= len(pictures) - 2  # a few related types may share one
+    shapes = {
+        fam: render(
+            lambda p, f=fam: glyphs.draw_connector(
+                p, 4, 4, f, 9, "male", QColor("black"), QColor("white")
+            )
+        )
+        for fam in ("dsub", "microd", "circular", "rj45", "coax", "generic")
+    }
+    assert len(set(shapes.values())) == len(shapes)
+
+
+def test_the_key_lists_what_the_project_uses(win) -> None:
+    entries = win.legend._entries()
+    labels = {label for _kind, _p, label in entries}
+    assert {"CAN", "Primary power", "Ethernet"} <= labels
+    assert any(kind == "conn" for kind, _p, _l in entries)

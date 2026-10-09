@@ -23,7 +23,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -48,7 +48,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -73,7 +73,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -98,7 +98,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -123,7 +123,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -148,7 +148,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -173,7 +173,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -198,7 +198,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -223,7 +223,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -248,7 +248,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -273,7 +273,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -298,7 +298,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -323,7 +323,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -348,7 +348,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -373,7 +373,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -398,7 +398,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [
@@ -423,7 +423,7 @@
       "redundancy": "nominal",
       "requirement_id": null,
       "type_id": "power_primary",
-      "voltage_v": null
+      "voltage_v": 28.0
     },
     {
       "endpoints": [

@@ -71,6 +71,7 @@ from harness_design_studio.gui.dialogs import (
     PaletteEntry,
     WaiverDialog,
 )
+from harness_design_studio.gui.legend import LegendBar
 from harness_design_studio.gui.panels import (
     HarnessPanel,
     InterfaceTable,
@@ -380,24 +381,11 @@ class MainWindow(QMainWindow):
         self.zoom_out_btn.clicked.connect(lambda: self.view.zoom_by(1 / 1.2))
         self.fit_btn.clicked.connect(self.view.fit)
         lay.addWidget(self.view, 1)
-        self.legend = QLabel("")
-        self.legend.setObjectName("legend")
-        self.legend.setTextFormat(Qt.TextFormat.RichText)
-        self.legend.setWordWrap(True)
+        self.legend = LegendBar(self.theme)
         lay.addWidget(self.legend)
         self.setCentralWidget(centre)
-        self.theme.changed.connect(self._update_legend)
-        self._update_legend()
-
-    def _update_legend(self) -> None:
-        t = self.theme.tokens
-        chips = "  ".join(
-            f'<span style="color:{t["cat-" + k]}"><b>[{c["icon"]}]</b></span> {c["label"]}'
-            for k, c in CATEGORIES.items()
-        )
-        self.legend.setText(
-            f'{chips}  &nbsp; ━━ {strings.NOMINAL}  ╌╌ {strings.REDUNDANT}  <span style="color:{t["auto-fill"]}">▢ {strings.AUTO_LEGEND}</span>'
-        )
+        self.ctl.changed.connect(lambda _d=None: self.legend.set_project(self.ctl.project))
+        self.legend.set_project(self.ctl.project)
 
     def _build_docks(self) -> None:
         self.palette_panel = PalettePanel(self.ctl, self.theme)
@@ -518,6 +506,9 @@ class MainWindow(QMainWindow):
         self.act_minimap = a(
             strings.A_MINIMAP, self._toggle_minimap, checkable=True, name="act-minimap"
         )
+        self.act_labels = a(
+            strings.A_LABELS, self._toggle_labels, checkable=True, name="act-labels"
+        )
         self.act_minimap.setChecked(True)
         self.scale_actions: dict[int, QAction] = {}
         sgroup = QActionGroup(self)
@@ -596,6 +587,7 @@ class MainWindow(QMainWindow):
         v.addSeparator()
         v.addAction(self.act_dark)
         v.addAction(self.act_minimap)
+        v.addAction(self.act_labels)
         scale_menu = v.addMenu(strings.A_SCALE)
         for act in self.scale_actions.values():
             scale_menu.addAction(act)
@@ -1438,6 +1430,10 @@ class MainWindow(QMainWindow):
     def _toggle_minimap(self) -> None:
         self.view.set_minimap_wanted(self.act_minimap.isChecked())
         self.settings.setValue("ui/minimap", self.act_minimap.isChecked())
+
+    def _toggle_labels(self) -> None:
+        self.view.dscene.show_all_labels = self.act_labels.isChecked()
+        self.view.viewport().update()
 
     def _toggle_dark(self) -> None:
         app = QApplication.instance()

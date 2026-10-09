@@ -15,7 +15,7 @@
   "connectors": [
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W005-P1",
       "keying": null,
       "mates_with": "OBC1-J13",
@@ -101,7 +101,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W005-P2",
       "keying": null,
       "mates_with": "PCDU1-J01",
@@ -196,7 +196,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W005-P3",
       "keying": null,
       "mates_with": "TRX1-J03",
@@ -219,7 +219,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W005-P4",
       "keying": null,
       "mates_with": "GPSU1-J01",
@@ -314,7 +314,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W005-P5",
       "keying": null,
       "mates_with": "RFSU1-J04",
@@ -337,7 +337,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W005-P6",
       "keying": null,
       "mates_with": "SCOE1-J13",

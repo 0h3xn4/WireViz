@@ -7,7 +7,7 @@
 <text x="8" y="12" font-size="4.2" font-weight="bold" text-anchor="start" fill="#000000">W001  PCDU to RW1 power</text>
 <text x="8" y="17" font-size="2.8" text-anchor="start" fill="#555555">Revision A  status draft</text>
 <rect x="8" y="22" width="404" height="7" fill="#e6e6e6" stroke="#000000" stroke-width="0.3"/>
-<text x="9.5" y="27" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">W001-P1 (EX-MICROD-9-M)  to  W001-P2 (EX-MICROD-9-F)</text>
+<text x="9.5" y="27" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">W001-P1 (EX-MICROD-9-M, male, pins)  to  W001-P2 (EX-MICROD-9-F, female, sockets)</text>
 <text x="9" y="36" font-size="2.6" text-anchor="start" fill="#000000">W001-P1:1 PWR</text>
 <text x="411" y="36" font-size="2.6" text-anchor="end" fill="#000000">W001-P2:1 PWR</text>
 <line x1="60" y1="35" x2="360" y2="35" stroke="#000000" stroke-width="0.5"/>

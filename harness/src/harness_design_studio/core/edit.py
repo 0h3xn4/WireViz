@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .commands import Delete, Op, Put, SetZones
+from .describe import part_gender
 from .errors import HarnessError
 from .model import (
     Connector,
@@ -21,9 +22,9 @@ from .model import (
     evolve,
 )
 
-LANE_WIDTH = 430.0
+LANE_WIDTH = 470.0
 LANE_X0 = 10.0
-UNIT_W = 176.0
+UNIT_W = 240.0
 UNIT_FOOTPRINT_H = 150.0  # smallest room a unit gets, whatever its size
 SLOT_STEP = 70.0
 PORT_ROW = 22.0  # height of one connector row of a unit drawn in expert mode
@@ -433,6 +434,7 @@ def ops_add_unit(
                     role="box",
                     part_id=ct.part_id,
                     unit_id=uid,
+                    gender=part_gender(part),  # a part that says male or female sets it
                     carries=list(ct.carries),
                     pins=pins,
                 ),

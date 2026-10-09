@@ -4,7 +4,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "BAT1-J01",
       "keying": null,
       "mates_with": null,
@@ -102,7 +102,7 @@
         "can",
         "rs422"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "BAT1-J02",
       "keying": null,
       "mates_with": null,
@@ -253,7 +253,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J01",
       "keying": null,
       "mates_with": null,
@@ -350,7 +350,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J02",
       "keying": null,
       "mates_with": null,
@@ -447,7 +447,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J03",
       "keying": null,
       "mates_with": null,
@@ -544,7 +544,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J04",
       "keying": null,
       "mates_with": null,
@@ -641,7 +641,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J05",
       "keying": null,
       "mates_with": null,
@@ -738,7 +738,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J06",
       "keying": null,
       "mates_with": null,
@@ -835,7 +835,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J07",
       "keying": null,
       "mates_with": null,
@@ -932,7 +932,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J08",
       "keying": null,
       "mates_with": null,
@@ -1029,7 +1029,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J09",
       "keying": null,
       "mates_with": null,
@@ -1126,7 +1126,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J10",
       "keying": null,
       "mates_with": null,
@@ -1223,7 +1223,7 @@
       "carries": [
         "heater"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J11",
       "keying": null,
       "mates_with": null,
@@ -1321,7 +1321,7 @@
         "can",
         "rs422"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J12",
       "keying": null,
       "mates_with": null,
@@ -1472,7 +1472,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SA1-J01",
       "keying": null,
       "mates_with": null,
@@ -1569,7 +1569,7 @@
       "carries": [
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SA1-J02",
       "keying": null,
       "mates_with": null,

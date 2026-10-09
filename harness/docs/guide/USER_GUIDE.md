@@ -87,14 +87,17 @@ Switching modes never changes your data.
 
 ### Reading a dense diagram
 
-A system with many units has many links, and seen all at once they form a tangle. The editor helps you in four ways:
+A system with many units has many links. The editor makes them readable in these ways:
 
-- **Click a unit or a link.** Only its links stay in full colour, with their labels; everything else fades. Click the empty background to see everything again. This is the quickest way to answer "what is connected to this?".
+- **Pictures tell the kinds apart.** A link carries the picture of its kind: a bolt for power, a ground symbol, a bus with end stops for CAN, two arrows for a differential pair (RS-422, LVDS), a bus with drops for RS-485, a node with branches for SpaceWire, two boxes for Ethernet, a sine wave for an analog signal, a square wave for a discrete signal, a spark for a pyro line, a ring for RF coax. A link with twisted-pair signals is drawn as two lines, a redundant link is dashed. The key under the diagram shows the pictures the project uses.
+- **Connectors are drawn as they look**: the tapered D of a D-sub, the small D of a Micro-D, a round shell, an RJ45 plug, a coax ring. Dots show the pins, and the look shows the gender: a male connector (pins) is drawn solid, a female (sockets) as an outline. The harness drawings and the mating matrix state the gender of every cable connector in words. In Expert mode a dashed line splits the unit into a left side and a darker right side (ports sit on the edge of their side), and every port reads from its edge inwards: the designator (J01), the picture of what the linked interface carries, the connector picture (a D-sub is a tapered D, a Micro-D has square shoulders and a double rim; both grow with the pin count), the pin count and the name; in Guided mode a unit shows its connectors and the kinds of link that end on it.
+- **Numbers appear when they exist.** A power link shows e.g. `28 V · 5 A` beside its picture, but only what somebody entered; nothing is filled in. In a diagram of more than 30 links the numbers show for the selected, focused or hovered link; *View > Show all link labels* shows them everywhere. Hover a link to read its name, type, values and ends in words.
+- **Click a unit or a link.** Only its links stay in full colour; everything else fades. Click the empty background or press Escape to see everything again. This is the quickest way to answer "what is connected to this?".
 - **Show** (toolbar) fades everything except one signal class, one connector or one bundle. It can be combined with a selection.
-- **A link leaves on the edge that faces the unit at its other end**, so it does not run through its own unit, and the links on one edge are ordered by the height of their other ends, so parallel links cross less. Links between two units of the same lane bulge out on the side away from the middle, as nested curves.
+- **Links run in lines.** Each link leaves on the edge that faces the unit at its other end, goes sideways into the gutter between lanes, runs up or down in its own track, and enters the other unit sideways. Links between the same two lanes run side by side, ordered so that they cross as little as possible.
 - **Arrange diagram** (View menu) puts the units in order and keeps room for each one: a unit with many connectors is tall in Expert mode, and the units around it make way. One undo step restores the old positions.
 
-Zoomed far out, the diagram shows lines only; zoom in to see labels.
+Zoomed far out, the diagram shows lines only; zoom in to see pictures and numbers.
 
 ## 6. Problems, fixes and waivers
 

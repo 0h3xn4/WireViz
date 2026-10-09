@@ -14,7 +14,7 @@
 <rect x="84" y="29" width="36" height="7" fill="#ffffff" stroke="#000000" stroke-width="0.4"/>
 <text x="85" y="33.6" font-size="2.6" font-weight="bold" text-anchor="start" fill="#000000">W002-P2</text>
 <rect x="8" y="44" width="404" height="7" fill="#e6e6e6" stroke="#000000" stroke-width="0.3"/>
-<text x="9.5" y="49" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">W002-P1 (EX-MICROD-25-M)  to  W002-P2 (EX-MICROD-15-F)</text>
+<text x="9.5" y="49" font-size="3" font-weight="bold" text-anchor="start" fill="#000000">W002-P1 (EX-MICROD-25-M, male, pins)  to  W002-P2 (EX-MICROD-15-F, female, sockets)</text>
 <text x="9" y="58" font-size="2.6" text-anchor="start" fill="#000000">W002-P1:1 TX+</text>
 <text x="411" y="58" font-size="2.6" text-anchor="end" fill="#000000">W002-P2:3 RX+</text>
 <line x1="60" y1="57" x2="360" y2="57" stroke="#000000" stroke-width="0.5"/>

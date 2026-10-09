@@ -14,6 +14,7 @@ from typing import Any, cast
 
 from harness_design_studio import __version__
 from harness_design_studio.core.commands import Delete, Op, Put, SetGeneration
+from harness_design_studio.core.describe import part_gender
 from harness_design_studio.core.edit import clone_with
 from harness_design_studio.core.errors import HarnessError
 from harness_design_studio.core.model import (
@@ -545,7 +546,7 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
                 )
                 mate = box.part_id
             cables[box_id] = Connector(
-                id=cid, name=cid.rsplit("-", 1)[-1], role="cable", part_id=mate, gender=_opposite(box.gender),
+                id=cid, name=cid.rsplit("-", 1)[-1], role="cable", part_id=mate, gender=_opposite(box.gender if box.gender != "unspecified" else part_gender(part)),
                 keying=box.keying, mates_with=box_id, pins=[Pin(id=pin.id, contact_size=pin.contact_size, termination=pin.termination) for pin in box.pins],
             )  # fmt: skip
             ctx.note(

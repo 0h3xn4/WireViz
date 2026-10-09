@@ -4,7 +4,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PL1-J01",
       "keying": null,
       "mates_with": null,
@@ -101,7 +101,7 @@
       "carries": [
         "ethernet"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PL1-J02",
       "keying": null,
       "mates_with": null,
@@ -191,7 +191,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PL1-J03",
       "keying": null,
       "mates_with": null,
@@ -396,7 +396,7 @@
       "carries": [
         "rf_coax"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PL1-J04",
       "keying": null,
       "mates_with": null,
