@@ -762,6 +762,9 @@ def _size(
                 f"gauge:{wire.id}",
                 f"wire-sizing: {i.type_id} has no current to size for, so the default gauge AWG {default} from the configuration was used",
             )
+    colours = ctx.gen.get("wire_colour_by_signal")  # the owner's own rule; absent: no colour
+    if isinstance(colours, dict) and out.colour is None and out.signal in colours:
+        out = evolve(out, colour=str(colours[out.signal]))
     _check_contacts(ctx, out, i)
     return out
 

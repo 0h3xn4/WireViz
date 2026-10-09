@@ -3557,7 +3557,7 @@
   "status": "draft",
   "wires": [
     {
-      "colour": null,
+      "colour": "red",
       "from_connector": "W004-P7",
       "from_pin": "1",
       "gauge_awg": 16,
@@ -3571,7 +3571,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "black",
       "from_connector": "W004-P7",
       "from_pin": "2",
       "gauge_awg": 16,
@@ -3585,7 +3585,7 @@
       "to_pin": "2"
     },
     {
-      "colour": null,
+      "colour": "red",
       "from_connector": "W004-P1",
       "from_pin": "1",
       "gauge_awg": 16,
@@ -3599,7 +3599,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "black",
       "from_connector": "W004-P1",
       "from_pin": "2",
       "gauge_awg": 16,
@@ -3613,7 +3613,7 @@
       "to_pin": "2"
     },
     {
-      "colour": null,
+      "colour": "red",
       "from_connector": "W004-P3",
       "from_pin": "1",
       "gauge_awg": 22,
@@ -3627,7 +3627,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "black",
       "from_connector": "W004-P3",
       "from_pin": "2",
       "gauge_awg": 22,
@@ -3641,7 +3641,7 @@
       "to_pin": "2"
     },
     {
-      "colour": null,
+      "colour": "red",
       "from_connector": "W004-P8",
       "from_pin": "1",
       "gauge_awg": 26,
@@ -3655,7 +3655,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "black",
       "from_connector": "W004-P8",
       "from_pin": "2",
       "gauge_awg": 26,
@@ -3669,7 +3669,7 @@
       "to_pin": "2"
     },
     {
-      "colour": null,
+      "colour": "red",
       "from_connector": "W004-P9",
       "from_pin": "1",
       "gauge_awg": 20,
@@ -3683,7 +3683,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "black",
       "from_connector": "W004-P9",
       "from_pin": "2",
       "gauge_awg": 20,
@@ -3697,7 +3697,7 @@
       "to_pin": "2"
     },
     {
-      "colour": null,
+      "colour": "yellow",
       "from_connector": "W004-P4",
       "from_pin": "1",
       "gauge_awg": null,
@@ -3711,7 +3711,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "green",
       "from_connector": "W004-P4",
       "from_pin": "2",
       "gauge_awg": null,
@@ -3725,7 +3725,7 @@
       "to_pin": "2"
     },
     {
-      "colour": null,
+      "colour": "yellow",
       "from_connector": "W004-P5",
       "from_pin": "1",
       "gauge_awg": null,
@@ -3739,7 +3739,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "green",
       "from_connector": "W004-P5",
       "from_pin": "2",
       "gauge_awg": null,
@@ -3809,7 +3809,7 @@
       "to_pin": "4"
     },
     {
-      "colour": null,
+      "colour": "yellow",
       "from_connector": "W004-P2",
       "from_pin": "1",
       "gauge_awg": null,
@@ -3823,7 +3823,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "green",
       "from_connector": "W004-P2",
       "from_pin": "2",
       "gauge_awg": null,

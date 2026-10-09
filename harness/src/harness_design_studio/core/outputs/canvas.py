@@ -65,7 +65,19 @@ class Text:
         return self.x - (w / 2 if self.anchor == "middle" else w if self.anchor == "end" else 0.0)
 
 
-Item = Line | Rect | Text
+@dataclass(frozen=True)
+class Curve:
+    """An S-shaped curve from (x1, y1) to (x2, y2) that leaves and arrives horizontally (a wire)."""
+
+    x1: float
+    y1: float
+    x2: float
+    y2: float
+    width: float = 0.3
+    color: str = "#000000"
+
+
+Item = Line | Rect | Text | Curve
 
 
 @dataclass
@@ -103,6 +115,12 @@ def to_svg(sheet: Sheet, metadata: str) -> bytes:
             out.append(
                 f'<line x1="{_n(it.x1)}" y1="{_n(it.y1)}" x2="{_n(it.x2)}" y2="{_n(it.y2)}" '
                 f'stroke="{it.color}" stroke-width="{_n(it.width)}"{_dash(it.dash)}/>'
+            )
+        elif isinstance(it, Curve):
+            xm = (it.x1 + it.x2) / 2
+            out.append(
+                f'<path d="M {_n(it.x1)} {_n(it.y1)} C {_n(xm)} {_n(it.y1)} {_n(xm)} {_n(it.y2)} '
+                f'{_n(it.x2)} {_n(it.y2)}" fill="none" stroke="{it.color}" stroke-width="{_n(it.width)}"/>'
             )
         elif isinstance(it, Rect):
             out.append(
@@ -148,6 +166,13 @@ def _page_stream(sheet: Sheet) -> bytes:
                 (f"[{pt(it.dash[0])} {pt(it.dash[1])}] 0 d" if it.dash else "[] 0 d").encode()
             )
             ops.append(f"{pt(it.x1)} {pt(h - it.y1)} m {pt(it.x2)} {pt(h - it.y2)} l S Q".encode())
+        elif isinstance(it, Curve):
+            xm = (it.x1 + it.x2) / 2
+            ops.append(f"q {_rgb(it.color)} RG {pt(it.width)} w [] 0 d".encode())
+            ops.append(
+                f"{pt(it.x1)} {pt(h - it.y1)} m {pt(xm)} {pt(h - it.y1)} {pt(xm)} {pt(h - it.y2)} "
+                f"{pt(it.x2)} {pt(h - it.y2)} c S Q".encode()
+            )
         elif isinstance(it, Rect):
             fill = f"{_rgb(it.fill)} rg " if it.fill else ""
             paint = "B" if it.fill else "S"

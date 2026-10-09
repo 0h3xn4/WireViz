@@ -286,3 +286,28 @@ def test_generated_projects_match_golden_fixtures(tmp_path):
         )
         for rel in files:
             assert (golden / rel).read_bytes() == (tmp_path / name / rel).read_bytes(), (name, rel)
+
+
+def test_wire_colour_comes_only_from_the_owners_signal_mapping():
+    """No mapping, no colour; with `wire_colour_by_signal` the wires of those signals get it and
+    a locked wire keeps its own."""
+    from harness_design_studio.core.model.config import ConfigFile
+
+    plain = generated(sat15())
+    assert all(w.colour is None for h in plain.harnesses.values() for w in h.wires)
+    p = sat15()
+    old = p.config["generation"]
+    signal = next(
+        w.signal for h in generated(sat15()).harnesses.values() for w in h.wires if w.signal
+    )
+    p.config["generation"] = ConfigFile(
+        name="generation",
+        placeholder=old.placeholder,
+        values={**old.values, "wire_colour_by_signal": {signal: "red"}},
+    )
+    out = generated(p)
+    coloured = [w for h in out.harnesses.values() for w in h.wires if w.signal == signal]
+    assert coloured and all(w.colour == "red" for w in coloured)
+    assert all(
+        w.colour is None for h in out.harnesses.values() for w in h.wires if w.signal != signal
+    )

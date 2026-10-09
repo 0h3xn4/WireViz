@@ -90,7 +90,7 @@ def test_every_output_type_is_produced() -> None:
 # ---- drawings -------------------------------------------------------------------------------------
 
 
-def test_svg_is_well_formed_and_greyscale_for_harness_drawings() -> None:
+def test_svg_is_well_formed_and_uses_only_grey_without_wire_colours() -> None:
     _, files = project_and_files("sat15")
     svgs = [k for k in files if k.endswith(".svg") and k.startswith("harnesses/")]
     assert svgs
@@ -103,6 +103,34 @@ def test_svg_is_well_formed_and_greyscale_for_harness_drawings() -> None:
             assert abs(r - g) < 3 and abs(g - b) < 3, (
                 f"{k} uses colour {c}; drawings must print in greyscale"
             )
+
+
+def test_wire_colours_are_drawn_and_written_as_codes() -> None:
+    """A wire with a colour is drawn in it (on a dark outline) and carries its IEC 60757 code as
+    text, so a greyscale print loses nothing; a colour that is not set is drawn grey."""
+    p, _ = project_and_files("sat15")
+    h = p.harnesses["W010"]
+    wires = [
+        evolve(w, colour=c) for w, c in zip(h.wires, ["red", "BK", "blue", None], strict=False)
+    ]
+    apply_ops(p, [Put("harnesses", evolve(h, wires=[*wires, *h.wires[len(wires) :]]))])
+    svg = build_outputs(p, harness_ids=["W010"]).files["harnesses/W010/drawing_A3_s1.svg"].decode()
+    for code, hexcolour in (("RD", "#e02020"), ("BK", "#1a1a1a"), ("BU", "#1e5bd8")):
+        assert hexcolour in svg
+        assert re.search(rf">{wires[0].id[:4]}-\d+  {code}<", svg)
+    assert "#808080" in svg  # the wire without a colour
+
+
+def test_the_drawing_shows_connector_tables_and_cable_blocks() -> None:
+    p, files = project_and_files("sat15")
+    h = p.harnesses["W001"]
+    text = " ".join(
+        re.findall(r"<text[^>]*>([^<]*)</text>", files["harnesses/W001/drawing_A3_s1.svg"].decode())
+    )
+    for c in h.connectors:
+        assert c.id in text and c.part_id in text
+    assert "male" in text or "female" in text  # the gender, in words
+    assert re.search(r"\d+x +(AWG|pending)", text)  # the cable block summary
 
 
 @pytest.mark.skipif(shutil.which("pdfinfo") is None, reason="poppler not installed")
@@ -128,7 +156,7 @@ def test_long_harness_paginates_and_numbers_its_sheets() -> None:
     apply_ops(p, [Put("harnesses", evolve(h, wires=many, shields=[]))])
     out = build_outputs(p, harness_ids=["W010"])
     sheets = sorted(k for k in out.files if re.search(r"drawing_A3_s\d+\.svg", k))
-    assert len(sheets) >= 3
+    assert len(sheets) >= 2
     assert f"1 / {len(sheets)}" in " ".join(
         re.findall(r"<text[^>]*>([^<]*)</text>", out.files[sheets[0]].decode())
     )

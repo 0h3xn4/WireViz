@@ -2,11 +2,11 @@
 see here is what is exported (title block stamped "preview" because no export has happened)."""
 
 from PySide6.QtCore import QPointF, QRectF, Qt, Signal
-from PySide6.QtGui import QColor, QFont, QPainter, QPen
+from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from harness_design_studio.core.model import Harness, Project
-from harness_design_studio.core.outputs.canvas import Line, Rect, Sheet, Text, text_width
+from harness_design_studio.core.outputs.canvas import Curve, Line, Rect, Sheet, Text, text_width
 from harness_design_studio.core.outputs.drawing import harness_sheets
 from harness_design_studio.core.outputs.stamp import Stamp
 from harness_design_studio.gui import strings
@@ -55,6 +55,17 @@ class SheetView(QWidget):
                     QPointF(ox + it.x1 * scale, oy + it.y1 * scale),
                     QPointF(ox + it.x2 * scale, oy + it.y2 * scale),
                 )
+            elif isinstance(it, Curve):
+                painter.setPen(pen(it.color, it.width, None))
+                painter.setBrush(Qt.BrushStyle.NoBrush)
+                path = QPainterPath(QPointF(ox + it.x1 * scale, oy + it.y1 * scale))
+                xm = ox + (it.x1 + it.x2) / 2 * scale
+                path.cubicTo(
+                    QPointF(xm, oy + it.y1 * scale),
+                    QPointF(xm, oy + it.y2 * scale),
+                    QPointF(ox + it.x2 * scale, oy + it.y2 * scale),
+                )
+                painter.drawPath(path)
             elif isinstance(it, Rect):
                 painter.setPen(pen(it.color, it.width, it.dash))
                 painter.setBrush(QColor(it.fill) if it.fill else Qt.BrushStyle.NoBrush)

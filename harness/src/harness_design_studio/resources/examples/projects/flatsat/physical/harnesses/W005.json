@@ -523,7 +523,7 @@
   "status": "draft",
   "wires": [
     {
-      "colour": null,
+      "colour": "red",
       "from_connector": "W005-P2",
       "from_pin": "1",
       "gauge_awg": 16,
@@ -537,7 +537,7 @@
       "to_pin": "1"
     },
     {
-      "colour": null,
+      "colour": "black",
       "from_connector": "W005-P2",
       "from_pin": "2",
       "gauge_awg": 16,
