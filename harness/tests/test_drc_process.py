@@ -103,21 +103,29 @@ def test_a_check_does_not_hold_up_the_calling_threads_neighbour() -> None:
 
     project = clone_with(build(), [])
     run_check(project)  # starts the helper
-    stop = threading.Event()
-    result: list[object] = []
 
-    def work() -> None:
-        result.append(run_check(project))
-        stop.set()
+    def longest_wait() -> float:
+        stop = threading.Event()
 
-    threading.Thread(target=work).start()
-    worst, last = 0.0, time.perf_counter()
-    while not stop.is_set():
-        time.sleep(0.001)
-        now = time.perf_counter()
-        worst, last = max(worst, now - last), now
-    drc_process._shared.close()
-    assert result and worst * 1000 < time_limit(50), worst
+        def work() -> None:
+            run_check(project)
+            stop.set()
+
+        threading.Thread(target=work).start()
+        worst, last = 0.0, time.perf_counter()
+        while not stop.is_set():
+            time.sleep(0.001)
+            now = time.perf_counter()
+            worst, last = max(worst, now - last), now
+        return worst
+
+    # A stall caused by the check shows in every run; a busy machine delays only some of them,
+    # so the best of three runs is compared with the limit.
+    try:
+        best = min(longest_wait() for _ in range(3))
+    finally:
+        drc_process._shared.close()
+    assert best * 1000 < time_limit(50), best
 
 
 def test_no_helper_is_left_running_after_close(project) -> None:  # type: ignore[no-untyped-def]

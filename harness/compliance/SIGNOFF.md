@@ -24,3 +24,16 @@ Master has moved on since (documentation and a benchmark change only: pull reque
 
 ## Nothing else was done
 No tag, release or publication was made, and the packages were not rebuilt (the signed-off files are the ones whose checksums are listed above).
+
+## Final release 0.1.0 (2026-10-09)
+
+After the sign-off above the owner said "I want a final 0.1.0". The assistant then pointed out that step 14 of `docs/RELEASE.md` asks for D-10 and D-15 to be decided and D-11 and D-12 to be supplied before `rc` is dropped, and asked for an explicit sentence. The owner answered, in the same session: "I waive the step 14 condition: release 0.1.0 with D-10, D-11, D-12 and D-15 still open." That sentence is the decision; it is recorded as `DEVIATIONS.md` T-31 and `docs/DECISIONS.md` D-137.
+
+What changes: the version is `0.1.0` (Debian `0.1.0`), the changelog, README and the other status lines no longer say "release candidate". What does not change: everything listed above as open stays open; no compliance is claimed; results are labelled as resting on placeholders and example parts; the packages are unsigned. The program is the one of rc8 (stamps differ). The release check passed (14 steps; 964 tests passed, 1 skipped, with and without instrumentation; no known vulnerabilities in the 10 shipped packages); evidence in `evidence/release_0.1.0_report.md`.
+
+| File | SHA-256 |
+|---|---|
+| `harness-design-studio-0.1.0-linux-x86_64.tar.gz` | `c828d9f3fccf762d7537da55172a239eaca30bea598f9008e1336e1a3d4a6a37` |
+| `harness-design-studio_0.1.0_amd64.deb` | `37422760206a803ee947b0045488da07c3bc19b811a44d0cb2b41ac0548520f7` |
+
+All checksums are in `evidence/release_0.1.0_SHA256SUMS`.
