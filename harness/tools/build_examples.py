@@ -26,6 +26,10 @@ PROJECTS = {
         "First steps: reaction wheel link",
         "Three units, a power link and an RS-422 link. Nothing is generated yet: start here.",
     ),
+    "minimal-satellite": (
+        "Minimal satellite",
+        "Seven units, nominal only: power, computer, radio, wheel and sun sensor. Adapt it.",
+    ),
     "small-satellite": (
         "Small satellite (reference)",
         "14 units with nominal and redundant chains. Generate it to see a realistic system.",
@@ -56,6 +60,41 @@ def _first_steps() -> Project:
     return p
 
 
+def _minimal_satellite() -> Project:
+    p = new_project(PROJECTS["minimal-satellite"][0])
+    p.meta = evolve(
+        p.meta,
+        description="A small spacecraft without redundancy: solar array, battery, power control unit, "
+        "on-board computer, transceiver, one reaction wheel and a sun sensor. "
+        "Copy it, then rename, add and remove units to describe your own spacecraft.",
+    )
+    history = History(p)
+    units = (
+        ("solar_array", 0, 40.0), ("battery", 0, 200.0), ("pdu", 0, 360.0), ("computer_xl", 0, 520.0),
+        ("transceiver", 1, 40.0), ("actuator", 1, 200.0), ("sun_sensor", 1, 360.0),
+    )  # fmt: skip
+    for template, lane, y in units:
+        ops, _ = edit.ops_add_unit(p, template, edit.lane_x(lane), y)
+        history.execute("add unit", ops)
+    sa, bat, pcdu, obc, trx, rw, ss = (
+        sorted(u for u in p.units if u.startswith(prefix))[0]
+        for prefix in ("SA", "BAT", "PCDU", "OBC", "TRX", "RW", "SS")
+    )
+    wiring = (
+        ("power_primary", sa, pcdu, 3.0), ("power_primary", bat, pcdu, 5.0),
+        ("power_primary", pcdu, obc, 1.0), ("power_primary", pcdu, trx, 2.0),
+        ("power_primary", pcdu, rw, 2.0), ("power_primary", pcdu, ss, 0.2),
+        ("can", obc, pcdu, None), ("can", obc, rw, None), ("rs422", obc, trx, None),
+        ("analog", obc, ss, None), ("can", obc, bat, None),
+    )  # fmt: skip
+    for type_id, a, b, current in wiring:
+        ops, iid = edit.ops_add_interface(p, type_id, a, b)
+        history.execute("add interface", ops)
+        if current is not None:
+            history.execute("set current", edit.ops_update_interface(p, iid, max_current_a=current))
+    return p
+
+
 def _small_satellite() -> Project:
     p = sat15()
     p.meta = evolve(
@@ -67,7 +106,12 @@ def _small_satellite() -> Project:
     return p
 
 
-BUILDERS = {"blank": _blank, "first-steps": _first_steps, "small-satellite": _small_satellite}
+BUILDERS = {
+    "blank": _blank,
+    "first-steps": _first_steps,
+    "minimal-satellite": _minimal_satellite,
+    "small-satellite": _small_satellite,
+}
 
 
 def build(target: Path = TARGET) -> None:

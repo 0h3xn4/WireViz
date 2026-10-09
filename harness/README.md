@@ -45,10 +45,10 @@ That is the whole idea. [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) wal
 
 | You are | Start with |
 | --- | --- |
-| **new to the tool** | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md): your first harness in 45 minutes. Then [`docs/CONCEPTS.md`](docs/CONCEPTS.md): how the tool thinks, in ten minutes. |
+| **new to the tool** | [`docs/LEARNING_PATH.md`](docs/LEARNING_PATH.md): the route in nine steps. Or directly [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md): your first harness in 45 minutes, then [`docs/CONCEPTS.md`](docs/CONCEPTS.md): how the tool thinks, in ten minutes. |
 | **installing it** | [`docs/INSTALL.md`](docs/INSTALL.md) |
 | **doing a task** (import, KiCad, release, Git, CI) | [`docs/HOWTO.md`](docs/HOWTO.md), step by step |
-| **looking something up** | [`docs/CLI.md`](docs/CLI.md) (every command), [`docs/guide/USER_GUIDE.md`](docs/guide/USER_GUIDE.md) (also in the app: **F1**), [`docs/FAQ.md`](docs/FAQ.md) |
+| **looking something up** | [`docs/CLI.md`](docs/CLI.md) (every command), [`docs/guide/USER_GUIDE.md`](docs/guide/USER_GUIDE.md) (also in the app: **F1**), [`docs/FAQ.md`](docs/FAQ.md), the one-page [`docs/CHEATSHEET.md`](docs/CHEATSHEET.md) |
 | **stuck** | [`docs/FAQ.md`](docs/FAQ.md) |
 | **an engineer supplying values** | [`docs/CONFIG.md`](docs/CONFIG.md), [`docs/PLACEHOLDERS.md`](docs/PLACEHOLDERS.md), [`docs/IMPORTS.md`](docs/IMPORTS.md) |
 | **a reviewer or releaser** | [`docs/RULES.md`](docs/RULES.md), [`docs/OUTPUTS.md`](docs/OUTPUTS.md), the review checklist in the templates |
@@ -64,9 +64,10 @@ That is the whole idea. [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) wal
 | --- | --- |
 | `blank` | An empty project with the starter parts and interface types. Start a real design here. |
 | `first-steps` | Three units, a power link and an RS-422 link. Nothing generated yet. Start here. |
+| `minimal-satellite` | Seven units, nominal only: solar array, battery, power unit, computer, radio, wheel and sun sensor. A small but realistic starting point. |
 | `small-satellite` | 14 units with redundant chains. Generate it to see a realistic system. |
 
-`harness templates my-templates` copies templates for your own data: CSV files for interfaces, approved parts and segment lengths, a KiCad netlist, a CI script, a GitHub Actions workflow, a design review checklist and *demo* engineering values for learning (not engineering data). What each file is for: [`src/harness_design_studio/resources/examples/templates/README.md`](src/harness_design_studio/resources/examples/templates/README.md).
+`harness templates my-templates` copies templates for your own data: CSV files for interfaces, approved parts and segment lengths, a KiCad netlist, a CI script, a GitHub Actions workflow, a **design worksheet** to plan a design on paper, a design review checklist and *demo* engineering values for learning (not engineering data). What each file is for: [`src/harness_design_studio/resources/examples/templates/README.md`](src/harness_design_studio/resources/examples/templates/README.md).
 
 ## What is in a project
 

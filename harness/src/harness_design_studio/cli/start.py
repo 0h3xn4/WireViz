@@ -12,7 +12,7 @@ COMMANDS = ("new", "templates", "schema")
 def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None:
     n = sub.add_parser(
         "new",
-        help="create a new project from an example (blank, first-steps, small-satellite)",
+        help="create a new project from an example (blank, first-steps, minimal-satellite, small-satellite)",
         description="Create a project folder from one of the bundled examples. "
         "`harness new --list` shows them. The folder must not exist yet or be empty.",
     )
@@ -50,7 +50,7 @@ def run(args: argparse.Namespace) -> int:
         return 0
     if args.list:
         for t in templates.TEMPLATES:
-            print(f"{t.name:16} {t.summary}")
+            print(f"{t.name:18} {t.summary}")
         return 0
     if args.folder is None:
         print("error: give the folder for the new project (or use --list).", file=sys.stderr)

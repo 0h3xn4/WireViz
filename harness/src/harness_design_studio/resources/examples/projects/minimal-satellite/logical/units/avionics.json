@@ -1,0 +1,13 @@
+{
+  "units": [
+    {
+      "id": "OBC1",
+      "mass_relevant": true,
+      "name": "Computer (many interfaces) 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "avionics",
+      "zone": "panel-A"
+    }
+  ]
+}

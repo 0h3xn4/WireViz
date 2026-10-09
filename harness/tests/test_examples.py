@@ -56,6 +56,29 @@ def test_first_steps_goes_through_the_whole_flow(tmp_path: Path) -> None:
     assert sorted(project.harnesses) == ["W001", "W002"]  # the templates below refer to these
 
 
+def test_minimal_satellite_goes_through_the_whole_flow(tmp_path: Path) -> None:
+    folder = tmp_path / "p"
+    assert main(["new", str(folder), "--template", "minimal-satellite"]) == 0
+    project = load_project(folder).project
+    assert len(project.units) == 7 and len(project.interfaces) == 11
+    assert all(i.redundancy == "nominal" for i in project.interfaces.values())
+    for command in (["validate"], ["generate"], ["verify"], ["drc"], ["export"]):
+        assert main([command[0], str(folder)]) == 0, command
+    assert main(["verify", str(folder), "--outputs"]) == 0
+
+
+def test_the_design_worksheet_names_only_real_unit_kinds_and_interface_types() -> None:
+    from harness_design_studio.core import edit
+    from harness_design_studio.core.samples import new_project
+
+    text = (TEMPLATES / "design-worksheet.md").read_text(encoding="utf-8")
+    for kind in ("computer", "computer_xl", "pdu", "battery", "solar_array", "actuator", "sensor",
+                 "sun_sensor", "magnetorquer", "transceiver", "payload", "heater_panel", "pyro"):  # fmt: skip
+        assert kind in edit.TEMPLATES and f"`{kind}`" in text, kind
+    for interface_type in new_project("x").interface_types.values():
+        assert interface_type.name in text, interface_type.name
+
+
 def test_new_names_the_project_and_refuses_a_used_folder(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
