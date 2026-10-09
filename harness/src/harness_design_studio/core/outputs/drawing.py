@@ -1,9 +1,15 @@
-"""Harness drawing: for every pair of connectors, one row per wire (pin, signal, wire ID, gauge,
-colour, length, pin), grouped under connector headings, with shields, segments and spare pins
-listed beneath. A title block closes every sheet. Black and grey only, so it prints legibly on a
-greyscale printer; wire colour is written as text, never used as a drawing colour.
+"""Harness drawing, in the manner of a wiring diagram: the connectors as tables on the left and
+the right (name, part, gender, pins, and for every used pin its signal), the wires between them as
+curves in their wire colour, and between the connectors a cable block that lists the wires (ID,
+colour code) with gauge and length. Shields, routing segments, spare pins and a routing sketch follow.
+A title block closes every sheet.
 
-Pagination: rows flow onto as many sheets as needed; every sheet repeats the headings.
+Wire colours are drawn (with a dark outline) and also written as a code beside every wire, so a
+greyscale print loses nothing; a wire whose colour is not set is drawn grey. The colour names and
+codes are the IEC 60757 designators; they are only used to draw, never to decide anything.
+
+Pagination: when the connectors do not fit one sheet the wires flow onto the next; every sheet
+repeats the connectors it needs and marks a continued cable block.
 """
 
 from dataclasses import dataclass
@@ -11,7 +17,7 @@ from dataclasses import dataclass
 from harness_design_studio.core.generate.lengths import wire_length
 from harness_design_studio.core.model import Connector, Harness, Project, Wire
 
-from .canvas import SHEETS, Line, Rect, Sheet, Text, fit
+from .canvas import SHEETS, Curve, Line, Rect, Sheet, Text, fit
 from .stamp import Stamp
 from .tables import PENDING, num
 
@@ -22,16 +28,6 @@ SIZE = 2.6
 GREY = "#555555"
 
 
-@dataclass(frozen=True)
-class Row:
-    kind: str  # "heading" | "wire" | "text" | "gap"
-    text: str = ""
-    wire: Wire | None = None
-    group: tuple[str, str] | None = None
-    height: float | None = None  # overrides HEIGHT for rows whose size depends on content
-
-
-HEIGHT = {"heading": 9.0, "wire": 8.0, "text": 4.4, "gap": 3.0, "sketch": 0.0}
 SKETCH_MAX_NODES = 14
 NODE_W, NODE_H, NODE_GAP_X, NODE_GAP_Y = 36.0, 7.0, 34.0, 4.0
 
@@ -70,94 +66,312 @@ def sketch_height(layout: dict[str, tuple[int, int]]) -> float:
     return 8.0 + rows * (NODE_H + NODE_GAP_Y) + 3.0
 
 
-def _kind(c: Connector | None) -> str:
-    """Part and gender of a cable connector, in words: a plug has pins, a socket has sockets."""
-    if c is None:
-        return "?"
-    word = {"male": "male, pins", "female": "female, sockets"}.get(c.gender, "gender not set")
-    return f"{c.part_id}, {word}"
+CONN_W = 58.0  # width of a connector table
+BOX_W = 96.0  # width of a cable block
+ROW = 4.2  # height of a pin row and of a wire row
+HEAD_ROW = 3.9
+HEAD_H = 3 * HEAD_ROW  # connector and cable headers: three lines
+GAP = 7.0
+MAX_WIRE_RUN = 45.0  # longest stretch of wire between a connector table and a cable block
+WIRE_W = 0.8
+PIN_SIZE = 2.5
+HEAD_SIZE = 2.2
+
+# IEC 60757 colour codes with a screen colour for drawing: display only, nothing is decided by it
+_COLOURS = {
+    "BK": "#1a1a1a", "BN": "#8b5a2b", "RD": "#e02020", "OG": "#ff8c00", "YE": "#ffd700",
+    "GN": "#22aa22", "BU": "#1e5bd8", "VT": "#8a2be2", "GY": "#9a9a9a", "WH": "#ffffff",
+    "PK": "#ff8fb0", "TQ": "#20b2aa",
+}  # fmt: skip
+_COLOUR_NAMES = {
+    "black": "BK", "brown": "BN", "red": "RD", "orange": "OG", "yellow": "YE", "green": "GN",
+    "blue": "BU", "violet": "VT", "purple": "VT", "grey": "GY", "gray": "GY", "white": "WH",
+    "pink": "PK", "turquoise": "TQ",
+}  # fmt: skip
+UNSET_COLOUR = "#808080"
 
 
-def _rows(project: Project, h: Harness) -> list[Row]:
-    rows: list[Row] = []
-    layout = sketch_layout(h)
-    if layout is not None:
-        rows.append(Row("sketch", height=sketch_height(layout)))
-    cables = {c.id: c for c in h.connectors}
-    groups: dict[tuple[str, str], list[Wire]] = {}
-    for w in sorted(h.wires, key=lambda x: x.id):
-        groups.setdefault(tuple(sorted((w.from_connector, w.to_connector))), []).append(w)  # type: ignore[arg-type]
-    for (a, b), wires in sorted(groups.items()):
-        ca, cb = cables.get(a), cables.get(b)
-        rows.append(
-            Row(
-                "heading",
-                f"{a} ({_kind(ca)})  to  {b} ({_kind(cb)})",
-                group=(a, b),
-            )
-        )
-        rows += [Row("wire", wire=w, group=(a, b)) for w in wires]
-    rows.append(Row("gap"))
+def wire_colour(name: str | None) -> tuple[str, str]:
+    """(code, screen colour) of a wire colour: ("BK", "#1a1a1a"); a colour that is not set gives
+    ("", grey) and one this table does not know keeps its text (shortened) and is drawn grey."""
+    if not name:
+        return "", UNSET_COLOUR
+    key = name.strip()
+    code = _COLOUR_NAMES.get(key.lower()) or (key.upper() if key.upper() in _COLOURS else None)
+    if code:
+        return code, _COLOURS[code]
+    return key[:6], UNSET_COLOUR
+
+
+def _pin_key(pin: str) -> tuple[bool, int, str]:
+    return (not pin.isdigit(), int(pin) if pin.isdigit() else 0, pin)
+
+
+def _gender_words(c: Connector | None) -> str:
+    return {"male": "male, pins", "female": "female, sockets"}.get(
+        c.gender if c else "", "gender not set"
+    )
+
+
+def _signal(cid: str, pin: str, project: Project, h: Harness) -> str:
+    """Signal of a cable connector's pin, or of the box connector it mates with."""
+    conn = next((c for c in h.connectors if c.id == cid), None)
+    box = project.connectors.get(conn.mates_with or "") if conn else None
+    for c in (conn, box):
+        signal = next((p.signal for p in (c.pins if c else []) if p.id == pin and p.signal), None)
+        if signal:
+            return signal
+    return ""
+
+
+@dataclass
+class _Page:
+    wires: list[tuple[tuple[str, str], Wire]]
+    continued: set[tuple[str, str]]
+
+
+def _sides(groups: list[tuple[str, str]]) -> dict[str, int]:
+    """Left (0) or right (1) column of every connector: connected connectors face each other."""
+    side: dict[str, int] = {}
+    for _ in range(len(groups) + 1):
+        changed = False
+        for a, b in groups:
+            if a in side and b not in side:
+                side[b], changed = 1 - side[a], True
+            elif b in side and a not in side:
+                side[a], changed = 1 - side[b], True
+            elif a not in side and b not in side:
+                side[a], side[b], changed = 0, 1, True
+        if not changed:
+            break
+    return side
+
+
+def _stack_height(items: list[float]) -> float:
+    return sum(items) + GAP * max(0, len(items) - 1)
+
+
+def _fits(wires: list[tuple[tuple[str, str], Wire]], side: dict[str, int], capacity: float) -> bool:
+    pins: dict[str, set[str]] = {}
+    per_group: dict[tuple[str, str], int] = {}
+    for g, w in wires:
+        pins.setdefault(w.from_connector, set()).add(w.from_pin)
+        pins.setdefault(w.to_connector, set()).add(w.to_pin)
+        per_group[g] = per_group.get(g, 0) + 1
+    cols: list[list[float]] = [[], []]
+    for cid, used in pins.items():
+        cols[side.get(cid, 0)].append(HEAD_H + len(used) * ROW)
+    cable = [HEAD_H + n * ROW for n in per_group.values()]
+    return max(_stack_height(cols[0]), _stack_height(cols[1]), _stack_height(cable)) <= capacity
+
+
+def _paginate(
+    items: list[tuple[tuple[str, str], Wire]], side: dict[str, int], capacity: float
+) -> list[_Page]:
+    pages: list[_Page] = []
+    cur: list[tuple[tuple[str, str], Wire]] = []
+    prev_groups: set[tuple[str, str]] = set()
+    cont: set[tuple[str, str]] = set()
+    for item in items:
+        if cur and not _fits([*cur, item], side, capacity):
+            pages.append(_Page(cur, cont))
+            prev_groups = {g for g, _ in cur}
+            cur = []
+            cont = set()
+        if not cur and item[0] in prev_groups:
+            cont = {item[0]}
+        elif item[0] in prev_groups and item[0] not in {g for g, _ in cur}:
+            cont.add(item[0])
+        cur.append(item)
+    if cur or not pages:
+        pages.append(_Page(cur, cont))
+    return pages
+
+
+def _extras(h: Harness) -> list[str]:
+    """The lines beneath the diagram: shields, routing segments, spare pins, notes."""
+    out: list[str] = []
     if h.shields:
-        rows.append(Row("text", "Shields:"))
+        out.append("Shields:")
         for s in sorted(h.shields, key=lambda x: x.id):
-            rows.append(
-                Row(
-                    "text",
-                    f"  {s.id} ({s.kind}) wires {', '.join(sorted(s.wire_ids))}; ends {s.end_a} / {s.end_b}",
-                )
+            out.append(
+                f"  {s.id} ({s.kind}) wires {', '.join(sorted(s.wire_ids))}; ends {s.end_a} / {s.end_b}"
             )
     if h.segments:
-        rows.append(Row("text", "Routing segments:"))
+        out.append("Routing segments:")
         for g in sorted(h.segments, key=lambda x: x.id):
-            rows.append(
-                Row(
-                    "text",
-                    f"  {g.id}: {g.from_node} to {g.to_node}, length {num(g.length_m) + ' m' if g.length_m is not None else 'unknown'}",
-                )
-            )
+            length = f"{num(g.length_m)} m" if g.length_m is not None else "unknown"
+            out.append(f"  {g.id}: {g.from_node} to {g.to_node}, length {length}")
+    used = {(w.from_connector, w.from_pin) for w in h.wires} | {
+        (w.to_connector, w.to_pin) for w in h.wires
+    }
     for c in sorted(h.connectors, key=lambda x: x.id):
-        used = {(w.from_connector, w.from_pin) for w in h.wires} | {
-            (w.to_connector, w.to_pin) for w in h.wires
-        }
         spare = [p.id for p in c.pins if (c.id, p.id) not in used]
         if spare:
-            rows.append(Row("text", f"Spare pins {c.id}: {', '.join(spare)}"))
+            out.append(f"Spare pins {c.id}: {', '.join(spare)}")
     if h.notes:
-        rows.append(Row("text", f"Notes: {h.notes}"))
-    return rows
+        out.append(f"Notes: {h.notes}")
+    return out
 
 
-def _paginate(rows: list[Row], capacity: float) -> list[list[Row]]:
-    pages: list[list[Row]] = [[]]
-    used = 0.0
-    current: Row | None = None
-    for r in rows:
-        need = r.height if r.height is not None else HEIGHT[r.kind]
-        if (
-            r.kind == "wire"
-            and (used == 0.0 or used + need > capacity)
-            and used != 0.0
-            or used + need > capacity
-            and used != 0.0
+def _cable_summary(h: Harness, wires: list[Wire]) -> str:
+    gauges = {w.gauge_awg for w in wires}
+    gauge = (
+        "AWG ?"
+        if gauges == {None}
+        else (f"AWG {gauges.pop()}" if len(gauges) == 1 else "AWG mixed")
+    )
+    if gauge == "AWG ?":
+        gauge = PENDING
+    lengths = {wire_length(h, w) for w in wires}
+    length = (
+        "length n/a"
+        if lengths == {None}
+        else (f"{num(next(iter(lengths)))} m" if len(lengths) == 1 else "lengths vary")
+    )
+    return f"{len(wires)}x  {gauge}  {length}"
+
+
+def _draw_page(
+    sh: Sheet, project: Project, h: Harness, page: _Page, side: dict[str, int], y0: float
+) -> float:
+    """Draw connectors, cable blocks and wires of one page from y0; return the bottom edge."""
+    w_mm = sh.width
+    conns = {c.id: c for c in h.connectors}
+    pins: dict[str, set[str]] = {}
+    order: list[str] = []
+    groups: dict[tuple[str, str], list[Wire]] = {}
+    for g, w in page.wires:
+        for cid, pin in ((w.from_connector, w.from_pin), (w.to_connector, w.to_pin)):
+            pins.setdefault(cid, set()).add(pin)
+            if cid not in order:
+                order.append(cid)
+        groups.setdefault(g, []).append(w)
+    gap = min(MAX_WIRE_RUN, (w_mm - 2 * MARGIN - 2 * CONN_W - BOX_W) / 2)
+    left_x = (w_mm - (2 * CONN_W + BOX_W + 2 * gap)) / 2  # the diagram is centred on the sheet
+    box_x = left_x + CONN_W + gap
+    right_x = box_x + BOX_W + gap
+    top: dict[str, float] = {}
+    rows: dict[str, list[str]] = {}
+    ends = [y0, y0]
+    for cid in order:
+        col = side.get(cid, 0)
+        top[cid] = ends[col]
+        rows[cid] = sorted(pins[cid], key=_pin_key)
+        ends[col] += HEAD_H + len(rows[cid]) * ROW + GAP
+
+    def pin_pos(cid: str, pin: str) -> tuple[float, float]:
+        x = left_x + CONN_W if side.get(cid, 0) == 0 else right_x
+        return x, top[cid] + HEAD_H + (rows[cid].index(pin) + 0.5) * ROW
+
+    # cable blocks: as close to the middle of their wires as the other blocks allow
+    want = {}
+    for g, ws in groups.items():
+        ys = [pin_pos(w.from_connector, w.from_pin)[1] for w in ws] + [
+            pin_pos(w.to_connector, w.to_pin)[1] for w in ws
+        ]
+        want[g] = sum(ys) / len(ys)
+    box_top: dict[tuple[str, str], float] = {}
+    edge = y0
+    for g in sorted(groups, key=lambda k: (want[k], k)):
+        height = HEAD_H + len(groups[g]) * ROW
+        box_top[g] = max(edge, want[g] - height / 2)
+        edge = box_top[g] + height + GAP / 2
+    # connector tables
+    for cid in order:
+        c = conns.get(cid)
+        col = side.get(cid, 0)
+        x = left_x if col == 0 else right_x
+        height = HEAD_H + len(rows[cid]) * ROW
+        sh.add(Rect(x, top[cid], CONN_W, height, width=0.35, fill="#ffffff"))
+        sh.add(Rect(x, top[cid], CONN_W, HEAD_H, width=0.35, fill="#e6e6e6"))
+        mate = f"mates {c.mates_with}" if c is not None and c.mates_with else ""
+        part = f"{c.part_id}, {_gender_words(c)}, {len(c.pins)}-pin" if c is not None else ""
+        for k, (text, size, bold) in enumerate(
+            ((cid, 2.8, True), (part, HEAD_SIZE, False), (mate, HEAD_SIZE, False))
         ):
-            pages.append([])
-            used = 0.0
-        if (
-            r.kind == "wire"
-            and used == 0.0
-            and r.group is not None
-            and current is not None
-            and current.group == r.group
-        ):
-            heading = Row("heading", current.text + "  (continued)", group=r.group)
-            pages[-1].append(heading)
-            used += HEIGHT["heading"]
-        pages[-1].append(r)
-        used += need
-        if r.kind == "heading" or r.kind == "wire" and current is None:
-            current = r
-    return [p for p in pages if p] or [[]]
+            sh.add(
+                Text(
+                    x + CONN_W / 2,
+                    top[cid] + (k + 1) * HEAD_ROW - 1.1,
+                    fit(text, CONN_W - 2.0, size),
+                    size=size,
+                    bold=bold,
+                    anchor="middle",
+                    color=GREY if k else "#000000",
+                )
+            )
+        split = x + CONN_W - 12.0 if col == 0 else x + 12.0
+        sh.add(Line(split, top[cid] + HEAD_H, split, top[cid] + height, width=0.25))
+        for k, pin in enumerate(rows[cid]):
+            yy = top[cid] + HEAD_H + (k + 1) * ROW
+            if k < len(rows[cid]) - 1:
+                sh.add(Line(x, yy, x + CONN_W, yy, width=0.2, color="#bbbbbb"))
+            base = yy - 1.2
+            signal = fit(_signal(cid, pin, project, h), CONN_W - 12.0 - 3.0, PIN_SIZE)
+            if col == 0:
+                sh.add(Text(x + 1.5, base, signal, size=PIN_SIZE))
+                sh.add(Text(x + CONN_W - 1.5, base, pin, size=PIN_SIZE, bold=True, anchor="end"))
+            else:
+                sh.add(Text(x + 1.5, base, pin, size=PIN_SIZE, bold=True))
+                sh.add(Text(x + 12.0 + 1.5, base, signal, size=PIN_SIZE))
+    # cable blocks and wires
+    for g in sorted(groups, key=lambda k: (box_top[k], k)):
+        ws = groups[g]
+        bt = box_top[g]
+        height = HEAD_H + len(ws) * ROW
+        sh.add(Rect(box_x, bt, BOX_W, height, width=0.3, dash=(1.5, 1.0), color=GREY))
+        title = f"{g[0]} - {g[1]}" + ("  (continued)" if g in page.continued else "")
+        sh.add(
+            Text(
+                box_x + BOX_W / 2,
+                bt + HEAD_ROW - 1.1,
+                fit(title, BOX_W - 2.0, 2.8),
+                size=2.8,
+                bold=True,
+                anchor="middle",
+            )
+        )
+        sh.add(
+            Text(
+                box_x + BOX_W / 2,
+                bt + 2 * HEAD_ROW - 1.1,
+                fit(_cable_summary(h, ws), BOX_W - 2.0, HEAD_SIZE),
+                size=HEAD_SIZE,
+                anchor="middle",
+                color=GREY,
+            )
+        )
+        mixed = len({(w.gauge_awg, wire_length(h, w)) for w in ws}) > 1
+        for k, w in enumerate(ws):
+            cy = bt + HEAD_H + (k + 0.5) * ROW
+            code, hexcolour = wire_colour(w.colour)
+            (ca, pa), (cb, pb) = (w.from_connector, w.from_pin), (w.to_connector, w.to_pin)
+            if side.get(ca, 0) == 1 and side.get(cb, 0) == 0:
+                (ca, pa), (cb, pb) = (cb, pb), (ca, pa)
+            (x1, y1), (x2, y2) = pin_pos(ca, pa), pin_pos(cb, pb)
+            for width, colour in ((WIRE_W + 0.7, "#000000"), (WIRE_W, hexcolour)):
+                sh.add(
+                    Curve(x1, y1, box_x, cy, width=width, color=colour),
+                    Line(box_x, cy, box_x + BOX_W, cy, width=width, color=colour),
+                    Curve(box_x + BOX_W, cy, x2, y2, width=width, color=colour),
+                )
+            label = f"{w.id}  {code}".rstrip()
+            if mixed:
+                length = wire_length(h, w)
+                gauge = "AWG ?" if w.gauge_awg is None else f"AWG {w.gauge_awg}"
+                label += f"  {gauge}  {num(length) + ' m' if length is not None else 'n/a'}"
+            sh.add(
+                Text(
+                    box_x + BOX_W / 2,
+                    cy - 1.0,
+                    fit(label, BOX_W - 2.0, PIN_SIZE),
+                    size=PIN_SIZE,
+                    anchor="middle",
+                    bold=True,
+                )
+            )
+    return max([*ends, edge]) - GAP
 
 
 def _title_block(
@@ -201,119 +415,69 @@ def harness_sheets(project: Project, h: Harness, stamp: Stamp, size: str) -> lis
     fields = fields or ["project", "harness_id", "title", "revision", "status", "sheet"]
     head_h = 14.0
     capacity = h_mm - 2 * MARGIN - head_h - TB_H - 4.0
-    pages = _paginate(_rows(project, h), capacity)
-    total = len(pages)
+    groups: dict[tuple[str, str], list[Wire]] = {}
+    for w in sorted(h.wires, key=lambda x: x.id):
+        groups.setdefault(tuple(sorted((w.from_connector, w.to_connector))), []).append(w)  # type: ignore[arg-type]
+    keys = sorted(groups)
+    side = _sides(keys)
+    items = [(g, w) for g in keys for w in groups[g]]
+    layout = sketch_layout(h)
+    sketch_h = sketch_height(layout) if layout is not None else 0.0
+    pages = _paginate(items, side, capacity - sketch_h)
+    extras = _extras(h)
     sheets: list[Sheet] = []
-    for n, rows in enumerate(pages, start=1):
-        sh = Sheet(w_mm, h_mm, title=f"{h.id} sheet {n}/{total}")
-        sh.add(Rect(MARGIN / 2, MARGIN / 2, w_mm - MARGIN, h_mm - MARGIN, width=0.6))
-        sh.add(
-            Text(
-                MARGIN,
-                MARGIN + 4.0,
-                fit(f"{h.id}  {h.name}", w_mm - 2 * MARGIN, 4.2),
-                size=4.2,
-                bold=True,
-            )
-        )
-        sh.add(
-            Text(
-                MARGIN,
-                MARGIN + 9.0,
-                f"Revision {h.revision}  status {h.status}",
-                size=2.8,
-                color=GREY,
-            )
-        )
+    bottoms: list[float] = []
+    for n, pg in enumerate(pages, start=1):
+        sh = _sheet_head(h, w_mm, h_mm, head_h)
         y = MARGIN + head_h
-        left_w = 52.0
-        mid_x0 = MARGIN + left_w
-        right_w = 52.0
-        mid_x1 = w_mm - MARGIN - right_w
-        for r in rows:
-            hgt = r.height if r.height is not None else HEIGHT[r.kind]
-            if r.kind == "sketch":
-                _draw_sketch(sh, h, y, w_mm)
-            if r.kind == "heading":
-                sh.add(Rect(MARGIN, y, w_mm - 2 * MARGIN, hgt - 2.0, width=0.3, fill="#e6e6e6"))
-                sh.add(
-                    Text(
-                        MARGIN + 1.5,
-                        y + hgt - 4.0,
-                        fit(r.text, w_mm - 2 * MARGIN - 3.0, SIZE + 0.4),
-                        size=SIZE + 0.4,
-                        bold=True,
-                    )
-                )
-            elif r.kind == "wire" and r.wire is not None:
-                w = r.wire
-                ya = y + hgt - 3.0
-                flip = r.group is not None and w.from_connector != r.group[0]
-                (ca_, pa_), (cb_, pb_) = [
-                    (w.from_connector, w.from_pin),
-                    (w.to_connector, w.to_pin),
-                ][:: -1 if flip else 1]
-                pa = _pin_label(ca_, pa_, project, h)
-                pb = _pin_label(cb_, pb_, project, h)
-                sh.add(Text(MARGIN + 1.0, ya, fit(pa, left_w - 2.0, SIZE), size=SIZE))
-                sh.add(
-                    Text(
-                        w_mm - MARGIN - 1.0,
-                        ya,
-                        fit(pb, right_w - 2.0, SIZE),
-                        size=SIZE,
-                        anchor="end",
-                    )
-                )
-                sh.add(Line(mid_x0, ya - 1.0, mid_x1, ya - 1.0, width=0.5))
-                gauge = PENDING if w.gauge_awg is None else f"AWG {w.gauge_awg}"
-                length = wire_length(h, w)
-                info = f"{gauge}  {w.colour or 'colour n/a'}  {num(length) + ' m' if length is not None else 'length n/a'}  {w.part_id or ''}"
-                mid_w = mid_x1 - mid_x0
-                sh.add(
-                    Text(
-                        (mid_x0 + mid_x1) / 2,
-                        ya - 2.0,
-                        fit(f"{w.id}  {w.signal or ''}", mid_w, SIZE),
-                        size=SIZE,
-                        bold=True,
-                        anchor="middle",
-                    )
-                )
-                sh.add(
-                    Text(
-                        (mid_x0 + mid_x1) / 2,
-                        ya + 2.2,
-                        fit(info, mid_w, SIZE - 0.3),
-                        size=SIZE - 0.3,
-                        anchor="middle",
-                        color=GREY,
-                    )
-                )
-            elif r.kind == "text":
-                sh.add(
-                    Text(
-                        MARGIN + 1.0,
-                        y + hgt - 1.2,
-                        fit(r.text, w_mm - 2 * MARGIN - 2.0, SIZE),
-                        size=SIZE,
-                    )
-                )
-            y += hgt
-        _title_block(sh, project, h, stamp, n, total, fields)
+        if n == 1 and layout is not None:
+            _draw_sketch(sh, h, y, w_mm)
+            y += sketch_h
+        bottoms.append(_draw_page(sh, project, h, pg, side, y))
         sheets.append(sh)
+    # the lines beneath the diagram go below its last sheet when they fit, else on sheets of their own
+    limit = h_mm - MARGIN - TB_H - 4.0
+    lines_here = max(0, int((limit - bottoms[-1] - 6.0) / 4.4))
+    rest = list(extras)
+    y = bottoms[-1] + 6.0
+    for line in rest[:lines_here]:
+        y += 4.4
+        sheets[-1].add(Text(MARGIN + 1.0, y, fit(line, w_mm - 2 * MARGIN - 2.0, SIZE), size=SIZE))
+    rest = rest[lines_here:]
+    per_sheet = int(capacity / 4.4)
+    while rest:
+        sh = _sheet_head(h, w_mm, h_mm, head_h)
+        y = MARGIN + head_h
+        for line in rest[:per_sheet]:
+            y += 4.4
+            sh.add(Text(MARGIN + 1.0, y, fit(line, w_mm - 2 * MARGIN - 2.0, SIZE), size=SIZE))
+        sheets.append(sh)
+        rest = rest[per_sheet:]
+    total = len(sheets)
+    for n, sh in enumerate(sheets, start=1):
+        sh.title = f"{h.id} sheet {n}/{total}"
+        _title_block(sh, project, h, stamp, n, total, fields)
     return sheets
 
 
-def _pin_label(cid: str, pin: str, project: Project, h: Harness) -> str:
-    conn = next((c for c in h.connectors if c.id == cid), None)
-    box = project.connectors.get(conn.mates_with or "") if conn else None
-    signal = None
-    for c in (conn, box):
-        signal = next((p.signal for p in (c.pins if c else []) if p.id == pin and p.signal), None)
-        if signal:
-            break
-    return f"{cid}:{pin}" + (f" {signal}" if signal else "")
+def _sheet_head(h: Harness, w_mm: float, h_mm: float, head_h: float) -> Sheet:
+    sh = Sheet(w_mm, h_mm)
+    sh.add(Rect(MARGIN / 2, MARGIN / 2, w_mm - MARGIN, h_mm - MARGIN, width=0.6))
+    sh.add(
+        Text(
+            MARGIN,
+            MARGIN + 4.0,
+            fit(f"{h.id}  {h.name}", w_mm - 2 * MARGIN, 4.2),
+            size=4.2,
+            bold=True,
+        )
+    )
+    sh.add(
+        Text(
+            MARGIN, MARGIN + 9.0, f"Revision {h.revision}  status {h.status}", size=2.8, color=GREY
+        )
+    )
+    return sh
 
 
 def _draw_sketch(sh: Sheet, h: Harness, y: float, width: float) -> None:

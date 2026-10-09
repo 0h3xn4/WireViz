@@ -39,8 +39,10 @@ def test_every_connector_has_a_known_family_and_gender(project) -> None:
 
 
 def test_the_harness_drawing_states_the_gender_of_cable_connectors(project) -> None:
-    from harness_design_studio.core.outputs.drawing import _rows
+    from harness_design_studio.core.outputs.drawing import harness_sheets
+    from harness_design_studio.core.outputs.stamp import Stamp
 
     harness = next(iter(project.harnesses.values()))
-    headings = [r.text for r in _rows(project, harness) if r.kind == "heading"]
-    assert headings and all(("male, pins" in h or "female, sockets" in h) for h in headings)
+    sheets = harness_sheets(project, harness, Stamp("t", "t"), "A3")
+    text = " ".join(getattr(i, "s", "") for sh in sheets for i in sh.items)
+    assert "male, pins" in text or "female, sockets" in text

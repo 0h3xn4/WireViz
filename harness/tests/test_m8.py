@@ -189,7 +189,7 @@ def test_preview_pagination_buttons(win) -> None:  # type: ignore[no-untyped-def
     panel.select_harness("W010")
     panel.preview.show_harness(win.ctl.project, win.ctl.project.harnesses["W010"])
     n = len(panel.preview.sheets)
-    assert n >= 3 and panel.preview.next.isEnabled()
+    assert n >= 2 and panel.preview.next.isEnabled()
     panel.preview.next.click()
     assert panel.preview.page == 1 and panel.preview.prev.isEnabled()
 

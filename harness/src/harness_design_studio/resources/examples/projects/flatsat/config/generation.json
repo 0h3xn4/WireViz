@@ -12,6 +12,12 @@
     "test_continuity_max_ohm": 1.0,
     "test_isolation_min_mohm": 100.0,
     "test_isolation_voltage_v": 500.0,
+    "wire_colour_by_signal": {
+      "CANH": "yellow",
+      "CANL": "green",
+      "PWR": "red",
+      "RTN": "black"
+    },
     "wire_part_by_construction": {
       "coax": "EX-WIRE-SINGLE",
       "quad": "EX-WIRE-TWISTED-SHIELDED",

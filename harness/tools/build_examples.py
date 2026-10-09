@@ -236,6 +236,10 @@ def _demo_values(p: Project) -> None:
     cfg("segmentation", mode="per_zone_pair")  # links between two zones share one bundle
     cfg("derating", ampacity_a_by_awg={"26": 1.0, "24": 2.0, "22": 3.0, "20": 5.0, "18": 7.0, "16": 10.0},
         bundle_derating=0.6, temperature_derating=0.9, contact_current_factor=0.5, max_voltage_drop_v=1.0)  # fmt: skip
+    cfg(
+        "generation",
+        wire_colour_by_signal={"PWR": "red", "RTN": "black", "CANH": "yellow", "CANL": "green"},
+    )  # EXAMPLE colours, drawn on the harness drawing
     cfg("generation", conductor_resistivity_ohm_m=1.7e-8, service_loop_m=0.1, shield_end_a="backshell_360",
         shield_end_b="floating", mass_margin_fraction=0.1, test_continuity_max_ohm=1.0,
         test_isolation_min_mohm=100.0, test_isolation_voltage_v=500.0)  # fmt: skip
