@@ -96,6 +96,11 @@ def _minimal_satellite() -> Project:
         history.execute("add interface", ops)
         if current is not None:
             history.execute("set current", edit.ops_update_interface(p, iid, max_current_a=current))
+        if (
+            type_id == "power_primary"
+        ):  # example value, so that the diagram shows what a rail delivers
+            history.execute("set voltage", edit.ops_update_interface(p, iid, voltage_v=28.0))
+    history.execute("arrange", edit.ops_arrange(p))
     return p
 
 
@@ -201,6 +206,11 @@ def _flatsat() -> Project:
         history.execute("add interface", ops)
         if current is not None:
             history.execute("set current", edit.ops_update_interface(p, iid, max_current_a=current))
+        if (
+            type_id == "power_primary"
+        ):  # example value, so that the diagram shows what a rail delivers
+            history.execute("set voltage", edit.ops_update_interface(p, iid, voltage_v=28.0))
+    history.execute("arrange", edit.ops_arrange(p))  # no overlaps, ordered to shorten links
     _demo_values(p)
     generate_project(p)
     _demo_lengths(p)
@@ -261,6 +271,7 @@ def _small_satellite() -> Project:
         description="Redundant computer and power unit, battery, solar array, transceiver, payload, "
         "star tracker, two wheels, sun sensor, magnetorquer and a heater panel.",
     )
+    History(p).execute("arrange", edit.ops_arrange(p))  # tall units must not overlap in expert mode
     return p
 
 

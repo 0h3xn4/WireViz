@@ -70,6 +70,21 @@ def category_icon(cat: str, theme: ThemeManager, size: int = 20, pressed: bool =
     return QIcon(pm)
 
 
+def type_icon(type_id: str, cat: str, theme: ThemeManager, pressed: bool = False) -> QIcon:
+    """The picture of a kind of link (bolt, bus, wave ...) in its category colour."""
+    from harness_design_studio.gui import glyphs
+
+    w, h = int(glyphs.LINK_GLYPH_W * 1.4), int(glyphs.LINK_GLYPH_H * 1.4)
+    pm = QPixmap(theme.px(w + 4), theme.px(h + 4))
+    pm.fill(Qt.GlobalColor.transparent)
+    p = QPainter(pm)
+    p.setRenderHint(QPainter.RenderHint.Antialiasing)
+    colour = QColor(theme.tokens["on-primary" if pressed else f"cat-{style_category(cat)}"])
+    glyphs.draw_link_glyph(p, 2, 2, type_id, cat, colour, 1.4 * theme.px(1))
+    p.end()
+    return QIcon(pm)
+
+
 def heading(text: str) -> QLabel:
     lab = QLabel(text.upper())
     lab.setProperty("heading", True)
@@ -187,7 +202,7 @@ class PalettePanel(QScrollArea):
             b = QPushButton(t.name)
             b.setObjectName(f"type-{tid}")
             b.setCheckable(True)
-            b.setIcon(category_icon(t.category, self.theme))
+            b.setIcon(type_icon(tid, t.category, self.theme))
             b.setToolTip(f"{t.name}: {CATEGORIES[style_category(t.category)]['label']} interface")
             b.clicked.connect(lambda _=False, x=tid: self.connectType.emit(x))
             self.type_box.addWidget(b)
@@ -211,7 +226,7 @@ class PalettePanel(QScrollArea):
                 b.setChecked(active)
                 b.blockSignals(False)
                 t = self.ctl.project.interface_types[tid]
-                b.setIcon(category_icon(t.category, self.theme, pressed=active))
+                b.setIcon(type_icon(tid, t.category, self.theme, pressed=active))
                 b.setProperty("icon-state", active)
 
 

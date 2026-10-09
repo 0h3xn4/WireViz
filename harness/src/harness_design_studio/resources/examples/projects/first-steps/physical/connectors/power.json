@@ -4,7 +4,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J01",
       "keying": null,
       "mates_with": null,
@@ -101,7 +101,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J02",
       "keying": null,
       "mates_with": null,
@@ -199,7 +199,7 @@
         "discrete",
         "rs422"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "PCDU1-J03",
       "keying": null,
       "mates_with": null,

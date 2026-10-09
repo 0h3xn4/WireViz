@@ -4,7 +4,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "GPSU1-J01",
       "keying": null,
       "mates_with": null,
@@ -101,7 +101,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "GPSU1-J02",
       "keying": null,
       "mates_with": null,
@@ -199,7 +199,7 @@
         "discrete",
         "rs422"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "GPSU1-J03",
       "keying": null,
       "mates_with": null,
@@ -350,7 +350,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RFSU1-J01",
       "keying": null,
       "mates_with": null,
@@ -447,7 +447,7 @@
       "carries": [
         "ethernet"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RFSU1-J02",
       "keying": null,
       "mates_with": null,
@@ -537,7 +537,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RFSU1-J03",
       "keying": null,
       "mates_with": null,
@@ -742,7 +742,7 @@
       "carries": [
         "rf_coax"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RFSU1-J04",
       "keying": null,
       "mates_with": null,
@@ -767,7 +767,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J01",
       "keying": null,
       "mates_with": null,
@@ -869,7 +869,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J02",
       "keying": null,
       "mates_with": null,
@@ -1169,7 +1169,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J03",
       "keying": null,
       "mates_with": null,
@@ -1469,7 +1469,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J04",
       "keying": null,
       "mates_with": null,
@@ -1769,7 +1769,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J05",
       "keying": null,
       "mates_with": null,
@@ -2069,7 +2069,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J06",
       "keying": null,
       "mates_with": null,
@@ -2369,7 +2369,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J07",
       "keying": null,
       "mates_with": null,
@@ -2669,7 +2669,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J08",
       "keying": null,
       "mates_with": null,
@@ -2969,7 +2969,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J09",
       "keying": null,
       "mates_with": null,
@@ -3269,7 +3269,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J10",
       "keying": null,
       "mates_with": null,
@@ -3569,7 +3569,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J11",
       "keying": null,
       "mates_with": null,
@@ -3869,7 +3869,7 @@
         "analog",
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J12",
       "keying": null,
       "mates_with": null,
@@ -4164,7 +4164,7 @@
       "carries": [
         "ethernet"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J13",
       "keying": null,
       "mates_with": null,
@@ -4252,7 +4252,7 @@
       "carries": [
         "ethernet"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "SCOE1-J14",
       "keying": null,
       "mates_with": null,

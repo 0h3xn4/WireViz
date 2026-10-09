@@ -6,7 +6,7 @@
   "connectors": [
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W017-P1",
       "keying": null,
       "mates_with": "PCDU1-J03",
@@ -101,7 +101,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W017-P2",
       "keying": null,
       "mates_with": "PL1-J01",

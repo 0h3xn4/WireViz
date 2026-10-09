@@ -4,7 +4,7 @@
       "carries": [
         "power_primary"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW1-J01",
       "keying": null,
       "mates_with": null,
@@ -103,7 +103,7 @@
         "rs485",
         "can"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "RW1-J02",
       "keying": null,
       "mates_with": null,

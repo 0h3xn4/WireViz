@@ -9,7 +9,7 @@ Pagination: rows flow onto as many sheets as needed; every sheet repeats the hea
 from dataclasses import dataclass
 
 from harness_design_studio.core.generate.lengths import wire_length
-from harness_design_studio.core.model import Harness, Project, Wire
+from harness_design_studio.core.model import Connector, Harness, Project, Wire
 
 from .canvas import SHEETS, Line, Rect, Sheet, Text, fit
 from .stamp import Stamp
@@ -70,6 +70,14 @@ def sketch_height(layout: dict[str, tuple[int, int]]) -> float:
     return 8.0 + rows * (NODE_H + NODE_GAP_Y) + 3.0
 
 
+def _kind(c: Connector | None) -> str:
+    """Part and gender of a cable connector, in words: a plug has pins, a socket has sockets."""
+    if c is None:
+        return "?"
+    word = {"male": "male, pins", "female": "female, sockets"}.get(c.gender, "gender not set")
+    return f"{c.part_id}, {word}"
+
+
 def _rows(project: Project, h: Harness) -> list[Row]:
     rows: list[Row] = []
     layout = sketch_layout(h)
@@ -84,7 +92,7 @@ def _rows(project: Project, h: Harness) -> list[Row]:
         rows.append(
             Row(
                 "heading",
-                f"{a} ({ca.part_id if ca else '?'})  to  {b} ({cb.part_id if cb else '?'})",
+                f"{a} ({_kind(ca)})  to  {b} ({_kind(cb)})",
                 group=(a, b),
             )
         )

@@ -15,7 +15,7 @@
   "connectors": [
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P1",
       "keying": null,
       "mates_with": "OBC1-J14",
@@ -101,7 +101,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P10",
       "keying": null,
       "mates_with": "HTR2-J02",
@@ -196,7 +196,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P11",
       "keying": null,
       "mates_with": "PL1-J01",
@@ -291,7 +291,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P12",
       "keying": null,
       "mates_with": "PL1-J02",
@@ -377,7 +377,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P13",
       "keying": null,
       "mates_with": "PYRO1-J01",
@@ -472,7 +472,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P14",
       "keying": null,
       "mates_with": "PYRO1-J03",
@@ -567,7 +567,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P2",
       "keying": null,
       "mates_with": "PCDU1-J07",
@@ -662,7 +662,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P3",
       "keying": null,
       "mates_with": "PCDU1-J08",
@@ -757,7 +757,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P4",
       "keying": null,
       "mates_with": "PCDU1-J11",
@@ -852,7 +852,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P5",
       "keying": null,
       "mates_with": "RIU1-J07",
@@ -1145,7 +1145,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P6",
       "keying": null,
       "mates_with": "RIU1-J08",
@@ -1438,7 +1438,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P7",
       "keying": null,
       "mates_with": "RIU1-J09",
@@ -1731,7 +1731,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P8",
       "keying": null,
       "mates_with": "HTR1-J01",
@@ -1826,7 +1826,7 @@
     },
     {
       "carries": [],
-      "gender": "unspecified",
+      "gender": "male",
       "id": "W006-P9",
       "keying": null,
       "mates_with": "HTR1-J02",

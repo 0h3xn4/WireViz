@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .commands import Delete, Op, Put, SetZones
+from .describe import part_gender
 from .errors import HarnessError
 from .model import (
     Connector,
@@ -21,11 +22,46 @@ from .model import (
     evolve,
 )
 
-LANE_WIDTH = 430.0
+LANE_WIDTH = 470.0
 LANE_X0 = 10.0
-UNIT_W = 176.0
-UNIT_FOOTPRINT_H = 150.0  # tallest case (expert mode) so switching modes never causes overlap
+UNIT_W = 240.0
+UNIT_FOOTPRINT_H = 150.0  # smallest room a unit gets, whatever its size
 SLOT_STEP = 70.0
+PORT_ROW = 28.0  # height of one connector row of a unit drawn in expert mode
+UNIT_GAP = 24.0  # empty space kept between two stacked units
+MAX_DIAGRAM_HEIGHT = 200_000.0  # no unit is placed lower than this
+
+
+def expert_height(connector_count: int) -> float:
+    """Height of a unit in expert mode: a header and one row per connector."""
+    return 46 + PORT_ROW * connector_count
+
+
+def guided_height(link_count: int) -> float:
+    """Height of a unit in guided mode: it grows with the number of links that end on it."""
+    return 70 + 14 * max(0, link_count - 2)
+
+
+def unit_footprints(project: Project) -> dict[str, float]:
+    """The room every unit needs: its taller height of the two modes, so that switching the mode
+    never makes units overlap. One pass over the project, whatever its size."""
+    connectors: dict[str, int] = {}
+    for c in project.connectors.values():
+        if c.role == "box" and c.unit_id is not None:
+            connectors[c.unit_id] = connectors.get(c.unit_id, 0) + 1
+    links: dict[str, int] = {}
+    for i in project.interfaces.values():
+        for uid in {e.unit_id for e in i.endpoints}:
+            links[uid] = links.get(uid, 0) + 1
+    floor = UNIT_FOOTPRINT_H - UNIT_GAP
+    return {
+        uid: max(floor, expert_height(connectors.get(uid, 0)), guided_height(links.get(uid, 0)))
+        for uid in project.units
+    }
+
+
+def unit_footprint(project: Project, unit_id: str) -> float:
+    return unit_footprints(project).get(unit_id, UNIT_FOOTPRINT_H - UNIT_GAP)
 
 
 class EditError(HarnessError):
@@ -214,35 +250,45 @@ def ops_arrange(project: Project) -> list[Op]:
         for k in sorted(lanes):
             lanes[k].sort(key=lambda u: (centre(u), u))
             order.update({u: float(pos) for pos, u in enumerate(lanes[k])})
+    room = unit_footprints(project)
     ops: list[Op] = []
     for k, units in sorted(lanes.items()):
-        for row, uid in enumerate(units):
-            x, y = lane_x(k), 40.0 + row * (UNIT_FOOTPRINT_H - 10)
+        y = 40.0
+        for uid in units:
+            x = lane_x(k)
             now = project.placements.get(uid)
             if now is None or (now.x, now.y) != (x, y):
                 ops.append(Put("placements", Placement(id=uid, x=x, y=y)))
+            y += room[uid] + UNIT_GAP
     return ops
 
 
-def free_slot(project: Project, zone: str | None = None) -> tuple[float, float]:
-    """First position in the preferred lane (then the others) that overlaps no placed unit."""
+def free_slot(
+    project: Project, zone: str | None = None, height: float | None = None
+) -> tuple[float, float]:
+    """First position in the preferred lane (then the others) that overlaps no placed unit.
+    `height` is the room the new unit needs (default: the smallest footprint)."""
     zones = effective_zones(project)
-    placed = [(p.x, p.y) for uid, p in project.placements.items() if uid in project.units]
+    need = height if height is not None else UNIT_FOOTPRINT_H - UNIT_GAP
+    room = unit_footprints(project)
+    placed = [
+        (p.x, p.y, room[uid]) for uid, p in project.placements.items() if uid in project.units
+    ]
     if zone in zones:
         order = [zones.index(zone)]  # the caller asked for this lane: stay in it
     else:  # no preference: fill the emptiest lane first so the diagram stays balanced
         counts = [
-            sum(1 for px, _ in placed if lane_index_of_x(project, px) == i)
+            sum(1 for px, _, _ in placed if lane_index_of_x(project, px) == i)
             for i in range(len(zones))
         ]
         order = sorted(range(len(zones)), key=lambda i: (counts[i], i))
     for lane in order:
         x = lane_x(lane)
         y = 40.0
-        while y < 20000:
+        while y < MAX_DIAGRAM_HEIGHT:
             if not any(
-                abs(px - x) < UNIT_W + 10 and abs(py - y) < UNIT_FOOTPRINT_H - 20
-                for px, py in placed
+                abs(px - x) < UNIT_W + 10 and y < py + ph + UNIT_GAP and py < y + need + UNIT_GAP
+                for px, py, ph in placed
             ):
                 return x, y
             y += SLOT_STEP
@@ -367,7 +413,7 @@ def ops_add_unit(
             raise EditError(f"ID {uid} is already used.")
         unit_name = name or f"{tpl.label} {uid}"
     if x is None or y is None:
-        x, y = free_slot(project)
+        x, y = free_slot(project, None, expert_height(len(tpl.connectors)))
     zone = zone_of_x(project, x)
     ops: list[Op] = [
         Put(
@@ -388,6 +434,7 @@ def ops_add_unit(
                     role="box",
                     part_id=ct.part_id,
                     unit_id=uid,
+                    gender=part_gender(part),  # a part that says male or female sets it
                     carries=list(ct.carries),
                     pins=pins,
                 ),
@@ -668,7 +715,7 @@ def _twin_unit_ops(project: Project, unit: Unit) -> list[Op]:
     lane = lane_index_of_x(project, position_of(project, unit.id)[0])
     zones = effective_zones(project)
     target_zone = zones[(lane + 1) % len(zones)] if len(zones) > 1 else zones[0]
-    x, y = free_slot(project, target_zone)
+    x, y = free_slot(project, target_zone, unit_footprint(project, unit.id))
     twin = evolve(
         unit, id=tid, name=f"{unit.name} (redundant)", side="redundant", zone=zone_of_x(project, x)
     )

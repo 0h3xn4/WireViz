@@ -25,6 +25,14 @@ Open it in the app (**File > Open project...**) or read on first. Everything in 
 
 The design is a single string (no redundant chains), as a flatsat usually is. For redundancy see the `small-satellite` example.
 
+![The flatsat in the editor, all 44 interfaces at once](img/flatsat-overview.png)
+
+That is the whole system at once, and it is busy by nature. Click a unit and only its links stay in colour:
+
+![The same diagram with PDU2 selected: its links stay in colour, everything else fades](img/flatsat-focus.png)
+
+(The pictures are made by `python -m tools.flatsat_screenshots` from the real editor.)
+
 ## How the system is wired
 
 - **Power.** The ground supply, the solar array simulator and the battery all feed `PCDU1`. `PCDU1` feeds the computer, the remote interface unit, the transceiver, the payload, the pyro unit and the AOCS distribution unit `PDU2`. `PDU2` feeds the four wheels, the star trackers, the sun sensors and the magnetorquer. Two heater lines (`PCDU1` to `HTR1`, `PDU2` to `HTR2`) have their own type. Every power interface has a maximum current, chosen so that the sums add up: what `PDU2` feeds is what it receives.
@@ -61,7 +69,7 @@ The totals in `outputs/system/mass_length.csv` after `harness export`: 329.6 m o
 
 ## Things to try
 
-1. **Read the diagram.** Open the project, use **Show** in the toolbar to look at power only, then at data only, then at one connector. Select a wire and read **Why is it like this?**
+1. **Read the diagram.** With 44 interfaces the whole picture is busy, by nature. Open the project and click `PDU2`: only its links stay in colour and everything else fades. Click the empty background to see everything again, then try `OBC1`, then a single link. Use **Show** in the toolbar to look at power only, then at data only, then at one connector. Select a wire and read **Why is it like this?**
 2. **Check the outputs.** `harness export flatsat-bench`, then open `outputs/system/block_diagram.pdf`, `harness_overview.pdf` and a harness drawing in `outputs/harnesses/`. `harness verify flatsat-bench --outputs` re-reads the files independently.
 3. **Change a number and watch.** In the app, select the interface *Feed of the AOCS distribution unit* and set its Max current to 8 A, then generate again. The generation reports wire sizing errors that name the wires: no listed gauge carries 8 A after derating. Set it back to 5 A.
 4. **Use the spare connectors.** The computer has one free data connector and `PCDU1` has one spare power connector. Add a unit from the *sensor* template, an RS-422 interface from `OBC1` to it and a power interface from `PCDU1` to it, then generate. The new wires appear in the harness between the lanes of the two units. Undo restores everything.

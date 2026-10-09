@@ -4,7 +4,7 @@
       "carries": [
         "heater"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "HTR1-J01",
       "keying": null,
       "mates_with": null,
@@ -101,7 +101,7 @@
       "carries": [
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "HTR1-J02",
       "keying": null,
       "mates_with": null,
@@ -198,7 +198,7 @@
       "carries": [
         "heater"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "HTR2-J01",
       "keying": null,
       "mates_with": null,
@@ -295,7 +295,7 @@
       "carries": [
         "thermistor"
       ],
-      "gender": "unspecified",
+      "gender": "female",
       "id": "HTR2-J02",
       "keying": null,
       "mates_with": null,
