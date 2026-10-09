@@ -12,7 +12,7 @@ You can follow the steps in the **app**, on the **command line**, or both. The c
 
 ## Part 1: create a practice project
 
-The tool ships three examples. List them:
+The tool ships five examples. List them:
 
 ```
 harness new --list
@@ -23,6 +23,7 @@ blank              An empty project: starter parts and interface types, no units
 first-steps        Three units, a power link and an RS-422 link. Nothing is generated yet: start here.
 minimal-satellite  Seven units, nominal only: power, computer, radio, wheel and sun sensor. Adapt it.
 small-satellite    14 units with nominal and redundant chains. Generate it to see a realistic system.
+flatsat            A complete bench: 23 flight and ground units, generated, with example numbers.
 ```
 
 Create a practice project from `first-steps`. Pick a folder that does not exist yet:
@@ -337,6 +338,7 @@ You have now done everything the tool does, once. Add a **Create redundant copy*
 | a one-page summary of commands and keys | [`CHEATSHEET.md`](CHEATSHEET.md) |
 | to try a small but realistic spacecraft | `harness new mini --template minimal-satellite`, then generate it |
 | to try a large system with redundancy | `harness new sat --template small-satellite`, then generate it |
+| to see a complete bench setup with ground equipment | `harness new bench --template flatsat`, then [`FLATSAT_EXAMPLE.md`](FLATSAT_EXAMPLE.md) |
 | to plan a design on paper first | `design-worksheet.md` in the templates (`harness templates my-templates`) |
 | something went wrong | [`FAQ.md`](FAQ.md) |
 | what the examples and templates contain | [`../src/harness_design_studio/resources/examples/templates/README.md`](../src/harness_design_studio/resources/examples/templates/README.md) |

@@ -37,7 +37,7 @@ Full instructions with checks and troubleshooting: [`INSTALL.md`](INSTALL.md). I
 ## 2. Start a project
 
 - GUI: **File > New project…**, pick an **empty** folder, name it.
-- Command line: `harness new DIR --name "My design"` makes an empty project. `harness new --list` shows the examples; `harness new DIR --template first-steps` starts from three connected units, `--template minimal-satellite` from a small spacecraft with seven units, `--template small-satellite` from a large system with redundancy. The folder must not exist yet or be empty; nothing is ever overwritten.
+- Command line: `harness new DIR --name "My design"` makes an empty project. `harness new --list` shows the examples; `harness new DIR --template first-steps` starts from three connected units, `--template minimal-satellite` from a small spacecraft with seven units, `--template small-satellite` from a large system with redundancy, `--template flatsat` from a complete bench setup (see [`FLATSAT_EXAMPLE.md`](FLATSAT_EXAMPLE.md)). The folder must not exist yet or be empty; nothing is ever overwritten.
 - Open a project in the app with **File > Open project…**.
 - The folder is the project. Everything in it is plain JSON; **Ctrl+S** saves.
 - Check it any time: `harness validate DIR` (exit code 0 means no errors).

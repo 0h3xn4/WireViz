@@ -1,0 +1,13 @@
+{
+  "units": [
+    {
+      "id": "PL1",
+      "mass_relevant": true,
+      "name": "Imager payload",
+      "notes": "Data over Ethernet to the computer, test interface over RS-422 to the checkout system.",
+      "side": "nominal",
+      "subsystem": "payload",
+      "zone": "payload"
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import pytest
 
 from harness_design_studio.cli.main import main
 from harness_design_studio.core import templates
+from harness_design_studio.core.generate.engine import plan_generation
 from harness_design_studio.core.imports import guess_mapping, plan_interface_import, read_table
 from harness_design_studio.core.io.loader import load_project
 from harness_design_studio.resources import examples_path
@@ -77,6 +78,57 @@ def test_the_design_worksheet_names_only_real_unit_kinds_and_interface_types() -
         assert kind in edit.TEMPLATES and f"`{kind}`" in text, kind
     for interface_type in new_project("x").interface_types.values():
         assert interface_type.name in text, interface_type.name
+
+
+def test_the_flatsat_example_opens_clean_and_stays_put_when_generated_again(tmp_path: Path) -> None:
+    """The flatsat is shipped generated. A harness with ten or more segments or shields used to be
+    reported as changed on every generation after a reload, because a saved project sorts them as
+    text (S10 before S2) and the generator numbered them."""
+    folder = tmp_path / "p"
+    assert main(["new", str(folder), "--template", "flatsat"]) == 0
+    loaded = load_project(folder)
+    assert not loaded.has_errors
+    project = loaded.project
+    assert len(project.units) == 23 and len(project.interfaces) == 44
+    assert (
+        len(project.harnesses) == 8 and sum(len(h.wires) for h in project.harnesses.values()) == 103
+    )
+    assert max(len(h.shields) for h in project.harnesses.values()) >= 10
+    plan = plan_generation(project)
+    assert plan.ops == [] and not plan.report.changed and not plan.report.added
+    assert main(["generate", str(folder)]) == 0
+    assert main(["export", str(folder)]) == 0
+    assert main(["verify", str(folder), "--outputs"]) == 0
+
+
+def test_the_flatsat_has_no_rule_errors_and_says_its_numbers_are_examples() -> None:
+    from harness_design_studio.core import drc
+
+    project = load_project(PROJECTS / "flatsat").project
+    assert [f.title for f in drc.run(project) if f.severity == "error"] == []
+    assert "EXAMPLE" in project.meta.name
+    assert project.config["derating"].placeholder  # example numbers never turn into reviewed values
+    ground = {u.id for u in project.units.values() if u.subsystem == "egse"}
+    assert ground == {"SCOE1", "GPSU1", "RFSU1"}
+
+
+def test_the_flatsat_walkthrough_matches_the_example() -> None:
+    import re
+
+    project = load_project(PROJECTS / "flatsat").project
+    text = (Path(__file__).resolve().parents[1] / "docs" / "FLATSAT_EXAMPLE.md").read_text(
+        encoding="utf-8"
+    )
+    wires = sum(len(h.wires) for h in project.harnesses.values())
+    assert f"{len(project.units)} units, {len(project.interfaces)} interfaces, " in text
+    assert f"{len(project.harnesses)} harnesses, {wires} wires" in text
+    for h in project.harnesses.values():
+        row = re.search(rf"\| `{h.id}` \| [^|]+ \| (\d+) \|", text)
+        assert row and int(row.group(1)) == len(h.wires), h.id
+    named = set(re.findall(r"`([A-Z]+\d+)`", text))
+    for prefix, first, last in re.findall(r"`([A-Z]+)(\d+)` to `\1(\d+)`", text):
+        named |= {f"{prefix}{n}" for n in range(int(first), int(last) + 1)}
+    assert set(project.units) <= named, sorted(set(project.units) - named)
 
 
 def test_new_names_the_project_and_refuses_a_used_folder(

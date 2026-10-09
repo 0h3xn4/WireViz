@@ -1,0 +1,1582 @@
+{
+  "generator_version": "0.1.0",
+  "input_hash": "0297d2ee9937c7ef32a79c2bb6bea0279888ffcf977e49ce031687a30dd7be34",
+  "next_harness_number": 9,
+  "placeholders_used": [
+    "derating",
+    "emc",
+    "generation",
+    "segmentation",
+    "segregation",
+    "titleblock"
+  ],
+  "provenance": {
+    "connector:W001-P1": [
+      "mating: cable end for MTQ1-J01 (MTQ1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P10": [
+      "mating: cable end for PDU2-J10 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P11": [
+      "mating: cable end for RW1-J01 (RW1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P12": [
+      "mating: cable end for RW2-J01 (RW2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P13": [
+      "mating: cable end for RW3-J01 (RW3); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P14": [
+      "mating: cable end for RW4-J01 (RW4); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P15": [
+      "mating: cable end for SS1-J01 (SS1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P16": [
+      "mating: cable end for SS2-J01 (SS2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P17": [
+      "mating: cable end for ST1-J01 (ST1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P18": [
+      "mating: cable end for ST2-J01 (ST2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P2": [
+      "mating: cable end for PDU2-J02 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P3": [
+      "mating: cable end for PDU2-J03 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P4": [
+      "mating: cable end for PDU2-J04 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P5": [
+      "mating: cable end for PDU2-J05 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P6": [
+      "mating: cable end for PDU2-J06 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P7": [
+      "mating: cable end for PDU2-J07 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P8": [
+      "mating: cable end for PDU2-J08 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W001-P9": [
+      "mating: cable end for PDU2-J09 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W002-P1": [
+      "mating: cable end for MTQ1-J02 (MTQ1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W002-P10": [
+      "mating: cable end for ST1-J02 (ST1); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W002-P11": [
+      "mating: cable end for ST2-J02 (ST2); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W002-P12": [
+      "mating: cable end for OBC1-J03 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P13": [
+      "mating: cable end for OBC1-J05 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P14": [
+      "mating: cable end for OBC1-J06 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P15": [
+      "mating: cable end for OBC1-J07 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P16": [
+      "mating: cable end for OBC1-J08 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P17": [
+      "mating: cable end for OBC1-J10 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P18": [
+      "mating: cable end for OBC1-J11 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P19": [
+      "mating: cable end for PCDU1-J09 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W002-P2": [
+      "mating: cable end for PDU2-J01 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W002-P20": [
+      "mating: cable end for RIU1-J04 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P21": [
+      "mating: cable end for RIU1-J05 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P22": [
+      "mating: cable end for RIU1-J06 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W002-P3": [
+      "mating: cable end for PDU2-J12 (PDU2); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W002-P4": [
+      "mating: cable end for RW1-J02 (RW1); part EX-MICROD-21-M mates with EX-MICROD-21-F"
+    ],
+    "connector:W002-P5": [
+      "mating: cable end for RW2-J02 (RW2); part EX-MICROD-21-M mates with EX-MICROD-21-F"
+    ],
+    "connector:W002-P6": [
+      "mating: cable end for RW3-J02 (RW3); part EX-MICROD-21-M mates with EX-MICROD-21-F"
+    ],
+    "connector:W002-P7": [
+      "mating: cable end for RW4-J02 (RW4); part EX-MICROD-21-M mates with EX-MICROD-21-F"
+    ],
+    "connector:W002-P8": [
+      "mating: cable end for SS1-J02 (SS1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W002-P9": [
+      "mating: cable end for SS2-J02 (SS2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W003-P1": [
+      "mating: cable end for PDU2-J11 (PDU2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W003-P2": [
+      "mating: cable end for HTR2-J01 (HTR2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P1": [
+      "mating: cable end for BAT1-J01 (BAT1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P10": [
+      "mating: cable end for RIU1-J10 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W004-P11": [
+      "mating: cable end for PCDU1-J03 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P12": [
+      "mating: cable end for PCDU1-J04 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P13": [
+      "mating: cable end for PCDU1-J12 (PCDU1); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W004-P14": [
+      "mating: cable end for RIU1-J01 (RIU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P15": [
+      "mating: cable end for RIU1-J02 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W004-P16": [
+      "mating: cable end for RIU1-J03 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W004-P17": [
+      "mating: cable end for SA1-J01 (SA1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P18": [
+      "mating: cable end for SA1-J02 (SA1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P19": [
+      "mating: cable end for TRX1-J01 (TRX1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P2": [
+      "mating: cable end for BAT1-J02 (BAT1); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W004-P20": [
+      "mating: cable end for TRX1-J02 (TRX1); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W004-P3": [
+      "mating: cable end for OBC1-J01 (OBC1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P4": [
+      "mating: cable end for OBC1-J02 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W004-P5": [
+      "mating: cable end for OBC1-J04 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W004-P6": [
+      "mating: cable end for OBC1-J09 (OBC1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W004-P7": [
+      "mating: cable end for PCDU1-J02 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P8": [
+      "mating: cable end for PCDU1-J05 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W004-P9": [
+      "mating: cable end for PCDU1-J06 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W005-P1": [
+      "mating: cable end for OBC1-J13 (OBC1); part EX-RJ45-M mates with EX-RJ45-F"
+    ],
+    "connector:W005-P2": [
+      "mating: cable end for PCDU1-J01 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W005-P3": [
+      "mating: cable end for TRX1-J03 (TRX1); part EX-SMA-M mates with EX-SMA-F"
+    ],
+    "connector:W005-P4": [
+      "mating: cable end for GPSU1-J01 (GPSU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W005-P5": [
+      "mating: cable end for RFSU1-J04 (RFSU1); part EX-SMA-M mates with EX-SMA-F"
+    ],
+    "connector:W005-P6": [
+      "mating: cable end for SCOE1-J13 (SCOE1); part EX-RJ45-M mates with EX-RJ45-F"
+    ],
+    "connector:W006-P1": [
+      "mating: cable end for OBC1-J14 (OBC1); part EX-RJ45-M mates with EX-RJ45-F"
+    ],
+    "connector:W006-P10": [
+      "mating: cable end for HTR2-J02 (HTR2); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P11": [
+      "mating: cable end for PL1-J01 (PL1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P12": [
+      "mating: cable end for PL1-J02 (PL1); part EX-RJ45-M mates with EX-RJ45-F"
+    ],
+    "connector:W006-P13": [
+      "mating: cable end for PYRO1-J01 (PYRO1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P14": [
+      "mating: cable end for PYRO1-J03 (PYRO1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P2": [
+      "mating: cable end for PCDU1-J07 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P3": [
+      "mating: cable end for PCDU1-J08 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P4": [
+      "mating: cable end for PCDU1-J11 (PCDU1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P5": [
+      "mating: cable end for RIU1-J07 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W006-P6": [
+      "mating: cable end for RIU1-J08 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W006-P7": [
+      "mating: cable end for RIU1-J09 (RIU1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W006-P8": [
+      "mating: cable end for HTR1-J01 (HTR1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W006-P9": [
+      "mating: cable end for HTR1-J02 (HTR1); part EX-MICROD-9-M mates with EX-MICROD-9-F"
+    ],
+    "connector:W007-P1": [
+      "mating: cable end for GPSU1-J03 (GPSU1); part EX-MICROD-15-M mates with EX-MICROD-15-F"
+    ],
+    "connector:W007-P2": [
+      "mating: cable end for RFSU1-J02 (RFSU1); part EX-RJ45-M mates with EX-RJ45-F"
+    ],
+    "connector:W007-P3": [
+      "mating: cable end for SCOE1-J02 (SCOE1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W007-P4": [
+      "mating: cable end for SCOE1-J14 (SCOE1); part EX-RJ45-M mates with EX-RJ45-F"
+    ],
+    "connector:W008-P1": [
+      "mating: cable end for SCOE1-J03 (SCOE1); part EX-MICROD-31-M mates with EX-MICROD-31-F"
+    ],
+    "connector:W008-P2": [
+      "mating: cable end for PL1-J03 (PL1); part EX-MICROD-21-M mates with EX-MICROD-21-F"
+    ],
+    "gauge:W001-001": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.458359 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-002": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.458359 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-003": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.524788 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-004": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.524788 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-005": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.591217 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-006": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.591217 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-007": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.657646 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-008": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.8 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.657646 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-009": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.3 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.154478 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-010": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.3 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.154478 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-011": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.3 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.194088 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-012": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.3 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.194088 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-013": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.05 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.0521528 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-014": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.05 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.0521528 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-015": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.05 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.0257463 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-016": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.05 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.0257463 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-017": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.6 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.293948 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W001-018": [
+      "wire-sizing: ampacity: AWG 24 carries 1.08 A derated (factor 0.54) for 0.6 A",
+      "wire-sizing: voltage drop: AWG 24 gives 0.293948 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W002-001": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 5 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.350731 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W002-002": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 5 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.350731 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W002-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-005": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-006": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-007": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-008": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-009": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-010": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-011": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-012": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-013": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-014": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-015": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-016": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-017": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-018": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-019": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-020": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-021": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-022": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-023": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-024": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-025": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W002-026": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W003-001": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.5 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.0924228 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W003-002": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.5 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.0924228 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-001": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 4 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.280585 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-002": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 4 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.280585 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-003": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 5 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.415681 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-004": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 5 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.415681 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-005": [
+      "wire-sizing: ampacity: AWG 22 carries 1.62 A derated (factor 0.54) for 1.5 A",
+      "wire-sizing: voltage drop: AWG 22 gives 0.697162 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-006": [
+      "wire-sizing: ampacity: AWG 22 carries 1.62 A derated (factor 0.54) for 1.5 A",
+      "wire-sizing: voltage drop: AWG 22 gives 0.697162 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-007": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.5 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.554537 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-008": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.5 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.554537 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-009": [
+      "wire-sizing: ampacity: AWG 20 carries 2.7 A derated (factor 0.54) for 2 A",
+      "wire-sizing: voltage drop: AWG 20 gives 0.387544 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-010": [
+      "wire-sizing: ampacity: AWG 20 carries 2.7 A derated (factor 0.54) for 2 A",
+      "wire-sizing: voltage drop: AWG 20 gives 0.387544 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W004-011": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-012": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-013": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-014": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-015": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-016": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-017": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-018": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-019": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-020": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-021": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W004-022": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-001": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 5 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.415681 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W005-002": [
+      "wire-sizing: ampacity: AWG 16 carries 5.4 A derated (factor 0.54) for 5 A",
+      "wire-sizing: voltage drop: AWG 16 gives 0.415681 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W005-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-005": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-006": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W005-007": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-001": [
+      "wire-sizing: ampacity: AWG 18 carries 3.78 A derated (factor 0.54) for 3 A",
+      "wire-sizing: voltage drop: AWG 18 gives 0.303628 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W006-002": [
+      "wire-sizing: ampacity: AWG 18 carries 3.78 A derated (factor 0.54) for 3 A",
+      "wire-sizing: voltage drop: AWG 18 gives 0.303628 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W006-003": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.3 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.253502 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W006-004": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.3 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.253502 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W006-005": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.5 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.48852 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W006-006": [
+      "wire-sizing: ampacity: AWG 26 carries 0.54 A derated (factor 0.54) for 0.5 A",
+      "wire-sizing: voltage drop: AWG 26 gives 0.48852 V over 2 conductor(s), limit 1 V"
+    ],
+    "gauge:W006-007": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-008": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-009": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-010": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-011": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-012": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-013": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-014": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-015": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W006-016": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-005": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-006": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-007": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W007-008": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W008-001": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W008-002": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W008-003": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "gauge:W008-004": [
+      "wire-sizing: undecided, waiting for interface current (set Max current on the interface)"
+    ],
+    "harness:W001": [
+      "segmentation: IF-010, IF-011, IF-012, IF-013, IF-014, IF-015, IF-016, IF-017, IF-018 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W002": [
+      "segmentation: IF-009, IF-027, IF-029, IF-030, IF-031, IF-032, IF-034, IF-035, IF-038, IF-039, IF-040 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W003": [
+      "segmentation: IF-020 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W004": [
+      "segmentation: IF-002, IF-003, IF-004, IF-005, IF-006, IF-026, IF-028, IF-033, IF-037, IF-044 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W005": [
+      "segmentation: IF-001, IF-022, IF-025 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W006": [
+      "segmentation: IF-007, IF-008, IF-019, IF-036, IF-041, IF-042, IF-043 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W007": [
+      "segmentation: IF-021, IF-024 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "harness:W008": [
+      "segmentation: IF-023 share a harness because they have the same pair of zones and chain (nominal)"
+    ],
+    "pin:BAT1-J01.1": [
+      "pin-allocation: PWR of IF-003 (power and return grouped)"
+    ],
+    "pin:BAT1-J01.2": [
+      "pin-allocation: RTN of IF-003 (power and return grouped)"
+    ],
+    "pin:BAT1-J02.1": [
+      "pin-allocation: CANH of IF-037 (pair BUS on adjacent pins)"
+    ],
+    "pin:BAT1-J02.2": [
+      "pin-allocation: CANL of IF-037 (pair BUS on adjacent pins)"
+    ],
+    "pin:GPSU1-J01.1": [
+      "pin-allocation: PWR of IF-001 (power and return grouped)"
+    ],
+    "pin:GPSU1-J01.2": [
+      "pin-allocation: RTN of IF-001 (power and return grouped)"
+    ],
+    "pin:GPSU1-J03.1": [
+      "pin-allocation: TX+ of IF-021 (pair TX on adjacent pins)"
+    ],
+    "pin:GPSU1-J03.2": [
+      "pin-allocation: TX- of IF-021 (pair TX on adjacent pins)"
+    ],
+    "pin:GPSU1-J03.3": [
+      "pin-allocation: RX+ of IF-021 (pair RX on adjacent pins)"
+    ],
+    "pin:GPSU1-J03.4": [
+      "pin-allocation: RX- of IF-021 (pair RX on adjacent pins)"
+    ],
+    "pin:HTR1-J01.1": [
+      "pin-allocation: HTR+ of IF-019 (power and return grouped)"
+    ],
+    "pin:HTR1-J01.2": [
+      "pin-allocation: HTR- of IF-019 (power and return grouped)"
+    ],
+    "pin:HTR1-J02.1": [
+      "pin-allocation: T+ of IF-042 (pair T on adjacent pins)"
+    ],
+    "pin:HTR1-J02.2": [
+      "pin-allocation: T- of IF-042 (pair T on adjacent pins)"
+    ],
+    "pin:HTR2-J01.1": [
+      "pin-allocation: HTR+ of IF-020 (power and return grouped)"
+    ],
+    "pin:HTR2-J01.2": [
+      "pin-allocation: HTR- of IF-020 (power and return grouped)"
+    ],
+    "pin:HTR2-J02.1": [
+      "pin-allocation: T+ of IF-043 (pair T on adjacent pins)"
+    ],
+    "pin:HTR2-J02.2": [
+      "pin-allocation: T- of IF-043 (pair T on adjacent pins)"
+    ],
+    "pin:MTQ1-J01.1": [
+      "pin-allocation: PWR of IF-018 (power and return grouped)"
+    ],
+    "pin:MTQ1-J01.2": [
+      "pin-allocation: RTN of IF-018 (power and return grouped)"
+    ],
+    "pin:MTQ1-J02.1": [
+      "pin-allocation: SIG of IF-040 (single signal)"
+    ],
+    "pin:MTQ1-J02.2": [
+      "pin-allocation: RTN of IF-040 (single signal)"
+    ],
+    "pin:OBC1-J01.1": [
+      "pin-allocation: PWR of IF-004 (power and return grouped)"
+    ],
+    "pin:OBC1-J01.2": [
+      "pin-allocation: RTN of IF-004 (power and return grouped)"
+    ],
+    "pin:OBC1-J02.1": [
+      "pin-allocation: CANH of IF-026 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J02.2": [
+      "pin-allocation: CANL of IF-026 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J03.1": [
+      "pin-allocation: CANH of IF-027 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J03.2": [
+      "pin-allocation: CANL of IF-027 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J04.1": [
+      "pin-allocation: CANH of IF-028 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J04.2": [
+      "pin-allocation: CANL of IF-028 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J05.1": [
+      "pin-allocation: CANH of IF-029 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J05.2": [
+      "pin-allocation: CANL of IF-029 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J06.1": [
+      "pin-allocation: CANH of IF-030 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J06.2": [
+      "pin-allocation: CANL of IF-030 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J07.1": [
+      "pin-allocation: CANH of IF-031 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J07.2": [
+      "pin-allocation: CANL of IF-031 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J08.1": [
+      "pin-allocation: CANH of IF-032 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J08.2": [
+      "pin-allocation: CANL of IF-032 (pair BUS on adjacent pins)"
+    ],
+    "pin:OBC1-J09.1": [
+      "pin-allocation: TX+ of IF-033 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J09.2": [
+      "pin-allocation: TX- of IF-033 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J09.3": [
+      "pin-allocation: RX+ of IF-033 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J09.4": [
+      "pin-allocation: RX- of IF-033 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J10.1": [
+      "pin-allocation: TX+ of IF-034 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J10.2": [
+      "pin-allocation: TX- of IF-034 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J10.3": [
+      "pin-allocation: RX+ of IF-034 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J10.4": [
+      "pin-allocation: RX- of IF-034 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J11.1": [
+      "pin-allocation: TX+ of IF-035 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J11.2": [
+      "pin-allocation: TX- of IF-035 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J11.3": [
+      "pin-allocation: RX+ of IF-035 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J11.4": [
+      "pin-allocation: RX- of IF-035 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J13.1": [
+      "pin-allocation: TX+ of IF-022 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J13.2": [
+      "pin-allocation: TX- of IF-022 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J13.3": [
+      "pin-allocation: RX+ of IF-022 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J13.4": [
+      "pin-allocation: RX- of IF-022 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J14.1": [
+      "pin-allocation: TX+ of IF-036 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J14.2": [
+      "pin-allocation: TX- of IF-036 (pair TX on adjacent pins)"
+    ],
+    "pin:OBC1-J14.3": [
+      "pin-allocation: RX+ of IF-036 (pair RX on adjacent pins)"
+    ],
+    "pin:OBC1-J14.4": [
+      "pin-allocation: RX- of IF-036 (pair RX on adjacent pins)"
+    ],
+    "pin:PCDU1-J01.1": [
+      "pin-allocation: PWR of IF-001 (power and return grouped)"
+    ],
+    "pin:PCDU1-J01.2": [
+      "pin-allocation: RTN of IF-001 (power and return grouped)"
+    ],
+    "pin:PCDU1-J02.1": [
+      "pin-allocation: PWR of IF-002 (power and return grouped)"
+    ],
+    "pin:PCDU1-J02.2": [
+      "pin-allocation: RTN of IF-002 (power and return grouped)"
+    ],
+    "pin:PCDU1-J03.1": [
+      "pin-allocation: PWR of IF-003 (power and return grouped)"
+    ],
+    "pin:PCDU1-J03.2": [
+      "pin-allocation: RTN of IF-003 (power and return grouped)"
+    ],
+    "pin:PCDU1-J04.1": [
+      "pin-allocation: PWR of IF-004 (power and return grouped)"
+    ],
+    "pin:PCDU1-J04.2": [
+      "pin-allocation: RTN of IF-004 (power and return grouped)"
+    ],
+    "pin:PCDU1-J05.1": [
+      "pin-allocation: PWR of IF-005 (power and return grouped)"
+    ],
+    "pin:PCDU1-J05.2": [
+      "pin-allocation: RTN of IF-005 (power and return grouped)"
+    ],
+    "pin:PCDU1-J06.1": [
+      "pin-allocation: PWR of IF-006 (power and return grouped)"
+    ],
+    "pin:PCDU1-J06.2": [
+      "pin-allocation: RTN of IF-006 (power and return grouped)"
+    ],
+    "pin:PCDU1-J07.1": [
+      "pin-allocation: PWR of IF-007 (power and return grouped)"
+    ],
+    "pin:PCDU1-J07.2": [
+      "pin-allocation: RTN of IF-007 (power and return grouped)"
+    ],
+    "pin:PCDU1-J08.1": [
+      "pin-allocation: PWR of IF-008 (power and return grouped)"
+    ],
+    "pin:PCDU1-J08.2": [
+      "pin-allocation: RTN of IF-008 (power and return grouped)"
+    ],
+    "pin:PCDU1-J09.1": [
+      "pin-allocation: PWR of IF-009 (power and return grouped)"
+    ],
+    "pin:PCDU1-J09.2": [
+      "pin-allocation: RTN of IF-009 (power and return grouped)"
+    ],
+    "pin:PCDU1-J11.1": [
+      "pin-allocation: HTR+ of IF-019 (power and return grouped)"
+    ],
+    "pin:PCDU1-J11.2": [
+      "pin-allocation: HTR- of IF-019 (power and return grouped)"
+    ],
+    "pin:PCDU1-J12.1": [
+      "pin-allocation: CANH of IF-026 (pair BUS on adjacent pins)"
+    ],
+    "pin:PCDU1-J12.2": [
+      "pin-allocation: CANL of IF-026 (pair BUS on adjacent pins)"
+    ],
+    "pin:PDU2-J01.1": [
+      "pin-allocation: PWR of IF-009 (power and return grouped)"
+    ],
+    "pin:PDU2-J01.2": [
+      "pin-allocation: RTN of IF-009 (power and return grouped)"
+    ],
+    "pin:PDU2-J02.1": [
+      "pin-allocation: PWR of IF-010 (power and return grouped)"
+    ],
+    "pin:PDU2-J02.2": [
+      "pin-allocation: RTN of IF-010 (power and return grouped)"
+    ],
+    "pin:PDU2-J03.1": [
+      "pin-allocation: PWR of IF-011 (power and return grouped)"
+    ],
+    "pin:PDU2-J03.2": [
+      "pin-allocation: RTN of IF-011 (power and return grouped)"
+    ],
+    "pin:PDU2-J04.1": [
+      "pin-allocation: PWR of IF-012 (power and return grouped)"
+    ],
+    "pin:PDU2-J04.2": [
+      "pin-allocation: RTN of IF-012 (power and return grouped)"
+    ],
+    "pin:PDU2-J05.1": [
+      "pin-allocation: PWR of IF-013 (power and return grouped)"
+    ],
+    "pin:PDU2-J05.2": [
+      "pin-allocation: RTN of IF-013 (power and return grouped)"
+    ],
+    "pin:PDU2-J06.1": [
+      "pin-allocation: PWR of IF-014 (power and return grouped)"
+    ],
+    "pin:PDU2-J06.2": [
+      "pin-allocation: RTN of IF-014 (power and return grouped)"
+    ],
+    "pin:PDU2-J07.1": [
+      "pin-allocation: PWR of IF-015 (power and return grouped)"
+    ],
+    "pin:PDU2-J07.2": [
+      "pin-allocation: RTN of IF-015 (power and return grouped)"
+    ],
+    "pin:PDU2-J08.1": [
+      "pin-allocation: PWR of IF-016 (power and return grouped)"
+    ],
+    "pin:PDU2-J08.2": [
+      "pin-allocation: RTN of IF-016 (power and return grouped)"
+    ],
+    "pin:PDU2-J09.1": [
+      "pin-allocation: PWR of IF-017 (power and return grouped)"
+    ],
+    "pin:PDU2-J09.2": [
+      "pin-allocation: RTN of IF-017 (power and return grouped)"
+    ],
+    "pin:PDU2-J10.1": [
+      "pin-allocation: PWR of IF-018 (power and return grouped)"
+    ],
+    "pin:PDU2-J10.2": [
+      "pin-allocation: RTN of IF-018 (power and return grouped)"
+    ],
+    "pin:PDU2-J11.1": [
+      "pin-allocation: HTR+ of IF-020 (power and return grouped)"
+    ],
+    "pin:PDU2-J11.2": [
+      "pin-allocation: HTR- of IF-020 (power and return grouped)"
+    ],
+    "pin:PDU2-J12.1": [
+      "pin-allocation: CANH of IF-027 (pair BUS on adjacent pins)"
+    ],
+    "pin:PDU2-J12.2": [
+      "pin-allocation: CANL of IF-027 (pair BUS on adjacent pins)"
+    ],
+    "pin:PL1-J01.1": [
+      "pin-allocation: PWR of IF-007 (power and return grouped)"
+    ],
+    "pin:PL1-J01.2": [
+      "pin-allocation: RTN of IF-007 (power and return grouped)"
+    ],
+    "pin:PL1-J02.1": [
+      "pin-allocation: TX+ of IF-036 (pair TX on adjacent pins)"
+    ],
+    "pin:PL1-J02.2": [
+      "pin-allocation: TX- of IF-036 (pair TX on adjacent pins)"
+    ],
+    "pin:PL1-J02.3": [
+      "pin-allocation: RX+ of IF-036 (pair RX on adjacent pins)"
+    ],
+    "pin:PL1-J02.4": [
+      "pin-allocation: RX- of IF-036 (pair RX on adjacent pins)"
+    ],
+    "pin:PL1-J03.1": [
+      "pin-allocation: TX+ of IF-023 (pair TX on adjacent pins)"
+    ],
+    "pin:PL1-J03.2": [
+      "pin-allocation: TX- of IF-023 (pair TX on adjacent pins)"
+    ],
+    "pin:PL1-J03.3": [
+      "pin-allocation: RX+ of IF-023 (pair RX on adjacent pins)"
+    ],
+    "pin:PL1-J03.4": [
+      "pin-allocation: RX- of IF-023 (pair RX on adjacent pins)"
+    ],
+    "pin:PYRO1-J01.1": [
+      "pin-allocation: PWR of IF-008 (power and return grouped)"
+    ],
+    "pin:PYRO1-J01.2": [
+      "pin-allocation: RTN of IF-008 (power and return grouped)"
+    ],
+    "pin:PYRO1-J03.1": [
+      "pin-allocation: SIG of IF-041 (single signal)"
+    ],
+    "pin:PYRO1-J03.2": [
+      "pin-allocation: RTN of IF-041 (single signal)"
+    ],
+    "pin:RFSU1-J02.1": [
+      "pin-allocation: TX+ of IF-024 (pair TX on adjacent pins)"
+    ],
+    "pin:RFSU1-J02.2": [
+      "pin-allocation: TX- of IF-024 (pair TX on adjacent pins)"
+    ],
+    "pin:RFSU1-J02.3": [
+      "pin-allocation: RX+ of IF-024 (pair RX on adjacent pins)"
+    ],
+    "pin:RFSU1-J02.4": [
+      "pin-allocation: RX- of IF-024 (pair RX on adjacent pins)"
+    ],
+    "pin:RFSU1-J04.1": [
+      "pin-allocation: RF of IF-025 (single signal)"
+    ],
+    "pin:RIU1-J01.1": [
+      "pin-allocation: PWR of IF-005 (power and return grouped)"
+    ],
+    "pin:RIU1-J01.2": [
+      "pin-allocation: RTN of IF-005 (power and return grouped)"
+    ],
+    "pin:RIU1-J02.1": [
+      "pin-allocation: CANH of IF-028 (pair BUS on adjacent pins)"
+    ],
+    "pin:RIU1-J02.2": [
+      "pin-allocation: CANL of IF-028 (pair BUS on adjacent pins)"
+    ],
+    "pin:RIU1-J03.1": [
+      "pin-allocation: CANH of IF-037 (pair BUS on adjacent pins)"
+    ],
+    "pin:RIU1-J03.2": [
+      "pin-allocation: CANL of IF-037 (pair BUS on adjacent pins)"
+    ],
+    "pin:RIU1-J04.1": [
+      "pin-allocation: SIG+ of IF-038 (pair SIG on adjacent pins)"
+    ],
+    "pin:RIU1-J04.2": [
+      "pin-allocation: SIG- of IF-038 (pair SIG on adjacent pins)"
+    ],
+    "pin:RIU1-J05.1": [
+      "pin-allocation: SIG+ of IF-039 (pair SIG on adjacent pins)"
+    ],
+    "pin:RIU1-J05.2": [
+      "pin-allocation: SIG- of IF-039 (pair SIG on adjacent pins)"
+    ],
+    "pin:RIU1-J06.1": [
+      "pin-allocation: SIG of IF-040 (single signal)"
+    ],
+    "pin:RIU1-J06.2": [
+      "pin-allocation: RTN of IF-040 (single signal)"
+    ],
+    "pin:RIU1-J07.1": [
+      "pin-allocation: SIG of IF-041 (single signal)"
+    ],
+    "pin:RIU1-J07.2": [
+      "pin-allocation: RTN of IF-041 (single signal)"
+    ],
+    "pin:RIU1-J08.1": [
+      "pin-allocation: T+ of IF-042 (pair T on adjacent pins)"
+    ],
+    "pin:RIU1-J08.2": [
+      "pin-allocation: T- of IF-042 (pair T on adjacent pins)"
+    ],
+    "pin:RIU1-J09.1": [
+      "pin-allocation: T+ of IF-043 (pair T on adjacent pins)"
+    ],
+    "pin:RIU1-J09.2": [
+      "pin-allocation: T- of IF-043 (pair T on adjacent pins)"
+    ],
+    "pin:RIU1-J10.1": [
+      "pin-allocation: T+ of IF-044 (pair T on adjacent pins)"
+    ],
+    "pin:RIU1-J10.2": [
+      "pin-allocation: T- of IF-044 (pair T on adjacent pins)"
+    ],
+    "pin:RW1-J01.1": [
+      "pin-allocation: PWR of IF-010 (power and return grouped)"
+    ],
+    "pin:RW1-J01.2": [
+      "pin-allocation: RTN of IF-010 (power and return grouped)"
+    ],
+    "pin:RW1-J02.1": [
+      "pin-allocation: CANH of IF-029 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW1-J02.2": [
+      "pin-allocation: CANL of IF-029 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW2-J01.1": [
+      "pin-allocation: PWR of IF-011 (power and return grouped)"
+    ],
+    "pin:RW2-J01.2": [
+      "pin-allocation: RTN of IF-011 (power and return grouped)"
+    ],
+    "pin:RW2-J02.1": [
+      "pin-allocation: CANH of IF-030 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW2-J02.2": [
+      "pin-allocation: CANL of IF-030 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW3-J01.1": [
+      "pin-allocation: PWR of IF-012 (power and return grouped)"
+    ],
+    "pin:RW3-J01.2": [
+      "pin-allocation: RTN of IF-012 (power and return grouped)"
+    ],
+    "pin:RW3-J02.1": [
+      "pin-allocation: CANH of IF-031 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW3-J02.2": [
+      "pin-allocation: CANL of IF-031 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW4-J01.1": [
+      "pin-allocation: PWR of IF-013 (power and return grouped)"
+    ],
+    "pin:RW4-J01.2": [
+      "pin-allocation: RTN of IF-013 (power and return grouped)"
+    ],
+    "pin:RW4-J02.1": [
+      "pin-allocation: CANH of IF-032 (pair BUS on adjacent pins)"
+    ],
+    "pin:RW4-J02.2": [
+      "pin-allocation: CANL of IF-032 (pair BUS on adjacent pins)"
+    ],
+    "pin:SA1-J01.1": [
+      "pin-allocation: PWR of IF-002 (power and return grouped)"
+    ],
+    "pin:SA1-J01.2": [
+      "pin-allocation: RTN of IF-002 (power and return grouped)"
+    ],
+    "pin:SA1-J02.1": [
+      "pin-allocation: T+ of IF-044 (pair T on adjacent pins)"
+    ],
+    "pin:SA1-J02.2": [
+      "pin-allocation: T- of IF-044 (pair T on adjacent pins)"
+    ],
+    "pin:SCOE1-J02.1": [
+      "pin-allocation: TX+ of IF-021 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J02.2": [
+      "pin-allocation: TX- of IF-021 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J02.3": [
+      "pin-allocation: RX+ of IF-021 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J02.4": [
+      "pin-allocation: RX- of IF-021 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J03.1": [
+      "pin-allocation: TX+ of IF-023 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J03.2": [
+      "pin-allocation: TX- of IF-023 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J03.3": [
+      "pin-allocation: RX+ of IF-023 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J03.4": [
+      "pin-allocation: RX- of IF-023 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J13.1": [
+      "pin-allocation: TX+ of IF-022 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J13.2": [
+      "pin-allocation: TX- of IF-022 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J13.3": [
+      "pin-allocation: RX+ of IF-022 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J13.4": [
+      "pin-allocation: RX- of IF-022 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J14.1": [
+      "pin-allocation: TX+ of IF-024 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J14.2": [
+      "pin-allocation: TX- of IF-024 (pair TX on adjacent pins)"
+    ],
+    "pin:SCOE1-J14.3": [
+      "pin-allocation: RX+ of IF-024 (pair RX on adjacent pins)"
+    ],
+    "pin:SCOE1-J14.4": [
+      "pin-allocation: RX- of IF-024 (pair RX on adjacent pins)"
+    ],
+    "pin:SS1-J01.1": [
+      "pin-allocation: PWR of IF-016 (power and return grouped)"
+    ],
+    "pin:SS1-J01.2": [
+      "pin-allocation: RTN of IF-016 (power and return grouped)"
+    ],
+    "pin:SS1-J02.1": [
+      "pin-allocation: SIG+ of IF-038 (pair SIG on adjacent pins)"
+    ],
+    "pin:SS1-J02.2": [
+      "pin-allocation: SIG- of IF-038 (pair SIG on adjacent pins)"
+    ],
+    "pin:SS2-J01.1": [
+      "pin-allocation: PWR of IF-017 (power and return grouped)"
+    ],
+    "pin:SS2-J01.2": [
+      "pin-allocation: RTN of IF-017 (power and return grouped)"
+    ],
+    "pin:SS2-J02.1": [
+      "pin-allocation: SIG+ of IF-039 (pair SIG on adjacent pins)"
+    ],
+    "pin:SS2-J02.2": [
+      "pin-allocation: SIG- of IF-039 (pair SIG on adjacent pins)"
+    ],
+    "pin:ST1-J01.1": [
+      "pin-allocation: PWR of IF-014 (power and return grouped)"
+    ],
+    "pin:ST1-J01.2": [
+      "pin-allocation: RTN of IF-014 (power and return grouped)"
+    ],
+    "pin:ST1-J02.1": [
+      "pin-allocation: TX+ of IF-034 (pair TX on adjacent pins)"
+    ],
+    "pin:ST1-J02.2": [
+      "pin-allocation: TX- of IF-034 (pair TX on adjacent pins)"
+    ],
+    "pin:ST1-J02.3": [
+      "pin-allocation: RX+ of IF-034 (pair RX on adjacent pins)"
+    ],
+    "pin:ST1-J02.4": [
+      "pin-allocation: RX- of IF-034 (pair RX on adjacent pins)"
+    ],
+    "pin:ST2-J01.1": [
+      "pin-allocation: PWR of IF-015 (power and return grouped)"
+    ],
+    "pin:ST2-J01.2": [
+      "pin-allocation: RTN of IF-015 (power and return grouped)"
+    ],
+    "pin:ST2-J02.1": [
+      "pin-allocation: TX+ of IF-035 (pair TX on adjacent pins)"
+    ],
+    "pin:ST2-J02.2": [
+      "pin-allocation: TX- of IF-035 (pair TX on adjacent pins)"
+    ],
+    "pin:ST2-J02.3": [
+      "pin-allocation: RX+ of IF-035 (pair RX on adjacent pins)"
+    ],
+    "pin:ST2-J02.4": [
+      "pin-allocation: RX- of IF-035 (pair RX on adjacent pins)"
+    ],
+    "pin:TRX1-J01.1": [
+      "pin-allocation: PWR of IF-006 (power and return grouped)"
+    ],
+    "pin:TRX1-J01.2": [
+      "pin-allocation: RTN of IF-006 (power and return grouped)"
+    ],
+    "pin:TRX1-J02.1": [
+      "pin-allocation: TX+ of IF-033 (pair TX on adjacent pins)"
+    ],
+    "pin:TRX1-J02.2": [
+      "pin-allocation: TX- of IF-033 (pair TX on adjacent pins)"
+    ],
+    "pin:TRX1-J02.3": [
+      "pin-allocation: RX+ of IF-033 (pair RX on adjacent pins)"
+    ],
+    "pin:TRX1-J02.4": [
+      "pin-allocation: RX- of IF-033 (pair RX on adjacent pins)"
+    ],
+    "pin:TRX1-J03.1": [
+      "pin-allocation: RF of IF-025 (single signal)"
+    ],
+    "rules": [
+      "pin-allocation: power-to-signal pin gap is a placeholder (0 used)"
+    ],
+    "wire:W001-001": [
+      "wiring: PWR of IF-010 connects PDU2-J02 pin 1 to RW1-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-002": [
+      "wiring: RTN of IF-010 connects PDU2-J02 pin 2 to RW1-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-003": [
+      "wiring: PWR of IF-011 connects PDU2-J03 pin 1 to RW2-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-004": [
+      "wiring: RTN of IF-011 connects PDU2-J03 pin 2 to RW2-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-005": [
+      "wiring: PWR of IF-012 connects PDU2-J04 pin 1 to RW3-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-006": [
+      "wiring: RTN of IF-012 connects PDU2-J04 pin 2 to RW3-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-007": [
+      "wiring: PWR of IF-013 connects PDU2-J05 pin 1 to RW4-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-008": [
+      "wiring: RTN of IF-013 connects PDU2-J05 pin 2 to RW4-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-009": [
+      "wiring: PWR of IF-014 connects PDU2-J06 pin 1 to ST1-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-010": [
+      "wiring: RTN of IF-014 connects PDU2-J06 pin 2 to ST1-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-011": [
+      "wiring: PWR of IF-015 connects PDU2-J07 pin 1 to ST2-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-012": [
+      "wiring: RTN of IF-015 connects PDU2-J07 pin 2 to ST2-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-013": [
+      "wiring: PWR of IF-016 connects PDU2-J08 pin 1 to SS1-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-014": [
+      "wiring: RTN of IF-016 connects PDU2-J08 pin 2 to SS1-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-015": [
+      "wiring: PWR of IF-017 connects PDU2-J09 pin 1 to SS2-J01 pin 1 (X drives)"
+    ],
+    "wire:W001-016": [
+      "wiring: RTN of IF-017 connects PDU2-J09 pin 2 to SS2-J01 pin 2 (X drives)"
+    ],
+    "wire:W001-017": [
+      "wiring: PWR of IF-018 connects MTQ1-J01 pin 1 to PDU2-J10 pin 1 (X drives)"
+    ],
+    "wire:W001-018": [
+      "wiring: RTN of IF-018 connects MTQ1-J01 pin 2 to PDU2-J10 pin 2 (X drives)"
+    ],
+    "wire:W002-001": [
+      "wiring: PWR of IF-009 connects PDU2-J01 pin 1 to PCDU1-J09 pin 1 (X drives)"
+    ],
+    "wire:W002-002": [
+      "wiring: RTN of IF-009 connects PDU2-J01 pin 2 to PCDU1-J09 pin 2 (X drives)"
+    ],
+    "wire:W002-003": [
+      "wiring: CANH of IF-027 connects PDU2-J12 pin 1 to OBC1-J03 pin 1 (X drives)"
+    ],
+    "wire:W002-004": [
+      "wiring: CANL of IF-027 connects PDU2-J12 pin 2 to OBC1-J03 pin 2 (X drives)"
+    ],
+    "wire:W002-005": [
+      "wiring: CANH of IF-029 connects RW1-J02 pin 1 to OBC1-J05 pin 1 (X drives)"
+    ],
+    "wire:W002-006": [
+      "wiring: CANL of IF-029 connects RW1-J02 pin 2 to OBC1-J05 pin 2 (X drives)"
+    ],
+    "wire:W002-007": [
+      "wiring: CANH of IF-030 connects RW2-J02 pin 1 to OBC1-J06 pin 1 (X drives)"
+    ],
+    "wire:W002-008": [
+      "wiring: CANL of IF-030 connects RW2-J02 pin 2 to OBC1-J06 pin 2 (X drives)"
+    ],
+    "wire:W002-009": [
+      "wiring: CANH of IF-031 connects RW3-J02 pin 1 to OBC1-J07 pin 1 (X drives)"
+    ],
+    "wire:W002-010": [
+      "wiring: CANL of IF-031 connects RW3-J02 pin 2 to OBC1-J07 pin 2 (X drives)"
+    ],
+    "wire:W002-011": [
+      "wiring: CANH of IF-032 connects RW4-J02 pin 1 to OBC1-J08 pin 1 (X drives)"
+    ],
+    "wire:W002-012": [
+      "wiring: CANL of IF-032 connects RW4-J02 pin 2 to OBC1-J08 pin 2 (X drives)"
+    ],
+    "wire:W002-013": [
+      "wiring: TX+/RX+ of IF-034 connects ST1-J02 pin 1 to OBC1-J10 pin 3 (X drives)"
+    ],
+    "wire:W002-014": [
+      "wiring: TX+/RX+ of IF-034 connects OBC1-J10 pin 1 to ST1-J02 pin 3 (Y drives)"
+    ],
+    "wire:W002-015": [
+      "wiring: TX-/RX- of IF-034 connects ST1-J02 pin 2 to OBC1-J10 pin 4 (X drives)"
+    ],
+    "wire:W002-016": [
+      "wiring: TX-/RX- of IF-034 connects OBC1-J10 pin 2 to ST1-J02 pin 4 (Y drives)"
+    ],
+    "wire:W002-017": [
+      "wiring: TX+/RX+ of IF-035 connects ST2-J02 pin 1 to OBC1-J11 pin 3 (X drives)"
+    ],
+    "wire:W002-018": [
+      "wiring: TX+/RX+ of IF-035 connects OBC1-J11 pin 1 to ST2-J02 pin 3 (Y drives)"
+    ],
+    "wire:W002-019": [
+      "wiring: TX-/RX- of IF-035 connects ST2-J02 pin 2 to OBC1-J11 pin 4 (X drives)"
+    ],
+    "wire:W002-020": [
+      "wiring: TX-/RX- of IF-035 connects OBC1-J11 pin 2 to ST2-J02 pin 4 (Y drives)"
+    ],
+    "wire:W002-021": [
+      "wiring: SIG+ of IF-038 connects SS1-J02 pin 1 to RIU1-J04 pin 1 (X drives)"
+    ],
+    "wire:W002-022": [
+      "wiring: SIG- of IF-038 connects SS1-J02 pin 2 to RIU1-J04 pin 2 (X drives)"
+    ],
+    "wire:W002-023": [
+      "wiring: SIG+ of IF-039 connects SS2-J02 pin 1 to RIU1-J05 pin 1 (X drives)"
+    ],
+    "wire:W002-024": [
+      "wiring: SIG- of IF-039 connects SS2-J02 pin 2 to RIU1-J05 pin 2 (X drives)"
+    ],
+    "wire:W002-025": [
+      "wiring: SIG of IF-040 connects MTQ1-J02 pin 1 to RIU1-J06 pin 1 (X drives)"
+    ],
+    "wire:W002-026": [
+      "wiring: RTN of IF-040 connects MTQ1-J02 pin 2 to RIU1-J06 pin 2 (X drives)"
+    ],
+    "wire:W003-001": [
+      "wiring: HTR+ of IF-020 connects PDU2-J11 pin 1 to HTR2-J01 pin 1 (X drives)"
+    ],
+    "wire:W003-002": [
+      "wiring: HTR- of IF-020 connects PDU2-J11 pin 2 to HTR2-J01 pin 2 (X drives)"
+    ],
+    "wire:W004-001": [
+      "wiring: PWR of IF-002 connects PCDU1-J02 pin 1 to SA1-J01 pin 1 (X drives)"
+    ],
+    "wire:W004-002": [
+      "wiring: RTN of IF-002 connects PCDU1-J02 pin 2 to SA1-J01 pin 2 (X drives)"
+    ],
+    "wire:W004-003": [
+      "wiring: PWR of IF-003 connects BAT1-J01 pin 1 to PCDU1-J03 pin 1 (X drives)"
+    ],
+    "wire:W004-004": [
+      "wiring: RTN of IF-003 connects BAT1-J01 pin 2 to PCDU1-J03 pin 2 (X drives)"
+    ],
+    "wire:W004-005": [
+      "wiring: PWR of IF-004 connects OBC1-J01 pin 1 to PCDU1-J04 pin 1 (X drives)"
+    ],
+    "wire:W004-006": [
+      "wiring: RTN of IF-004 connects OBC1-J01 pin 2 to PCDU1-J04 pin 2 (X drives)"
+    ],
+    "wire:W004-007": [
+      "wiring: PWR of IF-005 connects PCDU1-J05 pin 1 to RIU1-J01 pin 1 (X drives)"
+    ],
+    "wire:W004-008": [
+      "wiring: RTN of IF-005 connects PCDU1-J05 pin 2 to RIU1-J01 pin 2 (X drives)"
+    ],
+    "wire:W004-009": [
+      "wiring: PWR of IF-006 connects PCDU1-J06 pin 1 to TRX1-J01 pin 1 (X drives)"
+    ],
+    "wire:W004-010": [
+      "wiring: RTN of IF-006 connects PCDU1-J06 pin 2 to TRX1-J01 pin 2 (X drives)"
+    ],
+    "wire:W004-011": [
+      "wiring: CANH of IF-026 connects OBC1-J02 pin 1 to PCDU1-J12 pin 1 (X drives)"
+    ],
+    "wire:W004-012": [
+      "wiring: CANL of IF-026 connects OBC1-J02 pin 2 to PCDU1-J12 pin 2 (X drives)"
+    ],
+    "wire:W004-013": [
+      "wiring: CANH of IF-028 connects OBC1-J04 pin 1 to RIU1-J02 pin 1 (X drives)"
+    ],
+    "wire:W004-014": [
+      "wiring: CANL of IF-028 connects OBC1-J04 pin 2 to RIU1-J02 pin 2 (X drives)"
+    ],
+    "wire:W004-015": [
+      "wiring: TX+/RX+ of IF-033 connects OBC1-J09 pin 1 to TRX1-J02 pin 3 (X drives)"
+    ],
+    "wire:W004-016": [
+      "wiring: TX+/RX+ of IF-033 connects TRX1-J02 pin 1 to OBC1-J09 pin 3 (Y drives)"
+    ],
+    "wire:W004-017": [
+      "wiring: TX-/RX- of IF-033 connects OBC1-J09 pin 2 to TRX1-J02 pin 4 (X drives)"
+    ],
+    "wire:W004-018": [
+      "wiring: TX-/RX- of IF-033 connects TRX1-J02 pin 2 to OBC1-J09 pin 4 (Y drives)"
+    ],
+    "wire:W004-019": [
+      "wiring: CANH of IF-037 connects BAT1-J02 pin 1 to RIU1-J03 pin 1 (X drives)"
+    ],
+    "wire:W004-020": [
+      "wiring: CANL of IF-037 connects BAT1-J02 pin 2 to RIU1-J03 pin 2 (X drives)"
+    ],
+    "wire:W004-021": [
+      "wiring: T+ of IF-044 connects RIU1-J10 pin 1 to SA1-J02 pin 1 (X drives)"
+    ],
+    "wire:W004-022": [
+      "wiring: T- of IF-044 connects RIU1-J10 pin 2 to SA1-J02 pin 2 (X drives)"
+    ],
+    "wire:W005-001": [
+      "wiring: PWR of IF-001 connects PCDU1-J01 pin 1 to GPSU1-J01 pin 1 (X drives)"
+    ],
+    "wire:W005-002": [
+      "wiring: RTN of IF-001 connects PCDU1-J01 pin 2 to GPSU1-J01 pin 2 (X drives)"
+    ],
+    "wire:W005-003": [
+      "wiring: TX+/RX+ of IF-022 connects OBC1-J13 pin 1 to SCOE1-J13 pin 3 (X drives)"
+    ],
+    "wire:W005-004": [
+      "wiring: TX+/RX+ of IF-022 connects SCOE1-J13 pin 1 to OBC1-J13 pin 3 (Y drives)"
+    ],
+    "wire:W005-005": [
+      "wiring: TX-/RX- of IF-022 connects OBC1-J13 pin 2 to SCOE1-J13 pin 4 (X drives)"
+    ],
+    "wire:W005-006": [
+      "wiring: TX-/RX- of IF-022 connects SCOE1-J13 pin 2 to OBC1-J13 pin 4 (Y drives)"
+    ],
+    "wire:W005-007": [
+      "wiring: RF of IF-025 connects TRX1-J03 pin 1 to RFSU1-J04 pin 1 (X drives)"
+    ],
+    "wire:W006-001": [
+      "wiring: PWR of IF-007 connects PCDU1-J07 pin 1 to PL1-J01 pin 1 (X drives)"
+    ],
+    "wire:W006-002": [
+      "wiring: RTN of IF-007 connects PCDU1-J07 pin 2 to PL1-J01 pin 2 (X drives)"
+    ],
+    "wire:W006-003": [
+      "wiring: PWR of IF-008 connects PCDU1-J08 pin 1 to PYRO1-J01 pin 1 (X drives)"
+    ],
+    "wire:W006-004": [
+      "wiring: RTN of IF-008 connects PCDU1-J08 pin 2 to PYRO1-J01 pin 2 (X drives)"
+    ],
+    "wire:W006-005": [
+      "wiring: HTR+ of IF-019 connects PCDU1-J11 pin 1 to HTR1-J01 pin 1 (X drives)"
+    ],
+    "wire:W006-006": [
+      "wiring: HTR- of IF-019 connects PCDU1-J11 pin 2 to HTR1-J01 pin 2 (X drives)"
+    ],
+    "wire:W006-007": [
+      "wiring: TX+/RX+ of IF-036 connects OBC1-J14 pin 1 to PL1-J02 pin 3 (X drives)"
+    ],
+    "wire:W006-008": [
+      "wiring: TX+/RX+ of IF-036 connects PL1-J02 pin 1 to OBC1-J14 pin 3 (Y drives)"
+    ],
+    "wire:W006-009": [
+      "wiring: TX-/RX- of IF-036 connects OBC1-J14 pin 2 to PL1-J02 pin 4 (X drives)"
+    ],
+    "wire:W006-010": [
+      "wiring: TX-/RX- of IF-036 connects PL1-J02 pin 2 to OBC1-J14 pin 4 (Y drives)"
+    ],
+    "wire:W006-011": [
+      "wiring: SIG of IF-041 connects RIU1-J07 pin 1 to PYRO1-J03 pin 1 (X drives)"
+    ],
+    "wire:W006-012": [
+      "wiring: RTN of IF-041 connects RIU1-J07 pin 2 to PYRO1-J03 pin 2 (X drives)"
+    ],
+    "wire:W006-013": [
+      "wiring: T+ of IF-042 connects RIU1-J08 pin 1 to HTR1-J02 pin 1 (X drives)"
+    ],
+    "wire:W006-014": [
+      "wiring: T- of IF-042 connects RIU1-J08 pin 2 to HTR1-J02 pin 2 (X drives)"
+    ],
+    "wire:W006-015": [
+      "wiring: T+ of IF-043 connects RIU1-J09 pin 1 to HTR2-J02 pin 1 (X drives)"
+    ],
+    "wire:W006-016": [
+      "wiring: T- of IF-043 connects RIU1-J09 pin 2 to HTR2-J02 pin 2 (X drives)"
+    ],
+    "wire:W007-001": [
+      "wiring: TX+/RX+ of IF-021 connects GPSU1-J03 pin 1 to SCOE1-J02 pin 3 (X drives)"
+    ],
+    "wire:W007-002": [
+      "wiring: TX+/RX+ of IF-021 connects SCOE1-J02 pin 1 to GPSU1-J03 pin 3 (Y drives)"
+    ],
+    "wire:W007-003": [
+      "wiring: TX-/RX- of IF-021 connects GPSU1-J03 pin 2 to SCOE1-J02 pin 4 (X drives)"
+    ],
+    "wire:W007-004": [
+      "wiring: TX-/RX- of IF-021 connects SCOE1-J02 pin 2 to GPSU1-J03 pin 4 (Y drives)"
+    ],
+    "wire:W007-005": [
+      "wiring: TX+/RX+ of IF-024 connects RFSU1-J02 pin 1 to SCOE1-J14 pin 3 (X drives)"
+    ],
+    "wire:W007-006": [
+      "wiring: TX+/RX+ of IF-024 connects SCOE1-J14 pin 1 to RFSU1-J02 pin 3 (Y drives)"
+    ],
+    "wire:W007-007": [
+      "wiring: TX-/RX- of IF-024 connects RFSU1-J02 pin 2 to SCOE1-J14 pin 4 (X drives)"
+    ],
+    "wire:W007-008": [
+      "wiring: TX-/RX- of IF-024 connects SCOE1-J14 pin 2 to RFSU1-J02 pin 4 (Y drives)"
+    ],
+    "wire:W008-001": [
+      "wiring: TX+/RX+ of IF-023 connects SCOE1-J03 pin 1 to PL1-J03 pin 3 (X drives)"
+    ],
+    "wire:W008-002": [
+      "wiring: TX+/RX+ of IF-023 connects PL1-J03 pin 1 to SCOE1-J03 pin 3 (Y drives)"
+    ],
+    "wire:W008-003": [
+      "wiring: TX-/RX- of IF-023 connects SCOE1-J03 pin 2 to PL1-J03 pin 4 (X drives)"
+    ],
+    "wire:W008-004": [
+      "wiring: TX-/RX- of IF-023 connects PL1-J03 pin 2 to SCOE1-J03 pin 4 (Y drives)"
+    ]
+  }
+}

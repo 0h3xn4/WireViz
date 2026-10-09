@@ -1,0 +1,21 @@
+{
+  "name": "derating",
+  "placeholder": true,
+  "values": {
+    "ampacity_a_by_awg": {
+      "16": 10.0,
+      "18": 7.0,
+      "20": 5.0,
+      "22": 3.0,
+      "24": 2.0,
+      "26": 1.0
+    },
+    "bundle_derating": 0.6,
+    "contact_current_factor": 0.5,
+    "contact_rating_key": "contact_current_a",
+    "max_ambient_temperature_c": null,
+    "max_voltage_drop_v": 1.0,
+    "spare_pin_fraction": null,
+    "temperature_derating": 0.9
+  }
+}

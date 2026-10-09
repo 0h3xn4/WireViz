@@ -7,6 +7,7 @@
 | [`INSTALL.md`](INSTALL.md) | everyone | Install on Ubuntu, check it works, uninstall, build from source |
 | [`LEARNING_PATH.md`](LEARNING_PATH.md) | newcomers | The whole route in nine steps, with the example or template for each and how you know you are done |
 | [`GETTING_STARTED.md`](GETTING_STARTED.md) | newcomers | A guided tour with real output: example project, generate, read problems, export, fill in values, release |
+| [`FLATSAT_EXAMPLE.md`](FLATSAT_EXAMPLE.md) | everyone | A tour of the biggest example, a flatsat with ground equipment: what it contains, what was generated, what the checks say, things to try |
 | [`CONCEPTS.md`](CONCEPTS.md) | newcomers | The words and the mental model, in ten minutes |
 | [`HOWTO.md`](HOWTO.md) | engineers | Recipes for single tasks: import, KiCad, release, revisions, Git, CI |
 | [`guide/USER_GUIDE.md`](guide/USER_GUIDE.md) | everyone | The guide that opens with **F1** in the app: screen, modes, shortcuts, glossary |

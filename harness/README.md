@@ -70,6 +70,7 @@ That is the whole idea. [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) wal
 | `first-steps` | Three units, a power link and an RS-422 link. Nothing generated yet. Start here. |
 | `minimal-satellite` | Seven units, nominal only: solar array, battery, power unit, computer, radio, wheel and sun sensor. A small but realistic starting point. |
 | `small-satellite` | 14 units with redundant chains. Generate it to see a realistic system. |
+| `flatsat` | A complete bench: 23 flight and ground units, generated, with example numbers. Read [`docs/FLATSAT_EXAMPLE.md`](docs/FLATSAT_EXAMPLE.md) for a tour. |
 
 `harness templates my-templates` copies templates for your own data: CSV files for interfaces, approved parts and segment lengths, a KiCad netlist, a CI script, a GitHub Actions workflow, a **design worksheet** to plan a design on paper, a design review checklist and *demo* engineering values for learning (not engineering data). What each file is for: [`src/harness_design_studio/resources/examples/templates/README.md`](src/harness_design_studio/resources/examples/templates/README.md).
 
