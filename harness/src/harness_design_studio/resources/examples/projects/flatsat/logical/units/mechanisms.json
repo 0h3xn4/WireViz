@@ -1,0 +1,13 @@
+{
+  "units": [
+    {
+      "id": "PYRO1",
+      "mass_relevant": true,
+      "name": "Deployment pyro unit",
+      "notes": "On the bench the pyro lines go to a simulator, not to initiators.",
+      "side": "nominal",
+      "subsystem": "mechanisms",
+      "zone": "payload"
+    }
+  ]
+}

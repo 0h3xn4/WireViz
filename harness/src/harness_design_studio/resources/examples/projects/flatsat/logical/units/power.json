@@ -1,0 +1,40 @@
+{
+  "units": [
+    {
+      "id": "BAT1",
+      "mass_relevant": true,
+      "name": "Battery",
+      "notes": "Engineering model or battery simulator.",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "bus"
+    },
+    {
+      "id": "PCDU1",
+      "mass_relevant": true,
+      "name": "Main power control and distribution unit",
+      "notes": "Receives ground power, solar array and battery; feeds the bus and the AOCS distribution unit.",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "bus"
+    },
+    {
+      "id": "PDU2",
+      "mass_relevant": true,
+      "name": "AOCS power distribution unit",
+      "notes": "Feeds wheels, star trackers, sun sensors and the magnetorquer; also one heater line.",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "aocs"
+    },
+    {
+      "id": "SA1",
+      "mass_relevant": true,
+      "name": "Solar array simulator",
+      "notes": "Replaces the solar array on the bench.",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "bus"
+    }
+  ]
+}

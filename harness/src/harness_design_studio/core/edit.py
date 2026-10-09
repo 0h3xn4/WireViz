@@ -340,8 +340,16 @@ def connector_compat(
 
 
 def ops_add_unit(
-    project: Project, template_id: str, x: float | None = None, y: float | None = None
+    project: Project,
+    template_id: str,
+    x: float | None = None,
+    y: float | None = None,
+    *,
+    unit_id: str | None = None,
+    name: str | None = None,
 ) -> tuple[list[Op], str]:
+    """Ops that add a unit made from a template. The ID comes from the template's prefix unless
+    `unit_id` is given (it must be free); `name` replaces the generated name."""
     tpl = TEMPLATES.get(template_id)
     if tpl is None:
         raise EditError(f"Unknown unit template '{template_id}'.")
@@ -350,16 +358,21 @@ def ops_add_unit(
         raise EditError(
             f"The parts library lacks {', '.join(missing)}; add the starter parts first."
         )
-    uid, n = next_unit_id(project, tpl.prefix)
+    if unit_id is None:
+        uid, n = next_unit_id(project, tpl.prefix)
+        unit_name = name or f"{tpl.label} {n}"
+    else:
+        uid = unit_id
+        if uid.casefold() in _taken(set(project.units)) | _connector_owners(project):
+            raise EditError(f"ID {uid} is already used.")
+        unit_name = name or f"{tpl.label} {uid}"
     if x is None or y is None:
         x, y = free_slot(project)
     zone = zone_of_x(project, x)
     ops: list[Op] = [
         Put(
             "units",
-            Unit(
-                id=uid, name=f"{tpl.label} {n}", subsystem=tpl.subsystem, zone=zone, side="nominal"
-            ),
+            Unit(id=uid, name=unit_name, subsystem=tpl.subsystem, zone=zone, side="nominal"),
         ),
         Put("placements", Placement(id=uid, x=x, y=y)),
     ]

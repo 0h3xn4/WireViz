@@ -1,0 +1,24 @@
+{
+  "name": "generation",
+  "placeholder": true,
+  "values": {
+    "conductor_resistivity_ohm_m": 1.7e-08,
+    "default_gauge_awg": null,
+    "mass_margin_fraction": 0.1,
+    "power_signal_gap_pins": null,
+    "service_loop_m": 0.1,
+    "shield_end_a": "backshell_360",
+    "shield_end_b": "floating",
+    "test_continuity_max_ohm": 1.0,
+    "test_isolation_min_mohm": 100.0,
+    "test_isolation_voltage_v": 500.0,
+    "wire_part_by_construction": {
+      "coax": "EX-WIRE-SINGLE",
+      "quad": "EX-WIRE-TWISTED-SHIELDED",
+      "single": "EX-WIRE-SINGLE",
+      "twinax": "EX-WIRE-TWISTED-SHIELDED",
+      "twisted_pair": "EX-WIRE-SINGLE",
+      "twisted_shielded_pair": "EX-WIRE-TWISTED-SHIELDED"
+    }
+  }
+}

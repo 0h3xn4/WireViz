@@ -575,6 +575,11 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
                 id=ctx.namer.segment(hid, sn), from_node=a, to_node=b, length_m=old_len.get((a, b))
             )
         )
+    # A saved project lists the parts of a harness sorted by ID as text (L1, L10, L11, ..., L2, and
+    # S10 before S2). Generating in the same order keeps a reloaded harness equal to a regenerated
+    # one; a harness with ten or more segments or shields was reported as changed on every
+    # generation.
+    segments.sort(key=lambda s: s.id)
     # ---- wires
     old_wires = {}
     for w in old.wires if old else []:
@@ -667,7 +672,9 @@ def _build_harness(ctx: _Ctx, group: Group, old: Harness | None) -> Harness | No
     )
     built = Harness(
         id=hid, name=group.label, revision=old.revision if old else "A", status=old.status if old else "draft",
-        connectors=sorted(cables.values(), key=lambda c: c.id), wires=wires, shields=shields, branch_points=branches, segments=segments,
+        connectors=sorted(cables.values(), key=lambda c: c.id), wires=sorted(wires, key=lambda x: x.id),
+        shields=sorted(shields, key=lambda x: x.id), branch_points=sorted(branches, key=lambda x: x.id),
+        segments=segments,
         generated=True, group_key=group.key, interfaces=interfaces, notes=old.notes if old else "",
         author=old.author if old else None, checker=old.checker if old else None,
         approver=old.approver if old else None, released_on=old.released_on if old else None,

@@ -1,0 +1,85 @@
+{
+  "units": [
+    {
+      "id": "MTQ1",
+      "mass_relevant": true,
+      "name": "Magnetorquer system",
+      "notes": "Driver electronics for the three coils, one unit.",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "RW1",
+      "mass_relevant": true,
+      "name": "Reaction wheel 1",
+      "notes": "Wheels 1 to 4 form a pyramid.",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "RW2",
+      "mass_relevant": true,
+      "name": "Reaction wheel 2",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "RW3",
+      "mass_relevant": true,
+      "name": "Reaction wheel 3",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "RW4",
+      "mass_relevant": true,
+      "name": "Reaction wheel 4",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "SS1",
+      "mass_relevant": true,
+      "name": "Sun sensor 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "SS2",
+      "mass_relevant": true,
+      "name": "Sun sensor 2",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "ST1",
+      "mass_relevant": true,
+      "name": "Star tracker 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    },
+    {
+      "id": "ST2",
+      "mass_relevant": true,
+      "name": "Star tracker 2",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "aocs",
+      "zone": "aocs"
+    }
+  ]
+}

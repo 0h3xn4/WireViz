@@ -1,0 +1,31 @@
+{
+  "units": [
+    {
+      "id": "GPSU1",
+      "mass_relevant": true,
+      "name": "Ground power supply",
+      "notes": "EGSE: replaces the launch umbilical on the bench. Ground equipment.",
+      "side": "nominal",
+      "subsystem": "egse",
+      "zone": "egse"
+    },
+    {
+      "id": "RFSU1",
+      "mass_relevant": true,
+      "name": "RF test equipment",
+      "notes": "EGSE: closes the RF link by cable instead of antennas. Ground equipment.",
+      "side": "nominal",
+      "subsystem": "egse",
+      "zone": "egse"
+    },
+    {
+      "id": "SCOE1",
+      "mass_relevant": true,
+      "name": "Checkout system (SCOE)",
+      "notes": "EGSE: sends commands, records telemetry. Ground equipment, never flies.",
+      "side": "nominal",
+      "subsystem": "egse",
+      "zone": "egse"
+    }
+  ]
+}

@@ -54,7 +54,7 @@ Open it in the app (**File > Open project...**). Try these four things, in this 
 
 **Done when:** you can find, for any wire, which interface it belongs to and which two connector pins it joins.
 
-The 14-unit example `small-satellite` has redundant chains; use it once you are comfortable with `minimal-satellite`.
+The 14-unit example `small-satellite` has redundant chains; use it once you are comfortable with `minimal-satellite`. When you want to see a complete system with ground equipment, harness bundles between panels, example numbers and everything generated, take the `flatsat` example and read [`FLATSAT_EXAMPLE.md`](FLATSAT_EXAMPLE.md).
 
 ## 4. Plan your own design (30 minutes)
 

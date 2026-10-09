@@ -1,0 +1,13 @@
+{
+  "units": [
+    {
+      "id": "TRX1",
+      "mass_relevant": true,
+      "name": "S-band transceiver",
+      "notes": "Its antenna port goes to the RF test equipment.",
+      "side": "nominal",
+      "subsystem": "comms",
+      "zone": "bus"
+    }
+  ]
+}

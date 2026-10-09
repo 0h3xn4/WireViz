@@ -1,0 +1,479 @@
+{
+  "interfaces": [
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J02",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J12",
+          "role": null,
+          "unit_id": "PCDU1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-026",
+      "max_current_a": null,
+      "name": "PCDU housekeeping",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J03",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PDU2-J12",
+          "role": null,
+          "unit_id": "PDU2"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-027",
+      "max_current_a": null,
+      "name": "AOCS distribution housekeeping",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J04",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RIU1-J02",
+          "role": null,
+          "unit_id": "RIU1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-028",
+      "max_current_a": null,
+      "name": "Remote interface unit bus",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J05",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW1-J02",
+          "role": null,
+          "unit_id": "RW1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-029",
+      "max_current_a": null,
+      "name": "Wheel 1 bus",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J06",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW2-J02",
+          "role": null,
+          "unit_id": "RW2"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-030",
+      "max_current_a": null,
+      "name": "Wheel 2 bus",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J07",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW3-J02",
+          "role": null,
+          "unit_id": "RW3"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-031",
+      "max_current_a": null,
+      "name": "Wheel 3 bus",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J08",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW4-J02",
+          "role": null,
+          "unit_id": "RW4"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-032",
+      "max_current_a": null,
+      "name": "Wheel 4 bus",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J09",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "TRX1-J02",
+          "role": null,
+          "unit_id": "TRX1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-033",
+      "max_current_a": null,
+      "name": "Transceiver data",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "rs422",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J10",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "ST1-J02",
+          "role": null,
+          "unit_id": "ST1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-034",
+      "max_current_a": null,
+      "name": "Star tracker 1 data",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "rs422",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J11",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "ST2-J02",
+          "role": null,
+          "unit_id": "ST2"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-035",
+      "max_current_a": null,
+      "name": "Star tracker 2 data",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "rs422",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J14",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PL1-J02",
+          "role": null,
+          "unit_id": "PL1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-036",
+      "max_current_a": null,
+      "name": "Payload data",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "ethernet",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J03",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "BAT1-J02",
+          "role": null,
+          "unit_id": "BAT1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-037",
+      "max_current_a": null,
+      "name": "Battery monitoring",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J04",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "SS1-J02",
+          "role": null,
+          "unit_id": "SS1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-038",
+      "max_current_a": null,
+      "name": "Sun sensor 1 signal",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "analog",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J05",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "SS2-J02",
+          "role": null,
+          "unit_id": "SS2"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-039",
+      "max_current_a": null,
+      "name": "Sun sensor 2 signal",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "analog",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J06",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "MTQ1-J02",
+          "role": null,
+          "unit_id": "MTQ1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-040",
+      "max_current_a": null,
+      "name": "Magnetorquer drive",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "discrete",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J07",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PYRO1-J03",
+          "role": null,
+          "unit_id": "PYRO1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-041",
+      "max_current_a": null,
+      "name": "Pyro arm and fire",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "discrete",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J08",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "HTR1-J02",
+          "role": null,
+          "unit_id": "HTR1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-042",
+      "max_current_a": null,
+      "name": "Panel 1 temperature",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "thermistor",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J09",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "HTR2-J02",
+          "role": null,
+          "unit_id": "HTR2"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-043",
+      "max_current_a": null,
+      "name": "Panel 2 temperature",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "thermistor",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "RIU1-J10",
+          "role": null,
+          "unit_id": "RIU1"
+        },
+        {
+          "auto": true,
+          "connector_id": "SA1-J02",
+          "role": null,
+          "unit_id": "SA1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-044",
+      "max_current_a": null,
+      "name": "Array temperature",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "thermistor",
+      "voltage_v": null
+    }
+  ]
+}

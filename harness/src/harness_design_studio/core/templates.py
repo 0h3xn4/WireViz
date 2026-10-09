@@ -47,6 +47,11 @@ TEMPLATES = (
         "Small satellite (reference)",
         "14 units with nominal and redundant chains. Generate it to see a realistic system.",
     ),
+    TemplateInfo(
+        "flatsat",
+        "Flatsat (EXAMPLE numbers, not engineering data)",
+        "A complete bench: 23 flight and ground units, generated, with example numbers.",
+    ),
 )
 
 

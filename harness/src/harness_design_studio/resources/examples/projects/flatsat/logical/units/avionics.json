@@ -1,0 +1,22 @@
+{
+  "units": [
+    {
+      "id": "OBC1",
+      "mass_relevant": true,
+      "name": "On-board computer",
+      "notes": "Engineering model. One spare data connector is left for your own additions.",
+      "side": "nominal",
+      "subsystem": "avionics",
+      "zone": "bus"
+    },
+    {
+      "id": "RIU1",
+      "mass_relevant": true,
+      "name": "Remote interface unit",
+      "notes": "Collects the analog, discrete and thermistor signals so that the computer needs fewer connectors.",
+      "side": "nominal",
+      "subsystem": "avionics",
+      "zone": "bus"
+    }
+  ]
+}

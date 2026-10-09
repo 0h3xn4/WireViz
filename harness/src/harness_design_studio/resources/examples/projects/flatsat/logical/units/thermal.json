@@ -1,0 +1,22 @@
+{
+  "units": [
+    {
+      "id": "HTR1",
+      "mass_relevant": true,
+      "name": "Heater panel 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "thermal",
+      "zone": "payload"
+    },
+    {
+      "id": "HTR2",
+      "mass_relevant": true,
+      "name": "Heater panel 2",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "thermal",
+      "zone": "payload"
+    }
+  ]
+}

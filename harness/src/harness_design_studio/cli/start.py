@@ -12,7 +12,7 @@ COMMANDS = ("new", "templates", "schema")
 def register(sub: "argparse._SubParsersAction[argparse.ArgumentParser]") -> None:
     n = sub.add_parser(
         "new",
-        help="create a new project from an example (blank, first-steps, minimal-satellite, small-satellite)",
+        help="create a new project from an example (blank, first-steps, minimal-satellite, small-satellite, flatsat)",
         description="Create a project folder from one of the bundled examples. "
         "`harness new --list` shows them. The folder must not exist yet or be empty.",
     )
