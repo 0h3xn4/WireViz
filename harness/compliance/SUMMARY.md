@@ -14,8 +14,11 @@ This section was added after the audit; the sections below describe the audit an
 - Prepared for people, with nothing filled in on their behalf: the independent-review brief, the review record, the family-group worksheet, the organisation record, the risk register, the dependability input sheet, the usability schedule, the screen-reader checklist and the real-harness acceptance checklist (see `OPEN_ACTIONS.md`).
 - The product was renamed Harness Design Studio. Release candidate 0.1.0rc8: 964 tests passed, 1 skipped, with the coverage gate and again without instrumentation; no known vulnerabilities in the 10 shipped packages (`evidence/release_0.1.0rc8_report.md`).
 
-**Not done, and not going to be done by the project team**
-The owner has said (2026-10-09) that no further feedback from people will come. These actions therefore stay **open**; no document treats silence as approval, and none of them is marked done or waived: an independent verifier and validator (A-01), the reviews (A-02), organisation, training, audits and process assessment (A-03), the review board and customer interface (A-04), the dependability and safety analysis (A-07), the maintainer organisation and support period (A-11), the usability sessions and the screen-reader pass (A-12), the acceptance of the outputs for a real harness (A-13), the mapping of family-group codes (A-16), and the real values and parts the owner has still to supply (D-10, D-11, D-12, D-15; A-17 for the project files). Until they are done the tool must be used as it is labelled: results rest on placeholders and example parts unless a person has reviewed them, the packages are unsigned, and no compliance with any standard is claimed.
+**Waived by the owner on 2026-10-09** (`DEVIATIONS.md` T-20 to T-30), because no further feedback from people will come: the independent verifier and validator (A-01), the reviews (A-02), organisation, training, audits and process assessment (A-03), the review board and customer interface (A-04), the dependability and safety analysis (A-07), the review of the security analysis (A-08), the maintainer organisation and support period (A-11), the usability sessions and the screen-reader pass (A-12), the acceptance of the outputs for a real harness (A-13), the mapping of family-group codes (A-16), and the clean-VM installation test of the release procedure.
+
+**What a waiver means here.** It records that the owner accepts the deviation. It does not meet the requirement, and no document, matrix row or report treats it as met: the statuses in the matrix stay *partial*, *human*, *gap* or *na*, and none says compliant. The prepared templates stay available if a person ever does the work.
+
+**Not waived, and not done:** the owner's sign-off on a release candidate (`docs/RELEASE.md` step 14), the real derating and EMC values (D-11), the approved parts list (D-12), the answers on the harness boundary rule (D-10) and the title block (D-15), and the review of the profile values in each project's config files (A-17). Until they exist the tool must be used as it is labelled: results rest on placeholders and example parts unless a person has reviewed them (a release then needs a written reason, D-135, D-136), the packages are unsigned (T-19), every release candidate is labelled *not signed off by the owner*, and no compliance with any standard is claimed.
 
 ## What was done
 | Phase | Result |
@@ -56,9 +59,9 @@ Kind B (design checking), 41 requirements, after phase 2 (`assessment/design_ass
 Everything is opt-in or silent by default. Projects that do not use the new settings behave as before, except that the design rule report says `Rules run: 33` and cites a requirement ID in findings of the rules that serve one. See `CHANGELOG.md` and `docs/DECISIONS.md` D-131.
 
 ## Where the tool is weakest against the standards
-1. No independent verification or validation and no recorded reviews (A-01, A-02); the review board and customer interface are not named (A-04).
+1. No independent verification or validation and no recorded reviews (A-01, A-02; waived, T-20, T-21); the review board and customer interface are not named (A-04; waived, T-23).
 2. Wire surface temperature under load, the partial-load factor L, bundle spacing, multipactor, bond resistances and the "family-group code" mapping cannot be checked by the tool (T-14 to T-16, checklist).
-3. No specialist has reviewed the security analysis (A-08); packages are unsigned by the owner's waiver (T-19). Dependencies are scanned for known vulnerabilities at each release.
+3. No specialist has reviewed the security analysis (A-08; waived, T-25); packages are unsigned by the owner's waiver (T-19). Dependencies are scanned for known vulnerabilities at each release.
 4. Standards referred to by the supplied ones were not supplied, so many "shall apply" clauses are marked *human* (T-09).
 
 ## Files
