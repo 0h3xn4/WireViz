@@ -1,3 +1,5 @@
+> **Looking for Harness Design Studio?** This page documents the upstream WireViz tool that is kept in this repository. The spacecraft harness design tool is in [`../harness/`](../harness/README.md).
+
 # WireViz
 
 
