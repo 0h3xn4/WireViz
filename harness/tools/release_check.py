@@ -33,7 +33,8 @@ def versions() -> Result:
     from harness_design_studio import __version__
 
     pyproject = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(), re.M)
-    change = re.search(r"^## (\S+)", (ROOT / "CHANGELOG.md").read_text(), re.M)
+    # the section "Unreleased" collects changes after the last release; the version is the next one
+    change = re.search(r"^## (?!Unreleased)(\S+)", (ROOT / "CHANGELOG.md").read_text(), re.M)
     found = {
         "__init__": __version__,
         "pyproject": pyproject.group(1) if pyproject else "?",
