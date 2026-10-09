@@ -25,9 +25,8 @@ Master has moved on since (documentation and a benchmark change only: pull reque
 ## Nothing else was done
 No tag, release or publication was made, and the packages were not rebuilt (the signed-off files are the ones whose checksums are listed above).
 
-## Final release 0.1.0 (2026-10-09): DRAFT, NOT IN FORCE
-This section is a draft. The waiver it describes (`DEVIATIONS.md` T-31) is **not recorded as given**: the assistant asked the owner on 2026-10-09 to confirm it in an explicit sentence, and no confirmation has been received. Do not read anything below as the owner's decision until this note is removed.
+## Final release 0.1.0 (2026-10-09)
 
-After the sign-off above the owner said "I want a final 0.1.0". Before that, the owner had been told that step 14 of `docs/RELEASE.md` asks for D-10 and D-15 to be decided and D-11 and D-12 to be supplied before `rc` is dropped, and that a final `0.1.0` needed either those inputs or a recorded decision to waive that condition. The assistant read the statement as that decision and recorded it as `DEVIATIONS.md` T-31 and `docs/DECISIONS.md` D-137. If that reading is wrong, say so and the release can be withdrawn by a new candidate.
+After the sign-off above the owner said "I want a final 0.1.0". The assistant then pointed out that step 14 of `docs/RELEASE.md` asks for D-10 and D-15 to be decided and D-11 and D-12 to be supplied before `rc` is dropped, and asked for an explicit sentence. The owner answered, in the same session: "I waive the step 14 condition: release 0.1.0 with D-10, D-11, D-12 and D-15 still open." That sentence is the decision; it is recorded as `DEVIATIONS.md` T-31 and `docs/DECISIONS.md` D-137.
 
 What changes: the version is `0.1.0` (Debian `0.1.0`), the changelog, README and the other status lines no longer say "release candidate". What does not change: everything listed above as open stays open; no compliance is claimed; results are labelled as resting on placeholders and example parts; the packages are unsigned. The program is the one of rc8 (stamps differ). The checksums of the 0.1.0 packages are in `evidence/release_0.1.0_SHA256SUMS` once built.
