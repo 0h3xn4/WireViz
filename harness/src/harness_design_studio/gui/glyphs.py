@@ -273,3 +273,33 @@ def draw_connector(
         p.drawRoundedRect(QRectF(1, 1, 28, 14), 3, 3)
         _dots(p, QRectF(5, 4, 20, 8), pins, male, detail)
     p.restore()
+
+
+GENDER_W = 16.0
+
+
+def draw_gender(p: QPainter, x: float, y: float, gender: str, color: QColor) -> None:
+    """The sign of a connector's gender, 16 x 16 at (x, y): the male sign (a circle with an arrow
+    pointing out: a plug, pins) or the female sign (a circle on a cross: a socket); an unset gender
+    is a dashed circle with a dot, so that nobody takes it for either."""
+    p.save()
+    p.translate(x, y)
+    p.setPen(
+        QPen(color, 1.8, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+    )
+    p.setBrush(Qt.BrushStyle.NoBrush)
+    if gender == "male":
+        p.drawEllipse(QPointF(6.2, 9.8), 4.4, 4.4)
+        _line(p, 9.4, 6.6, 14.2, 1.8)
+        _path(p, [(9.6, 1.6), (14.4, 1.6), (14.4, 6.4)])
+    elif gender == "female":
+        p.drawEllipse(QPointF(8, 5.4), 4.4, 4.4)
+        _line(p, 8, 9.8, 8, 15.2)
+        _line(p, 5.2, 12.6, 10.8, 12.6)
+    else:
+        pen = QPen(color, 1.4, Qt.PenStyle.DashLine)
+        p.setPen(pen)
+        p.drawEllipse(QPointF(8, 8), 5.6, 5.6)
+        p.setBrush(color)
+        p.drawEllipse(QPointF(8, 8), 0.9, 0.9)
+    p.restore()

@@ -121,7 +121,7 @@ harness drc wheel-link
 ```
 # Design rule check: Wheel link
 
-Model hash: `8a25f0c99a86`. Rules run: 33.
+Model hash: `c80db81933b8`. Rules run: 33.
 Open: 0 error(s), 10 warning(s), 8 note(s). Waived: 0.
 
 Placeholder configuration in use: derating, emc, generation, segmentation, segregation, titleblock. Results that depend on it are marked as not checked.
@@ -146,7 +146,7 @@ harness export wheel-link
 ```
 
 ```
-38 files written to wheel-link/outputs (model 8a25f0c99a86).
+38 files written to wheel-link/outputs (model c80db81933b8).
 ```
 
 The files are checked independently before they are written; if that check fails, nothing is written. Look in `wheel-link/outputs/`:
@@ -163,7 +163,7 @@ The files are checked independently before they are written; if that check fails
 | `system/harness_overview.pdf`, `box_pinouts.csv`, `mating_matrix.csv`, `traceability.csv` | all harnesses at a glance; the pinout of every unit connector; which cable mates with which unit; which interface is carried by which wires |
 | `system/drc_report.md`, `changelog.csv`, `revision_report.md`, `export.json` | the Problems report; the change log; the revision report; the whole model as one JSON |
 
-The harness drawing, with a title block and the model hash (`8a25f0c99a86` is the same fingerprint you saw above):
+The harness drawing, with a title block and the model hash (`c80db81933b8` is the same fingerprint you saw above):
 
 ![A harness drawing](img/w001-drawing.png)
 

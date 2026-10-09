@@ -317,12 +317,14 @@ class UnitItem(QGraphicsItem):
             counts[key] = counts.get(key, 0) + 1
         x = 10.0
         for (family, pins, gender), n in counts.items():
-            if x + glyphs.CONNECTOR_W + (16 if n > 1 else 0) > W - 8:
+            if x + glyphs.CONNECTOR_W + glyphs.GENDER_W + (16 if n > 1 else 0) > W - 8:
                 break  # no room for more: the unit's properties list them all
             glyphs.draw_connector(
                 painter, x, 52, family, pins, gender, th.color("text"), th.color("surface")
             )
-            x += glyphs.CONNECTOR_W + 2
+            x += glyphs.CONNECTOR_W + 1
+            glyphs.draw_gender(painter, x, 52, gender, th.color("text"))
+            x += glyphs.GENDER_W + 1
             if n > 1:
                 painter.setPen(th.color("text-muted"))
                 painter.drawText(QRectF(x, 50, 18, 20), Qt.AlignmentFlag.AlignVCenter, f"×{n}")
@@ -403,7 +405,10 @@ class UnitItem(QGraphicsItem):
             glyphs.draw_connector(
                 painter, pic_x, y - glyphs.CONNECTOR_H / 2, family, pins, gender, ink, th.color("surface")
             )  # fmt: skip
-            cursor += sign * (glyphs.CONNECTOR_W + 2)
+            cursor += sign * (glyphs.CONNECTOR_W + 1)
+            gx = cursor - glyphs.GENDER_W if right else cursor
+            glyphs.draw_gender(painter, gx, y - 8, gender, ink)  # male or female, drawn
+            cursor += sign * (glyphs.GENDER_W + 2)
             if pins > 1:
                 cursor = self._port_text(painter, cursor, y, right, ink, 14, str(pins))
 
@@ -735,6 +740,7 @@ class DiagramScene(QGraphicsScene):
         self._slots: dict[str, dict[str, tuple[str, int, int]]] = {}
         self._routes: dict[str, list[tuple[float, float]]] | None = None
         self._batch = 0  # while above 0, routes are worked out once at the end
+        self._geo_sig: object = None
         self._route_key: tuple[list[routing.RouteLink], routing.Geometry] | None = None
         self._route_cache: dict[str, list[tuple[float, float]]] = {}
         self._routes_stale = False
@@ -1068,11 +1074,23 @@ class DiagramScene(QGraphicsScene):
             self._apply_units_and_links(delta)
         finally:
             self._batch -= 1
-        self._routes = None
-        self._redraw_changed()
+        sig = self._geometry_signature()
+        if delta.interfaces or sig != self._geo_sig:  # a rename or a note changes no route
+            self._geo_sig = sig
+            self._routes = None
+            self._redraw_changed()
         self._update_extent()
         if self.filter is not None or self.ctl.selection is not None:
             self._apply_filter()
+
+    def _geometry_signature(self) -> object:
+        """Everything the routes depend on, except the links themselves: where the units are, how
+        tall, which edge each link leaves from."""
+        units = tuple(
+            (uid, it.pos().x(), it.pos().y(), it.height())
+            for uid, it in sorted(self.unit_items.items())
+        )
+        return (units, self.ctl.mode, self.zone_count, self._conn_link, self._adj)
 
     def _apply_units_and_links(self, delta: Delta) -> None:
         project = self.ctl.project
