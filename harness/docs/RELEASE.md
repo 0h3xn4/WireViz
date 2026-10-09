@@ -2,7 +2,7 @@
 
 Run `python -m tools.release_check` on the build host (Ubuntu 24.04; with Docker use `packaging/ubuntu/container/`). It performs the automated steps (1 to 11) and writes `dist/release-docs/release-report.md`. Steps 12 to 14 are for people.
 
-1. Versions agree in `pyproject.toml`, `harness_design_studio/__init__.py` and the top of `CHANGELOG.md` (the changelog entry says what changed and what is still open).
+1. Versions agree in `pyproject.toml`, `harness_design_studio/__init__.py` and the top of `CHANGELOG.md` (the changelog entry says what changed and what is still open). Changes made after a release are collected under `## Unreleased`; at the next release rename that heading to the new version, and the check skips it until then.
 2. `ruff format --check`, `ruff check` and `mypy --strict` are clean.
 3. The independent verifiers are clean on `mini3`, `sat15` and `sat15_full`.
 4. Performance targets on the stress project: generation under 10 s, no design rule errors; export and checks complete.

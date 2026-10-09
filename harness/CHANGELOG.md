@@ -2,6 +2,21 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
+## Unreleased (after 0.1.0)
+
+Changes on `master` since the release of 0.1.0. They are not in the 0.1.0 packages.
+
+- **New example `flatsat`** (`harness new bench --template flatsat`): a complete bench setup of 23 flight and ground units, 44 interfaces, 8 harnesses and 103 wires, shipped generated with EXAMPLE numbers (the configuration files stay marked as placeholders, the parts are example parts). It has ground equipment (checkout system, ground power supply, RF test equipment), four lanes and links between lanes grouped by `per_zone_pair`. A tour with exercises is in `docs/FLATSAT_EXAMPLE.md`; a test checks it against the project.
+- **New example `minimal-satellite`**: seven units without redundancy, between `first-steps` and `small-satellite`, as a small realistic starting point. `harness new --list` now sizes its columns to the longest name.
+- **New template `design-worksheet.md`** (`harness templates DIR`): a worksheet to plan units, interfaces and the data you do not have yet before opening the tool.
+- **Fix: regeneration after a reload** (D-139). A saved project sorts the parts of a harness by ID as text (`S10` before `S2`) but the generator numbered them, so a harness with ten or more shields or segments was reported as *changed* on every generation although nothing had changed. The generator now uses the saved order. A project that has such harnesses shows them as *changed* once on the next generation, and the model hash of such a project changes once; afterwards it is stable. The flatsat example found it.
+- **`ops_add_unit` accepts `unit_id` and `name`**, so a unit made from a template can get its own ID and name.
+- **Documentation for newcomers**: `docs/LEARNING_PATH.md` (nine steps from install to release, each with a "done when"), `docs/CHEATSHEET.md` (one page), a fuller `docs/INSTALL.md` (supported-system check, checksums, a first five-minute check, troubleshooting), three FAQ starters, and pointers from the README, the tutorial and the in-app guide. The commands and the quoted model hash of the tutorial are unchanged.
+- **Repository front page**: the page of this repository (`docs/README.md`) starts with a section on Harness Design Studio, states that the tool was created mainly by an AI (Claude) at the direction of the repository owner, and says how it relates to WireViz (separate clean-room codebase in the WireViz fork, WireViz YAML as an export target). The original WireViz documentation follows unchanged. The same two notices are at the top of `harness/README.md`.
+- **CI**: for changes that touch only Markdown directly under `harness/`, Markdown under `harness/docs/` or anything under `harness/compliance/`, the full suite and the package jobs are skipped and a `docs` job runs the checks that read documents (D-138). Any other change runs everything.
+- **Records**: `compliance/SIGNOFF.md` has a Publication section for 0.1.0 (merge commit, tag, release page); `docs/RELEASE.md` has a step for tagging and publishing a release; `docs/SECURITY.md` says the SBOM ships with every release.
+- **Release check**: the version step skips an `Unreleased` section when it compares the changelog with the version.
+
 ## 0.1.0 (first release, 2026-10-09; released by the owner with the engineering decisions still open, see compliance/SIGNOFF.md; not a statement of compliance)
 
 This is release candidate 0.1.0rc8 without the `rc`, plus the note below. The program is unchanged: results differ from rc8 only in the stamps (version, model hash). **Still open at this release**: the harness boundary rule (D-10) and the title block (D-15) are at their defaults; the real derating and EMC values (D-11) and the approved parts list (D-12) have not been supplied, so results rest on placeholders and example parts unless a person has reviewed them (a release of a harness needs a written reason, D-135 and D-136). Waived by the owner and not done: independent verification and validation, the formal reviews, usability sessions, the screen-reader pass and the clean-machine installation test; the packages are unsigned (`compliance/DEVIATIONS.md` T-18 to T-31). Platform: Ubuntu 24.04 and newer.
