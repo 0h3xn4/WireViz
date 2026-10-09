@@ -37,3 +37,7 @@ What changes: the version is `0.1.0` (Debian `0.1.0`), the changelog, README and
 | `harness-design-studio_0.1.0_amd64.deb` | `37422760206a803ee947b0045488da07c3bc19b811a44d0cb2b41ac0548520f7` |
 
 All checksums are in `evidence/release_0.1.0_SHA256SUMS`.
+
+## Publication (2026-10-09)
+
+Pull request 26 was merged as commit `5cc4d3988054ea715d5f0e787f295d377c0f2fee` after all 14 CI runs passed on its head. The annotated tag `v0.1.0` (tag object `6b88ad1a73d5c2208d1e4ccbc5c7e0a237b96187`, unsigned) and the GitHub release "Harness Design Studio 0.1.0" were created by the owner on that commit; the notes repeat the open decisions, the placeholders and the unsigned packages. The assistant could not push the tag from its session (HTTP 403) and could not attach files to the release page; attaching the packages is up to the owner. A package taken from a CI run is built again on another machine, so its bytes can differ from the checksums above; compare it with the `SHA256SUMS` that came with it and say so in the release notes.
