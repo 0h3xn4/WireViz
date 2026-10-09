@@ -510,3 +510,21 @@ def test_mini3_text_outputs_match_the_reviewable_golden_files() -> None:
             assert (root / rel).read_bytes() == data, rel
             checked += 1
     assert checked > 20
+
+
+def test_shields_are_drawn_as_sleeves_around_their_wires() -> None:
+    """Each shield gets a header with its ID and kind and a jacket round its wires; the end
+    terminations are drawn (a solid bar for a 360 degree backshell)."""
+    p, files = project_and_files("sat15")
+    shielded = [(h, s) for h in p.harnesses.values() for s in h.shields]
+    assert shielded
+    h, s = shielded[0]
+    key = f"harnesses/{h.id}/drawing_A3_s1.svg"
+    svg = files[key].decode()
+    text = " ".join(re.findall(r"<text[^>]*>([^<]*)</text>", svg))
+    assert f"{s.id}  {s.kind}" in text
+    assert "#e9e9e9" in svg  # the jacket
+    for end in (s.end_a, s.end_b):
+        assert {"backshell_360": "backshell 360", "pigtail": "pigtail", "floating": "floating"}[
+            end
+        ] in text
