@@ -1,4 +1,30 @@
-> **Looking for Harness Design Studio?** This page documents the upstream WireViz tool that is kept in this repository. The spacecraft harness design tool is in [`../harness/`](../harness/README.md).
+# This repository: WireViz and Harness Design Studio
+
+This repository is a fork of **[WireViz](https://github.com/wireviz/WireViz)**. The original WireViz documentation is unchanged and starts [below](#wireviz). In addition, the repository contains a second tool, **Harness Design Studio**, in the folder [`harness/`](../harness/README.md).
+
+## Harness Design Studio
+
+An offline desktop tool for designing the electrical harnesses of a spacecraft. You describe the units (computer, power unit, reaction wheel, ...) and the interfaces between them; the tool generates the harnesses (connectors, pins, wires, each with a reason), checks them against design rules, writes the drawings and lists, and keeps a change-controlled record of every release. It works offline, produces byte-identical files for the same design, and never invents engineering values: until you supply them, results say *pending* or *not checked*. It runs on Ubuntu 24.04 or newer (x86-64). Version 0.1.0.
+
+| You want to | Go to |
+| --- | --- |
+| try it in five minutes | [`harness/README.md`](../harness/README.md#try-it-in-five-minutes) |
+| install it | [`harness/docs/INSTALL.md`](../harness/docs/INSTALL.md) |
+| learn it, step by step | [`harness/docs/LEARNING_PATH.md`](../harness/docs/LEARNING_PATH.md) |
+| see all its documents | [`harness/docs/README.md`](../harness/docs/README.md) |
+| get the newest release | the [Releases page](../../../releases) of this repository |
+
+### Created mainly by an AI
+
+**Harness Design Studio was written mainly by an AI**: Claude, Anthropic's AI assistant, used through Claude Code. Nearly all of its code, tests and documentation were produced by the AI. The repository owner set the requirements, answered the design questions, approved the decisions and the releases, and is named as the person who did so in the records (`harness/compliance/SIGNOFF.md`). No other person has reviewed it independently: that review was waived by the owner and is recorded as a deviation (`harness/compliance/DEVIATIONS.md`). It makes no claim of compliance with any standard. Treat it as an AI-built tool and check its results before relying on them. The limits are listed in the [status section of the tool's README](../harness/README.md#status).
+
+### How it relates to WireViz
+
+- It lives in this fork of WireViz and has the same goal at its core: describing wiring harnesses as text files kept in version control, and turning them into drawings and bills of materials.
+- It is a **separate codebase**. It was written clean-room: no WireViz source code is copied into it or imported by it (decision D-01 in [`harness/docs/DECISIONS.md`](../harness/docs/DECISIONS.md)), because WireViz is released under the GPL-3.0. The upstream WireViz code, documentation, examples and tutorial in this repository are untouched by it.
+- WireViz is an **export target**: Harness Design Studio can write each harness as WireViz-style YAML (best effort; not validated against the WireViz program, see [`harness/docs/OUTPUTS.md`](../harness/docs/OUTPUTS.md)).
+
+---
 
 # WireViz
 

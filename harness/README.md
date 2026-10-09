@@ -2,6 +2,10 @@
 
 An offline desktop tool for designing the electrical harnesses of a spacecraft.
 
+> **Created mainly by an AI.** Harness Design Studio was written mainly by Claude, Anthropic's AI assistant, used through Claude Code; the repository owner set the requirements and approved the decisions and releases. No other person has reviewed it independently (waived by the owner, `compliance/DEVIATIONS.md`), and no compliance with any standard is claimed. Check its results before relying on them.
+>
+> **Based in the WireViz repository.** This repository is a fork of [WireViz](https://github.com/wireviz/WireViz). Harness Design Studio is a separate, clean-room codebase inside it: no WireViz code is copied or imported (D-01 in [`docs/DECISIONS.md`](docs/DECISIONS.md)), and WireViz is an export target (WireViz-style YAML, best effort). The original WireViz documentation is at [`../docs/README.md`](../docs/README.md).
+
 You describe the **units** (computer, power unit, reaction wheel ...) and the **interfaces** between them. The tool generates the harnesses (connectors, pins, wires), checks them, writes the drawings and lists, and keeps a change-controlled record of every release.
 
 ```
