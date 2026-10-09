@@ -1,0 +1,31 @@
+{
+  "units": [
+    {
+      "id": "BAT1",
+      "mass_relevant": true,
+      "name": "Battery 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "panel-A"
+    },
+    {
+      "id": "PCDU1",
+      "mass_relevant": true,
+      "name": "Power distribution unit 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "panel-A"
+    },
+    {
+      "id": "SA1",
+      "mass_relevant": true,
+      "name": "Solar array 1",
+      "notes": "",
+      "side": "nominal",
+      "subsystem": "power",
+      "zone": "panel-A"
+    }
+  ]
+}

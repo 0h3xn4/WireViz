@@ -38,6 +38,11 @@ TEMPLATES = (
         "Three units, a power link and an RS-422 link. Nothing is generated yet: start here.",
     ),
     TemplateInfo(
+        "minimal-satellite",
+        "Minimal satellite",
+        "Seven units, nominal only: power, computer, radio, wheel and sun sensor. Adapt it.",
+    ),
+    TemplateInfo(
         "small-satellite",
         "Small satellite (reference)",
         "14 units with nominal and redundant chains. Generate it to see a realistic system.",

@@ -806,7 +806,7 @@ def test_new_project_from_an_example(win, tmp_path) -> None:  # type: ignore[no-
     win.ask_folder = lambda title: str(folder)
     win.ask_text = lambda t, label, default: "Wheel link"
     win.new_from_example_flow()
-    assert seen[:3] == ["blank", "first-steps", "small-satellite"]
+    assert seen[:4] == ["blank", "first-steps", "minimal-satellite", "small-satellite"]
     assert (folder / "project.json").exists() and win.ctl.root == folder
     assert {"OBC", "PCDU"} <= set(win.ctl.project.units) or len(win.ctl.project.units) >= 3
     assert win.windowTitle().startswith("Wheel link")

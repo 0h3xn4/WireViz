@@ -10,11 +10,37 @@ Pick **one** of the three ways. If you are unsure, use A.
 | **B** | the same, without administrator rights | unpack the `.tar.gz` and run `install.sh` |
 | **C** | a developer or you want the newest source | run it from source |
 
+## Before you start (two minutes)
+
+Check that your machine is supported. Open a terminal (Ctrl+Alt+T) and run:
+
+```
+lsb_release -rs          # must print 24.04 or higher
+uname -m                 # must print x86_64
+```
+
+If the first command is not found, run `cat /etc/os-release` and read `VERSION_ID`. Ubuntu 22.04 and older are not supported. Other Linux distributions, macOS and Windows are not supported either.
+
+You also need about 500 MB of free disk space for the program (`df -h ~` shows it) and a screen of at least 1280 x 720 for the app. The command line tool works without a screen.
+
 ## Get the package
 
-You need one file, either `harness-design-studio_<version>_amd64.deb` (way A) or `harness-design-studio-<version>-linux-<arch>.tar.gz` (way B). Your tool administrator provides it, or you take it from the build artifacts of the project's CI run (the artifact is called `harness-design-studio-ubuntu-24.04`). You can also build it yourself (way C, last section).
+You need one file, either `harness-design-studio_<version>_amd64.deb` (way A) or `harness-design-studio-<version>-linux-<arch>.tar.gz` (way B). Ask your tool administrator, or take it from one of these places:
+
+- the **Releases** page of the project's repository, when the packages are attached to the release (look for the newest version number);
+- the build artifacts of a CI run (Actions, then the run, then *Artifacts*): the artifact is called `harness-design-studio-ubuntu-24.04` and holds both files and a `SHA256SUMS` file.
+
+You can also build it yourself (way C, last section).
 
 Copy the file to the machine. It never needs to reach the network.
+
+**Check the file** if it came over a network or on a stick. The release lists a SHA-256 checksum for each file (`compliance/evidence/release_<version>_SHA256SUMS` in the repository). Compare:
+
+```
+sha256sum harness-design-studio_<version>_amd64.deb
+```
+
+The printed value must be the same as the one in the list. If it differs, do not install the file. The packages are not signed (this is a recorded deviation, `compliance/DEVIATIONS.md` T-19), so the checksum is the only check you have. A package built by CI is built again on another machine, so its checksum can differ from the recorded one; use the `SHA256SUMS` file that came in the same artifact.
 
 ## A. The `.deb` package (recommended)
 
@@ -71,6 +97,18 @@ harness-design-studio --selftest    # opens the editor offscreen, makes a projec
 
 Then start **Harness Design Studio** from the application menu. The first start opens a sample project and a short tour.
 
+**What you should see:** a window with the title *Harness Design Studio*, a diagram of boxes (units) joined by lines (interfaces) in the middle, tabs such as *Problems* at the bottom or side, and the menus **File**, **Edit**, **View**, **Help**. If the window is too small or the text is hard to read, see *If the app does not start* below. **F1** opens the user guide.
+
+## Your first five minutes after installing
+
+```
+harness new wheel-link --template first-steps
+harness generate wheel-link
+harness drc wheel-link
+```
+
+Then open `wheel-link` in the app (**File > Open project...**). If this works, the installation is complete. Continue with [`LEARNING_PATH.md`](LEARNING_PATH.md) (the whole route) or [`GETTING_STARTED.md`](GETTING_STARTED.md) (the first step in detail).
+
 ## If the app does not start
 
 The app needs a few system libraries that every normal Ubuntu desktop has. On a minimal install (a container, a server image) add them:
@@ -80,6 +118,15 @@ sudo apt install libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 
 ```
 
 The `.deb` asks `apt` for these itself. More help: [`FAQ.md`](FAQ.md).
+
+| You see | Do this |
+| --- | --- |
+| `E: Unable to locate package ./harness-design-studio_...` or `apt` cannot find the file | Run the command in the folder that holds the file, and keep the `./` in front of the name. |
+| `dpkg: dependency problems` | Run `sudo apt install -f`. It installs the missing system libraries from your normal Ubuntu sources (this is the only step that may need network). |
+| `harness: command not found` after the `.tar.gz` install | `~/.local/bin` is not on your PATH; see way B above. |
+| The app window is blank or the app closes at once | Run `harness-design-studio --selftest` in a terminal. If it prints an error about `xcb`, `libEGL` or `libxkbcommon`, install the libraries above. |
+| You are connected by SSH and the app does not open | The app needs a screen. Use the `harness` command line tool over SSH, or start the app on the machine itself. |
+| `install.sh` says the built program is missing | You ran it from the source tree. Run it from the unpacked `.tar.gz` folder. |
 
 ## C. Run from source (developers)
 

@@ -2,6 +2,8 @@
 
 You will start from a small example, look at what the tool makes of it, fix a finding, export the drawings and lists, and (optionally) see what a release looks like. Every step shows what you should see, and what to do if you do not.
 
+**Looking for the whole route?** [`LEARNING_PATH.md`](LEARNING_PATH.md) puts this tutorial in context: before it, a ten-minute read; after it, a realistic small spacecraft, a worksheet for your own design, real data, release and automation.
+
 **You need:** the tool installed ([`INSTALL.md`](INSTALL.md), five minutes) and nothing else. No spacecraft data, no network.
 
 **Words you do not know?** Read [`CONCEPTS.md`](CONCEPTS.md) first (ten minutes) or look words up as you go.
@@ -17,9 +19,10 @@ harness new --list
 ```
 
 ```
-blank            An empty project: starter parts and interface types, no units.
-first-steps      Three units, a power link and an RS-422 link. Nothing is generated yet: start here.
-small-satellite  14 units with nominal and redundant chains. Generate it to see a realistic system.
+blank              An empty project: starter parts and interface types, no units.
+first-steps        Three units, a power link and an RS-422 link. Nothing is generated yet: start here.
+minimal-satellite  Seven units, nominal only: power, computer, radio, wheel and sun sensor. Adapt it.
+small-satellite    14 units with nominal and redundant chains. Generate it to see a realistic system.
 ```
 
 Create a practice project from `first-steps`. Pick a folder that does not exist yet:
@@ -330,6 +333,10 @@ You have now done everything the tool does, once. Add a **Create redundant copy*
 | a recipe for one task (import, KiCad, release, Git, CI) | [`HOWTO.md`](HOWTO.md) |
 | every command and option | [`CLI.md`](CLI.md) |
 | the screen, shortcuts, glossary | the user guide ([`guide/USER_GUIDE.md`](guide/USER_GUIDE.md); **F1** in the app) |
-| to try a realistic system | `harness new sat --template small-satellite`, then generate it |
+| the whole route from beginner to release | [`LEARNING_PATH.md`](LEARNING_PATH.md) |
+| a one-page summary of commands and keys | [`CHEATSHEET.md`](CHEATSHEET.md) |
+| to try a small but realistic spacecraft | `harness new mini --template minimal-satellite`, then generate it |
+| to try a large system with redundancy | `harness new sat --template small-satellite`, then generate it |
+| to plan a design on paper first | `design-worksheet.md` in the templates (`harness templates my-templates`) |
 | something went wrong | [`FAQ.md`](FAQ.md) |
 | what the examples and templates contain | [`../src/harness_design_studio/resources/examples/templates/README.md`](../src/harness_design_studio/resources/examples/templates/README.md) |

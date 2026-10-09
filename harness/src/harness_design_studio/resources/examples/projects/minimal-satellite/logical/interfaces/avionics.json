@@ -1,0 +1,129 @@
+{
+  "interfaces": [
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J02",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "PCDU1-J12",
+          "role": null,
+          "unit_id": "PCDU1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-007",
+      "max_current_a": null,
+      "name": "CAN OBC1 to PCDU1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J03",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "RW1-J02",
+          "role": null,
+          "unit_id": "RW1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-008",
+      "max_current_a": null,
+      "name": "CAN OBC1 to RW1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J04",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "TRX1-J02",
+          "role": null,
+          "unit_id": "TRX1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-009",
+      "max_current_a": null,
+      "name": "RS-422 OBC1 to TRX1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "rs422",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J05",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "SS1-J02",
+          "role": null,
+          "unit_id": "SS1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-010",
+      "max_current_a": null,
+      "name": "Analog signal OBC1 to SS1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "analog",
+      "voltage_v": null
+    },
+    {
+      "endpoints": [
+        {
+          "auto": true,
+          "connector_id": "OBC1-J06",
+          "role": null,
+          "unit_id": "OBC1"
+        },
+        {
+          "auto": true,
+          "connector_id": "BAT1-J02",
+          "role": null,
+          "unit_id": "BAT1"
+        }
+      ],
+      "flow": "unspecified",
+      "id": "IF-011",
+      "max_current_a": null,
+      "name": "CAN OBC1 to BAT1",
+      "notes": "",
+      "redundancy": "nominal",
+      "requirement_id": null,
+      "type_id": "can",
+      "voltage_v": null
+    }
+  ]
+}

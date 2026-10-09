@@ -57,6 +57,7 @@ Then **File > Open project…** and pick the folder. You cannot break anything: 
 | --- | --- |
 | `blank` | An empty project with the starter parts and interface types. Use it for a real design. |
 | `first-steps` | Three units, a power link and an RS-422 link. Nothing is generated yet: start here. |
+| `minimal-satellite` | Seven units, nominal only: power, computer, radio, wheel and sun sensor. Adapt it. |
 | `small-satellite` | 14 units with nominal and redundant chains. Generate it to see a realistic system. |
 
 `harness templates my-templates` copies templates for your own data: CSV files for interfaces, parts and lengths, a KiCad netlist, a CI script and a review checklist. The demo engineering values in it are for learning only.
