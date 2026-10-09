@@ -2,7 +2,9 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## Unreleased
+## 0.1.0 (first release, 2026-10-09; released by the owner with the engineering decisions still open, see compliance/SIGNOFF.md; not a statement of compliance)
+
+This is release candidate 0.1.0rc8 without the `rc`, plus the note below. The program is unchanged: results differ from rc8 only in the stamps (version, model hash). **Still open at this release**: the harness boundary rule (D-10) and the title block (D-15) are at their defaults; the real derating and EMC values (D-11) and the approved parts list (D-12) have not been supplied, so results rest on placeholders and example parts unless a person has reviewed them (a release of a harness needs a written reason, D-135 and D-136). Waived by the owner and not done: independent verification and validation, the formal reviews, usability sessions, the screen-reader pass and the clean-machine installation test; the packages are unsigned (`compliance/DEVIATIONS.md` T-18 to T-31). Platform: Ubuntu 24.04 and newer.
 
 - **Editor timings re-measured** (`python -m tools.bench_gui`): the benchmark now times undo and redo over whole add / undo / redo cycles instead of one sample. At stress size (200 units, 2,000 interfaces) every edit is under 100 ms and undo is 46 to 59 ms; the earlier "undo about 200 ms" was the one-off cost of the first undo after start-up. UX log item Q16 is closed. No change to the program itself.
 

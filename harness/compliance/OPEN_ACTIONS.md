@@ -2,7 +2,7 @@
 
 Things the tool and its documents cannot do for themselves. None of them was done by the developer assistant, and no document claims it. Each action names the requirements it blocks.
 
-**Note of 2026-10-09:** the owner has said that no further feedback from people will come and has **waived** the actions that need a person (`DEVIATIONS.md` T-20 to T-30). A waived action is not done: it records that the owner accepts the deviation. The owner signed off release candidate 0.1.0rc8 on 2026-10-09 (`SIGNOFF.md`); that sign-off does not close anything in this list. What is not waived and not done: the real values and parts (D-10, D-11, D-12, D-15), and the review of the profile values in each project's config files (A-17). Only a recorded decision with a name and a date changes a status.
+**Note of 2026-10-09:** the owner has said that no further feedback from people will come and has **waived** the actions that need a person (`DEVIATIONS.md` T-20 to T-30). A waived action is not done: it records that the owner accepts the deviation. The owner signed off release candidate 0.1.0rc8 and released 0.1.0 on 2026-10-09 (`SIGNOFF.md`, T-31); that does not close anything in this list. What is not waived and not done: the real values and parts (D-10, D-11, D-12, D-15), and the review of the profile values in each project's config files (A-17). Only a recorded decision with a name and a date changes a status.
 
 | ID | Action | Who | Blocks (gap, clauses) | Status |
 | --- | --- | --- | --- | --- |

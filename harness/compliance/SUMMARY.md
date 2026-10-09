@@ -1,6 +1,6 @@
 # ECSS/ESCC compliance audit: summary report
 
-Status of 2026-10-09 (release candidate 0.1.0rc8, on `master`); the audit itself was done on the branch `compliance/ecss-esccc-audit`. Software criticality category **C** (owner). Standards: ECSS-E-ST-40C Rev.1, ECSS-Q-ST-80C Rev.2 (the tool as software); ECSS-Q-ST-30-11C Rev.2, ECSS-E-ST-20-07C Rev.2, ESCC 3901 Issue 4 (the tool's ability to check harness designs). WireViz was not touched.
+Status of 2026-10-09 (version 0.1.0, on `master`); the audit itself was done on the branch `compliance/ecss-esccc-audit`. Software criticality category **C** (owner). Standards: ECSS-E-ST-40C Rev.1, ECSS-Q-ST-80C Rev.2 (the tool as software); ECSS-Q-ST-30-11C Rev.2, ECSS-E-ST-20-07C Rev.2, ESCC 3901 Issue 4 (the tool's ability to check harness designs). WireViz was not touched.
 
 **The tool is not claimed to comply with anything.** The matrix records what exists and what evidence there is; compliance is a decision of the owner after the reviews in `OPEN_ACTIONS.md`.
 
