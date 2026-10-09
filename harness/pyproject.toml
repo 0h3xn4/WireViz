@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "harness-design-studio"
-version = "0.1.0rc7"
+version = "0.1.0rc8"
 description = "Offline spacecraft harness design tool"
 requires-python = ">=3.12"
 license = "LicenseRef-Proprietary"

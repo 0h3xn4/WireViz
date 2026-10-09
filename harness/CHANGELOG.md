@@ -2,7 +2,9 @@
 
 Versions follow semantic versioning. Every project file records the tool version that saved it.
 
-## Unreleased
+## 0.1.0rc8 (release candidate; not yet signed off by the owner)
+
+This release candidate adds the release gate for parts (D-136) and two fixes from the trial to rc7. Results are unchanged; only the stamps (version, model hash) differ.
 
 - **Release gate for parts (D-136)**: a harness cannot be released while it uses a part that is missing from the parts list, not approved, or marked as unverified example data, unless the person releasing gives a written reason (`harness release ... --accept-unapproved-parts REASON`, or the second field in the release window). The reason and the first part IDs are kept in the change log and the baseline, like the reason for placeholders (D-135). Approved, verified parts need nothing.
 - **Fixes from the trial**: the wire current check now uses the table of bundle factors (Table 6-41) when it is set, as the wire sizing does, instead of the single `bundle_derating` factor (with both set, the two used to disagree); the import of segment lengths explains the cause when every row fails on the harness name because the columns are in another order (the columns are read by position: harness, segment, length).
