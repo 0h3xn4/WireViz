@@ -6,7 +6,7 @@ Versions follow semantic versioning. Every project file records the tool version
 
 - **Editor timings re-measured** (`python -m tools.bench_gui`): the benchmark now times undo and redo over whole add / undo / redo cycles instead of one sample. At stress size (200 units, 2,000 interfaces) every edit is under 100 ms and undo is 46 to 59 ms; the earlier "undo about 200 ms" was the one-off cost of the first undo after start-up. UX log item Q16 is closed. No change to the program itself.
 
-## 0.1.0rc8 (release candidate; not yet signed off by the owner)
+## 0.1.0rc8 (release candidate; signed off by the owner on 2026-10-09 with the engineering decisions still open, see compliance/SIGNOFF.md; not a statement of compliance)
 
 This release candidate adds the release gate for parts (D-136) and two fixes from the trial to rc7. Results are unchanged; only the stamps (version, model hash) differ.
 
