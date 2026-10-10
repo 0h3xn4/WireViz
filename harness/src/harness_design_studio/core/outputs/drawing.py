@@ -512,11 +512,12 @@ def _title_block(
 
 def harness_sheets(project: Project, h: Harness, stamp: Stamp, size: str) -> list[Sheet]:
     w_mm, h_mm = SHEETS[size]
-    fields = (
-        [str(f) for f in (project.config["titleblock"].values.get("fields") or [])]
+    raw_fields = (
+        project.config["titleblock"].values.get("fields")
         if "titleblock" in project.config
-        else []
+        else None
     )
+    fields = [str(f) for f in raw_fields] if isinstance(raw_fields, list) else []
     fields = fields or ["project", "harness_id", "title", "revision", "status", "sheet"]
     head_h = 14.0
     capacity = h_mm - 2 * MARGIN - head_h - TB_H - 4.0
