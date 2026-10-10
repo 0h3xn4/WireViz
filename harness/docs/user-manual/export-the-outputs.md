@@ -96,7 +96,7 @@ The title block shows the author, checker, approver and date as "-" until the ha
 
 ## 4. Check that the outputs are current
 
-The app shows the state in the status bar and in the **Harness plans** tab: "Outputs: up to date with the design.", "Outputs: out of date, the design changed after the last export.", "Outputs: not exported yet.", "Outputs: files were changed after export." On the command line:
+The **Harness plans** tab shows the state: "Outputs: up to date with the design.", "Outputs: out of date, the design changed after the last export.", "Outputs: not exported yet.", "Outputs: files were changed after export." On the command line:
 
 ```
 harness verify wheel-link --outputs
