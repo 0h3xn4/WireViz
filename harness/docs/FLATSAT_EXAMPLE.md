@@ -65,7 +65,7 @@ The totals in `outputs/system/mass_length.csv` after `harness export`: 329.6 m o
 
 `harness drc` reports no errors. It reports warnings and notes, and they are worth reading, because they show what the tool is for:
 
-- **Connector look-alikes.** Many units have several identical connectors (a power distribution unit has ten Micro-D 9 connectors). The rule warns that two cables could be plugged into the wrong place. On a real flatsat you would key the connectors differently or label them.
+- **Connector look-alikes.** Many units have several identical connectors (a power distribution unit has eleven identical Micro-D 9 connectors). The rule warns that two cables could be plugged into the wrong place. On a real flatsat you would key the connectors differently or label them.
 - **Unapproved parts.** Every part is an example part that nobody has approved, so each is listed. This is the example being honest.
 - **Not checked.** Rules that need numbers nobody entered (EMC classes, spare pins, shield grounding) say that they did not run. Silence would look like a pass.
 

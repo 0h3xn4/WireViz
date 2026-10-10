@@ -18,7 +18,7 @@ This page lists the error messages you are most likely to meet, with the exact t
 
 ## How this page was made
 
-Every message below was produced on purpose with the tool (version `0.1.0`, installed into a clean Python virtual environment on Ubuntu 24.04) and pasted as the tool printed it. Project folder names such as `demo` are the ones used in the commands. Three things were **not** run, and say so where they appear: the `.deb` and `.tar.gz` installs (text quoted from [`INSTALL.md`](INSTALL.md)), and anything that needs the app window (text quoted from the program's own message list). Messages about the examples of the released 0.1.0 packages were produced from the source of the `v0.1.0` tag.
+Every message below was produced on purpose with the tool (version `0.1.0`, installed into a clean Python virtual environment on Ubuntu 24.04) and pasted as the tool printed it. Project folder names such as `demo` are the ones used in the commands. Some things were **not** run, and the page says so where they appear: the `.deb` and `.tar.gz` installs and the packaged `--selftest` (text quoted from [`INSTALL.md`](INSTALL.md)), and anything that needs the app window (text quoted from the program's own message list). Messages about the examples of the released 0.1.0 packages were produced from the source of the `v0.1.0` tag.
 
 Questions that are not errors ("which example should I start with?", "does it use the internet?") are answered in [`FAQ.md`](FAQ.md). Words you do not know are explained in [`GLOSSARY.md`](GLOSSARY.md).
 
@@ -179,7 +179,7 @@ WARNING orphan_placement: A diagram position exists for 'RW1', which is not a un
 2 units, 2 interfaces, 9 connectors, 0 harnesses: 5 error(s), 1 warning(s).
 ```
 
-Read the **first** error: it names the file and the line and column. The other errors follow from it (the wheel is missing, so everything that mentions it is wrong). The message never prints the content of the file, because it may be confidential. Fix the file (a JSON-aware editor shows the position; `git diff` shows what changed) and run `harness validate` again. `harness generate` on a project with errors changes nothing:
+Read the **first** error: it names the file and the line and column. The other errors follow from it (the wheel is missing, so everything that mentions it is wrong). The message never prints the content of the file, because it may be confidential. Fix the file (a JSON-aware editor shows the position; `git diff` shows what changed) and run `harness validate` again. `harness generate` on a project with errors changes nothing; after two `warning: [interface_skipped]` lines it ends with (exit code 1):
 
 ```
 2 interfaces and 0 wires checked: 6 error(s)
@@ -192,7 +192,7 @@ Not saved: fix the errors above first.
 The last session ended before its changes were saved. Restore them?
 ```
 
-The app keeps an autosave (`.harness-recovery/` in the project folder). Press **Restore** to bring your last edits back. If you do not want them, decline; nothing else changes.
+The app keeps an autosave (`.harness-recovery/` in the project folder). Press **Restore** to bring your last edits back.
 
 ## Creating a project
 
@@ -278,7 +278,7 @@ Not an error: the blank project has no units and no interfaces, and the command 
 
 ### `Not saved: fix the errors above first.` with `[contact_overload]` or `[wire_sizing]`
 
-Seen after setting the maximum current of one power link of the `flatsat` example to 8 A:
+Seen after setting the maximum current of the power link *Feed of the AOCS distribution unit* (`IF-009`) of the `flatsat` example to 8 A in its project file:
 
 ```
 error: [contact_overload] W002-001: 8 A exceeds the derated contact rating of PCDU1-J09.
@@ -292,7 +292,7 @@ error: [wire_sizing] W002-002: no listed gauge carries 8 A after derating (facto
 Not saved: fix the errors above first.
 ```
 
-Exit code 1. **Why:** the current is more than the connector contact (or the largest wire in your ampacity table) can carry after derating. The line `44 interfaces and 103 wires checked: 0 error(s)` is the same independent check that `harness verify` prints; the errors that stopped the save are the `error:` lines above it. Nothing was written. **Fix:** lower the current, choose a connector with a higher contact rating, or correct the derating values (`harness config DIR`). Run `harness generate` again.
+Exit code 1. **Why:** the current is more than the connector contact (or the largest wire in your ampacity table) can carry after derating. The line `44 interfaces and 103 wires checked: 0 error(s)` is the same independent check that `harness verify` prints; the errors that stopped the save are the `error:` lines above it. Nothing was written. **Fix:** lower the current, or choose a connector or wire that can carry it. If you think the derating values are wrong, ask the engineer who owns them (`harness config DIR` lists them); do not lower them just to make the error go away. Run `harness generate` again.
 
 ### A wire gauge says `pending`
 
@@ -494,7 +494,7 @@ Importing interfaces (**File > Import interfaces...**, CSV or XLSX) is done in t
 
 ## Exporting
 
-### `error: there are no harnesses to export; run `harness generate` first.`
+### There are no harnesses to export
 
 ```
 harness export demo
@@ -506,7 +506,7 @@ error: there are no harnesses to export; run `harness generate` first.
 
 Exit code 1. Outputs are written per harness, and none exists yet. Run `harness generate demo`, then `harness export demo`. (With the `blank` project it stays this way until you add units and interfaces in the app.)
 
-### `error: no outputs folder; run `harness export` first.`
+### No outputs folder
 
 ```
 harness verify demo --outputs
@@ -518,7 +518,7 @@ error: no outputs folder; run `harness export` first.
 
 Exit code 1. `--outputs` checks the files in `demo/outputs`; there are none yet.
 
-### Exporting and then asking "which file is what?"
+### Which file is what?
 
 See [`OUTPUTS.md`](OUTPUTS.md) for the list of files. A project of the `first-steps` example writes `38 files written to demo-first-steps/outputs (model 91531b45fd2c).`
 

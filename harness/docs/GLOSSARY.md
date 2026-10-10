@@ -149,7 +149,7 @@ Six words are used in more than one sense. The documents say which sense they me
 - **Mating matrix**: A table of which cable connector mates with which unit (box) connector (`mating_matrix.csv`). See [`OUTPUTS.md`](OUTPUTS.md).
 - **MDM**: An older connector family kept in the starter library for projects that need it. The repository does not spell the abbreviation out. See [`CONCEPTS.md`](CONCEPTS.md).
 - **Micro-D**: A small D-shaped connector family (drawn as a rounded block). The baseline for power and data, in 9, 15, 21, 25 and 31 pin sizes: power uses the 9 pin size, and for data the size follows how many interface types the connector carries. See [`CONCEPTS.md`](CONCEPTS.md). (general meaning)
-- **Milestones M0 to M7**: The build stages of the tool: M0 Foundation, M1 Model and files, M2 Block diagram, M3 Generation, M4 Design rule checks, M5 Outputs, M6 Change control, M7 Polish. Documents say 'needed by M3' or 'additions in M4' to mean the stage in which a value or file was introduced. See [`PLAN.md`](PLAN.md).
+- **Milestones M0 to M7**: The build stages of the tool: M0 Foundation, M1 Model and files, M2 Block diagram, M3 Generation, M4 Design rule checks, M5 Outputs, M6 Change control, M7 Polish (later work is recorded as M8 and M9 in `docs/demos/`). Documents say 'needed by M3' or 'additions in M4' to mean the stage in which a value or file was introduced. See [`PLAN.md`](PLAN.md).
 - **MIL-STD-1553B**: A military and aerospace data bus standard that several units can share, on a twisted shielded pair (starter signals `BUS+` and `BUS-`). Not part of the baseline. See [`FAQ.md`](FAQ.md). (general meaning)
 - **Model hash**: A fingerprint (SHA-256) of the whole design. Every output file carries its first 12 characters, so a printed sheet can be traced to the exact design it came from. If the design changes, the hash changes and exported outputs are marked out of date. See [`CONCEPTS.md`](CONCEPTS.md), [`FILE_FORMAT.md`](FILE_FORMAT.md).
 - **Multipactor**: A radio-frequency breakdown effect that can occur in vacuum and damage RF parts. The tool cannot check it; it needs an RF analysis outside the tool and is on the [`design-review-checklist.md`](../src/harness_design_studio/resources/examples/templates/design-review-checklist.md) template. (general meaning)
@@ -164,7 +164,7 @@ Six words are used in more than one sense. The documents say which sense they me
 ## O
 
 - **On-board computer (OBC)**: The spacecraft's main computer. Its unit ID in the examples is `OBC1`. See [`CONCEPTS.md`](CONCEPTS.md). (general meaning)
-- **Owner**: The person who set this tool's requirements, answered the design questions and approved its decisions and releases. Only the owner can sign off a release or waive a process step. See [`compliance/SIGNOFF.md`](../compliance/SIGNOFF.md).
+- **Owner**: The owner of the repository, who set this tool's requirements, answered its design questions and made its decisions (a few are still open: see Decision ID). Sign-offs and waivers of process steps in the compliance records are the owner's statements; no personal name is recorded. See [`../compliance/SIGNOFF.md`](../compliance/SIGNOFF.md).
 
 ## P
 
