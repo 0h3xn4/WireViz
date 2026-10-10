@@ -109,6 +109,8 @@ The quick checks run on every edit. The design rules (33 of them) run in the bac
 
 ## 7. Generating harnesses
 
+- **Wire colours**: *Edit > Wire colours...* sets one colour for each signal (PWR, RTN, CANH ...), from the IEC 60757 colours. The wires take them the next time you generate, the *Colour* column of the wire list shows them, and the drawings draw them with the colour code as text. Nothing is preset: a signal with no colour is drawn grey. A wire between two different signals (`TX+/RX+`) takes the colour of the first.
+
 - By default one harness is made for each pair of unit connectors. Nominal and redundant chains, and pyro lines, never share a harness.
 - Pins are chosen by rules (power first, pairs side by side, locked pins never moved). **Why is it like this?** shows the reason for each choice.
 - Generating again keeps IDs, locked wires and locked pins, never touches released harnesses, and shows a report of what was added, changed and removed.

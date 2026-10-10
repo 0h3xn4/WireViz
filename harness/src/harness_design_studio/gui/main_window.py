@@ -70,6 +70,7 @@ from harness_design_studio.gui.dialogs import (
     NewInterfaceDialog,
     PaletteEntry,
     WaiverDialog,
+    WireColoursDialog,
 )
 from harness_design_studio.gui.legend import LegendBar
 from harness_design_studio.gui.panels import (
@@ -527,6 +528,9 @@ class MainWindow(QMainWindow):
         )
         self.act_fit = a(strings.FIT, self.view.fit, "Ctrl+0", name="act-fit")
         self.act_arrange = a(strings.A_ARRANGE, self.arrange_flow, name="act-arrange")
+        self.act_wire_colours = a(
+            strings.A_WIRE_COLOURS, self.wire_colours_flow, name="act-wire-colours"
+        )
         self.act_commands = a(strings.A_COMMANDS, self.open_commands, "Ctrl+K", name="act-commands")
         self.act_guide = a(strings.A_GUIDE, self.guide_flow, "F1", name="act-guide")
         self.act_tour = a(
@@ -573,6 +577,7 @@ class MainWindow(QMainWindow):
             self.act_delete,
             self.act_redundant,
             self.act_add_zone,
+            self.act_wire_colours,
         ):
             e.addAction(act)
         self.menu_add = e.addMenu(strings.M_ADD_UNIT)
@@ -749,6 +754,7 @@ class MainWindow(QMainWindow):
         self.act_redo2.setEnabled(c.history.can_redo and not ro)
         self.act_save.setEnabled(not ro)
         self.act_import.setEnabled(not ro)
+        self.act_wire_colours.setEnabled(not ro)
         self.status_saved.setText(strings.UNSAVED if c.dirty else strings.ALL_SAVED)
         self._update_banner()
         self._update_selection_actions()
@@ -1134,6 +1140,16 @@ class MainWindow(QMainWindow):
         if self.run_dialog(dlg) == QDialog.DialogCode.Accepted:
             t, a, b = dlg.choice()
             self.ctl.add_interface_between(t, a, b)
+
+    def wire_colours_flow(self) -> None:
+        if self.ctl.read_only:
+            return
+        dlg = WireColoursDialog(self, self.ctl.project)
+        if self.run_dialog(dlg) != QDialog.DialogCode.Accepted:
+            return
+        ops = edit.ops_set_wire_colours(self.ctl.project, dlg.colours())
+        if ops and self.ctl.run("wire colours", ops):
+            self.toasts.show_message(strings.WIRE_COLOURS_SET, None)
 
     def add_zone_flow(self) -> None:
         name = self.ask_text(strings.A_ADD_ZONE, strings.ZONE_NAME, "")
