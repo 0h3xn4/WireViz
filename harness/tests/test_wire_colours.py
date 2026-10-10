@@ -87,5 +87,7 @@ def test_the_dialog_sets_the_colours_and_the_wire_list_shows_them(qtbot, tmp_pat
     panel.select_harness(sorted(win.ctl.project.harnesses)[0])
     panel._show_wires()
     assert win.ctl.project.harnesses, "generation made no harness"
-    texts = [panel.wires.item(r, 6).text() for r in range(panel.wires.rowCount())]
+    cells = [panel.wires.item(r, 6) for r in range(panel.wires.rowCount())]
+    assert all(c is not None for c in cells)
+    texts = [c.text() for c in cells if c is not None]
     assert "yellow (YE)" in texts
