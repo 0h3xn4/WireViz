@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .commands import Delete, Op, Put, SetZones
+from .commands import Delete, Op, Put, SetConfig, SetZones
 from .describe import part_gender
 from .errors import HarnessError
 from .model import (
@@ -21,6 +21,7 @@ from .model import (
     Unit,
     evolve,
 )
+from .model.config import ConfigFile
 
 LANE_WIDTH = 470.0
 LANE_X0 = 10.0
@@ -842,3 +843,35 @@ def ops_update_unit(project: Project, unit_id: str, **changes: object) -> list[O
     if bad:
         raise EditError(f"These unit fields cannot be changed here: {', '.join(sorted(bad))}.")
     return [Put("units", evolve(project.units[unit_id], **changes))]
+
+
+def signal_names(project: Project) -> list[str]:
+    """Signal names (PWR, RTN, CANH ...), sorted: those of the interface types the project's
+    interfaces use, or of all interface types while no interface exists yet."""
+    used = {i.type_id for i in project.interfaces.values()}
+    types = [t for t in project.interface_types.values() if t.id in used] or list(
+        project.interface_types.values()
+    )
+    return sorted({sig.name for t in types for sig in t.signals})
+
+
+def wire_colour_map(project: Project) -> dict[str, str]:
+    """The wire colour set for each signal name (`generation.wire_colour_by_signal`), if any."""
+    cfg = project.config.get("generation")
+    got = cfg.values.get("wire_colour_by_signal") if cfg is not None else None
+    return {str(k): str(v) for k, v in got.items()} if isinstance(got, dict) else {}
+
+
+def ops_set_wire_colours(project: Project, colours: dict[str, str]) -> list[Op]:
+    """Ops that set the wire colour of each signal; an empty colour removes the entry. The wires
+    take the colours the next time the harnesses are generated."""
+    old = project.config["generation"]
+    values = dict(old.values)
+    kept = {k: v for k, v in sorted(colours.items()) if v}
+    if kept:
+        values["wire_colour_by_signal"] = kept
+    else:
+        values.pop("wire_colour_by_signal", None)
+    if values == old.values:
+        return []
+    return [SetConfig(ConfigFile(name="generation", placeholder=old.placeholder, values=values))]
