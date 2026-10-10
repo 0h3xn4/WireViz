@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QStandardItem, QStandardItemModel
+from PySide6.QtGui import QColor, QIcon, QPixmap, QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -42,6 +42,7 @@ from harness_design_studio.core.imports import (
 from harness_design_studio.core.issues import Issue
 from harness_design_studio.core.model import Project
 from harness_design_studio.core.vcs.diff import KIND_NAMES, Diff
+from harness_design_studio.core.wirecolours import COLOURS, name_of
 from harness_design_studio.gui import strings
 from harness_design_studio.gui.theme import ThemeManager
 
@@ -208,6 +209,64 @@ def table_to_csv(table: Table) -> str:
     out = io.StringIO()
     csv.writer(out, lineterminator="\n").writerows(table)
     return out.getvalue()
+
+
+class WireColoursDialog(QDialog):
+    """One colour for each signal name (PWR, RTN, CANH ...): the wires of that signal are drawn
+    in it. Nothing is preset: a signal with no choice stays without colour."""
+
+    def __init__(self, parent: QWidget | None, project: Project) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(strings.WIRE_COLOURS_TITLE)
+        self.setObjectName("wire-colours-dialog")
+        self.resize(460, 480)
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel(f"<h3>{strings.WIRE_COLOURS_TITLE}</h3>"))
+        help_ = QLabel(strings.WIRE_COLOURS_HELP)
+        help_.setProperty("muted", True)
+        help_.setWordWrap(True)
+        lay.addWidget(help_)
+        self.signals = edit.signal_names(project)
+        current = edit.wire_colour_map(project)
+        self.table = QTableWidget(len(self.signals), 2)
+        self.table.setObjectName("wire-colours-table")
+        self.table.setAccessibleName(strings.WIRE_COLOURS_TABLE)
+        self.table.setHorizontalHeaderLabels(
+            [strings.WIRE_COLOURS_SIGNAL, strings.WIRE_COLOURS_COLUMN]
+        )
+        self.table.verticalHeader().setVisible(False)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.boxes: dict[str, QComboBox] = {}
+        for r, sig in enumerate(self.signals):
+            item = QTableWidgetItem(sig)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.table.setItem(r, 0, item)
+            box = QComboBox()
+            box.setObjectName(f"wire-colour-{sig}")
+            box.setAccessibleName(f"{strings.WIRE_COLOURS_TITLE}: {sig}")
+            box.addItem(strings.WIRE_COLOUR_NONE, "")
+            for name, code, hexcolour in COLOURS:
+                pm = QPixmap(16, 16)
+                pm.fill(QColor(hexcolour))
+                box.addItem(QIcon(pm), f"{name} ({code})", name)
+            known = name_of(current.get(sig))
+            if current.get(sig) and not known:  # a colour typed by hand that the table lacks
+                box.addItem(current[sig], current[sig])
+                known = current[sig]
+            box.setCurrentIndex(max(0, box.findData(known)))
+            self.table.setCellWidget(r, 1, box)
+            self.boxes[sig] = box
+        lay.addWidget(self.table)
+        if not self.signals:
+            note = QLabel(strings.WIRE_COLOURS_NO_SIGNALS)
+            note.setProperty("muted", True)
+            lay.addWidget(note)
+        self.ok, self.cancel, row = _buttons(self, strings.SAVE)
+        lay.addLayout(row)
+
+    def colours(self) -> dict[str, str]:
+        """Signal name -> chosen colour name (empty: none)."""
+        return {sig: str(box.currentData() or "") for sig, box in self.boxes.items()}
 
 
 class ImportDialog(QDialog):

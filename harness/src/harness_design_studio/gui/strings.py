@@ -225,7 +225,7 @@ GEN_STATUS = {
 PLANS_VERIFY_OK = "Independent check: {0}"
 PLANS_VERIFY_BAD = "Independent check found problems: {0}"
 PLANS_COLUMNS = ["Harness", "Name", "Wires", "Interfaces", "Status", "Origin"]
-WIRE_COLUMNS = ["Wire", "Signal", "From", "To", "AWG", "Length (m)", "Locked"]
+WIRE_COLUMNS = ["Wire", "Signal", "From", "To", "AWG", "Length (m)", "Colour", "Locked"]
 EXPLAIN = "Why is it like this?"
 EXPLAIN_NONE = "No explanation recorded (this item was made by hand)."
 ALL_SAVED = "All changes saved"
@@ -407,3 +407,17 @@ DELETE_HARNESS_TITLE = "Delete {0}"
 DELETE_HARNESS_BODY = "<b>{0}</b> and its {1} wire(s) will be deleted. You can undo this."
 HARNESS_DELETED = "{0} deleted."
 GROUPED_PROBLEMS = "{0}: {1} problems of the same kind"
+
+A_WIRE_COLOURS = "Wire colours..."
+WIRE_COLOURS_TITLE = "Wire colours"
+WIRE_COLOURS_HELP = (
+    "Pick the colour of the wire for each signal. The wires take the colours the next time you "
+    "generate the harnesses, and the harness drawings draw them (with the colour code as text). "
+    "A signal without a colour is drawn grey. The tool defines no colours of its own."
+)
+WIRE_COLOUR_NONE = "no colour"
+WIRE_COLOURS_TABLE = "Wire colour for each signal"
+WIRE_COLOURS_SIGNAL = "Signal"
+WIRE_COLOURS_COLUMN = "Colour"
+WIRE_COLOURS_NO_SIGNALS = "The project has no interface types with signals yet."
+WIRE_COLOURS_SET = "Wire colours saved. Generate the harnesses to apply them."
